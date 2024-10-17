@@ -108,7 +108,7 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
             name: vm?.name ?? 'Unknown',               
             comment: vm?.comment ?? '',                 
             host: vm?.hostVo?.name ?? 'Unknown',         
-            ipv4: vm?.ipv4?.[0] ?? 'Unknown', 
+            ipv4: vm?.ipv4?.[0] ?? '', 
             fqdn: vm?.fqdn ?? '',                      
             cluster: vm?.clusterVo?.name ?? 'Unknown',        
             datacenter: vm?.dataCenterVo?.name ?? 'Unknown', 

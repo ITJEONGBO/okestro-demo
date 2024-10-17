@@ -14,7 +14,7 @@ const TableColumnsInfo = {
     { header: '상태', accessor: 'status', clickable: false },
     { header: '호스트 수', accessor: 'hostCnt', clickable: false }, 
     { header: '클러스터 수', accessor: 'clusterCnt', clickable: false }, 
-    { header: '호환 버전', accessor: 'compatVersion', clickable: false },
+    { header: '호환 버전', accessor: 'version', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
   CLUSTERS_FROM_DATACENTER: [
@@ -313,7 +313,6 @@ const TableColumnsInfo = {
     { header: 'SPM', accessor: 'spmStatus', clickable: false }
   ],
   VM_CHART:[
-
     { header: '', accessor: 'icon', clickable: false },  // 이모티콘 칸
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
@@ -340,7 +339,24 @@ const TableColumnsInfo = {
     { header: '데이터센터', accessor: 'datacenter', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
+
   VMS: [
+    { header: '상태', accessor: 'status', clickable: false },
+    // { header: '엔진', accessor: 'engine', clickable: false },
+    { header: '이름', accessor: 'name', clickable: true },
+    { header: '코멘트', accessor: 'comment', clickable: false },
+    { header: 'IP주소', accessor: 'ipv4', clickable: false },
+    { header: 'FQDN', accessor: 'fqdn', clickable: false },
+    { header: '호스트', accessor: 'host', clickable: true },
+    { header: '클러스터', accessor: 'cluster', clickable: true },
+    { header: '데이터센터', accessor: 'dataCenter', clickable: true },
+    { header: 'Memory', accessor: 'memory', clickable: false },
+    { header: 'CPU', accessor: 'cpu', clickable: false },
+    { header: 'Network', accessor: 'networkPer', clickable: false },
+    { header: '업타임', accessor: 'upTime', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false }
+  ],
+  VMS_NIC: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
@@ -388,6 +404,7 @@ const TableColumnsInfo = {
     { header: '상태', accessor: 'status', clickable: false },
     { header: '업타임', accessor: 'uptime', clickable: false },
   ],
+
   TEMPLATES: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '버전', accessor: 'nicId', clickable: false },

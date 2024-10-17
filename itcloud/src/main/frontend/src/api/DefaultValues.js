@@ -3,11 +3,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { version } from 'react';
 
 const DEFAULT_VALUES = {
-  FIND_ALL_TREE_NAVIGATIONS: {
-    "type": "DATACENTER",
-    "id": "32cfa74b-9adc-40cc-a2a1-0ada699b714c",
-    "name": "de",
+
+  FIND_ALL_USERS: {
+      name: '',
+      surname: '',
+      userName: '',
+      provider: '',
+      nameSpace: '',
+      email: ''
   },
+
+  FIND_ALL_TREE_NAVIGATIONS: {
+    "type": "",
+    "id": "*",
+    "name": "*",
+  },
+
   GET_DASHBOARD: {
       uptime: 0,
       datacenters: 0,
@@ -42,7 +53,10 @@ const DEFAULT_VALUES = {
   GET_VM_CPU: () =>         `/api/v1/dashboard/vmCpu`,
   GET_VM_MEMORY: () =>      `/api/v1/dashboard/vmMemory`, 
   GET_STORAGE_MEMORY: () => `/api/v1/dashboard/storageMemory`,
+
+
   // 컴퓨팅
+  // region: DataCenter
    FIND_ALL_DATA_CENTERS: [
     {
         name: 'DataCenter1',
@@ -87,6 +101,9 @@ const DEFAULT_VALUES = {
     }
   ],
   
+
+  
+  //endregion: DataCenter
 
 //region:Cluster------ 클러스터
   FIND_ALL_CLUSTERS: [
@@ -165,12 +182,12 @@ const DEFAULT_VALUES = {
   // 네트워크목록 나열
   FIND_ALL_NETWORKS: [
     { 
-      id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
-      name: 'ovirtmgmt', 
-      description: 'Management Network', 
-      dataCenter: 'DC1', 
-      provider: 'Provider1', 
-      portSeparation: '아니요' 
+      id: '*',
+      name: '*', 
+      description: '*', 
+      dataCenter: '*', 
+      provider: '*', 
+      portSeparation: '*' 
     }
   ],
   // 네트워크 세부(일반)
@@ -452,10 +469,10 @@ FIND_ALL_TEMPLATES:[
     FIND_EVENT:[
       {
         icon: <FontAwesomeIcon icon="fa-solid fa-check-circle" style={{ color: 'green' }}fixedWidth/>,  // 상태 아이콘
-        time: '2024. 8. 12. PM 12:24:11',
-        description: 'Check for update of host host02.ititinfo.com. Delete yum_updates file from host.',
+        time: '2024. *. *. PM *:*:*',
+        description: '-',
         correlationId: '',
-        source: 'oVirt',
+        source: '*',
         userEventId: '',
       },
     ],

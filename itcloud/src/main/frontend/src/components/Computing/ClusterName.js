@@ -5,7 +5,7 @@ import HeaderButton from '../button/HeaderButton';
 import Modal from 'react-modal';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import NetworkDetail from '../Network/NetworkDetail';
-import { useClusterById, useEventFromCluster, useHostFromCluster, useLogicalFromCluster, usePermissionFromCluster, useVMFromCluster } from '../../api/RQHook';
+import { useCluster, useEventFromCluster, useHostFromCluster, useLogicalFromCluster, usePermissionFromCluster, useVMFromCluster } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faCrown, faUser,
@@ -107,7 +107,7 @@ function ClusterName() {
         isError: isNetworkError,
         error: networkError, 
         isLoading: isNetworkLoading,
-      } = useClusterById(id);
+      } = useCluster(id);
       
       useEffect(() => {
         clusterRefetch();  // 함수 이름을 일치시킴

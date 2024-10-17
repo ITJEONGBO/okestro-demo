@@ -33,7 +33,19 @@ const makeAPICall = async ({method = "GET", url, data, defaultValues}) => {
 }
 
 const ApiManager = {
+
   //region: User
+  /**
+   * @name ApiManager.findAllUsers
+   * @description User 목록 
+   *
+   * @returns 
+   */
+  findAllUsers: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_USERS(), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_USERS
+  }),
   /**
    * @name ApiManager.authenticate
    * @description 로그인
@@ -157,89 +169,96 @@ const ApiManager = {
     url: ENDPOINTS.FIND_ALL_DATA_CENTERS(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_DATA_CENTERS
   }),
-    /**
+  /**
    * @name ApiManager.findDataCenter
    * @description datacenter
    *
+   * @param {string} dataCenterId
    * @returns 
    * 
    * @see Computing.js (components/Computing)
    */
-    findDataCenter: async (dataCenterId) => makeAPICall({ 
-      method: "GET",  
-      url: ENDPOINTS.FIND_DATA_CENTER(dataCenterId), 
-      defaultValues: DEFAULT_VALUES.FIND_DATACENTER
-    }),
+  findDataCenter: async (dataCenterId) => makeAPICall({ 
+    method: "GET",  
+    url: ENDPOINTS.FIND_DATA_CENTER(dataCenterId), 
+    defaultValues: DEFAULT_VALUES.FIND_DATACENTER
+  }),
   /**
-   * @name findAllClustersFromDataCenter
+   * @name ApiManager.findAllClustersFromDataCenter
    * @description 
    * 
+   * @param {string} dataCenterId
    * @returns 
    */
-  findAllClustersFromDataCenter: async () => makeAPICall({
+  findAllClustersFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_CLUSTERS_FROM_DATA_CENTER(), 
+    url: ENDPOINTS.FIND_CLUSTERS_FROM_DATA_CENTER(dataCenterId), 
     defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_FROM_DATA_CENTER
   }),
   /**
-   * @name findAllHostsFromDataCenter
+   * @name ApiManager.findAllHostsFromDataCenter
    * @description 
    * 
+   * @param {string} dataCenterId
    * @returns 
    */
-  findAllHostsFromDataCenter: async () => makeAPICall({
+  findAllHostsFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_HOSTS_FROM_DATA_CENTER(), 
+    url: ENDPOINTS.FIND_HOSTS_FROM_DATA_CENTER(dataCenterId), 
     defaultValues: DEFAULT_VALUES.FIND_HOSTS_FROM_DATA_CENTER
   }),
   /**
-   * @name findAllVmsFromDataCenter
+   * @name ApiManager.findAllVmsFromDataCenter
    * @description 
    * 
+   * @param {string} dataCenterId
    * @returns 
    */
-  findAllVmsFromDataCenter: async () => makeAPICall({
+  findAllVmsFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_VMS_FROM_DATA_CENTER(), 
+    url: ENDPOINTS.FIND_VMS_FROM_DATA_CENTER(dataCenterId), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_VMS
   }),
   /**
-   * @name findAllDomainsFromDataCenter
+   * @name ApiManager.findAllDomainsFromDataCenter
    * @description 
    * 
+   * @param {string} dataCenterId
    * @returns 
    */
-  findAllDomainsFromDataCenter: async () => makeAPICall({
+  findAllDomainsFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_DATA_CENTER(), 
+    url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_DATA_CENTER(dataCenterId), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
   }),
   /**
-   * @name findAllEventsFromDataCenter
+   * @name ApiManager.findAllNetworksFromDataCenter
    * @description 
    * 
+   * @param {string} dataCenterId
    * @returns 
    */
-  findAllEventsFromDataCenter: async () => makeAPICall({
+  findAllNetworksFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_EVENTS_FROM_DATA_CENTER(), 
+    url: ENDPOINTS.FIND_NETWORKS_FROM_DATA_CENTER(dataCenterId), 
+    defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_DATA_CENTER
+  }),
+  /**
+   * @name ApiManager.findAllEventsFromDataCenter
+   * @description 
+   * 
+   * @param {string} dataCenterId
+   * @returns 
+   */
+  findAllEventsFromDataCenter: async (dataCenterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_EVENTS_FROM_DATA_CENTER(dataCenterId), 
     defaultValues: DEFAULT_VALUES.FIND_EVENT
   }),
-    /**
-   * @name findAllNetworksFromDataCenter
-   * @description 
-   * 
-   * @returns 
-   */
-    findAllNetworksFromDataCenter: async () => makeAPICall({
-      method: "GET", 
-      url: ENDPOINTS.FIND_NETWORKS_FROM_DATA_CENTER(), 
-      defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_DATA_CENTER
-    }),
 
-    /**
+  /**
    * @name ApiManager.addDataCenter
-   * @description 새 데이터센터 추가
+   * @description 새 데이터센터 생성
    * 
    * @param {Object} dataCenterData - 추가할 데이터센터 정보
    * @returns {Promise<Object>} API 응답 결과
@@ -252,94 +271,426 @@ const ApiManager = {
       defaultValues: DEFAULT_VALUES.ADD_DATA_CENTER
     });
   },
-
+  /**
+   * @name ApiManager.editDataCenter
+   * @description 데이터센터 편집
+   * 
+   * @param {string} dataCenterId
+   * @param {Object} dataCenterData - 추가할 데이터센터 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+    editDataCenter: async (dataCenterId, dataCenterData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_DATA_CENTER(dataCenterId),
+        data: dataCenterData, // PUT 요청 시 전송할 데이터
+        defaultValues: DEFAULT_VALUES.EDIT_DATA_CENTER
+      });
+    },
+  /**
+   * @name ApiManager.deleteDataCenter
+   * @description 데이터센터 삭제
+   * 
+   * @param {String} dataCenterId - 삭제할 데이터센터 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  deleteDataCenter: async (dataCenterId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_DATA_CENTER(dataCenterId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.DELETE_DATA_CENTER
+    });
+  },
   //endregion: DataCenter
 
   //region : Cluster--------------------------------------------
   /**
-   * 
+   * @name ApiManager.findAllClusters
+   * @description 클러스터 목록 
+   *
    * @returns 
-   **/
+   * 
+   * @see
+   */
   findAllClusters: async ()  => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_CLUSTERS(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
   }),
-  findAllClusterById: async (clusterId) => makeAPICall({
+   /**
+   * @name ApiManager.findCluster
+   * @description 클러스터
+   *
+   * @param {string} clusterId
+   * @returns 
+   * 
+   * @see
+   */
+  findCluster: async (clusterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_CLUSTERS_BY_ID(clusterId), 
+    url: ENDPOINTS.FIND_CLUSTER(clusterId), 
     defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_BY_ID
   }),
-  findLogicalFromCluster : async (clusterId) => makeAPICall({
+  /**
+   * @name ApiManager.findHostsFromCluster
+   * @description 호스트 목록 
+   *
+   * @param {string} clusterId
+   * @returns 
+   * 
+   * @see
+   */
+  findHostsFromCluster : async (clusterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_LOGICAL_FROM_CLUSTERS(clusterId), 
+    url: ENDPOINTS.FIND_HOSTS_FROM_CLUSTER(clusterId), 
     defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
   }),
-  findHostFromCluster : async (clusterId) => makeAPICall({
+   /**
+   * @name ApiManager.findVMsFromCluster
+   * @description vm 목록 
+   *
+   * @param {string} clusterId
+   * @returns 
+   * 
+   * @see
+   */
+  findVMsFromCluster : async (clusterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_HOST_FROM_CLUSTERS(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
-  }),
-  findVMFromCluster : async (clusterId) => makeAPICall({
-    method: "GET", 
-    url: ENDPOINTS.FIND_VM_FROM_CLUSTERS(clusterId), 
+    url: ENDPOINTS.FIND_VMS_FROM_CLUSTER(clusterId), 
     defaultValues: DEFAULT_VALUES.FIND_VM_FROM_CLUSTER
   }),
-  findPermissionsFromCluster : async (clusterId) => makeAPICall({
+   /**
+   * @name ApiManager.findNetworksFromCluster
+   * @description 클러스터 네트워크 목록 
+   *
+   * @param {string} clusterId
+   * @returns 
+   * 
+   * @see
+   */
+  findNetworksFromCluster : async (clusterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_PERMISSIONS_FROM_CLUSTERS(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_PERMISSION
+    url: ENDPOINTS.FIND_NETWORKS_FROM_CLUSTER(clusterId), 
+    defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
   }),
-  findEventFromCluster: async (clusterId) => makeAPICall({
+   /**
+   * @name ApiManager.addNetworkFromCluster
+   * @description 클러스터 새 네트워크 생성
+   * 
+   * @param {string} clusterId
+   * @param {Object} networkData - 추가할 클러스터 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+   addNetworkFromCluster: async (clusterId, networkData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_NETWORK_FROM_CLUSTER(clusterId),
+      data: networkData, // POST 요청 시 전송할 데이터
+      defaultValues: DEFAULT_VALUES.ADD_NETWORK_CLUSTER
+    });
+  },
+  //  /**
+  //  * @name ApiManager.addNetworkFromCluster
+  //  * @description 클러스터 네트워크 관리
+  //  * 
+  //  * @param {string} clusterId
+  //  * @param {Object} networkData - 추가할 클러스터 정보
+  //  * @returns {Promise<Object>} API 응답 결과
+  //  */
+  //  addNetworkFromCluster: async (clusterId, networkData) => {
+  //   return makeAPICall({
+  //     method: "POST",
+  //     url: ENDPOINTS.MANAGE_NETWORKS_FROM_CLUSTER(clusterId),
+  //     data: networkData, // POST 요청 시 전송할 데이터
+  //     defaultValues: DEFAULT_VALUES.ADD_NETWORK_CLUSTER
+  //   });
+  // },
+   /**
+   * @name ApiManager.findEventsFromCluster
+   * @description 이벤트 목록 
+   *
+   * @param {string} clusterId
+   * @returns 
+   * 
+   * @see
+   */
+  findEventsFromCluster: async (clusterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_EVENT_FROM_CLUSTERS(clusterId), 
+    url: ENDPOINTS.FIND_EVENTS_FROM_CLUSTER(clusterId), 
     defaultValues: DEFAULT_VALUES.FIND_EVENT_FROM_CLUSTER
   }),
+   /**
+   * @name ApiManager.findCpuProfilesFromCluster
+   * @description cpuProfile 목록 
+   *
+   * @param {string} clusterId
+   * @returns 
+   * 
+   * @see
+   */
+   findCpuProfilesFromCluster: async (clusterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_CPU_PROFILES_FROM_CLUSTER(clusterId), 
+    defaultValues: DEFAULT_VALUES.FIND_CPU_PROFILES_FROM_CLUSTER
+  }),
+
+
+  /**
+   * @name ApiManager.addCluster
+   * @description 새 클러스터 생성
+   * 
+   * @param {Object} clusterData - 추가할 클러스터 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  addCluster: async (clusterData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_CLUSTER(),
+      data: clusterData, // POST 요청 시 전송할 데이터
+      defaultValues: DEFAULT_VALUES.ADD_CLUSTER
+    });
+  },
+  /**
+   * @name ApiManager.editCluster
+   * @description 클러스터 편집
+   * 
+   * @param {string} clusterId
+   * @param {Object} clusterData - 추가할 클러스터 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+    editCluster: async (clusterId, clusterData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_CLUSTER(clusterId),
+        data: clusterData, // PUT 요청 시 전송할 데이터
+        defaultValues: DEFAULT_VALUES.EDIT_CLUSTER
+      });
+    },
+  /**
+   * @name ApiManager.deleteCluster
+   * @description 클러스터 삭제
+   * 
+   * @param {String} clusterId - 삭제할 클러스터 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  deleteCluster: async (clusterId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_CLUSTER(clusterId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.DELETE_CLUSTER
+    });
+  },
   //endregion: Cluster
 
 
   //region : Host--------------------------------------------
   /**
-   * 
+   * @name ApiManager.findAllHosts
+   * @description 호스트 목록 
+   *
    * @returns 
-   **/
+   * 
+   * @see
+   */
   findAllHosts : async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_HOSTS(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_HOSTS
   }),
-
-  findAllHostById : async (hostId) => makeAPICall({
+  /**
+   * @name ApiManager.findHost
+   * @description 호스트
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findHost : async (hostId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOST(hostId), 
     defaultValues: DEFAULT_VALUES.FIND_HOST
   }),
-  findVmFromHost : async (hostId) => makeAPICall({
+  /**
+   * @name ApiManager.findVmsFromHost
+   * @description 가상머신 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findVmsFromHost : async (hostId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_VM_FROM_HOST(hostId), 
+    url: ENDPOINTS.FIND_VMS_FROM_HOST(hostId), 
     defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
   }),
-  findHostdeviceFromHost : async (hostId) => makeAPICall({
+  /**
+   * @name ApiManager.findHostNicsFromHost
+   * @description 호스트 Nic 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findHostNicsFromHost : async (hostId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_HOSTDEVICE_FROM_HOST(hostId), 
+    url: ENDPOINTS.FIND_HOST_NICS_FROM_HOST(hostId), 
+    defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_HOST
+  }),
+  /**
+   * @name ApiManager.findNetworksFromHost
+   * @description 호스트 네트워크 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findNetworksFromHost : async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_NETWORKS_FROM_HOST(hostId), 
+    defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_HOST
+  }),
+  // /**
+  //  * @name ApiManager.findSetHostNicsFromHost
+  //  * @description 
+  //  *
+  //  * @param {string} hostId
+  //  * @returns 
+  //  * 
+  //  * @see
+  //  */
+  // findSetHostNicsFromHost : async (hostId) => makeAPICall({
+  //   method: "GET", 
+  //   url: ENDPOINTS.SETUP_HOST_NICS_FROM_HOST(hostId), 
+  //   defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_HOST
+  // }),
+  /**
+   * @name ApiManager.findHostdevicesFromHost
+   * @description 호스트 장치 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findHostdevicesFromHost : async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_HOSTDEVICES_FROM_HOST(hostId), 
     defaultValues: DEFAULT_VALUES.FIND_DEVICE_FROM_HOST
   }),
-  findPermissionsFromHost: async (hostId) => makeAPICall({
-    method: "GET", 
-    url: ENDPOINTS.FIND_PERMISSIONS_FROM_HOST(hostId), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_PERMISSION
-  }),
+  /**
+   * @name ApiManager.findEventsFromHost
+   * @description 호스트 이벤트 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
   findEventsFromHost: async (hostId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_EVENT_FROM_HOST(hostId), 
+    url: ENDPOINTS.FIND_EVENTS_FROM_HOST(hostId), 
     defaultValues: DEFAULT_VALUES.FIND_EVNET_FROM_HOST
   }),
+
+
+  /**
+   * @name ApiManager.addHost
+   * @description 새 호스트 생성
+   * 
+   * @param {Object} hostData - 추가할 호스트 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  addHost: async (hostData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_HOST(),
+      data: hostData, // POST 요청 시 전송할 데이터
+      defaultValues: DEFAULT_VALUES.ADD_HOST
+    });
+  },
+  /**
+   * @name ApiManager.editHost
+   * @description 호스트 편집
+   * 
+   * @param {string} hostId
+   * @param {Object} hostData - 추가할 호스트 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+    editHost: async (hostId, hostData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_HOST(hostId),
+        data: hostData, // PUT 요청 시 전송할 데이터
+        defaultValues: DEFAULT_VALUES.EDIT_HOST
+      });
+    },
+  /**
+   * @name ApiManager.deleteHost
+   * @description 호스트 삭제
+   * 
+   * @param {String} hostId - 삭제할 호스트 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  deleteHost: async (hostId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_HOST(hostId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.DELETE_HOST
+    });
+  },
+  /**
+   * @name ApiManager.activateHost
+   * @description 호스트 활성
+   * 
+   * @param {String} hostId - 호스트 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  activateHost: async (hostId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ACTIVATE_HOST(hostId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.ACTIVATE_HOST
+    });
+  },
+  /**
+   * @name ApiManager.deactivateHost
+   * @description 호스트 유지보수
+   * 
+   * @param {String} hostId - 호스트 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  deactivateHost: async (hostId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.DEACTIVATE_HOST(hostId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.DEACTIVATE_HOST
+    });
+  },
+  /**
+   * @name ApiManager.restartHost
+   * @description 호스트 재시작
+   * 
+   * @param {String} hostId - 호스트 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  restartHost: async (hostId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.RESTART_HOST(hostId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.RESTART_HOST
+    });
+  },
   //endregion: Host
 
 
-  //region : VM/Template --------------------------------------------
+  //region : VM --------------------------------------------
   /**
    * @name ApiManager.findAllVMs
+   * @description 가상머신 목록
    * 
    * @returns 
    **/
@@ -348,123 +699,1374 @@ const ApiManager = {
     url: ENDPOINTS.FIND_ALL_VMS(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_VMS
   }),
+  /**
+   * @name ApiManager.findVM
+   * @description 가상머신
+   *
+   * @param {string} vmId
+   * @returns 
+   * 
+   * @see
+   */
+  findVM : async (vmId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VM(vmId), 
+    defaultValues: DEFAULT_VALUES.FIND_VM
+  }),
+
+  /**
+   * @name ApiManager.findDisksFromVM
+   * @description 디스크 목록
+   *
+   * @param {string} vmId
+   * @returns 
+   * 
+   * @see
+   */
+  findDisksFromVM : async (vmId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISKS_FROM_VM(vmId), 
+    defaultValues: DEFAULT_VALUES.FIND_DISKS_FROM_VM
+  }),
+  /**
+   * @name ApiManager.findDiskFromVM
+   * @description 디스크
+   *
+   * @param {string} vmId
+   * @param {string} diskAttachmentId
+   * @returns 
+   * 
+   * @see
+   */
+  findDiskFromVM : async (vmId, diskAttachmentId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISK_FROM_VM(vmId, diskAttachmentId), 
+    defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_VM
+  }),
+  /**
+   * @name ApiManager.addDiskFromVM
+   * @description 가상머신 디스크 생성
+   * 
+   * @param {string} vmId
+   * @param {Object} diskData - 추가할 디스크 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  addDiskFromVM: async (vmId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_DISK_FROM_VM(vmId),
+      data: diskData, // POST 요청 시 전송할 데이터
+      defaultValues: DEFAULT_VALUES.ADD_DISK_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.editDiskFromVM
+   * @description 가상머신 디스크 편집
+   * 
+   * @param {string} vmId
+   * @param {Object} diskData - 추가할 디스크 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  editDiskFromVM: async (hostId, diskData) => {
+    return makeAPICall({
+      method: "PUT",
+      url: ENDPOINTS.EDIT_DISK_FROM_VM(hostId),
+      data: diskData, // PUT 요청 시 전송할 데이터
+      defaultValues: DEFAULT_VALUES.EDIT_DISK_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.deleteDisksFromVM
+   * @description 가상머신 디스크 삭제(여러개)
+   * 
+   * @param {String} vmId
+   * @param {Object} List<string> diskAttachmentIds
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  deleteDisksFromVM: async (vmId, diskData) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_DISKS_FROM_VM(vmId), 
+      data: diskData, // diskAttachmentId 목록
+      defaultValues: DEFAULT_VALUES.DELETE_DISKS_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.attachDisksFromVM
+   * @description 가상머신 디스크 연결(여러개)
+   * 
+   * @param {String} vmId
+   * @param {Object} List<string> diskAttachmentIds
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  attachDisksFromVM: async (vmId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ATTACH_DISKS_FROM_VM(vmId), 
+      data: diskData, // diskAttachmentId 목록
+      defaultValues: DEFAULT_VALUES.ATTACH_DISKS_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.findStorageDomainsFromVM
+   * @description 스토리지 도메인 목록
+   *
+   * @param {string} vmId
+   * @param {string} diskAttachmentId
+   * @returns 
+   * 
+   * @see
+   */
+  findStorageDomainsFromVM : async (vmId, diskAttachmentId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_VM(vmId, diskAttachmentId), 
+    defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_VM
+  }),
+  /**
+   * @name ApiManager.activateDisksFromVM
+   * @description 가상머신 디스크 활성화(여러개)
+   * 
+   * @param {String} vmId
+   * @param {Object} List<string> diskAttachmentIds
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  activateDisksFromVM: async (vmId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ACTIVATE_DISKS_FROM_VM(vmId), 
+      data: diskData,
+      defaultValues: DEFAULT_VALUES.ACTIVATE_DISKS_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.deactivateDisksFromVM
+   * @description 가상머신 디스크 비활성화(여러개)
+   * 
+   * @param {String} vmId
+   * @param {Object} List<string> diskAttachmentIds
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  deactivateDisksFromVM: async (vmId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.DEACTIVATE_DISKS_FROM_VM(vmId), 
+      data: diskData,
+      defaultValues: DEFAULT_VALUES.DEACTIVATE_DISKS_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.deactivateDisksFromVM
+   * @description 가상머신 디스크 이동(여러개)
+   * 
+   * @param {String} vmId
+   * @param {Object} diskData
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  moveDisksFromVM: async (vmId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.MOVE_DISK_FROM_VM(vmId), 
+      data: diskData,
+      defaultValues: DEFAULT_VALUES.MOVE_DISK_FROM_VM
+    });
+  },
+
+    /**
+   * @name ApiManager.findSnapshotsFromVM
+   * @description 스냅샷 목록
+   *
+   * @param {string} vmId
+   * @returns 
+   * 
+   * @see
+   */
+  findSnapshotsFromVM : async (vmId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_SNAPSHOTS_FROM_VM(vmId), 
+    defaultValues: DEFAULT_VALUES.FIND_SNAPSHOTS_FROM_VM
+  }),
+  /**
+   * @name ApiManager.findSnapshotFromVm
+   * @description 스냅샷
+   *
+   * @param {string} vmId
+   * @param {string} snapshotId
+   * @returns 
+   * 
+   * @see
+   */
+  findSnapshotFromVm : async (vmId, snapshotId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_SNAPSHOT_FROM_VM(vmId, snapshotId), 
+    defaultValues: DEFAULT_VALUES.FIND_SNAPSHOT_FROM_VM
+  }),
+  /**
+   * @name ApiManager.addSnapshotFromVM
+   * @description 가상머신 스냅샷 생성
+   * 
+   * @param {string} vmId
+   * @param {Object} snapshotData - 추가할 디스크 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  addSnapshotFromVM: async (vmId, snapshotData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_SNAPSHOT_FROM_VM(vmId),
+      data: snapshotData, 
+      defaultValues: DEFAULT_VALUES.ADD_SNAPSHOT_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.deleteSnapshotsFromVM
+   * @description 가상머신 스냅샷 삭제(여러개)
+   * 
+   * @param {String} vmId
+   * @param {Object} List<string> diskAttachmentIds
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  deleteSnapshotsFromVM: async (vmId, snapshotData) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_SNAPSHOTS_FROM_VM(vmId), 
+      data: snapshotData, 
+      defaultValues: DEFAULT_VALUES.DELETE_SNAPSHOTS_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.previewSnapshotFromVM
+   * @description 가상머신 스냅샷 미리보기
+   * 
+   * @param {string} vmId
+   * @param {string} snapshotId
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  previewSnapshotFromVM: async (vmId, snapshotId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.PREVIEW_SNAPSHOT_FROM_VM(vmId, snapshotId),
+      defaultValues: DEFAULT_VALUES.PREVIEW_SNAPSHOT_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.cloneSnapshotFromVM
+   * @description 가상머신 스냅샷 clone
+   * 
+   * @param {string} vmId
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  cloneSnapshotFromVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.CLONE_SNAPSHOTS_FROM_VM(vmId),
+      defaultValues: DEFAULT_VALUES.CLONE_SNAPSHOTS_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.commitSnapshotFromVM
+   * @description 가상머신 스냅샷 commit
+   * 
+   * @param {string} vmId
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  commitSnapshotFromVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.COMMIT_SNAPSHOTS_FROM_VM(vmId),
+      defaultValues: DEFAULT_VALUES.COMMIT_SNAPSHOTS_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.undoSnapshotFromVM
+   * @description 가상머신 스냅샷 undo
+   * 
+   * @param {string} vmId
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  undoSnapshotFromVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.UNDO_SNAPSHOTS_FROM_VM(vmId),
+      defaultValues: DEFAULT_VALUES.UNDO_SNAPSHOTS_FROM_VM
+    });
+  },
+
+  /**
+   * @name ApiManager.findNicsFromVM
+   * @description nic 목록
+   * 
+   * @param {string} vmId
+   * @returns 
+   **/
+  findNicsFromVM : async (vmId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_NICS_FROM_VM(vmId), 
+    defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_VM
+  }),
+  /**
+   * @name ApiManager.findNicFromVM
+   * @description 가상머신 nic
+   *
+   * @param {string} vmId
+   * @param {string} nicId
+   * @returns 
+   * 
+   * @see
+   */
+  findNicFromVM : async (vmId, nicId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_NIC_FROM_VM(vmId, nicId), 
+    defaultValues: DEFAULT_VALUES.FIND_NIC_FROM_VM
+  }),
+  /**
+   * @name ApiManager.addNicFromVM
+   * @description 새 nic 생성
+   * 
+   * @param {string} vmId
+   * @param {Object} nicData
+   * @returns {Promise<Object>}
+   */
+  addNicFromVM: async (vmId, nicData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_NICS_FROM_VM(vmId),
+      data: nicData,
+      defaultValues: DEFAULT_VALUES.ADD_NICS_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.editNicFromVM
+   * @description 가상머신 nic 편집
+   * 
+   * @param {string} vmId
+   * @param {string} nicId
+   * @param {Object} nicData
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  editNicFromVM: async (vmId, nicId, nicData) => {
+    return makeAPICall({
+      method: "PUT",
+      url: ENDPOINTS.EDIT_NIC_FROM_VM(vmId, nicId),
+      data: nicData, // PUT 요청 시 전송할 데이터
+      defaultValues: DEFAULT_VALUES.EDIT_NIC_FROM_VM
+    });
+  },
+  /**
+   * @name ApiManager.deleteNicFromVM
+   * @description 가상머신 nic 삭제
+   * 
+   * @param {string} vmId
+   * @param {string} nicId
+   * @returns {Promise<Object>}
+   */
+  deleteNicFromVM: async (vmId, nicId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_NIC_FROM_VM(vmId, nicId),
+      defaultValues: DEFAULT_VALUES.DELETE_NIC_FROM_VM
+    });
+  },
+
+  /**
+   * @name ApiManager.findApplicationsFromVM
+   * @description applications 목록
+   * 
+   * @param {string} vmId
+   * @returns 
+   **/
+  findApplicationsFromVM : async (vmId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_APPLICATIONS_FROM_VM(vmId), 
+    defaultValues: DEFAULT_VALUES.FIND_APPLICATIONS_FROM_VM
+  }),
+  /**
+   * @name ApiManager.findHostDevicesFromVM
+   * @description hostDevices 목록
+   * 
+   * @param {string} vmId
+   * @returns 
+   **/
+  findHostDevicesFromVM : async (vmId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_HOST_DEVICES_FROM_VM(vmId), 
+    defaultValues: DEFAULT_VALUES.FIND_HOST_DEVICES_FROM_VM
+  }),
+  /**
+   * @name ApiManager.findEventsFromVM
+   * @description events 목록
+   * 
+   * @param {string} vmId
+   * @returns 
+   **/
+  findEventsFromVM : async (vmId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_EVENTS_FROM_VM(vmId), 
+    defaultValues: DEFAULT_VALUES.FIND_EVENTS_FROM_VM
+  }),
+
+  /**
+   * @name ApiManager.findAllISO
+   * @description iso 목록
+   * 
+   * @returns 
+   **/
+  findAllISO : async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ISOS_FROM_VM(), 
+    defaultValues: DEFAULT_VALUES.FIND_ISOS_FROM_VM
+  }),
+  /**
+   * @name ApiManager.findDiskListFromVM
+   * @description 연결할 수 있는 디스크 목록
+   * 
+   * @returns 
+   **/
+  findDiskListFromVM : async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISK_LIST_FROM_VM(), 
+    defaultValues: DEFAULT_VALUES.FIND_DISK_LIST_FROM_VM
+  }),
+  // /**
+  //  * @name ApiManager.findNicFromVM
+  //  * @description iso 목록
+  //  * 
+  //  * @returns 
+  //  **/
+  // findNicFromVM : async () => makeAPICall({
+  //   method: "GET", 
+  //   url: ENDPOINTS.FIND_NICS_FROM_CLUSTER(), 
+  //   defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_CLUSTER
+  // }),
+
+  /**
+   * @name ApiManager.addVM
+   * @description 새 가상머신 생성
+   * 
+   * @param {Object} vmData 
+   * @returns {Promise<Object>}
+   */
+  addVM: async (vmData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_VM(),
+      data: vmData,
+      defaultValues: DEFAULT_VALUES.ADD_VM
+    });
+  },
+  /**
+   * @name ApiManager.editVM
+   * @description 가상머신 편집
+   * 
+   * @param {string} vmId
+   * @param {Object} vmData 
+   * @returns {Promise<Object>}
+   */
+    editVM: async (vmId, vmData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_VM(vmId),
+        data: vmData,
+        defaultValues: DEFAULT_VALUES.EDIT_VM
+      });
+    },
+  /**
+   * @name ApiManager.deleteVM
+   * @description 가상머신 삭제
+   * 
+   * @param {String} vmId 
+   * @returns {Promise<Object>}
+   */
+  deleteVM: async (vmId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_VM(vmId),
+      defaultValues: DEFAULT_VALUES.DELETE_VM
+    });
+  },
+
+  /**
+   * @name ApiManager.startVM
+   * @description 가상머신 시작
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  startVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.START_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.START_VM
+    });
+  },
+  /**
+   * @name ApiManager.pauseVM
+   * @description 가상머신 일시정지
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  pauseVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.PAUSE_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.PAUSE_VM
+    });
+  },
+  /**
+   * @name ApiManager.activateVM
+   * @description 가상머신 활성
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  activateVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ACTIVATE_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.ACTIVATE_VM
+    });
+  },
+  /**
+   * @name ApiManager.deactivateVM
+   * @description 가상머신 비활성
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  deactivateVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.DEACTIVATE_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.DEACTIVATE_VM
+    });
+  },
+  /**
+   * @name ApiManager.rebootVM
+   * @description 가상머신 재부팅
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  rebootVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.REBOOT_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.REBOOT_VM
+    });
+  },
+  /**
+   * @name ApiManager.powerOffVM
+   * @description 가상머신 powerOff
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  powerOffVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.POWER_OFF_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.POWER_OFF_VM
+    });
+  },
+  /**
+   * @name ApiManager.shutdownVM
+   * @description 가상머신 shutdown
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  shutdownVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.SHUT_DOWN_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.SHUT_DOWN_VM
+    });
+  },
+  /**
+   * @name ApiManager.resetVM
+   * @description 가상머신 reset
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  resetVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.RESET_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.RESET_VM
+    });
+  },
+  /**
+   * @name ApiManager.exportVM
+   * @description 가상머신 export
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  exportVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.EXPORT_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.EXPORT_VM
+    });
+  },
+  /**
+   * @name ApiManager.migrateHostsFromVM
+   * @description 가상머신 migrateHosts
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  migrateHostsFromVM: async (vmId) => {
+    return makeAPICall({
+      method: "GET",
+      url: ENDPOINTS.MIGRATE_HOST_LIST_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.MIGRATE_HOST_LIST_VM
+    });
+  },
+  /**
+   * @name ApiManager.migrateVM
+   * @description 가상머신 마이그레이션
+   * 
+   * @param {String} vmId
+   * @param {String} hostId
+   * @returns {Promise<Object>} 
+   */
+  migrateVM: async (vmId, hostId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.MIGRATE_VM(vmId, hostId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.MIGRATE_VM
+    });
+  },
+  /**
+   * @name ApiManager.consoleVM
+   * @description 가상머신 console
+   * 
+   * @param {String} vmId
+   * @returns {Promise<Object>} 
+   */
+  consoleVM: async (vmId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.CONSOLE_VM(vmId),  // ID를 URL에 포함
+      defaultValues: DEFAULT_VALUES.CONSOLE_VM
+    });
+  },
+  //endregion : VM ----------------------------------------------
+
+
+  //region : Template ---------------------------------------------
+  /**
+   * @name ApiManager.findAllTemplates
+   * @description 템플릿 목록
+   * 
+   * @returns 
+   **/
   findAllTemplates : async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_TEMPLATE_CHART(), 
+    url: ENDPOINTS.FIND_ALL_TEMPLATES(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES
   }),
+  /**
+   * @name ApiManager.findTemplate
+   * @description 템플릿
+   *
+   * @param {string} templateId
+   * @returns 
+   * 
+   * @see
+   */
+  findTemplate : async (templateId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_TEMPLATE(templateId), 
+    defaultValues: DEFAULT_VALUES.FIND_TEMPLATE
+  }),
+  /**
+   * @name ApiManager.findVMsFromTemplate
+   * @description 가상머신 목록
+   *
+   * @param {string} templateId
+   * @returns 
+   * 
+   * @see
+   */
+  findVMsFromTemplate : async (templateId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VMS_FROM_TEMPLATE(templateId), 
+    defaultValues: DEFAULT_VALUES.FIND_VMS_FROM_TEMPLATE
+  }),
+  /**
+   * @name ApiManager.findNicsFromTemplate
+   * @description nic 목록
+   *
+   * @param {string} templateId
+   * @returns 
+   * 
+   * @see
+   */
+  findNicsFromTemplate : async (templateId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_NICS_FROM_TEMPLATE(templateId), 
+    defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_TEMPLATE
+  }),
+  /**
+   * @name ApiManager.addNicFromTemplate
+   * @description 새 nic 생성
+   * 
+   * @param {string} templateId
+   * @param {Object} nicData
+   * @returns {Promise<Object>}
+   */
+  addNicFromTemplate: async (templateId, nicData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_NICS_FROM_TEMPLATE(templateId),
+      data: nicData,
+      defaultValues: DEFAULT_VALUES.ADD_NICS_FROM_TEMPLATE
+    });
+  },
+  /**
+   * @name ApiManager.findDisksFromTemplate
+   * @description disk 목록
+   *
+   * @param {string} templateId
+   * @returns 
+   * 
+   * @see
+   */
+  findDisksFromTemplate : async (templateId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISKS_FROM_TEMPLATE(templateId), 
+    defaultValues: DEFAULT_VALUES.FIND_DISKS_FROM_TEMPLATE
+  }),
+  /**
+   * @name ApiManager.findStorageDomainsFromTemplate
+   * @description 스토리지도메인 목록
+   *
+   * @param {string} templateId
+   * @returns 
+   * 
+   * @see
+   */
+  findStorageDomainsFromTemplate : async (templateId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_TEMPLATE(templateId), 
+    defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_TEMPLATE
+  }),
+  /**
+   * @name ApiManager.findEventsFromTemplate
+   * @description 이벤트 목록
+   *
+   * @param {string} templateId
+   * @returns 
+   * 
+   * @see
+   */
+  findEventsFromTemplate : async (templateId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_EVENTS_FROM_TEMPLATE(templateId), 
+    defaultValues: DEFAULT_VALUES.FIND_EVENTS_FROM_TEMPLATE
+  }),
+
+  /**
+   * @name ApiManager.addTemplate
+   * @description 새 템플릿 생성
+   * 
+   * @param {Object} templateData 
+   * @returns {Promise<Object>}
+   */
+  addTemplate: async (templateData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_TEMPLATE(),
+      data: templateData, 
+      defaultValues: DEFAULT_VALUES.ADD_TEMPLATE
+    });
+  },
+  /**
+   * @name ApiManager.editTemplate
+   * @description 템플릿 편집
+   * 
+   * @param {string} templateId
+   * @param {Object} templateData 
+   * @returns {Promise<Object>}
+   */
+    editTemplate: async (templateId, templateData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_TEMPLATE(templateId),
+        data: templateData, 
+        defaultValues: DEFAULT_VALUES.EDIT_TEMPLATE
+      });
+    },
+  /**
+   * @name ApiManager.deleteTemplate
+   * @description 템플릿 삭제
+   * 
+   * @param {String} templateId 
+   * @returns {Promise<Object>}
+   */
+  deleteTemplate: async (templateId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_TEMPLATE(templateId), 
+      defaultValues: DEFAULT_VALUES.DELETE_TEMPLATE
+    });
+  },
+
+  //endregion : Template ---------------------------------------------
+
+
   //region: Network------------------------------------------------
   /**
+   * @name ApiManager.findAllNetworks
+   * @description 네트워크 목록
    * 
-   */
+   * @returns 
+   **/
   findAllNetworks: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_NETWORKS(),
     defaultValues: DEFAULT_VALUES.FIND_ALL_NETWORKS
   }),
-  findNetworkById: async (networkId) => makeAPICall({
+  /**
+   * @name ApiManager.findNetwork
+   * @description 네트워크
+   *
+   * @param {string} networkId
+   * @returns 
+   * 
+   * @see
+   */
+  findNetwork: async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_NETWORK_BY_ID
   }),
+  /**
+   * @name ApiManager.findAllVnicProfilesFromNetwork
+   * @description vnicProfile 목록
+   *
+   * @param {string} networkId
+   * @returns 
+   * 
+   * @see
+   */
   findAllVnicProfilesFromNetwork: async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VNIC_PROFILES_FROM_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK
   }),
+  /**
+   * @name ApiManager.findAllClustersFromNetwork
+   * @description 클러스터 목록
+   *
+   * @param {string} networkId
+   * @returns 
+   * 
+   * @see
+   */
   findAllClustersFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_CLUSTERS_FROM_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS_FROM_NETWORK
   }),
+   /**
+   * @name ApiManager.findAllHostsFromNetwork
+   * @description 호스트 목록
+   *
+   * @param {string} networkId
+   * @returns 
+   * 
+   * @see
+   */
   findAllHostsFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOSTS_FROM_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK
   }),
+  /**
+   * @name ApiManager.findAllVmsFromNetwork
+   * @description 가상머신 목록
+   *
+   * @param {string} networkId
+   * @returns 
+   * 
+   * @see
+   */
   findAllVmsFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_FROM_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_VMS_FROM_NETWORK
   }),
+  /**
+   * @name ApiManager.findAllTemplatesFromNetwork
+   * @description 템플릿 목록
+   *
+   * @param {string} networkId
+   * @returns 
+   * 
+   * @see
+   */
   findAllTemplatesFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_TEMPLATES_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK
   }),
-  findAllPermissionFromNetwork : async (networkId) => makeAPICall({
+
+  /**
+   * @name ApiManager.addNetwork
+   * @description 새 네트워크 생성
+   * 
+   * @param {Object} networkData 
+   * @returns {Promise<Object>}
+   */
+  addNetwork: async (networkData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_NETWORK(),
+      data: networkData, 
+      defaultValues: DEFAULT_VALUES.ADD_NETWORK
+    });
+  },
+  /**
+   * @name ApiManager.editNetwork
+   * @description 네트워크 편집
+   * 
+   * @param {string} networkId
+   * @param {Object} networkData 
+   * @returns {Promise<Object>}
+   */
+    editNetwork: async (networkId, networkData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_NETWORK(networkId),
+        data: networkData, 
+        defaultValues: DEFAULT_VALUES.EDIT_NETWORK
+      });
+    },
+  /**
+   * @name ApiManager.deleteNetwork
+   * @description 네트워크 삭제
+   * 
+   * @param {String} networkId 
+   * @returns {Promise<Object>}
+   */
+  deleteNetwork: async (networkId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_NETWORK(networkId), 
+      defaultValues: DEFAULT_VALUES.DELETE_NETWORK
+    });
+  },
+
+  /**
+   * @name ApiManager.findAllNetworkProviders
+   * @description 네트워크 공급자 목록
+   *
+   * @returns 
+   * 
+   * @see
+   */
+  findAllNetworkProviders : async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_PERMISSION_NETWORK(networkId),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_PERMISSION
+    url: ENDPOINTS.FIND_NETWORK_PROVIDERS(),
+    defaultValues: DEFAULT_VALUES.FIND_NETWORK_PROVIDERS
   }),
+  /**
+   * @name ApiManager.findAllNetworkFromProvider
+   * @description 네트워크 목록
+   *
+   * @param {string} providerId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllNetworkFromProvider : async (providerId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_NETWORKS_FROM_PROVIDERS(providerId),
+    defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_PROVIDERS
+  }),
+  /**
+   * @name ApiManager.findAllDatacentersFromNetwork
+   * @description 데이터센터 목록
+   *
+   * @param {string} openstackNetworkId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllDatacentersFromNetwork : async (openstackNetworkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DATA_CENTERS_FROM_NETWORK(openstackNetworkId),
+    defaultValues: DEFAULT_VALUES.FIND_DATA_CENTERS_FROM_NETWORK
+  }),
+  /**
+   * @name ApiManager.importNetwork
+   * @description 네트워크 가져오기
+   *
+   * @param {Object} networkData 
+   * @returns 
+   * 
+   * @see
+   */
+  importNetwork: async (networkData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.IMPORT_NETWORK(),
+      data: networkData, 
+      defaultValues: DEFAULT_VALUES.IMPORT_NETWORK
+    });
+  },
+ 
   //endregion: Network
   
+  // region: vnicprofile
+  /**
+   * @name ApiManager.findAllVnicProfiles
+   * @description vnicprofile 목록
+   *
+   * @returns 
+   * 
+   * @see
+   */
+  findAllVnicProfiles : async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_VNIC_PROFILES(),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES
+  }),
+  // endregion: vnicprofile
 
   
   //region: Domain
+  /**
+   * @name ApiManager.findAllStorageDomains
+   * @description storagedomain 목록
+   *
+   * @returns 
+   * 
+   * @see
+   */
   findAllStorageDomains: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(),
     defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
   }),
-  findDomainById: async (storageDomainId) => makeAPICall({
+  /**
+   * @name ApiManager.findDomain
+   * @description 네트워크
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+  findDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_STORAGE_DOMAIN(storageDomainId),
     defaultValues: DEFAULT_VALUES.FIND_DOMAIN_BY_ID
   }),
-  findAllDataCenterFromDomain : async (storageDomainId) => makeAPICall({
+  /**
+   * @name ApiManager.findAllDataCentersFromDomain
+   * @description 데이터센터 목록
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllDataCentersFromDomain : async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DATA_CENTERS_FROM_STORAGE_DOMAINS(storageDomainId),
     defaultValues: DEFAULT_VALUES.FIND_DATACENTER_FROM_DOMAIN
   }),
-  
-  findAllDiskFromDomain: async (storageDomainId) => makeAPICall({
+
+  /**
+   * @name ApiManager.findAllVMsFromDomain
+   * @description 데이터센터 목록
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllVMsFromDomain : async (storageDomainId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VMS_FROM_STORAGE_DOMAINS(storageDomainId),
+    defaultValues: DEFAULT_VALUES.FIND_VMS_FROM_STORAGE_DOMAINS
+  }),
+
+  /**
+   * @name ApiManager.findAllDisksFromDomain
+   * @description vm 목록
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllDisksFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISKS_FROM_STORAGE_DOMAINS(storageDomainId),
     defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_DOMAIN
   }),
-  findAllDiskSnapshotFromDomain: async (storageDomainId) => makeAPICall({
+  /**
+   * @name ApiManager.findAllDiskSnapshotsFromDomain
+   * @description 디스크 스냅샷 목록
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllDiskSnapshotsFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISK_SNAPSHOTS_FROM_STORAGE_DOMAINS(storageDomainId),
     defaultValues: DEFAULT_VALUES.DISK_SNAPSHOT_FROM_DOMAIN
   }),
-  findAllTemplateFromDomain: async (storageDomainId) => makeAPICall({
+  /**
+   * @name ApiManager.findAllTemplatesFromDomain
+   * @description 템플릿 목록
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllTemplatesFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_TEMPLATES_FROM_STORAGE_DOMAINS(storageDomainId),
     defaultValues: DEFAULT_VALUES.TEMPLATE_FROM_DOMAIN
   }),
-  findAllEventFromDomain: async (storageDomainId) => makeAPICall({
+  /**
+   * @name ApiManager.findAllEventsFromDomain
+   * @description 이벤트 목록
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllEventsFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_EVENTS_FROM_STORAGE_DOMAINS(storageDomainId),
     defaultValues: DEFAULT_VALUES.FIND_EVENT
   }),
+
+  /**
+   * @name ApiManager.addDomain
+   * @description 새 스토리지도메인 생성
+   * 
+   * @param {Object} domaineData 
+   * @returns {Promise<Object>}
+   */
+  addDomain: async (domaineData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_STORAGE_DOMAIN(),
+      data: domaineData, 
+      defaultValues: DEFAULT_VALUES.ADD_STORAGE_DOMAIN
+    });
+  },
+  /**
+   * @name ApiManager.editDomain
+   * @description 스토리지도메인 편집
+   * 
+   * @param {string} storageDomainId
+   * @param {Object} domaineData 
+   * @returns {Promise<Object>}
+   */
+    editDomain: async (storageDomainId, domaineData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_STORAGE_DOMAIN(storageDomainId),
+        data: domaineData, 
+        defaultValues: DEFAULT_VALUES.EDIT_STORAGE_DOMAIN
+      });
+    },
+  /**
+   * @name ApiManager.deleteDomain
+   * @description 스토리지도메인 삭제
+   * 
+   * @param {String} storageDomainId 
+   * @returns {Promise<Object>}
+   */
+  deleteDomain: async (storageDomainId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_STORAGE_DOMAIN(storageDomainId), 
+      defaultValues: DEFAULT_VALUES.DELETE_STORAGE_DOMAIN
+    });
+  },
   //endregion: Domain
 
 
 
   //region: Disk
-  findAllDisk: async () => makeAPICall({
+  /**
+   * @name ApiManager.findAllDisks
+   * @description disk 목록
+   *
+   * @returns 
+   * 
+   * @see
+   */
+  findAllDisks: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_DISKS(),
     defaultValues: DEFAULT_VALUES.FIND_ALL_DISK
   }),
-  findDiskById: async (diskId) => makeAPICall({
+  /**
+   * @name ApiManager.findDisk
+   * @description 디스크 
+   *
+   * @param {string} diskId
+   * @returns 
+   * 
+   * @see
+   */
+  findDisk: async (diskId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISK(diskId),
     defaultValues: DEFAULT_VALUES.FIND_DISK_BY_ID
   }),
+  /**
+   * @name ApiManager.findAllVmsFromDisk
+   * @description vms 
+   *
+   * @param {string} diskId
+   * @returns 
+   * 
+   * @see
+   */
   findAllVmsFromDisk: async (diskId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_VMS_DISK(diskId),
+    url: ENDPOINTS.FIND_VMS_FROM_DISK(diskId),
     defaultValues: DEFAULT_VALUES.VMS_FROM_DISK
   }),
+  /**
+   * @name ApiManager.findAllStorageDomainsFromDisk
+   * @description vms 
+   *
+   * @param {string} diskId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllStorageDomainsFromDisk: async (diskId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_DISK(diskId),
+    defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_DISK
+  }),
+
+  /**
+   * @name ApiManager.addDisk
+   * @description 새 디스크 생성
+   * 
+   * @param {Object} diskData 
+   * @returns {Promise<Object>}
+   */
+  addDisk: async (diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_DISK(),
+      data: diskData, 
+      defaultValues: DEFAULT_VALUES.ADD_DISK
+    });
+  },
+  /**
+   * @name ApiManager.editDisk
+   * @description 디스크 편집
+   * 
+   * @param {string} diskId
+   * @param {Object} diskData 
+   * @returns {Promise<Object>}
+   */
+    editDisk: async (diskId, diskData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_DISK(diskId),
+        data: diskData, 
+        defaultValues: DEFAULT_VALUES.EDIT_DISK
+      });
+    },
+  /**
+   * @name ApiManager.deleteDisk
+   * @description 디스크 삭제
+   * 
+   * @param {String} diskId 
+   * @returns {Promise<Object>}
+   */
+  deleteDisk: async (diskId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_DISK(diskId), 
+      defaultValues: DEFAULT_VALUES.DELETE_DISK
+    });
+  },
+  /**
+   * @name ApiManager.copyDisk
+   * @description 디스크 복제
+   * 
+   * @param {String} diskId 
+   * @param {Object} diskData 
+   * @returns {Promise<Object>}
+   */
+  copyDisk: async (diskId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.COPY_DISK(diskId),
+      data: diskData, 
+      defaultValues: DEFAULT_VALUES.COPY_DISK
+    });
+  },
+  /**
+   * @name ApiManager.moveDisk
+   * @description 디스크 이동
+   * 
+   * @param {String} diskId 
+   * @param {Object} diskData 
+   * @returns {Promise<Object>}
+   */
+  moveDisk: async (diskId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.MOVE_DISK(diskId),
+      data: diskData, 
+      defaultValues: DEFAULT_VALUES.MOVE_DISK
+    });
+  },
+  /**
+   * @name ApiManager.refresheDisk
+   * @description 디스크 이동
+   * 
+   * @param {String} diskId 
+   * @param {Object} diskData 
+   * @returns {Promise<Object>}
+   */
+  refresheDisk: async (diskId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.REFRESH_LUN_DISK(diskId),
+      data: diskData, 
+      defaultValues: DEFAULT_VALUES.REFRESH_LUN_DISK
+    });
+  },
+  // uploadDisk
   //endregion: Disk
 
+
   //region: event
-  findAllEvent: async () => makeAPICall({
+  /**
+   * @name ApiManager.findAllEvents
+   * @description 이벤트 목록
+   * 
+   * @returns 
+   **/
+  findAllEvents: async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_EVENT(),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_EVENT
+    url: ENDPOINTS.FIND_ALL_EVENTS(),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_EVENTS
   }),
   //endregion: event
 

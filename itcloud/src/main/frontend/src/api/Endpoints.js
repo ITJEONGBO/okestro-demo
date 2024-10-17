@@ -1,6 +1,6 @@
 const ENDPOINTS = {  
   //region: User
-  USERS: () => `/api/v1/auth/users`,
+  FIND_ALL_USERS: () => `/api/v1/auth/users`,
   FIND_USER: (username) => `/api/v1/auth/users/${username}`,
   //endregion: User
 
@@ -77,7 +77,7 @@ const ENDPOINTS = {
   FIND_DISKS_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/disks`, 
   FIND_DISK_FROM_VM: (vmId, diskAttachmentId) =>  `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}`,
   ADD_DISK_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/disks`, 
-  EDIT_DISK_FROM_VM: (vmId, diskAttachmentId) =>  `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}`,
+  EDIT_DISK_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/disks`,
   DELETE_DISKS_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/disks`, 
   ATTACH_DISKS_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/disks/attach`, 
   FIND_STORAGE_DOMAINS_FROM_VM: (vmId, diskAttachmentId) =>  `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}/storageDomains`,
@@ -98,15 +98,15 @@ const ENDPOINTS = {
   FIND_NIC_FROM_VM: (vmId, nicId) =>  `/api/v1/computing/vms/${vmId}/nics/${nicId}`, 
   ADD_NICS_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/nics`, 
   EDIT_NIC_FROM_VM: (vmId, nicId) =>  `/api/v1/computing/vms/${vmId}/nics/${nicId}`, 
-  REMOVE_NIC_FROM_VM: (vmId, nicId) =>  `/api/v1/computing/vms/${vmId}/nics/${nicId}`, 
+  DELETE_NIC_FROM_VM: (vmId, nicId) =>  `/api/v1/computing/vms/${vmId}/nics/${nicId}`, 
 
   FIND_APPLICATIONS_FROM_VM:(vmId) =>  `/api/v1/computing/vms/${vmId}/applications`, 
   FIND_HOST_DEVICES_FROM_VM:(vmId) =>  `/api/v1/computing/vms/${vmId}/hostDevices`, 
   FIND_EVENTS_FROM_VM:(vmId) =>  `/api/v1/computing/vms/${vmId}/events`, 
 
-  FIND_DISKS_FROM_VM:() =>  `/api/v1/computing/vms/disks`, 
+  FIND_DISK_LIST_FROM_VM:() =>  `/api/v1/computing/vms/disks`, 
   FIND_ISOS_FROM_VM:() =>  `/api/v1/computing/vms/iso`, 
-  FIND_NICS_FROM_VM:(clusterId) =>  `/api/v1/computing/vms/nic/${clusterId}`, 
+  FIND_NICS_FROM_CLUSTER:(clusterId) =>  `/api/v1/computing/vms/nic/${clusterId}`, 
 
   ADD_VM: () => `/api/v1/computing/vms`,
   EDIT_VM: (vmId) => `/api/v1/computing/vms/${vmId}`, 
@@ -144,7 +144,6 @@ const ENDPOINTS = {
   FIND_ALL_NETWORKS: () => `/api/v1/networks`,
   FIND_NETWORK: (networkId) => `/api/v1/networks/${networkId}`,
 
-  FIND_ALL_VNIC_PROFILES: () =>  `/api/v1/networks/vnicProfiles`,
   FIND_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
   FIND_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
   ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
@@ -163,6 +162,8 @@ const ENDPOINTS = {
   FIND_NETWORKS_FROM_PROVIDERS: (providerId) => `/api/v1/networks/import/settings/${providerId}`,
   FIND_DATA_CENTERS_FROM_NETWORK: (openstackNetworkId) => `/api/v1/networks/import/datacenters/${openstackNetworkId}`,
   IMPORT_NETWORK: () => `/api/v1/networks/import`,
+  
+  FIND_ALL_VNIC_PROFILES: () =>  `/api/v1/networks/vnicProfiles`,
   //endregion: Network
 
   //region: StorageDomain
@@ -192,8 +193,8 @@ const ENDPOINTS = {
   //region: Disk
   FIND_ALL_DISKS: () =>      `/api/v1/storages/disks`,
   FIND_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,
-  FIND_VMS_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/vms`,
-  FIND_STORAGE_DOMAINS_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/storagdDomains`,
+  FIND_VMS_FROM_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/vms`,
+  FIND_STORAGE_DOMAINS_FROM_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/storagdDomains`,
   
   ADD_DISK: () =>      `/api/v1/storages/disks`,
   EDIT_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,
@@ -207,7 +208,7 @@ const ENDPOINTS = {
   
 
   //region: Event
-  FIND_ALL_EVENT: () => `/api/v1/events`,
+  FIND_ALL_EVENTS: () => `/api/v1/events`,
   //endregion: Event
 }
 
