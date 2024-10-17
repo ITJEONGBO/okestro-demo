@@ -135,7 +135,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     isError: isVmsError,
   } = useAllVmsFromDisk(disk?.id, toTableItemPredicateVMs);
   
-  function toTableItemPredicateVMs(vm) {
+  function toTableItemPredicateVMs(vm) { 
     return {
       name: vm?.name ?? '없음',  // 가상머신 이름
       cluster: vm?.cluster?.name ?? '없음',  // 클러스터
