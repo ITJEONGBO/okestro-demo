@@ -168,7 +168,7 @@ const ENDPOINTS = {
   //region: StorageDomain
   FIND_ALL_STORAGE_DOMAINS: () => `/api/v1/storages/domains`,
   FIND_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
-  FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/storages/${dataCenterId}/storageDomains`,
+  // FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/storages/${dataCenterId}/storageDomains`,
 
   FIND_DATA_CENTERS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters`,
   ACTIVATE_FROM_DATACENTER: (storageDomainId, dataCenterId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters/${dataCenterId}/activate`,

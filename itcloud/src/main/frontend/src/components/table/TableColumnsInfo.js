@@ -24,7 +24,7 @@ const TableColumnsInfo = {
   ],
   
   STORAGE_DOMAIN_FROM_DATACENTER: [
-    { header: '', accessor: 'icon', clickable: false, style: { textAlign: 'center' } },
+    { header: '', accessor: 'icon', clickable: false},
     { header: '이름', accessor: 'name', clickable: false },
     { header: '데이터 센터 내의 도메인 상태', accessor: 'domainStatus', clickable: false },
   ],
@@ -114,10 +114,10 @@ const TableColumnsInfo = {
     { header: '', accessor: 'icon1', clickable: false },
     { header: '', accessor: 'icon2', clickable: false },
     { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
-    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomainVo', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '유형', accessor: 'type', clickable: false },
+    { header: '유형', accessor: 'storageType', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
   IMG_DISK:  [
@@ -159,10 +159,10 @@ const TableColumnsInfo = {
     { header: 'IOMMU 그룹', accessor: 'iommuGroup', clickable: false },
     { header: 'Mdev 유형', accessor: 'mdevType', clickable: false },
   ],
-  VOLUMES_FROM_CLUSTER: [
+  DISK_FROM_DOMAIN: [
     { header: '별칭', accessor: 'alias', clickable: false },
-    { header: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>, accessor: 'icon1', clickable: false },
-    { header: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>, accessor: 'icon2', clickable: false },
+    { header: '', accessor: 'icon1', clickable: false },
+    { header: '', accessor: 'icon2', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
     { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
@@ -174,6 +174,23 @@ const TableColumnsInfo = {
     { header: '상태', accessor: 'status', clickable: false },
     { header: '유형', accessor: 'type', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
+  ],
+  DISK_SNAPSHOT_FROM_DOMAIN: [
+    { header: '크기', accessor: 'size', clickable: false },
+    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '스냅샷 생성일', accessor: 'snapshotCreationDate', clickable: false },
+    { header: '디스크 별칭', accessor: 'diskAlias', clickable: false },
+    { header: '스냅샷 설명', accessor: 'snapshotDescription', clickable: false },
+    { header: '연결 대상', accessor: 'target', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
+  ],
+  TEMPLATE_FROM_DOMAIN: [
+    { header: '별칭', accessor: 'alias', clickable: false },
+    { header: '디스크', accessor: 'disk', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '실제 크기', accessor: 'actualSize', clickable: false },
+    { header: '생성 일자', accessor: 'creationDate', clickable: false },
   ],
   CLUSTER_VM:[
     { header: '아이콘', accessor: 'icon', clickable: false },
@@ -193,7 +210,7 @@ const TableColumnsInfo = {
     { header: 'QoS 이름', accessor: 'qosName', clickable: false },
     { header: '네트워크 필터', accessor: 'networkFilter', clickable: false },
     { header: '포트 미러링', accessor: 'portMirroring', clickable: false },
-    { header: '통과', accessor: 'passthrough', clickable: false },
+    { header: '통과', accessor: 'passThrough', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
 
@@ -328,7 +345,7 @@ const TableColumnsInfo = {
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false },
+    { header: 'vNIC 상태', accessor: 'icon', clickable: false },
     { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: 'vNIC Rx', accessor: 'vnicRx', clickable: false },
     { header: 'vNIC Tx', accessor: 'vnicTx', clickable: false },

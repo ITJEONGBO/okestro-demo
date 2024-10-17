@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import Modal from 'react-modal';
 import { adjustFontSize } from '../UIEvent';
 import { useAllTreeNavigations, } from '../api/RQHook';
 import './MainOuter.css';
@@ -42,7 +41,7 @@ const MainOuter = ({ children }) => {
     default: 'rgb(218, 236, 245)'
   });
   const [selected, setSelected] = useState(() => localStorage.getItem('selected') || 'dashboard');
-  const [selectedDiv, setSelectedDiv] = useState(() => localStorage.getItem('selectedDiv') || null);
+
   const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
   const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
   const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
@@ -63,8 +62,30 @@ const MainOuter = ({ children }) => {
   const [isThirdVisibleNetwork, setIsThirdVisibleNetwork] = useState(false); // 3단계 열림/닫힘 상태
   const [isFourthVisibleNetwork, setIsFourthVisibleNetwork] = useState(false); // 4단계 열림/닫힘 상태
 
-// 클러스터(컴퓨팅)api
+  // URL에 따라 맞는 div 색칠하기
+  const [selectedDiv, setSelectedDiv] = useState(null);
+  const [selectedSection, setSelectedSection] = useState(null);
+//   useEffect(() => {
+//     const path = location.pathname;
+//     if (path.startsWith('/storages/domains')) {
+//       const domainId = path.split('/').pop(); // URL에서 도메인 ID 추출
+//       setSelectedDiv(domainId); // 해당 도메인 ID를 selectedDiv로 설정
+//       setSelectedSection('storage'); // 스토리지 섹션 선택
+//     } else if (path.startsWith('/computing/vms')) {
+//       const vmId = path.split('/').pop(); // URL에서 가상머신 ID 추출
+//       setSelectedDiv(vmId); // 해당 VM ID를 selectedDiv로 설정
+//       setSelectedSection('computing'); // 컴퓨팅 섹션 선택
+//     } else if (path.startsWith('/networks')) {
+//       const networkId = path.split('/').pop(); // URL에서 네트워크 ID 추출
+//       setSelectedDiv(networkId); // 해당 네트워크 ID를 selectedDiv로 설정
+//       setSelectedSection('network'); // 네트워크 섹션 선택
+//     } else {
+//       setSelectedDiv(null);
+//       setSelectedSection(null);
+//     }
+//   }, [location]);
 
+// 클러스터(컴퓨팅)api
 const { 
     data: navClusters,          
     status: navClustersStatus,   
@@ -401,9 +422,7 @@ const {
           );
       })}
   </div>
-)}
-
-  
+        )}
         {/* 네트워크 섹션 */}
         {selected === 'network' && (
           <div id="network_chart">
@@ -564,7 +583,7 @@ const {
                                           }}
                                           onClick={() => {
                                               setSelectedDiv(domain.id);
-                                              navigate(`/storage-domain/${domain.id}`);
+                                              navigate(`/storages/domains/${domain.id}`);
                                           }}
                                       >
                                           {hasDisks && ( 
@@ -706,6 +725,27 @@ useEffect(() => {
   }
 }, []);
 
+    const getClassNames = (id) => {
+        return selected === id ? 'selected' : '';
+    };
+
+
+    const handleMainClick = () => {
+        setContextMenuVisible(false);
+        setContextMenuTarget(null);
+    };
+
+    const handleAsidePopupBtnClick = () => {
+        setAsidePopupVisible(!asidePopupVisible);
+    };
+
+
+    const handleSettingIconClick = () => {
+        navigate('/settings');
+        setSelected('setting');  // 'setting'이 선택되었음을 설정
+        toggleAsidePopup('setting');  // 배경색을 파랑으로 변경하기 위해 호출
+    };
+    
     // 스토리지
     const handleFirstDivClickStorage = () => {
         if (selectedDiv !== 'data_center') {
@@ -714,12 +754,6 @@ useEffect(() => {
             navigate('/storage');
         }
     };
- 
-
-    const getClassNames = (id) => {
-        return selected === id ? 'selected' : '';
-    };
-
     const handleMouseEnter = (target) => {
         setHoverTarget(target);
     };
@@ -734,44 +768,27 @@ useEffect(() => {
         setContextMenuVisible(true);
         setContextMenuTarget(target);
     };
-
-    const handleMainClick = () => {
-        setContextMenuVisible(false);
-        setContextMenuTarget(null);
-    };
-
-    const handleAsidePopupBtnClick = () => {
-        setAsidePopupVisible(!asidePopupVisible);
-    };
-
     const handleSettingNavClick = (form) => {
         setActiveSettingForm(form);
     };
-    const handleSettingIconClick = () => {
-        navigate('/settings');
-        setSelected('setting');  // 'setting'이 선택되었음을 설정
-        toggleAsidePopup('setting');  // 배경색을 파랑으로 변경하기 위해 호출
-    };
-    
+    // const handleUserIconClick = (name) => {
+    //     navigate(`/computing/hosts/${name}`);
+    //     setSelectedDiv(name);
+    // };
 
-    const handleUserIconClick = (name) => {
-        navigate(`/computing/hosts/${name}`);
-        setSelectedDiv(name);
-    };
-
-    const handleMicrochipIconClick = (name) => {
-        setSelectedDiv(name);
+    // const handleMicrochipIconClick = (name) => {
+    //     setSelectedDiv(name);
    
-        setIsThirdVisible(true);
-        navigate(`/computing/${name}`);
-    };
+    //     setIsThirdVisible(true);
+    //     navigate(`/computing/${name}`);
+    // };
 
-    const handleStorageDiskClick = (name) => {
-        setSelectedDiv(name);
+    // const handleStorageDiskClick = (name) => {
+    //     setSelectedDiv(name);
    
-        setIsThirdVisible(true);
-        navigate(`/storages/${name}`);
-    };
+    //     setIsThirdVisible(true);
+    //     navigate(`/storages/${name}`);
+    // };
     return (
       <div id="main_outer" onClick={handleMainClick}>
         <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
@@ -788,44 +805,44 @@ useEffect(() => {
                         </div>
                     </Link>
                     <Link to='/computing/vms' className="link-no-underline">
-    <div
-        id="aside_popup_machine_btn"
-        className={getClassNames('computing')}
-        onClick={() => {
-            handleClick('computing');
-            setSelectedDiv(null); // 선택된 div를 null로 설정하여 루틸 매니저가 선택되지 않도록 함
-        }}
-        style={{ backgroundColor: asidePopupBackgroundColor.computing }}
-    >
-        <FontAwesomeIcon icon={faDesktop} fixedWidth/>
-    </div>
-</Link>
-<Link to='/networks' className="link-no-underline">
-    <div
-        id="aside_popup_network_btn"
-        className={getClassNames('network')}
-        onClick={() => {
-            handleClick('network');
-            setSelectedDiv(null); // 루틸 매니저 선택을 방지하기 위해 selectedDiv를 null로 설정
-        }}
-        style={{ backgroundColor: asidePopupBackgroundColor.network }}
-    >
-       <FontAwesomeIcon icon={faServer} fixedWidth/>
-    </div>
-</Link>
-<Link to='/storages/domains' className="link-no-underline">
-    <div
-        id="aside_popup_storage_btn"
-        className={getClassNames('storage')}
-        onClick={() => {
-            handleClick('storage');
-            setSelectedDiv(null); // 루틸 매니저 선택을 방지하기 위해 selectedDiv를 null로 설정
-        }}
-        style={{ backgroundColor: asidePopupBackgroundColor.storage }}
-    >
-       <FontAwesomeIcon icon={faDatabase} fixedWidth/>
-    </div>
-</Link>
+                        <div
+                            id="aside_popup_machine_btn"
+                            className={getClassNames('computing')}
+                            onClick={() => {
+                                handleClick('computing');
+                                setSelectedDiv(null); // 선택된 div를 null로 설정하여 루틸 매니저가 선택되지 않도록 함
+                            }}
+                            style={{ backgroundColor: asidePopupBackgroundColor.computing }}
+                        >
+                            <FontAwesomeIcon icon={faDesktop} fixedWidth/>
+                        </div>
+                    </Link>
+                    <Link to='/networks' className="link-no-underline">
+                        <div
+                            id="aside_popup_network_btn"
+                            className={getClassNames('network')}
+                            onClick={() => {
+                                handleClick('network');
+                                setSelectedDiv(null); // 루틸 매니저 선택을 방지하기 위해 selectedDiv를 null로 설정
+                            }}
+                            style={{ backgroundColor: asidePopupBackgroundColor.network }}
+                        >
+                        <FontAwesomeIcon icon={faServer} fixedWidth/>
+                        </div>
+                    </Link>
+                    <Link to='/storages/domains' className="link-no-underline">
+                        <div
+                            id="aside_popup_storage_btn"
+                            className={getClassNames('storage')}
+                            onClick={() => {
+                                handleClick('storage');
+                                setSelectedDiv(null); // 루틸 매니저 선택을 방지하기 위해 selectedDiv를 null로 설정
+                            }}
+                            style={{ backgroundColor: asidePopupBackgroundColor.storage }}
+                        >
+                        <FontAwesomeIcon icon={faDatabase} fixedWidth/>
+                        </div>
+                    </Link>
                     <Link to='/events' className="link-no-underline">
                         <div
                             id="aside_popup_storage_btn"

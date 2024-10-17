@@ -18,8 +18,11 @@ import TableOuter from '../table/TableOuter';
 import Footer from '../footer/Footer';
 import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
+import { useAllDataCenterFromDomain, useAllDiskFromDomain, useAllDiskSnapshotFromDomain, useAllEventFromDomain, useAllTemplateFromDomain, useDomainById } from '../../api/RQHook';
+import EventDu from '../duplication/EventDu';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
+  // url값 바꿔주기 section에따라
   const {id, name,section } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,20 +31,19 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     if (tab !== 'general') {
-      navigate(`/storages/domains/${id}/${tab}`); // 'general'이 아닐 경우 해당 탭을 URL에 추가
+      navigate(`/storages/domains/${id}/${tab}`);
     } else {
-      navigate(`/storages/domains/${id}`); // 'general' 탭은 URL에 아무것도 추가하지 않음
+      navigate(`/storages/domains/${id}`);
     }
   };
 
-  // URL의 마지막 부분에 따라 탭 설정
   useEffect(() => {
     if (!section) {
-      setActiveTab('general'); // section이 없으면 기본적으로 'general'
+      setActiveTab('general');
     } else {
-      setActiveTab(section); // section이 있으면 해당 값으로 탭 설정
+      setActiveTab(section);
     }
-  }, [section]); // section이 변경될 때마다 실행
+  }, [section]);
   
 
 
@@ -95,103 +97,8 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     setSecondRowExpanded(!isSecondRowExpanded);
   };
 
-  // 테이블컴포넌트
-  // 데이터센터
-  const dataCenterData = [
-    {
-      icon: <FontAwesomeIcon icon={faExclamation} fixedWidth/>,
-      name: name,
-      domainStatus: '활성화',
-    },
-  ];
-  //가상머신(편집해야됨)
-  //템플릿
-  const templateColumns = [
-    { header: '별칭', accessor: 'alias', clickable: false },
-    { header: '디스크', accessor: 'disk', clickable: false },
-    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
-    { header: '실제 크기', accessor: 'actualSize', clickable: false },
-    { header: '생성 일자', accessor: 'creationDate', clickable: false },
-  ];
 
-  const templateData = [
-    {
-      alias: (
-        <>
-          <FontAwesomeIcon icon={faPlusCircle} fixedWidth/> test02
-        </>
-      ),
-      disk: '',
-      virtualSize: '1 GIB',
-      actualSize: '5 GIB',
-      creationDate: '2024.1.19 AM9:21:57',
-    },
-  ];
-
-  // 디스크
-  const diskcolumns = [
-    { header: '별칭', accessor: 'alias' },
-    { header: '', accessor: 'leftIcon1', clickable: true },
-    { header: '', accessor: 'leftIcon2', clickable: true },
-    { header: '가상 크기', accessor: 'virtualSize' },
-    { header: '실제 크기', accessor: 'actualSize' },
-    { header: '할당 정책', accessor: 'allocationPolicy' },
-    { header: '스토리지 도메인', accessor: 'storageDomain' },
-    { header: '생성 일자', accessor: 'createdDate' },
-    { header: '최근 업데이트', accessor: 'lastUpdated' },
-    { header: '', accessor: 'rightIcon', clickable: true },
-    { header: '연결 대상', accessor: 'connectedTo' },
-    { header: '상태', accessor: 'status' },
-    { header: '유형', accessor: 'type' },
-    { header: '설명', accessor: 'description' },
-  ];
-  const diskdata = [
-    {
-      alias: 'aa',
-      leftIcon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
-      leftIcon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
-      virtualSize: '<1 GiB',
-      actualSize: '<1 GiB',
-      allocationPolicy: '씬 프로비저닝',
-      storageDomain: 'hosted_storage',
-      createdDate: '2024. 4. 26. PM 3:19:39',
-      lastUpdated: '2024. 4. 26. PM 3:19:45',
-      rightIcon: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
-      connectedTo: '',
-      status: 'OK',
-      type: '이미지',
-      description: 'testa',
-    },
-  ];
-  //
-  // 디스크 스냅샷
-  const snapshotColumns = [
-    { header: '크기', accessor: 'size', clickable: false },
-    { header: '생성 일자', accessor: 'creationDate', clickable: false },
-    { header: '스냅샷 생성일', accessor: 'snapshotCreationDate', clickable: false },
-    { header: '디스크 별칭', accessor: 'diskAlias', clickable: false },
-    { header: '스냅샷 설명', accessor: 'snapshotDescription', clickable: false },
-    { header: '연결 대상', accessor: 'target', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
-  ];
-
-  const snapshotData = [];
-
-  // 이벤트
-  const eventData = [
-    {
-      statusIcon: <FontAwesomeIcon icon={faCheck} style={{ color: 'green' }}fixedWidth/>,
-      time: '2024. 7. 29. PM 3:31:41',
-      message: 'Image Download with disk he_metadata was cancelled.',
-      correlationId: '2568d791:c08...',
-      source: 'oVirt',
-      customEventId: '',
-    },
-  ];
-
-
-
+//임시(팝업데이터)
   const data = [
     {
       alias: (
@@ -254,7 +161,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       description: '',
     },
   ];
-  //
+
 
 
   // 옵션박스 열고닫기
@@ -262,38 +169,145 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const toggleUploadOptionBox = () => {
     setUploadOptionBoxVisible(!isUploadOptionBoxVisible);
   };
-  //headerbutton 컴포넌트
+
+  
+  //일반
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+  const { 
+    data: domain,
+    status: domainStatus,
+    isRefetching: isDomainRefetching,
+    refetch: domainRefetch, 
+    isError: isDomainError,
+    error: domainError, 
+    isLoading: isDomainLoading,
+  } = useDomainById(id);
+  useEffect(() => {
+    domainRefetch();
+    setShouldRefresh(false);
+  }, [shouldRefresh, domainRefetch]);
+
+  //데이터센터(???????정보안나옴)
+  const { 
+    data: dataCenters, 
+    status: dataCentersStatus, 
+    isLoading: isDataCentersLoading, 
+    isError: isDataCentersError,
+  } = useAllDataCenterFromDomain(domain?.id, toTableItemPredicateDataCenters);
+  function toTableItemPredicateDataCenters(dataCenter) {
+    return {
+      id: dataCenter?.id ?? '없음',
+      name: dataCenter?.name ?? '',
+      status:dataCenter?.status ?? '',
+      domainTypeMaster: dataCenter?.domainTypeMaster ? '활성화' : '비활성화'
+    };
+  }
+  //디스크
+  const { 
+    data: disks, 
+    status: disksStatus, 
+    isLoading: isDisksLoading, 
+    isError: isDisksError,
+  } = useAllDiskFromDomain(domain?.id, toTableItemPredicateDisks);
+  function toTableItemPredicateDisks(disk) {
+    return {
+      alias: disk?.alias ?? '없음',  // 별칭
+      icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
+      icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
+      virtualSize: disk?.virtualSize ? `${disk.virtualSize} GiB` : '알 수 없음', 
+      actualSize: disk?.actualSize ? `${disk.actualSize} GiB` : '알 수 없음',
+      allocationPolicy: disk?.allocationPolicy ?? '알 수 없음', 
+      storageDomain: disk?.storageDomain ?? '없음',  
+      creationDate: disk?.creationDate ?? '알 수 없음', 
+      lastUpdate: disk?.lastUpdate ?? '알 수 없음',
+      icon3: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
+      connectionTarget: disk?.connectionTarget ?? '없음',
+      status: disk?.status ?? '알 수 없음',
+      type: disk?.type ?? '알 수 없음', 
+      description: disk?.description ?? '없음', 
+    };
+  }
+
+  //디스크 스냅샷
+  const { 
+    data: diskSnapshots, 
+    status: diskSnapshotsStatus, 
+    isLoading: isDiskSnapshotsLoading, 
+    isError: isDiskSnapshotsError,
+  } = useAllDiskSnapshotFromDomain(domain?.id, toTableItemPredicateDiskSnapshots);
+  function toTableItemPredicateDiskSnapshots(diskSnapshot) {
+    return {
+      size: diskSnapshot?.size ? `${diskSnapshot.size} GiB` : '알 수 없음',
+      creationDate: diskSnapshot?.creationDate ?? '알 수 없음',
+      snapshotCreationDate: diskSnapshot?.snapshotCreationDate ?? '알 수 없음',
+      diskAlias: diskSnapshot?.diskAlias ?? '없음',
+      snapshotDescription: diskSnapshot?.snapshotDescription ?? '없음',
+      target: diskSnapshot?.target ?? '없음',
+      status: diskSnapshot?.status ?? '알 수 없음',
+      diskSnapshotId: diskSnapshot?.diskSnapshotId ?? '없음',
+    };
+  }
+
+  //템플릿
+  const { 
+    data: templates, 
+    status: templatesStatus, 
+    isLoading: isTemplatesLoading, 
+    isError: isTemplatesError,
+  } = useAllTemplateFromDomain(domain?.id, toTableItemPredicateTemplates);
+  function toTableItemPredicateTemplates(template) {
+    return {
+      alias: template?.alias ?? '없음',
+      disk: template?.disk ?? '없음',
+      virtualSize: template?.virtualSize ? `${template.virtualSize} GiB` : '알 수 없음',
+      actualSize: template?.actualSize ? `${template.actualSize} GiB` : '알 수 없음',
+      creationDate: template?.creationDate ?? '알 수 없음',
+    };
+  }
+
+  // 이벤트
+  const { 
+    data: events, 
+    status: eventsStatus, 
+    isLoading: isEventsLoading, 
+    isError: isEventsError 
+  } = useAllEventFromDomain(domain?.id, toTableItemPredicateEvents);
+  function toTableItemPredicateEvents(event) {
+    return {
+      icon: '',                      
+      time: event?.time ?? '',                
+      description: event?.description ?? 'No message', 
+      correlationId: event?.correlationId ?? '',
+      source: event?.source ?? 'ovirt',     
+      userEventId: event?.userEventId ?? '',   
+    };
+  }
+
+
+
   const buttons = [
     { id: 'manage_domain_btn', label: '도메인 관리', onClick: () => openModal('manageDomain') },
     { id: 'delete_btn', label: '삭제', onClick: () => openModal('delete') },
     { id: 'connections_btn', label: 'Connections', onClick: () => console.log('Connections button clicked') },
-];
-
-
-const popupItems = [
-  { label: <div className="disabled">OVF 업데이트</div>, onClick: () => console.log('OVF 업데이트 clicked') },
-  { label: <div className="disabled">파괴</div>, onClick: () => console.log('파괴 clicked') },
-  { label: <div className="disabled">디스크 검사</div>, onClick: () => console.log('디스크 검사 clicked') },
-  { label: <div className="disabled">마스터 스토리지 도메인으로 선택</div>, onClick: () => console.log('마스터 스토리지 도메인으로 선택 clicked') },
-];
-
-  // NAV컴포넌트
+  ];
+  const popupItems = [
+    { label: <div className="disabled">OVF 업데이트</div>, onClick: () => console.log('OVF 업데이트 clicked') },
+    { label: <div className="disabled">파괴</div>, onClick: () => console.log('파괴 clicked') },
+    { label: <div className="disabled">디스크 검사</div>, onClick: () => console.log('디스크 검사 clicked') },
+    { label: <div className="disabled">마스터 스토리지 도메인으로 선택</div>, onClick: () => console.log('마스터 스토리지 도메인으로 선택 clicked') },
+  ];
   const sections = [
     { id: 'general', label: '일반' },
-    { id: 'datacenter', label: '데이터 센터' },
-    { id: 'machine', label: '가상머신' },
-    { id: 'disk', label: '디스크' },
-    { id: 'disk_snapshot', label: '디스크 스냅샷' },
-    { id: 'template', label: '템플릿' },
-    { id: 'event', label: '이벤트' },
-
+    { id: 'datacenters', label: '데이터 센터' },
+    { id: 'vms', label: '가상머신' },
+    { id: 'disks', label: '디스크' },
+    { id: 'diskSnapshots', label: '디스크 스냅샷' },
+    { id: 'templates', label: '템플릿' },
+    { id: 'events', label: '이벤트' },
   ];
-  const pathData = [
-    '#',
 
-  sections.find(section => section.id === activeTab)?.label,
- 
-].filter(Boolean);
+  const pathData = [domain?.name, sections.find(section => section.id === activeTab)?.label];
+
   // 바탕클릭하면 옵션박스 닫기
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -316,8 +330,7 @@ const popupItems = [
     <div className="content_detail_section">
       <HeaderButton
       titleIcon={faCloud}
-      title="스토리지도메인 > "
-      subtitle={name}
+      title={domain?.name}
       buttons={buttons}
       popupItems={popupItems}
     />
@@ -337,47 +350,47 @@ const popupItems = [
               <tbody>
                 <tr>
                   <th>ID:</th>
-                  <td>{name}</td>
+                  <td>{domain?.id}</td>
                 </tr>
                 <tr>
                   <th>크기:</th>
-                  <td>99 GiB</td>
+                  <td>#</td>
                 </tr>
                 <tr>
                   <th>사용 가능:</th>
-                  <td>83 GiB</td>
+                  <td>{domain?.availableSize}</td>
                 </tr>
                 <tr>
                   <th>사용됨:</th>
-                  <td>16 GiB</td>
+                  <td>#</td>
                 </tr>
                 <tr>
                   <th>할당됨:</th>
-                  <td>92 GiB</td>
+                  <td>#</td>
                 </tr>
                 <tr>
                   <th>오버 할당 비율:</th>
-                  <td>89%</td>
+                  <td>#</td>
                 </tr>
                 <tr>
                   <th>이미지:</th>
-                  <td>6</td>
+                  <td>{domain?.image}</td>
                 </tr>
                 <tr>
                   <th>경로:</th>
-                  <td>192.168.0.73:/ovirt.ititinfo.com_engine</td>
+                  <td>{domain?.storageAddress}</td>
                 </tr>
                 <tr>
                   <th>NFS 버전:</th>
-                  <td>자동</td>
+                  <td>#</td>
                 </tr>
                 <tr>
                   <th>디스크 공간 부족 경고 표시:</th>
-                  <td>10% (9 GiB)</td>
+                  <td>#</td>
                 </tr>
                 <tr>
                   <th>심각히 부족한 디스크 공간의 동작 차단:</th>
-                  <td>5 GiB</td>
+                  <td>#</td>
                 </tr>
               </tbody>
             </table>
@@ -386,7 +399,7 @@ const popupItems = [
           </div> 
         )}
 
-        {activeTab === 'datacenter' && (
+        {activeTab === 'datacenters' && (
           <>
            
               <div className="header_right_btns">
@@ -398,14 +411,14 @@ const popupItems = [
               
               <TableOuter 
                 columns={TableColumnsInfo.STORAGE_DOMAIN_FROM_DATACENTER}
-                data={dataCenterData} 
+                data={dataCenters} 
                 onRowClick={() => console.log('Row clicked')} 
               />
           </>
         )}
 
         {/*밑에딸린 박스 편집 */}
-        {activeTab === 'machine' && (
+        {activeTab === 'vms' && (
           <>
  <div className="host_empty_outer">
       <div className="section_table_outer">
@@ -476,20 +489,7 @@ const popupItems = [
     </div>
           </>
         )}
-
-        {activeTab === 'template' && (
-          <>
-          <div className="host_empty_outer">
-            <TableOuter 
-              columns={templateColumns}
-              data={templateData}
-              onRowClick={() => console.log('Row clicked')} 
-            />
-          </div>
-        </>
-        )}
-
-        {activeTab === 'disk' && (
+        {activeTab === 'disks' && (
         <>
             <div className="header_right_btns">
                 <button  onClick={() => openModal('move')}>이동</button>
@@ -511,38 +511,43 @@ const popupItems = [
             </div>
             
             <TableOuter 
-              columns={diskcolumns}
-              data={diskdata}
+              columns={TableColumnsInfo.DISK_FROM_DOMAIN}
+              data={disks}
               onRowClick={() => console.log('Row clicked')}
             />
        </>
         )}
 
-        {activeTab === 'disk_snapshot' && (
+        {activeTab === 'diskSnapshots' && (
         <>
             <div className="header_right_btns">
                 <button onClick={() => openModal('delete')}>제거</button>
             </div>
             
             <TableOuter 
-              columns={snapshotColumns}
-              data={snapshotData}
+              columns={TableColumnsInfo.DISK_SNAPSHOT_FROM_DOMAIN}
+              data={diskSnapshots}
               onRowClick={() => console.log('Row clicked')}
             />
         </>
         )}
-
-        {activeTab === 'event' && (
+        {activeTab === 'templates' && (
           <>
-        
-          <PagingTableOuter 
-            columns={TableColumnsInfo.EVENTS}
-            data={eventData}
-            onRowClick={() => console.log('Row clicked')} 
-            showSearchBox={false}
-          />
-      
+          <div className="host_empty_outer">
+            <TableOuter 
+              columns={TableColumnsInfo.TEMPLATE_FROM_DOMAIN}
+              data={templates}
+              onRowClick={() => console.log('Row clicked')} 
+            />
+          </div>
         </>
+        )}
+        {activeTab === 'events' && (
+          <EventDu 
+          columns={TableColumnsInfo.EVENTS}
+          data={events}
+          handleRowClick={() => console.log('Row clicked')}
+      />
         )}
 
         {/* 권한(삭제예정)*/}
@@ -576,10 +581,6 @@ const popupItems = [
             />
           </>
         )} */}
-
-
-
-        
 
       </div>
 

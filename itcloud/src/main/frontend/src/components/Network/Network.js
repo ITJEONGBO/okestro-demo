@@ -32,10 +32,10 @@ const Network = () => {
           id: network?.id ?? '',
           name: network?.name ?? '',
           comment: network?.comment ?? '',  // 코멘트
-          dataCenter: network?.dataCenterVo?.name ?? '',  // 데이터 센터
+          dataCenter: network?.dataCenter?.name ?? '',  // 데이터 센터
           description: network?.description ?? '',  // 설명
           vlan: network?.vlan ?? '',  // VLAN 태그
-          label: network?.label ?? '',  // 레이블
+          label: network?.label ?? '-',  // 레이블
           mtu: network?.mtu ?? '',  // MTU
         };
       }
@@ -45,8 +45,6 @@ const Network = () => {
     const navigate = useNavigate();
 
     const handleNetworkNameClick = (row, column) => {
-    // 테이블 행 클릭 시 NetworkDetai
-        console.log(`handleNetworkNameClick ... id: ${row.id}`)
         if (column.accessor === 'name') {
             navigate(
               `/networks/${row.id}`, 

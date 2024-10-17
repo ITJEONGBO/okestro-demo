@@ -8,7 +8,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import ApiManager from '../../api/ApiManager';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown, faChevronDown, faDatabase, faExclamationTriangle, faRefresh, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons'
+import { faArrowDown, faChevronDown, faChevronLeft, faDatabase, faExclamationTriangle, faRefresh, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 import './css/AllDisk.css';
 import { useAllDisk } from '../../api/RQHook';
@@ -86,31 +86,28 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
   const pathData = ['스토리지','디스크'];
 
   const { 
-    data: data,
-    status: networksStatus,
-    isRefetching: isNetworksRefetching,
-    refetch: networksRefetch, 
-    isError: isNetworksError, 
-    error: networksError, 
-    isLoading: isNetworksLoading,
-  } = useAllDisk((item) => {
+    data: diskdata,
+    status: disksStatus,
+    isRefetching: isDisksRefetching,
+    refetch: disksRefetch, 
+    isError: isDisksError, 
+    error: disksError, 
+    isLoading: isDisksLoading,
+  } = useAllDisk(toTableItemPredicateDisks);
+  function toTableItemPredicateDisks(disk) {
     return {
-      id: item?.id ?? '',  // ID
-      name: item?.name ?? '',  // 이름
-      description: item?.description ?? '',  // 설명
-      dataCenter: item?.dataCenterVo?.name ?? '',  // 데이터 센터
-      provider: item?.provider ?? 'Provider1',  // 제공자 (기본값: 'Provider1')
-      portSeparation: item?.portIsolation ? '예' : '아니요',  // 포트 분리 여부
-      alias: item?.alias ?? '',  // 별칭
-      icon1: item?.icon1 ?? '',  // 아이콘 1
-      icon2: item?.icon2 ?? '',  // 아이콘 2
-      connectionTarget: item?.connectionTarget ?? '',  // 연결 대상
-      storageDomain: item?.storageDomainVo?.name ?? '',
-      virtualSize: item?.virtualSize ?? '',  // 가상 크기
-      status: item?.status ?? '',  // 상태
-      type: item?.type ?? '',  // 유형
-    }
-  })
+      alias: disk?.alias ?? '',
+      id: disk?.id ?? '',
+      icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
+      icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
+      connectionTarget: disk?.connectionTarget ?? '',
+      storageDomainVo: disk?.storageDomainVo?.name ?? '',
+      virtualSize: disk?.virtualSize ?? '알 수 없음',
+      status: disk?.status ?? '',
+      storageType: disk?.storageType ?? '',
+      description: disk?.description ?? '',
+    };
+  }
 
 
   const handleRowClick = (row, column) => {
@@ -165,16 +162,17 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
                 {activeDiskType === 'all' && (
                   <TableOuter 
                     columns={TableColumnsInfo.ALL_DISK}
-                    data={data}
+                    data={diskdata}
                     onRowClick={handleRowClick}
                     showSearchBox={true}
+                    clickableColumnIndex={[0]} 
                   />
                 )}
 
                 {activeDiskType === 'image' && (
                   <TableOuter 
                     columns={TableColumnsInfo.IMG_DISK}
-                    data={data}
+                    data={diskdata}
                     onRowClick={handleRowClick}
                     showSearchBox={true}
                   />
@@ -183,7 +181,7 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
                 {activeDiskType === 'lun' && (
                   <TableOuter 
                     columns={TableColumnsInfo.LUN_DISK}
-                    data={data}
+                    data={diskdata}
                     onRowClick={handleRowClick}
                     showSearchBox={true}
                   />

@@ -364,32 +364,32 @@ const ApiManager = {
   }),
   findNetworkById: async (networkId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_NETWORK_BY_ID(networkId),
+    url: ENDPOINTS.FIND_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_NETWORK_BY_ID
   }),
   findAllVnicProfilesFromNetwork: async (networkId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_VNIC_PROFILES_FROM_NETWORK(networkId),
+    url: ENDPOINTS.FIND_VNIC_PROFILES_FROM_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK
   }),
   findAllClustersFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_CLUSTERS_FROM_NETWORK(networkId),
+    url: ENDPOINTS.FIND_CLUSTERS_FROM_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS_FROM_NETWORK
   }),
   findAllHostsFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_HOST_FROM_NETWORK(networkId),
+    url: ENDPOINTS.FIND_HOSTS_FROM_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK
   }),
   findAllVmsFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_VMS_FROM_NETWORK(networkId),
+    url: ENDPOINTS.FIND_VMS_FROM_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_VMS_FROM_NETWORK
   }),
   findAllTemplatesFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_TEMPLATES_NETWORK(networkId),
+    url: ENDPOINTS.FIND_TEMPLATES_NETWORK(networkId),
     defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK
   }),
   findAllPermissionFromNetwork : async (networkId) => makeAPICall({
@@ -401,20 +401,64 @@ const ApiManager = {
   
 
   
-  //region: StorageDomain
-  findAllDisk: async () => makeAPICall({
-    method: "GET", 
-    url: ENDPOINTS.FIND_ALL_DISK(),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_DISK
-  }),
-
+  //region: Domain
   findAllStorageDomains: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(),
     defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
   }),
-  //endregion: StorageDomain
+  findDomainById: async (storageDomainId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_STORAGE_DOMAIN(storageDomainId),
+    defaultValues: DEFAULT_VALUES.FIND_DOMAIN_BY_ID
+  }),
+  findAllDataCenterFromDomain : async (storageDomainId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DATA_CENTERS_FROM_STORAGE_DOMAINS(storageDomainId),
+    defaultValues: DEFAULT_VALUES.FIND_DATACENTER_FROM_DOMAIN
+  }),
+  
+  findAllDiskFromDomain: async (storageDomainId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISKS_FROM_STORAGE_DOMAINS(storageDomainId),
+    defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_DOMAIN
+  }),
+  findAllDiskSnapshotFromDomain: async (storageDomainId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISK_SNAPSHOTS_FROM_STORAGE_DOMAINS(storageDomainId),
+    defaultValues: DEFAULT_VALUES.DISK_SNAPSHOT_FROM_DOMAIN
+  }),
+  findAllTemplateFromDomain: async (storageDomainId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_TEMPLATES_FROM_STORAGE_DOMAINS(storageDomainId),
+    defaultValues: DEFAULT_VALUES.TEMPLATE_FROM_DOMAIN
+  }),
+  findAllEventFromDomain: async (storageDomainId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_EVENTS_FROM_STORAGE_DOMAINS(storageDomainId),
+    defaultValues: DEFAULT_VALUES.FIND_EVENT
+  }),
+  //endregion: Domain
 
+
+
+  //region: Disk
+  findAllDisk: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_DISKS(),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_DISK
+  }),
+  findDiskById: async (diskId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISK(diskId),
+    defaultValues: DEFAULT_VALUES.FIND_DISK_BY_ID
+  }),
+  findAllVmsFromDisk: async (diskId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VMS_DISK(diskId),
+    defaultValues: DEFAULT_VALUES.VMS_FROM_DISK
+  }),
+  //endregion: Disk
 
   //region: event
   findAllEvent: async () => makeAPICall({

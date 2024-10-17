@@ -1,3 +1,4 @@
+import { faChevronLeft, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { version } from 'react';
 
@@ -377,11 +378,7 @@ FIND_ALL_TEMPLATES:[
     vmCount: 7,
   },
 ],
-//region: Storage ----------------------스토리지    
-      // 스토리지 도메인
-    FIND_ALL_DISK:[
-
-    ],
+//region: Storage ----------------------스토리지      
     FIND_ALL_STORAGE_DOMAINS: [
       {
         domainName: '스토리지도메인명', // 여기에 도메인 이름을 설정합니다.
@@ -396,8 +393,62 @@ FIND_ALL_TEMPLATES:[
         description: '',
       }
     ],
+    FIND_DOMAIN_BY_ID:[
 
+    ],
+    FIND_DATACENTER_FROM_DOMAIN:[
+      {
+        icon: '',
+        name: '',
+        domainTypeMaster: '활성화',
+      },
+    ],
+    
+    FIND_DISK_FROM_DOMAIN:[
+      {
+        alias: 'aa',
+        leftIcon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
+        leftIcon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
+        virtualSize: '<1 GiB',
+        actualSize: '<1 GiB',
+        allocationPolicy: '씬 프로비저닝',
+        storageDomain: 'hosted_storage',
+        createdDate: '2024. 4. 26. PM 3:19:39',
+        lastUpdated: '2024. 4. 26. PM 3:19:45',
+        rightIcon: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
+        connectedTo: '',
+        status: 'OK',
+        type: '이미지',
+        description: 'testa',
+      },
+    ],
+    DISK_SNAPSHOT_FROM_DOMAIN:[
+  
+    ],
+    TEMPLATE_FROM_DOMAIN:[
+      {
+        alias: (
+          <>
+            <FontAwesomeIcon icon={faPlusCircle} fixedWidth/> test02
+          </>
+        ),
+        disk: '',
+        virtualSize: '1 GIB',
+        actualSize: '5 GIB',
+        creationDate: '2024.1.19 AM9:21:57',
+      },
+    ],
+//region: Storage ----------------------디스크
+  FIND_ALL_DISK:[
 
+  ],
+  FIND_DISK_BY_ID:[
+
+  ],
+  VMS_FROM_DISK:[
+
+  ],
+//region: ----------------------이벤트
     FIND_EVENT:[
       {
         icon: <FontAwesomeIcon icon="fa-solid fa-check-circle" style={{ color: 'green' }}fixedWidth/>,  // 상태 아이콘
@@ -408,11 +459,11 @@ FIND_ALL_TEMPLATES:[
         userEventId: '',
       },
     ],
-//region: Storage ----------------------이벤트
-FIND_ALL_EVENT:[
 
-],
-}
+    FIND_ALL_EVENT:[
+
+    ],
+    }
 
 
 export default DEFAULT_VALUES

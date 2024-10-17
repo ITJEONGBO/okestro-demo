@@ -13,7 +13,7 @@ import {
   faHdd
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDiskDetail.css';
-import { useAllDisk } from '../../api/RQHook';
+import { useAllDisk, useAllVmsFromDisk, useDiskById } from '../../api/RQHook';
 import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
 
@@ -60,8 +60,6 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     setActivePopup(null);
   };
 
-
-
   const buttons = [
     { id: 'edit_btn', label: '수정', onClick: () => openPopup('editDisk') },
     { id: 'new_btn', label: '제거', onClick: () => openPopup('delete') },
@@ -71,15 +69,11 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     { id: 'edit_btn', label: '다운로드', onClick: () => openPopup('editDisk') },
    
   ];
-  
-
   const uploadOptions = [
     '옵션 1',
     '옵션 2',
     '옵션 3',
   ];
-
-
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'machine', label: '가상머신' },
@@ -111,7 +105,6 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
         // 여기에 원래 setUploadOptionBoxVisible(false) 관련 코드가 있었다면 삭제합니다.
       }
     };
-  
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -119,19 +112,43 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   }, []);
 
   // api
+  const [shouldRefresh, setShouldRefresh] = useState(false);
   const { 
     data: disk,
     status: diskStatus,
     isRefetching: isDiskRefetching,
-    refetch: diskRefetch,
+    refetch: diskRefetch, 
     isError: isDiskError,
-    error: diskError,
+    error: diskError, 
     isLoading: isDiskLoading,
-  } = useAllDisk(id);
-  
+  } = useDiskById(id);
   useEffect(() => {
     diskRefetch();
-  }, [diskRefetch]);
+    setShouldRefresh(false);
+  }, [shouldRefresh, diskRefetch]);
+
+  // 가상머신
+  const { 
+    data: vms, 
+    status: vmsStatus, 
+    isLoading: isVmsLoading, 
+    isError: isVmsError,
+  } = useAllVmsFromDisk(disk?.id, toTableItemPredicateVMs);
+  
+  function toTableItemPredicateVMs(vm) {
+    return {
+      name: vm?.name ?? '없음',  // 가상머신 이름
+      cluster: vm?.cluster?.name ?? '없음',  // 클러스터
+      ipAddress: vm?.ipAddress ?? '없음',  // IP 주소
+      fqdn: vm?.fqdn ?? '없음',  // FQDN
+      memory: vm?.memory ? `${vm.memory} MB` : '알 수 없음',  // 메모리 (MB)
+      cpu: vm?.cpu?.cores ?? '알 수 없음',  // CPU 코어 수
+      network: vm?.network?.name ?? '없음',  // 네트워크 이름
+      status: vm?.status ?? '알 수 없음',  // 가상머신 상태
+      uptime: vm?.uptime ?? '알 수 없음',  // 가상머신 업타임
+    };
+  }
+  
 
 
 
@@ -139,9 +156,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     <div className="content_detail_section">
       <HeaderButton
         titleIcon={faHdd}
-        title="디스크"
-        subtitle={disk?.name}
-        additionalText={name}
+        title={disk?.alias}
         buttons={buttons}
         popupItems={[]}
         uploadOptions={uploadOptions}
@@ -164,28 +179,28 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                   <tbody>
                     <tr>
                       <th>별칭:</th>
-                      <td>#</td>
+                      <td>{disk?.alias}</td>
                     </tr>
                     <tr>
                       <th>설명:</th>
-                      <td>#</td>
+                      <td>{disk?.description}</td>
                     </tr>
                     <tr>
                       <th>ID:</th>
-                      <td>#</td>
+                      <td>{disk?.id}</td>
                     </tr>
                     <tr>
                       <th>디스크 프로파일:</th>
-                      <td>#</td>
+                      <td>{disk?.diskProfileVo?.name}</td>
                     </tr>
                     
                     <tr>
                       <th>가상 크기:</th>
-                      <td>&lt; #</td>
+                      <td>{disk?.virtualSize}</td>
                     </tr>
                     <tr>
                       <th>실제 크기:</th>
-                      <td>&lt; #</td>
+                      <td>{disk?.actualSize}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -197,7 +212,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
            
               <PagingTableOuter 
                 columns={TableColumnsInfo.VMS_FROM_DISK} 
-                data={vmData}
+                data={vms}
                 onRowClick={() => console.log('Row clicked')} 
                 showSearchBox={false}
               />
