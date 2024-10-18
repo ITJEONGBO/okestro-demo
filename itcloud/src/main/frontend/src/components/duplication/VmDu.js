@@ -1,16 +1,17 @@
 import React, { useState,  useEffect } from 'react';
 import Modal from 'react-modal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import TableOuter from '../table/TableOuter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV, faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import { useAllVMs } from '../../api/RQHook';
+import { useAllVMs, useVMsFromDataCenter } from '../../api/RQHook';
 import VncViewer from '../Vnc/VncViewer';
 import { createRoot } from 'react-dom/client';
 
-const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActiveTab: parentSetActiveTab, togglePopup, isPopupOpen, showTemplateButton = true }) => {
+const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActiveTab: parentSetActiveTab, togglePopup, isPopupOpen, dataCenterId, showTemplateButton = true,  }) => {
   const navigate = useNavigate();
+  
   const [activePopup, setActivePopup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('common');
@@ -18,8 +19,45 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
   const openModal = () => setIsModalOpen(true);
 
 
- // 가상머신 데이터 가져오기
- const { data: vms, isLoading, isError } = useAllVMs(toTableItemPredicateVMs);
+  // 모든가상머신목록
+  const { 
+    data: vms, 
+    status: vmsStatus,
+    isRefetching: isVMsRefetching,
+    refetch: refetchVMs, 
+    isError: isVMsError, 
+    error: vmsError, 
+    isLoading: isVMsLoading,
+  } = useAllVMs(toTableItemPredicateVMs);
+
+ //데이터센터id
+ const { data: vmsByDataCenter, status, isLoading, isError } = useVMsFromDataCenter(dataCenterId,toTableItemPredicateVMs); 
+ function toTableItemPredicateVMs(vm) {
+  return {
+    icon: '🖥️', // 이모티콘은 고정적으로 추가
+    name: vm?.name ?? '없음',
+    comment: vm?.comment ?? '없음',
+    host: vm?.host?.name ?? '없음',
+    ipv4: vm?.ipv4 ?? '알 수 없음',
+    fqdn: vm?.fqdn ?? '알 수 없음',
+    cluster: vm?.cluster?.name ?? '알 수 없음',
+    status: vm?.status ?? '알 수 없음',
+    datacenter: vm?.dataCenter?.name ?? '알 수 없음',
+    memory: vm?.memory ? `${vm.memory} MiB` : '알 수 없음',
+    cpu: vm?.cpu ? `${vm.cpu} cores` : '알 수 없음',
+    network: vm?.network ?? '알 수 없음',
+    upTime: vm?.upTime ?? '알 수 없음',
+    description: vm?.description ?? '알 수 없음',
+  };
+} 
+
+  // 데이터선택
+  const selectedData = dataCenterId ? vmsByDataCenter : vms;
+   
+    
+
+
+
 
   // 모달 관련 상태 및 함수
   const handleOpenPopup = (popupType) => { 
@@ -98,28 +136,6 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
       };
     }
   };
-  
-    
-    function toTableItemPredicateVMs(vm) {
-        return {
-            status: vm?.status ?? 'Unknown',       
-            id: vm?.id ?? '',
-            icon: '',                                   
-            name: vm?.name ?? 'Unknown',               
-            comment: vm?.comment ?? '',                 
-            host: vm?.hostVo?.name ?? 'Unknown',         
-            ipv4: vm?.ipv4?.[0] ?? '', 
-            fqdn: vm?.fqdn ?? '',                      
-            cluster: vm?.clusterVo?.name ?? 'Unknown',        
-            datacenter: vm?.dataCenterVo?.name ?? 'Unknown', 
-            memory: vm?.memoryInstalled ?? '',  
-            cpu: vm?.cpu ?? '',  
-            clusterVo: vm?.clusterVo?.id ?? '',
-            network: vm?.network ?? '',  
-            upTime: vm?.upTime ?? '',                    
-            description: vm?.description ?? 'No description',  
-        };
-    }
 
 
   return (
@@ -155,7 +171,7 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
 
       <TableOuter 
         columns={columns}
-        data={vms}
+        data={selectedData}
         onRowClick={handleRowClick}
         showSearchBox={true}
         clickableColumnIndex={[1, 6,8]} // 첫 번째와 세 번째 컬럼을 클릭 가능하게 설정

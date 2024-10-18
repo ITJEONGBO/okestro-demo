@@ -49,7 +49,6 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('general'); 
 
-
  const handleTabClick = (tab) => {
   setActiveTab(tab);
   if (tab !== 'general') {
@@ -97,7 +96,7 @@ useEffect(() => {
   const [prevPath, setPrevPath] = useState(location.pathname);
   const locationState = location.state  
 
-  
+    
 
 
   const [shouldRefresh, setShouldRefresh] = useState(false);
@@ -114,6 +113,7 @@ useEffect(() => {
     networkRefetch()
   }, [setShouldRefresh, networkRefetch])
   
+  //vnic프로파일
   const { 
     data: vnicProfiles,
     status: vnicProfilesStatus,
@@ -138,6 +138,7 @@ useEffect(() => {
     };
   }
 
+  // 클러스터
   const { 
     data: clusters, 
     status: clustersStatus, 
@@ -157,6 +158,7 @@ useEffect(() => {
     };
   }
 
+  //호스트
   const { 
     data: hosts, 
     status: hostsStatus, 
@@ -187,6 +189,7 @@ useEffect(() => {
     };
   }
 
+  //가상머신
   const { 
     data: vms, 
     status: vmsStatus, 
@@ -217,6 +220,7 @@ useEffect(() => {
     };
   }
 
+  //템플릿
   const { 
     data: templates, 
     status: templatesStatus, 
@@ -297,27 +301,26 @@ useEffect(() => {
 
   // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
+  // 모달 열기 핸들러
+  const openSecondModal = () => {
+    setIsSecondModalOpen(true);
+  };
+  // 모달 닫기 핸들러
+  const closeSecondModal = () => {
+    setIsSecondModalOpen(false);
+    setSelectedModalTab('ipv4'); // 모달이 닫힐 때 첫 번째 탭으로 초기화
+  };
+  const openPopup = (popupType) => setActivePopup(popupType);
+  const closePopup = () => setActivePopup(null);
+
   // 추가모달
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
-
-
   useEffect(() => {
     if (isSecondModalOpen) {
       handleTabModalClick('ipv4');
     }
   }, [isSecondModalOpen]);
-// 모달 닫기 핸들러
-const closeSecondModal = () => {
-  setIsSecondModalOpen(false);
-  setSelectedModalTab('ipv4'); // 모달이 닫힐 때 첫 번째 탭으로 초기화
-};
 
-// 모달 열기 핸들러
-const openSecondModal = () => {
-  setIsSecondModalOpen(true);
-};
-  const openPopup = (popupType) => setActivePopup(popupType);
-  const closePopup = () => setActivePopup(null);
 
   const sections = [
     { id: 'general', label: '일반' },
@@ -381,7 +384,6 @@ const openSecondModal = () => {
               onRowClick={() => console.log('Row clicked')}
             />
        </>
-       
         )}
         
         {activeTab === 'hosts' && (
@@ -447,6 +449,7 @@ const openSecondModal = () => {
                     columns={TableColumnsInfo.VMS}
                     data={vms}
                     onRowClick={() => console.log('Row clicked')}
+                    clickableColumnIndex={[1]} 
                   />
                 )}
 

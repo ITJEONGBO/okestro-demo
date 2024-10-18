@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
 import './Table.css';
 
-const TableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol = false, clickableColumnIndex = [0], showSearchBox = false }) => {
+const TableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol = false, clickableColumnIndex, showSearchBox = false }) => {
   return (
     <div className="section_table_outer">
       {showSearchBox && ( // showSearchBox가 true일 때만 렌더링

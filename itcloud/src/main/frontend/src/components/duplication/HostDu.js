@@ -101,7 +101,7 @@ const closePopup = () => {
         data={data} 
         onRowClick={handleRowClick} 
         className="host_table"
-        clickableColumnIndex={[2]} 
+        clickableColumnIndex={[0,3,4]} 
       />
 
       {/* 호스트 새로 만들기 */}

@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
@@ -11,11 +11,12 @@ import {
   faUser, faCheck,faTimes,
   faInfoCircle,
   faExclamationTriangle,
-  faLayerGroup
+  faLayerGroup,
+  faChevronLeft
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenter.css';
 import TableOuter from '../table/TableOuter';
-import { useDataCenter, useNetworkById } from '../../api/RQHook';
+import { useClustersFromDataCenter, useDataCenter, useDomainsFromDataCenter, useHostsFromDataCenter, useNetworkById, useVMsFromDataCenter } from '../../api/RQHook';
 import Path from '../Header/Path';
 import HostDu from '../duplication/HostDu';
 import VmDu from '../duplication/VmDu';
@@ -25,53 +26,44 @@ import EventDu from '../duplication/EventDu';
 Modal.setAppElement('#root');
 
 const DataCenterDetail = () => {
-
-  const { name } = useParams();
+  const { id,section,name } = useParams();
+  const dataCenterId = id;      // dataCenterId로 설정
   const navigate = useNavigate();
-  const [activePermissionFilter, setActivePermissionFilter] = useState('all');
-  const [showNetworkDetail, setShowNetworkDetail] = useState(false);
-  // const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
-  
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('clusters');
+  const [activePermissionFilter, setActivePermissionFilter] = useState('all'); // 권한관련
 
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  const locationState = location.state  
+
+  
+ const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    if (tab !== 'cluster') {
+      navigate(`/computing/datacenters/${id}/${tab}`);
+    } else {
+      navigate(`/computing/datacenters/${id}`);
+    }
+  };
+useEffect(() => {
+  if (!section) {
+    setActiveTab('clusters');
+  } else {
+    setActiveTab(section);
+  }
+}, [section]); 
+
+  
   const [isModalOpen, setIsModalOpen] = useState({
     edit: false,
     permission: false,
   });
 
-  // useEffect(() => {
-  //   const 기본섹션 = document.getElementById('일반_섹션_btn');
-  //   if (기본섹션) {
-  //     기본섹션.style.backgroundColor = '#EDEDED';
-  //     기본섹션.style.color = '#1eb8ff';
-  //     기본섹션.style.borderBottom = '1px solid blue';
-  //   }
-  // }, []);
-
-  // const 섹션변경 = (section) => {
-  //   set활성화된섹션(section);
-  //   const 모든섹션들 = document.querySelectorAll('.edit_aside > div');
-  //   모든섹션들.forEach((el) => {
-  //     el.style.backgroundColor = '#FAFAFA';
-  //     el.style.color = 'black';
-  //     el.style.borderBottom = 'none';
-  //   });
-
-  //   const 선택된섹션 = document.getElementById(`${section}_btn`);
-  //   if (선택된섹션) {
-  //     선택된섹션.style.backgroundColor = '#EDEDED';
-  //     선택된섹션.style.color = '#1eb8ff';
-  //     선택된섹션.style.borderBottom = '1px solid blue';
-  //   }
-  // };
-
+ 
   const handleOpenModal = (type) => {
     setIsModalOpen((prev) => ({ ...prev, [type]: true }));
-    // setSelectedTab('cluster_common_btn');
   };
 
-// const handleTabClickModal = (tab) => {
-//   setSelectedTab(tab); 
-// };
   const handleCloseModal = (type) => {
     setIsModalOpen((prev) => ({ ...prev, [type]: false }));
   };
@@ -86,17 +78,23 @@ const DataCenterDetail = () => {
     setInputName(event.target.value); // input의 값을 상태로 업데이트
   };
 
-  const [showTooltip, setShowTooltip] = useState(false); // hover하면 설명창 뜨게하기
+  const handleRowClick = (row, column) => {
+    if (column.accessor === 'domainName') {
+      navigate(`/storage-domain/${row.domainName.props.children}`);  
+    }
+    if (column.accessor === 'logicalName') {
+      navigate(`/network/${row.logicalName.props.children}`); 
+    }
+    if (column.accessor === 'clusterName') {
+      navigate(`/computing/cluster/${row.clusterName.props.children}`); 
+    }
+  };
 
   const sectionHeaderButtons = [
     { id: 'edit_btn', label: '데이터센터 편집', onClick: () => handleOpenModal('edit') },
     { id: 'delete_btn', label: '삭제', onClick: () => handleOpenModal('delete') },
   ];
-  const [isHiddenParameterVisible, setHiddenParameterVisible] = useState(false);
-  const toggleHiddenParameter = () => {
-    setHiddenParameterVisible(!isHiddenParameterVisible);
-  };
-  
+
   // VmDu...버튼
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const togglePopup = () => {
@@ -104,27 +102,11 @@ const DataCenterDetail = () => {
     };
  
 
-  const [activeTab, setActiveTab] = useState('cluster');
-  useEffect(() => {
-    const savedTab = localStorage.getItem('activeTab');
-    if (savedTab) {
-        setActiveTab(savedTab);  // 로컬스토리지에 저장된 값이 있으면 그 값을 사용
-    } else {
-        setActiveTab('cluster'); 
-        localStorage.setItem('activeTab', 'cluster'); 
-    }
-  }, []);
 
-  const handleTabClick = (tab) => {
-      setActiveTab(tab);
-      setShowNetworkDetail(false);
-      localStorage.setItem('activeTab', tab); // 로컬 스토리지에 선택된 탭 저장
-  };
+
+
 
   //api
-  const { id } = useParams(); // useParams로 URL에서 name을 가져옴
-  const [shouldRefresh, setShouldRefresh] = useState(false);
-
   const { 
     data: dataCenter,
     status: dataCenterStatus,
@@ -133,41 +115,83 @@ const DataCenterDetail = () => {
     isError: isDataCenterError,
     error: dataCenterError,
     isLoading: isDataCenterLoading,
-  } = useDataCenter(id);
-  
-  const { 
-    data: network,
-    status: networkStatus,
-    isRefetching: isNetworkRefetching,
-    refetch: networkRefetch, 
-    isError: isNetworkError,
-    error: networkError, 
-    isLoading: isNetworkLoaindg,
-  } = useNetworkById(id);
-  useEffect(() => {
-    networkRefetch()
-  }, [setShouldRefresh, networkRefetch])
+  } = useDataCenter(dataCenterId);
 
+  
+  // 클러스터
+  const { 
+    data: clusters, 
+    status: clustersStatus, 
+    isLoading: isClustersLoading, 
+    isError: isClustersError 
+  } = useClustersFromDataCenter(dataCenter?.id, toTableItemPredicateClusters);
+  function toTableItemPredicateClusters(cluster) {
+    return {
+      name: cluster?.name ?? '없음',
+      description: cluster?.description ?? '없음',
+      version: cluster?.version ?? '없음',
+    };
+  }
+  // 호스트
+  const { 
+    data: hosts, 
+    status: hostsStatus, 
+    isLoading: isHostsLoading, 
+    isError: isHostsError 
+  } = useHostsFromDataCenter(dataCenter?.id, toTableItemPredicateHosts);
+  function toTableItemPredicateHosts(host) {
+    return {
+      name: host?.name ?? '없음',
+      comment: host?.comment ?? '없음',
+      hostNameIP: host?.hostNameIP ?? '알 수 없음',
+      clusterVo: host?.clusterVo?.name ?? '알 수 없음',
+      dataCenterVo: host?.dataCenterVo?.name ?? '알 수 없음',
+      status: host?.status ?? '알 수 없음',
+      vm: host?.vm ?? '#',
+      memory: host?.memory ? `${host.memory} GiB` : '#',
+      cpu: host?.cpu ?? '#',
+      network: host?.network ?? '#',
+      spmStatus: host?.spmStatus ?? '알 수 없음',
+    };
+  }
+    // 스토리지
+    const { 
+      data: domains, 
+      status: domainsStatus, 
+      isLoading: isDomainsLoading, 
+      isError: isDomainsError 
+    } = useDomainsFromDataCenter(dataCenter?.id, toTableItemPredicateDomains);
+    
+    function toTableItemPredicateDomains(domain) {
+      return {
+        icon: '📁', // 첫 번째 이모티콘을 고정적으로 표시
+        icon2: '💾', // 두 번째 이모티콘을 고정적으로 표시
+        name: domain?.name ?? '없음', // 도메인 이름
+        domainType: domain?.domainType ?? '없음', // 도메인 유형
+        status: domain?.status ?? '알 수 없음', // 상태
+        availableSize: domain?.availableSize ?? '알 수 없음', // 여유 공간 (GiB)
+        usedSize: domain?.usedSize ?? '알 수 없음', // 사용된 공간
+        diskSize: domain?.diskSize ?? '알 수 없음', // 전체 공간 (GiB)
+        description: domain?.description ?? '설명 없음', // 설명
+      };
+    }
 
 
   // Nav 컴포넌트
   const sections = [
-    { id: 'cluster', label: '클러스터' },
-    { id: 'host', label: '호스트' },
-    { id: 'vm', label: '가상머신' },
+    { id: 'clusters', label: '클러스터' },
+    { id: 'hosts', label: '호스트' },
+    { id: 'vms', label: '가상머신' },
     { 
-      id: 'storage', 
+      id: 'storageDomains', 
       label: '스토리지', 
-      isActive: activeTab === 'storage' || activeTab === 'storage_disk' 
+      isActive: activeTab === 'storageDomains' || activeTab === 'storage_disk' 
     },
-    { id: 'logical_network', label: '논리 네트워크' },
-    { id: 'event', label: '이벤트' },
+    { id: 'networks', label: '논리 네트워크' },
+    { id: 'events', label: '이벤트' },
   ];
-  const pathData = [
-    dataCenter?.name || 'Default',  // 데이터센터 이름이 없으면 'Default'로 대체
-    activeTab === 'storage' || activeTab === 'storage_disk' ? '스토리지' : sections.find(section => section.id === activeTab)?.label,
-    activeTab === 'storage_disk' ? '디스크' : '' // storage_disk일 때만 '디스크' 추가
-  ].filter(Boolean); 
+  
+
   // 테이블 컴포넌트 데이터
   const storagedata = [
     {
@@ -206,23 +230,7 @@ const DataCenterDetail = () => {
     },
   ];
 
-  const clusterdata = [
-    {
-      clusterName: (
-        <span
-          style={{ color: 'blue', cursor: 'pointer'}}
-          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-        >
-        Default
-        </span>
-      ),
-      version: '4.7',
-      description: '',
-    },
-  ];
-
-
+ 
   const permissionData = [
     {
       icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
@@ -245,50 +253,16 @@ const DataCenterDetail = () => {
       customEventId: '',
     },
   ];
-  const vms = [
-    {
-      icon: <FontAwesomeIcon icon={faCheck} style={{ color: 'green' }} fixedWidth/>,
-      name: 'Unknown',
-      status: 'Unknown',
-      upTime: '',
-      cpu: 'oVirt',
-      memory: '',
-      network: '',             
-      ipv4:''
-    },
-  ];
-  const hosts = [
-    {
-      icon: <FontAwesomeIcon icon={faCheck} style={{ color: 'green' }} fixedWidth/>,
-      name: 'Unknown',
-      hostNameIP: 'Unknown',
-      status: '',
-      loading: 'oVirt',
-      displayAddress: ''
-    },
-  ];
 
 
 
-  const handleRowClick = (row, column) => {
-    if (column.accessor === 'domainName') {
-      navigate(`/storage-domain/${row.domainName.props.children}`);  
-    }
-    if (column.accessor === 'logicalName') {
-      navigate(`/network/${row.logicalName.props.children}`); 
-    }
-    if (column.accessor === 'clusterName') {
-      navigate(`/computing/cluster/${row.clusterName.props.children}`); 
-    }
-  };
-
+  const pathData = [dataCenter?.name, sections.find(section => section.id === activeTab)?.label];
   return (
     <div className="content_detail_section">
 
       <HeaderButton
         titleIcon={faLayerGroup}
-        title="데이터센터 "
-        subtitle={dataCenter?.name}
+        title={dataCenter?.name}
         buttons={sectionHeaderButtons}
         popupItems={[]}
       />
@@ -302,92 +276,7 @@ const DataCenterDetail = () => {
         
         <div className="empty_nav_outer">
           <Path pathElements={pathData} />
-          {/* {activeTab === 'general' && (
-            <>
-             <div className="cluster_general">
-                <div className="table_container_center">
-                    <table className="table">
-                        <tbody>
-                            <tr>
-                                <th>ID:</th>
-                                <td>{id}</td>
-                            </tr>
-                            <tr>
-                                <th>설명:</th>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th>데이터센터:</th>
-                                <td>{dataCenter?.name}</td>
-                            </tr>
-                            <tr>
-                                <th>호환버전:</th>
-                                <td>4.7</td>
-                            </tr>
-                            <tr>
-                                <th>클러스터 노드 유형:</th>
-                                <td>Virt</td>
-                            </tr>
-                            <tr>
-                                <th>클러스터 ID:</th>
-                                <td>f0adf4f6-274b-4533-b6b3-6a683b062c9a</td>
-                            </tr>
-                            <tr>
-                                <th>클러스터 CPU 유형:</th>
-                                <td>
-                                      Intel Nehalem Family
-                                    <FontAwesomeIcon icon={faBan} style={{ marginLeft: '13%', color: 'orange' }} fixedWidth/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>스레드를 CPU 로 사용:</th>
-                                <td>아니요</td>
-                            </tr>
-                            <tr>
-                                <th>최대 메모리 오버 커밋:</th>
-                                <td>100%</td>
-                            </tr>
-                            <tr>
-                                <th>복구 정책:</th>
-                                <td>예</td>
-                            </tr>
-                            <tr>
-                                <th>칩셋/펌웨어 유형:</th>
-                                <td>UEFI의 Q35 칩셋</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div className="table_container_center">
-                    <table className="table">
-                        <tbody>
-                            <tr>
-                                <th>에뮬레이션된 시스템:</th>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th>가상 머신 수:</th>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <th>총 볼륨 수:</th>
-                                <td>해당 없음</td>
-                            </tr>
-                            <tr>
-                                <th>Up 상태의 볼륨 수:</th>
-                                <td>해당 없음</td>
-                            </tr>
-                            <tr>
-                                <th>Down 상태의 볼륨 수:</th>
-                                <td>해당 없음</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            </>
-          )} */}
-           {activeTab === 'cluster' && (
+          {activeTab === 'clusters' && (
               <>
                 <div className="header_right_btns">
                   <button onClick={() => handleOpenModal('cluster_new')}>새로 만들기</button>
@@ -396,13 +285,13 @@ const DataCenterDetail = () => {
                 </div>
                 <TableOuter
                   columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER}
-                  data={clusterdata}
+                  data={clusters}
                   onRowClick={handleRowClick} 
                 />
             </>
           
           )}
-          {activeTab === 'host' && (
+          {activeTab === 'hosts' && (
             <>
             {/* <div className="header_right_btns">
                 <button onClick={() => handleOpenModal('host_new')}>새로 만들기</button>
@@ -423,30 +312,25 @@ const DataCenterDetail = () => {
                 columns={TableColumnsInfo.HOSTS_ALL_DATA} 
                 handleRowClick={handleRowClick}
                 openPopup={[]}
+                
               />
             </>
           )}
-          {activeTab === 'vm' && (
+          {activeTab === 'vms' && (
             <>
-            {/* <div className="host_empty_outer">
-              <TableOuter 
-                columns={TableColumnsInfo.CLUSTER_VM} 
-                data={vms} 
-                onRowClick={() => console.log('Row clicked')}
-              />
-            </div> */}
             <VmDu 
-                data={vms} 
-                columns={TableColumnsInfo.VM_CHART} 
-                handleRowClick={handleRowClick} 
-                openPopup={handleOpenModal}
-                setActiveTab={setActiveTab}
-                togglePopup={togglePopup}
-                isPopupOpen={isPopupOpen}
-              />
+               // 가상머신 데이터를 전달
+              columns={TableColumnsInfo.VM_CHART}  // VM_CHART 테이블 컬럼 설정
+              handleRowClick={handleRowClick}  // 클릭 시 동작
+              openPopup={handleOpenModal}  // 모달 열기 함수
+              setActiveTab={setActiveTab}  // 탭 설정 함수
+              togglePopup={togglePopup}  // 팝업 토글 함수
+              isPopupOpen={isPopupOpen}  // 팝업 상태
+              dataCenterId={dataCenter?.id} 
+            />
             </>
           )}
-           {activeTab === 'storage' && (
+           {activeTab === 'storageDomains' && (
             <>
               <div className="header_right_btns">
                 <button>새로 만들기</button>
@@ -457,7 +341,7 @@ const DataCenterDetail = () => {
               </div>
               <TableOuter 
                 columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} 
-                data={storagedata}
+                data={domains}
                 onRowClick={handleRowClick}
               />
             </>
@@ -479,7 +363,7 @@ const DataCenterDetail = () => {
             </>
           )}
 
-          {activeTab === 'logical_network' && (
+          {activeTab === 'networks' && (
             <>
               <div className="header_right_btns">
                 <button>새로 만들기</button>
@@ -493,7 +377,7 @@ const DataCenterDetail = () => {
               />
             </>
           )}
-            {activeTab === 'event' && (
+            {activeTab === 'events' && (
               <EventDu 
                 columns={TableColumnsInfo.EVENTS}
                 data={eventData}

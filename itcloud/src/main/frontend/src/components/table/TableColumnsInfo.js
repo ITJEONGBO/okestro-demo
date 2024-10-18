@@ -18,7 +18,7 @@ const TableColumnsInfo = {
     { header: '설명', accessor: 'description', clickable: false },
   ],
   CLUSTERS_FROM_DATACENTER: [
-    { header: '이름', accessor: 'clusterName' },
+    { header: '이름', accessor: 'name' },
     { header: '호환 버전', accessor: 'version' },  // 호환 버전 열 추가
     { header: '설명', accessor: 'description' }
   ],
@@ -36,7 +36,7 @@ const TableColumnsInfo = {
   NETWORKS: [
     { header: '이름',       accessor: 'name',          clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '데이터센터',  accessor: 'dataCenters',     clickable: false },
+    { header: '데이터센터',  accessor: 'dataCenter',     clickable: false },
     { header: '설명',       accessor: 'description',    clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
     { header: '레이블', accessor: 'label', clickable: false },
@@ -89,23 +89,23 @@ const TableColumnsInfo = {
   STORAGES_FROM_DATACENTER: [
     { header: '', accessor: 'icon' }, // 이모티콘을 표시할 열
     { header: '', accessor: 'icon2' }, // 이모티콘을 표시할 열
-    { header: '도메인 이름', accessor: 'domainName' },
+    { header: '도메인 이름', accessor: 'name' },
     { header: '도메인 유형', accessor: 'domainType' },
     { header: '상태', accessor: 'status' },
-    { header: '여유 공간 (GiB)', accessor: 'freeSpace' },
-    { header: '사용된 공간', accessor: 'usedSpace' },
-    { header: '전체 공간 (GiB)', accessor: 'totalSpace' },
+    { header: '여유 공간 (GiB)', accessor: 'availableSize', clickable: false },
+    { header: '사용된 공간 (GiB)', accessor: 'usedSize', clickable: false },
+    { header: '전체 공간 (GiB)', accessor: 'diskSize', clickable: false },
     { header: '설명', accessor: 'description' },
   ],
   STORAGES_FROM_DISK: [
     { header: '', accessor: 'icon1', clickable: false },
     { header: '', accessor: 'icon2', clickable: false },
-    { header: '도메인 이름', accessor: 'domainName', clickable: false },
+    { header: '도메인 이름', accessor: 'name', clickable: false },
     { header: '도메인 유형', accessor: 'domainType', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '여유 공간 (GiB)', accessor: 'freeSpace', clickable: false },
-    { header: '사용된 공간 (GiB)', accessor: 'usedSpace', clickable: false },
-    { header: '전체 공간 (GiB)', accessor: 'totalSpace', clickable: false },
+    { header: '여유 공간 (GiB)', accessor: 'availableSize', clickable: false },
+    { header: '사용된 공간 (GiB)', accessor: 'usedSize', clickable: false },
+    { header: '전체 공간 (GiB)', accessor: 'diskSize', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
   ALL_DISK:  [
@@ -298,13 +298,11 @@ const TableColumnsInfo = {
     { header: '디스플레이 주소 덮어쓰기', accessor: 'displayAddress', clickable: false }
   ],
   HOSTS_ALL_DATA: [
-    { header: '', accessor: 'icon', clickable: false }, 
-    { header: '', accessor: 'icon', clickable: false }, 
     { header: '이름', accessor: 'name', clickable: false },
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '호스트이름/IP', accessor: 'hostNameIP', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: true },
-    { header: '데이터센터', accessor: 'datacenter', clickable: true },
+    { header: '클러스터', accessor: 'clusterVo', clickable: true },
+    { header: '데이터센터', accessor: 'dataCenterVo', clickable: true },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '가상머신', accessor: 'vm', clickable: false },
     { header: '메모리', accessor: 'memory', clickable: false },

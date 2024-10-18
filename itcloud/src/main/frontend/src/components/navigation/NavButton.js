@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 const NavButton = ({ sections, handleSectionClick }) => {
   const { pathname } = useLocation(); // 현재 URL 경로 가져오기
-  const [activeSection, setActiveSection] = useState('general'); // 기본값을 'general'로 설정
+  const [activeSection, setActiveSection] = useState(sections[0]?.id || ''); // 기본값을 첫 번째 섹션으로 설정
 
   useEffect(() => {
     // URL이 변경되면 해당 URL의 끝부분을 activeSection으로 설정
@@ -15,7 +15,7 @@ const NavButton = ({ sections, handleSectionClick }) => {
     if (sections.some(section => section.id === lastPart)) {
       setActiveSection(lastPart);
     } else {
-      setActiveSection('general'); // 기본값으로 'general' 설정
+      setActiveSection(sections[0]?.id || ''); // 기본값을 첫 번째 섹션으로 설정
     }
   }, [pathname, sections]);
 

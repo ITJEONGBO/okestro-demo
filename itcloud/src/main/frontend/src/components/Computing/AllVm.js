@@ -24,9 +24,6 @@ const AllVm = () => {
   const openModal = () => setIsModalOpen(true);
 
 
-
-  
-  const [selectedPopupTab, setSelectedPopupTab] = useState('cluster_common_btn');
  // 모달 관련 상태 및 함수
  const openPopup = (popupType) => {
     setActivePopup(popupType);
@@ -160,15 +157,15 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
            
           </div>
         </div> */}
-        <VmDu 
-            // data={vms} 
-            columns={TableColumnsInfo.VM_CHART} 
-            handleRowClick={() => console.log("Row clicked")}  
-            openPopup={openPopup} 
-            setActiveTab={setActiveTab}
-            togglePopup={togglePopup} 
-            isPopupOpen={isPopupOpen} 
-          />
+   <VmDu 
+
+  columns={TableColumnsInfo.VM_CHART} 
+  handleRowClick={handleRowClick}  
+  openPopup={openPopup} 
+  setActiveTab={setActiveTab}
+  togglePopup={togglePopup} 
+  isPopupOpen={isPopupOpen} 
+/>
       </div>
   
            

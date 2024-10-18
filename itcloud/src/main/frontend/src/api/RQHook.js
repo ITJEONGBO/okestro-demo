@@ -635,7 +635,7 @@ export const useNetworkById = (networkId) => useQuery({
   queryFn: async () => {
     if (!networkId) return {};  // networkId가 없는 경우 빈 객체 반환
     console.log(`Fetching network with ID: ${networkId}`);
-    const res = await ApiManager.findNetworkById(networkId);
+    const res = await ApiManager.findNetwork(networkId);
     return res ?? {};
   },
   staleTime: 0,
@@ -801,7 +801,7 @@ export const useDomainById = (storageDomainId) => useQuery({
   queryFn: async () => {
     if (!storageDomainId) return {};  
     console.log(`Fetching network with ID: ${storageDomainId}`);
-    const res = await ApiManager.findDomainById(storageDomainId);
+    const res = await ApiManager.findDomain(storageDomainId);
     return res ?? {};
   },
   staleTime: 0,
@@ -822,11 +822,11 @@ export const useAllDataCenterFromDomain = (storageDomainId, mapPredicate) => use
   queryKey: ['AllDataCenterFromDomain', storageDomainId], 
   queryFn: async () => {
     console.log(`useAllTemplatesFromNetwork ... ${storageDomainId}`);
-    const res = await ApiManager.findAllDataCenterFromDomain(storageDomainId); 
+    const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
-// 가상머신 목록
+
 /**
  * @name useAllDiskFromDomain
  * @description 도메인 내 디스크 목록조회 useQuery훅
@@ -842,7 +842,7 @@ export const useAllDiskFromDomain = (storageDomainId, mapPredicate) => useQuery(
   queryKey: ['AllDiskFromDomain', storageDomainId], 
   queryFn: async () => {
     console.log(`useAllDiskFromDomain ... ${storageDomainId}`);
-    const res = await ApiManager.findAllDiskFromDomain(storageDomainId); 
+    const res = await ApiManager.findAllDisksFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })
@@ -861,7 +861,7 @@ export const useAllDiskSnapshotFromDomain = (storageDomainId, mapPredicate) => u
   queryKey: ['AllDiskSnapshotFromDomain', storageDomainId], 
   queryFn: async () => {
     console.log(`useAllDiskSnapshotFromDomain ... ${storageDomainId}`);
-    const res = await ApiManager.findAllDiskSnapshotFromDomain(storageDomainId); 
+    const res = await ApiManager.findAllDiskSnapshotsFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })
@@ -880,7 +880,7 @@ export const useAllTemplateFromDomain = (storageDomainId, mapPredicate) => useQu
   queryKey: ['AllTemplateFromDomain', storageDomainId], 
   queryFn: async () => {
     console.log(`useAllTemplateFromDomain ... ${storageDomainId}`);
-    const res = await ApiManager.findAllTemplateFromDomain(storageDomainId); 
+    const res = await ApiManager.findAllTemplatesFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })
@@ -899,7 +899,7 @@ export const useAllEventFromDomain = (storageDomainId, mapPredicate) => useQuery
   queryKey: ['AllEventFromDomain', storageDomainId], 
   queryFn: async () => {
     console.log(`useAllEventFromDomain ... ${storageDomainId}`);
-    const res = await ApiManager.findAllEventFromDomain(storageDomainId); 
+    const res = await ApiManager.findAllEventsFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })
@@ -931,7 +931,7 @@ export const useDiskById = (diskId) => useQuery({
   queryFn: async () => {
     if (!diskId) return {};  
     console.log(`useDiskById: ${diskId}`);
-    const res = await ApiManager.findDiskById(diskId);
+    const res = await ApiManager.findDisk(diskId);
     return res ?? {};
   },
   staleTime: 0,
@@ -945,7 +945,7 @@ export const useDiskById = (diskId) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findAllDataCenterFromDomain
+ * @see ApiManager.findAllVmsFromDisk
  */
 export const useAllVmsFromDisk = (diskId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -953,6 +953,26 @@ export const useAllVmsFromDisk = (diskId, mapPredicate) => useQuery({
   queryFn: async () => {
     console.log(`useAllVmsFromDisk ... ${diskId}`);
     const res = await ApiManager.findAllVmsFromDisk(diskId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  }
+})
+
+/**
+ * @name useAllStorageDomainFromDisk
+ * @description 디스크 내 스토리지 목록조회 useQuery훅
+ * 
+ * @param {string} diskId 디스크ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllStorageDomainsFromDisk
+ */
+export const useAllStorageDomainFromDisk = (diskId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllStorageDomainFromDisk', diskId], 
+  queryFn: async () => {
+    console.log(`useAllStorageDomainFromDisk ... ${diskId}`);
+    const res = await ApiManager.findAllStorageDomainsFromDisk(diskId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })

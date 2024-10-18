@@ -185,7 +185,7 @@ const ApiManager = {
   }),
   /**
    * @name ApiManager.findAllClustersFromDataCenter
-   * @description 
+   * @description  데이터 센터 내 클러스터
    * 
    * @param {string} dataCenterId
    * @returns 
@@ -197,7 +197,7 @@ const ApiManager = {
   }),
   /**
    * @name ApiManager.findAllHostsFromDataCenter
-   * @description 
+   * @description 데이터 센터 내 호스트
    * 
    * @param {string} dataCenterId
    * @returns 
@@ -205,12 +205,13 @@ const ApiManager = {
   findAllHostsFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOSTS_FROM_DATA_CENTER(dataCenterId), 
-    defaultValues: DEFAULT_VALUES.FIND_HOSTS_FROM_DATA_CENTER
+    defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK
   }),
+
   /**
    * @name ApiManager.findAllVmsFromDataCenter
-   * @description 
-   * 
+   * @description  데이터 센터 내 가상머신
+   *  
    * @param {string} dataCenterId
    * @returns 
    */
@@ -221,7 +222,7 @@ const ApiManager = {
   }),
   /**
    * @name ApiManager.findAllDomainsFromDataCenter
-   * @description 
+   * @description  데이터 센터 내 도메인
    * 
    * @param {string} dataCenterId
    * @returns 
@@ -233,7 +234,7 @@ const ApiManager = {
   }),
   /**
    * @name ApiManager.findAllNetworksFromDataCenter
-   * @description 
+   * @description  데이터 센터 내 네트워크
    * 
    * @param {string} dataCenterId
    * @returns 
@@ -245,7 +246,7 @@ const ApiManager = {
   }),
   /**
    * @name ApiManager.findAllEventsFromDataCenter
-   * @description 
+   * @description  데이터 센터 내 이벤트
    * 
    * @param {string} dataCenterId
    * @returns 
@@ -1783,7 +1784,7 @@ const ApiManager = {
 
   /**
    * @name ApiManager.findAllVMsFromDomain
-   * @description 데이터센터 목록
+   * @description 가상머신 목록
    *
    * @param {string} storageDomainId
    * @returns 
@@ -1798,7 +1799,7 @@ const ApiManager = {
 
   /**
    * @name ApiManager.findAllDisksFromDomain
-   * @description vm 목록
+   * @description 디스크 목록
    *
    * @param {string} storageDomainId
    * @returns 
@@ -1810,6 +1811,8 @@ const ApiManager = {
     url: ENDPOINTS.FIND_DISKS_FROM_STORAGE_DOMAINS(storageDomainId),
     defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_DOMAIN
   }),
+
+
   /**
    * @name ApiManager.findAllDiskSnapshotsFromDomain
    * @description 디스크 스냅샷 목록
@@ -1916,9 +1919,10 @@ const ApiManager = {
     url: ENDPOINTS.FIND_ALL_DISKS(),
     defaultValues: DEFAULT_VALUES.FIND_ALL_DISK
   }),
+
   /**
    * @name ApiManager.findDisk
-   * @description 디스크 
+   * @description 디스크세부정보
    *
    * @param {string} diskId
    * @returns 
@@ -1930,9 +1934,10 @@ const ApiManager = {
     url: ENDPOINTS.FIND_DISK(diskId),
     defaultValues: DEFAULT_VALUES.FIND_DISK_BY_ID
   }),
+
   /**
    * @name ApiManager.findAllVmsFromDisk
-   * @description vms 
+   * @description 가상머신
    *
    * @param {string} diskId
    * @returns 
@@ -1944,9 +1949,10 @@ const ApiManager = {
     url: ENDPOINTS.FIND_VMS_FROM_DISK(diskId),
     defaultValues: DEFAULT_VALUES.VMS_FROM_DISK
   }),
+
   /**
    * @name ApiManager.findAllStorageDomainsFromDisk
-   * @description vms 
+   * @description 스토리지
    *
    * @param {string} diskId
    * @returns 

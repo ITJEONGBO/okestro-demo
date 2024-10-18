@@ -13,7 +13,7 @@ import {
   faHdd
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDiskDetail.css';
-import { useAllDisk, useAllVmsFromDisk, useDiskById } from '../../api/RQHook';
+import { useAllDisk, useAllStorageDomainFromDisk, useAllVmsFromDisk, useDiskById } from '../../api/RQHook';
 import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
 
@@ -76,25 +76,12 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   ];
   const sections = [
     { id: 'general', label: '일반' },
-    { id: 'machine', label: '가상머신' },
-    { id: 'storage', label: '스토리지' }
+    { id: 'vms', label: '가상머신' },
+    { id: 'storagdDomains', label: '스토리지' }
   ];
-  const pathData = ['#', sections.find((section) => section.id === activeTab)?.label];
 
-  const vmData = [];
-  const storageData = [
-    {
-      icon1: '#',
-      icon2: '#',
-      domainName: '#',
-      domainType: '#',
-      status: '#',
-      freeSpace: '#',
-      usedSpace: '#',
-      totalSpace: '#',
-      description: '#',
-    },
-  ];
+
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -134,7 +121,6 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     isLoading: isVmsLoading, 
     isError: isVmsError,
   } = useAllVmsFromDisk(disk?.id, toTableItemPredicateVMs);
-  
   function toTableItemPredicateVMs(vm) { 
     return {
       name: vm?.name ?? '없음',  // 가상머신 이름
@@ -148,7 +134,29 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
       uptime: vm?.uptime ?? '알 수 없음',  // 가상머신 업타임
     };
   }
-  
+
+  // 스토리지(????정보안뜸)
+  const { 
+    data: storageDomains, 
+    status: storageDomainsStatus, 
+    isLoading: isStorageDomainsLoading, 
+    isError: isStorageDomainsError,
+  } = useAllStorageDomainFromDisk(disk?.id, toTableItemPredicateStorage);
+  function toTableItemPredicateStorage(storageDomain) { 
+    return {
+      icon1: '',
+      icon2: '',
+      name: storageDomain?.name ?? '없음',
+      domainType: storageDomain?.domainType ?? '없음',
+      status: storageDomain?.status ?? '알 수 없음',
+      freeSpace: storageDomain?.freeSpace ? `${(storageDomain.freeSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
+      usedSpace: storageDomain?.usedSpace ? `${(storageDomain.usedSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
+      totalSpace: storageDomain?.totalSpace ? `${(storageDomain.totalSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
+      description: storageDomain?.description ?? '없음',
+    };
+  }
+    
+    const pathData = [disk?.alias, sections.find((section) => section.id === activeTab)?.label]; 
 
 
 
@@ -208,7 +216,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
             </div>
           )}
 
-          {activeTab === 'machine' && (
+          {activeTab === 'vms' && (
            
               <PagingTableOuter 
                 columns={TableColumnsInfo.VMS_FROM_DISK} 
@@ -219,10 +227,10 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
            
           )}
 
-          {activeTab === 'storage' && (
+          {activeTab === 'storagdDomains' && (
               <PagingTableOuter 
                 columns={TableColumnsInfo.STORAGES_FROM_DISK} 
-                data={storageData}
+                data={storageDomains}
                 onRowClick={() => console.log('Row clicked')} 
                 showSearchBox={false}
               />

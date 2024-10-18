@@ -186,7 +186,7 @@ const ENDPOINTS = {
   ADD_STORAGE_DOMAIN: () => `/api/v1/storages/domains`,
   EDIT_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
   DELETE_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
-  DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destory`,
+  DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destory`, 
   IMPORT_STORAGE_DOMAIN: () => `/api/v1/storages/domains/import`,
   //endregion: StorageDomain
 
