@@ -61,30 +61,34 @@ const MainOuter = ({ children }) => {
 
   const [isThirdVisibleNetwork, setIsThirdVisibleNetwork] = useState(false); // 3단계 열림/닫힘 상태
   const [isFourthVisibleNetwork, setIsFourthVisibleNetwork] = useState(false); // 4단계 열림/닫힘 상태
-
-  // URL에 따라 맞는 div 색칠하기
   const [selectedDiv, setSelectedDiv] = useState(null);
-  const [selectedSection, setSelectedSection] = useState(null);
-//   useEffect(() => {
-//     const path = location.pathname;
-//     if (path.startsWith('/storages/domains')) {
-//       const domainId = path.split('/').pop(); // URL에서 도메인 ID 추출
-//       setSelectedDiv(domainId); // 해당 도메인 ID를 selectedDiv로 설정
-//       setSelectedSection('storage'); // 스토리지 섹션 선택
-//     } else if (path.startsWith('/computing/vms')) {
-//       const vmId = path.split('/').pop(); // URL에서 가상머신 ID 추출
-//       setSelectedDiv(vmId); // 해당 VM ID를 selectedDiv로 설정
-//       setSelectedSection('computing'); // 컴퓨팅 섹션 선택
-//     } else if (path.startsWith('/networks')) {
-//       const networkId = path.split('/').pop(); // URL에서 네트워크 ID 추출
-//       setSelectedDiv(networkId); // 해당 네트워크 ID를 selectedDiv로 설정
-//       setSelectedSection('network'); // 네트워크 섹션 선택
-//     } else {
-//       setSelectedDiv(null);
-//       setSelectedSection(null);
-//     }
-//   }, [location]);
-
+    // url에 따라 맞는버튼 색칠
+    useEffect(() => {
+        const path = location.pathname;
+        
+        if (path.includes('/computing')) {
+          handleClick('computing');  // /computing이 들어가 있을 때
+        } else if (path.includes('/networks')) {
+          handleClick('network');    // /networks가 들어가 있을 때
+        } else if (path.includes('/storages')) {
+          handleClick('storage');    // /storages가 들어가 있을 때
+        } else if (path.includes('/events')) {
+          handleClick('event');      // /events가 들어가 있을 때
+        } else if (path.includes('/settings')) {
+          handleClick('setting');    // /settings가 들어가 있을 때
+        } else {
+          handleClick('dashboard');  // 기본적으로 dashboard로 설정
+        }
+      }, [location.pathname]);
+      
+      useEffect(() => {
+        const path = location.pathname;
+        const pathParts = path.split('/'); // 경로를 "/"로 나누기
+        const lastId = pathParts[pathParts.length - 1]; // 마지막 부분이 ID
+    
+        // ID에 따라 적절한 항목을 선택 및 강조
+        setSelectedDiv(lastId);
+      }, [location.pathname]);
 // 클러스터(컴퓨팅)api
 const { 
     data: navClusters,          
@@ -117,7 +121,8 @@ const {
     error: navStorageDomainsError,    
     isLoading: isNavStorageDomainsLoading,
   } = useAllTreeNavigations('storagedomain');
-  
+
+
   useEffect(() => {
     const fetchData = async () => {
        try {
@@ -157,54 +162,6 @@ const {
   
 
 
-      
-      
-// useEffect(() => {
-//   const path = location.pathname;
-//   const pathParts = path.split('/');
-
-//   // 사용자가 직접 버튼을 클릭했을 때에는 경로 분석을 건너뛰기 위한 변수
-//   const manuallySetSelected = localStorage.getItem('manuallySetSelected');
-
-//   // 사용자가 직접 선택하지 않은 경우에만 location에 따라 selected 상태 설정
-//   if (!manuallySetSelected) {
-//     if (path.includes('/rutil-manager')) {
-//       setSelected('computing'); // 컴퓨팅 섹션 선택
-//       setSelectedDiv('rutil-manager'); // rutil-manager로 selectedDiv 설정
-//     } else if (path.includes('/datacenters')) {
-//       const dataCenterId = pathParts[pathParts.length - 1];
-//       setSelected('computing'); // 클러스터 섹션 선택
-//       setSelectedDiv(dataCenterId); // 데이터센터 ID 저장
-//     } else if (path.includes('/clusters')) {
-//       const clusterId = pathParts[pathParts.length - 1];
-//       setSelected('computing');
-//       setSelectedDiv(clusterId); 
-//     } else if (path.includes('/host')) {
-//       const hostId = pathParts[pathParts.length - 1];
-//       setSelected('computing');
-//       setSelectedDiv(hostId);
-//     } else if (path.includes('/networks')) {
-//       setSelected('network');
-//       setSelectedDiv(null);
-//     } else if (path.includes('/storage')) {
-//       setSelected('storage');
-//       setSelectedDiv(null);
-//     } else if (path.includes('/events')) {
-//       setSelected('event');
-//     } else if (path.includes('/settings')) {
-//       setSelected('setting');
-//     } else {
-//       setSelected('dashboard');
-//     }
-//   }
-
-//   // manuallySetSelected는 한 번 설정 후 삭제
-//   localStorage.removeItem('manuallySetSelected');
-// }, [location.pathname]);
-
-
-
-
 
   
   
@@ -214,26 +171,6 @@ const {
     adjustFontSize();
     return () => { window.removeEventListener('resize', adjustFontSize); };
   }, []);
-
-    // 네트워크 섹션에서 사용하는 것과 유사한 로직으로 편집
-    // useEffect(() => {
-    //     const pathParts = location.pathname.split('/');
-    //     const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
-
-    //     if (location.pathname.includes('/storages/disks')) {
-    //         setSelected('storage');
-    //         setSelectedDiv(null); 
-    //         setSelectedDisk(lastPart);
-    //     } else if (location.pathname.includes('/storage-domain/:id')) {
-    //         setSelected('storage');
-    //         setSelectedDiv('storage_domain');
-    //         setSelectedDisk(null); 
-    //     } else if (location.pathname.includes('/storage')) {
-    //         setSelected('storage');
-    //         setSelectedDiv('data_centerdd');  
-    //         setSelectedDisk(null); 
-    //     }
-    // }, [location]);
 
     const handleDetailClickStorage = (diskName) => {
         if (selectedDisk !== diskName) {
@@ -266,7 +203,7 @@ const {
   const renderAsidePopup = (selected) => {
     return (
       <>
-        {/*가상머신*/} 
+        {/*가상머신 섹션*/} 
         {selected === 'computing' && (
   <div id="virtual_machine_chart">
       {/* 첫 번째 레벨 (Rutil Manager) */}
@@ -747,30 +684,30 @@ useEffect(() => {
     };
     
     // 스토리지
-    const handleFirstDivClickStorage = () => {
-        if (selectedDiv !== 'data_center') {
-            setSelectedDiv('data_center');
-            setSelectedDisk(null);
-            navigate('/storage');
-        }
-    };
-    const handleMouseEnter = (target) => {
-        setHoverTarget(target);
-    };
+    // const handleFirstDivClickStorage = () => {
+    //     if (selectedDiv !== 'data_center') {
+    //         setSelectedDiv('data_center');
+    //         setSelectedDisk(null);
+    //         navigate('/storage');
+    //     }
+    // };
+    // const handleMouseEnter = (target) => {
+    //     setHoverTarget(target);
+    // };
 
-    const handleMouseLeave = () => {
-        setHoverTarget(null);
-    };
+    // const handleMouseLeave = () => {
+    //     setHoverTarget(null);
+    // };
 
-    const handleContextMenu = (event, target) => {
-        event.preventDefault();
-        setContextMenuPosition({ x: event.clientX, y: event.clientY });
-        setContextMenuVisible(true);
-        setContextMenuTarget(target);
-    };
-    const handleSettingNavClick = (form) => {
-        setActiveSettingForm(form);
-    };
+    // const handleContextMenu = (event, target) => {
+    //     event.preventDefault();
+    //     setContextMenuPosition({ x: event.clientX, y: event.clientY });
+    //     setContextMenuVisible(true);
+    //     setContextMenuTarget(target);
+    // };
+    // const handleSettingNavClick = (form) => {
+    //     setActiveSettingForm(form);
+    // };
     // const handleUserIconClick = (name) => {
     //     navigate(`/computing/hosts/${name}`);
     //     setSelectedDiv(name);
@@ -794,6 +731,7 @@ useEffect(() => {
         <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
             <div id="aside">
                 <div id="nav">
+                    {/*대시보드버튼 */}
                     <Link to='/' className="link-no-underline">
                         <div
                             id="aside_popup_dashboard_btn"
@@ -804,6 +742,7 @@ useEffect(() => {
                             <FontAwesomeIcon icon={faThLarge} fixedWidth/>
                         </div>
                     </Link>
+                    {/*가상머신 버튼 */}
                     <Link to='/computing/vms' className="link-no-underline">
                         <div
                             id="aside_popup_machine_btn"
@@ -817,6 +756,7 @@ useEffect(() => {
                             <FontAwesomeIcon icon={faDesktop} fixedWidth/>
                         </div>
                     </Link>
+                    {/*네트워크 버튼 */}
                     <Link to='/networks' className="link-no-underline">
                         <div
                             id="aside_popup_network_btn"
@@ -830,6 +770,7 @@ useEffect(() => {
                         <FontAwesomeIcon icon={faServer} fixedWidth/>
                         </div>
                     </Link>
+                    {/*스토리지 버튼 */}
                     <Link to='/storages/domains' className="link-no-underline">
                         <div
                             id="aside_popup_storage_btn"
@@ -843,6 +784,7 @@ useEffect(() => {
                         <FontAwesomeIcon icon={faDatabase} fixedWidth/>
                         </div>
                     </Link>
+                    {/*이벤트 버튼 */}
                     <Link to='/events' className="link-no-underline">
                         <div
                             id="aside_popup_storage_btn"

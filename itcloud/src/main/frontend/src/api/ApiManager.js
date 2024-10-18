@@ -2069,7 +2069,7 @@ const ApiManager = {
    * 
    * @returns 
    **/
-  findAllEvents: async () => makeAPICall({
+  findAllEvent: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_EVENTS(),
     defaultValues: DEFAULT_VALUES.FIND_ALL_EVENTS
