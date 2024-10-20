@@ -5,15 +5,6 @@ import './Table.css';
 const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = [],onContextMenuItems = false }) => {
   const [selectedRowIndex, setSelectedRowIndex] = useState(null); // 선택된 행의 인덱스를 관리
   const [tooltips, setTooltips] = useState({}); // 툴팁 상태 관리
-<<<<<<< HEAD
-  const tableRef = useRef(null); // 테이블을 참조하는 ref 생성
-  
-  // 테이블 외부 클릭 시 선택된 행 초기화
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (tableRef.current && !tableRef.current.contains(event.target)) {
-        setSelectedRowIndex(null); // 테이블 외부 클릭 시 선택된 행 초기화
-=======
   const tableRef = useRef(null); 
   const [contextRowIndex, setContextRowIndex] = useState(null); // 우클릭한 행의 인덱스 관리
  
@@ -45,7 +36,6 @@ useEffect(() => {
     ) {
       if (contextRowIndex !== selectedRowIndex) {
         setSelectedRowIndex(null); 
->>>>>>> 5f2ccfe8 ([fix]우클릭박스,테이블수정)
       }
     }
   };
