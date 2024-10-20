@@ -66,41 +66,32 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    textAlign: (typeof row[column.accessor] === 'string' || typeof row[column.accessor] === 'number') 
-                      ? 'left' 
-                      : 'center', // 체크박스 및 이모티콘 같은 요소는 가운데 정렬
-                    verticalAlign: 'middle', // 수직 가운데 정렬
+                    textAlign: typeof row[column.accessor] === 'object' ? 'center' : 'left',
                     cursor: clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
-                    color: clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit',
+                    color: clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit', // 클릭 가능한 컬럼일 때 파란색으로 강조
                     fontWeight: clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
+                    textDecoration: clickableColumnIndex.includes(colIndex) ? 'none' : 'none' // 기본적으로 밑줄 없음
                   }}
                   onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])}
                   onClick={(e) => {
                     if (clickableColumnIndex.includes(colIndex)) {
                       e.stopPropagation();
-                      onRowClick(row, column, colIndex);
+                      onRowClick(row, column);
                     }
                   }}
                   onMouseOver={(e) => {
                     if (clickableColumnIndex.includes(colIndex)) {
-                      e.target.style.textDecoration = 'underline';
+                      e.target.style.textDecoration = 'underline'; // 마우스를 올렸을 때 밑줄 추가
                     }
                   }}
                   onMouseOut={(e) => {
                     if (clickableColumnIndex.includes(colIndex)) {
-                      e.target.style.textDecoration = 'none';
+                      e.target.style.textDecoration = 'none'; // 마우스가 벗어나면 밑줄 제거
                     }
                   }}
                 >
-                  {typeof row[column.accessor] === 'object' ? (
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                      {row[column.accessor]} {/* 체크박스와 같은 요소는 flex로 가운데 정렬 */}
-                    </div>
-                  ) : (
-                    row[column.accessor] // 텍스트나 숫자는 그대로 출력
-                  )}
+                  {row[column.accessor]}
                 </td>
-                
                 
                 ))}
               </tr>

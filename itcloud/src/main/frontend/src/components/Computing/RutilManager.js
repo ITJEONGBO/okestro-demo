@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
-import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBuilding, faTimes, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import './css/RutilManager.css';
 import Path from '../Header/Path';
-import Table from '../table/Table';
-import TableOuter from '../table/TableOuter';
-import TableColumnsInfo from '../table/TableColumnsInfo';
+import TablesOuter from '../table/TablesOuter';
+import TableInfo from '../table/TableInfo';
 import DataCenterModal from '../Modal/DataCenterModal';
 import ClusterModal from '../Modal/ClusterModal';
 import TemplateDu from '../duplication/TemplateDu';
@@ -122,9 +120,6 @@ function RutilManager() {
         localStorage.setItem('activeTab', tab);
     };
     
-    // const handleRowClick = (row, column) => {
-    //     if (column.accessor === 'name') navigate(`/computing/datacenters/${row.id}`);
-    // };
     const handleRowClick = (row) => {
         setSelectedId(row.id);  // 클릭된 Row의 ID 저장
         setSelectedRow(row);     // 클릭된 Row 전체 저장
@@ -247,8 +242,8 @@ function RutilManager() {
                             <div>
                                 <text>{selectedId ? `선택된 ID: ${selectedId}` : '선택된 데이터 센터가 없습니다'}</text>
                             </div>
-                            <TableOuter 
-                                columns={TableColumnsInfo.DATACENTERS} 
+                            <TablesOuter 
+                                columns={TableInfo.DATACENTERS} 
                                 data={allDataCenters} 
                                 onRowClick={handleRowClick} // Row 클릭 시 ID 및 Row 데이터 저장
                             />
@@ -268,18 +263,19 @@ function RutilManager() {
                                 <button onClick={() => openCreatePopup('cluster')}>클러스터 생성</button>
                                 <button onClick={() => openEditPopup('cluster')}>편집</button>
                                 <button>삭제</button>
-                                <ClusterModal
-                                    isOpen={isModalOpen}
-                                    onRequestClose={closePopup}
-                                    onSubmit={handleSubmit}
-                                    editMode={editMode}          // editMode 전달
-                                    data={modalData}             // 편집할 데이터 전달
-                                />
+                                
                             </div>
-                            <TableOuter 
-                                columns={TableColumnsInfo.CLUSTERS_DATA} 
+                            <TablesOuter 
+                                columns={TableInfo.CLUSTERS} 
                                 data={allClusters} 
                                 onRowClick={handleRowClick} 
+                                />
+                            <ClusterModal
+                                isOpen={isModalOpen}
+                                onRequestClose={closePopup}
+                                onSubmit={handleSubmit}
+                                editMode={editMode}          // editMode 전달
+                                data={modalData}             // 편집할 데이터 전달
                             />
                         </>
                     )}
@@ -287,15 +283,15 @@ function RutilManager() {
                     {activeTab === 'host' && (
                         <HostDu 
                             data={allHosts} 
-                            columns={TableColumnsInfo.HOSTS_ALL_DATA} 
+                            columns={TableInfo.HOSTS_ALL_DATA} 
                             handleRowClick={handleRowClick} 
                         />
                     )}
 
                     {activeTab === 'virtual_machine' && (
                         <>
-                            <TableOuter 
-                                columns={TableColumnsInfo.VMS} 
+                            <TablesOuter 
+                                columns={TableInfo.VMS} 
                                 data={allVMs} 
                                 onRowClick={handleRowClick} 
                             />
@@ -305,7 +301,7 @@ function RutilManager() {
                     {activeTab === 'template' && (
                         <TemplateDu 
                             data={allTemplates} 
-                            columns={TableColumnsInfo.TEMPLATE_CHART} 
+                            columns={TableInfo.TEMPLATE_CHART} 
                             handleRowClick={handleRowClick} 
                         />
                     )}
@@ -325,8 +321,8 @@ function RutilManager() {
                                     )}
                                 </button>
                             </div>
-                            <TableOuter 
-                                columns={TableColumnsInfo.STORAGE_DOMAINS} 
+                            <TablesOuter 
+                                columns={TableInfo.STORAGE_DOMAINS} 
                                 data={allStorageDomains} 
                                 onRowClick={handleRowClick}
                             />
@@ -356,16 +352,16 @@ function RutilManager() {
                             </div>
 
                             {activeDiskType === 'all' && 
-                                <TableOuter 
-                                    columns={TableColumnsInfo.ALL_DISK} 
+                                <TablesOuter 
+                                    columns={TableInfo.ALL_DISK} 
                                     data={allDisks} 
                                     onRowClick={handleRowClick} 
                                     showSearchBox={true} 
                                 />
                             }
                             {activeDiskType === 'image' && 
-                                <TableOuter 
-                                    columns={TableColumnsInfo.IMG_DISK} 
+                                <TablesOuter 
+                                    columns={TableInfo.IMG_DISK} 
                                     data={allDisks} 
                                     onRowClick={handleRowClick} 
                                     showSearchBox={true} 
@@ -376,8 +372,8 @@ function RutilManager() {
 
                     {activeTab === 'network' && (
                         <>
-                            <TableOuter 
-                                columns={TableColumnsInfo.NETWORKS} 
+                            <TablesOuter 
+                                columns={TableInfo.NETWORKS} 
                                 data={allNetworks} 
                                 onRowClick={handleRowClick} 
                             />
@@ -386,8 +382,8 @@ function RutilManager() {
 
                     {activeTab === 'vnic_profile' && (
                         <>
-                            <TableOuter 
-                                columns={TableColumnsInfo.VNIC_PROFILES} 
+                            <TablesOuter 
+                                columns={TableInfo.VNIC_PROFILES} 
                                 data={allVnicProfiles} 
                                 onRowClick={handleRowClick} 
                             />
