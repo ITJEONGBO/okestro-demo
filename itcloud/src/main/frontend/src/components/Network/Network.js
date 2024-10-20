@@ -101,6 +101,11 @@ const Network = () => {
                     data={networkdata} 
                     onRowClick={handleNetworkNameClick} 
                     clickableColumnIndex={[0,2]} 
+                    onContextMenuItems={(rowData) => [
+                        <div key="1" onClick={() => openPopup('newNetwork')}>1</div>,
+                        <div key="2" onClick={() => console.log('2번 클릭', rowData)}>2</div>,
+                        <div key="3" onClick={() => console.log('3번 클릭', rowData)}>3</div>
+                      ]}
                   />
                 
             </div>

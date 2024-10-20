@@ -102,3 +102,6 @@
   cursor: pointer;
   font-size: 0.3rem;
 }
+.Contextbox>div{
+  padding:0.2rem;
+}

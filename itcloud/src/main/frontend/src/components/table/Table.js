@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip'; // react-tooltip의 Tooltip 컴포넌트 사용
 import './Table.css';
 
-const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = [] }) => {
+const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = [],onContextMenuItems = false }) => {
   const [selectedRowIndex, setSelectedRowIndex] = useState(null); // 선택된 행의 인덱스를 관리
   const [tooltips, setTooltips] = useState({}); // 툴팁 상태 관리
+<<<<<<< HEAD
   const tableRef = useRef(null); // 테이블을 참조하는 ref 생성
   
   // 테이블 외부 클릭 시 선택된 행 초기화
@@ -12,18 +13,53 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
     const handleClickOutside = (event) => {
       if (tableRef.current && !tableRef.current.contains(event.target)) {
         setSelectedRowIndex(null); // 테이블 외부 클릭 시 선택된 행 초기화
+=======
+  const tableRef = useRef(null); 
+  const [contextRowIndex, setContextRowIndex] = useState(null); // 우클릭한 행의 인덱스 관리
+ 
+  //우클릭메뉴 위치
+  const [contextMenu, setContextMenu] = useState(null);
+  const handleContextMenu = (e, rowIndex) => {
+    e.preventDefault();
+    const rowData = data[rowIndex];
+    if (onContextMenuItems) {
+      const menuItems = onContextMenuItems(rowData);
+      setContextMenu({
+        mouseX: e.clientX - 240,
+        mouseY: e.clientY - 40,
+        menuItems,
+      });
+    }
+    setContextRowIndex(rowIndex);
+    setSelectedRowIndex(null);   
+  };
+  
+  
+// 테이블 외부 클릭 시 선택된 행 초기화, 단 메뉴 박스를 제외
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      tableRef.current && 
+      !tableRef.current.contains(event.target) && 
+      (!menuRef.current || !menuRef.current.contains(event.target))  // 메뉴 박스를 제외
+    ) {
+      if (contextRowIndex !== selectedRowIndex) {
+        setSelectedRowIndex(null); 
+>>>>>>> 5f2ccfe8 ([fix]우클릭박스,테이블수정)
       }
-    };
+    }
+  };
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [contextRowIndex, selectedRowIndex]);
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
+
+  // 툴팁
   const handleMouseEnter = (e, rowIndex, colIndex, content) => {
     const element = e.target;
-    // 텍스트가 잘려서 overflow가 발생한 경우에만 툴팁을 설정
     if (element.scrollWidth > element.clientWidth) {
       setTooltips((prevTooltips) => ({
         ...prevTooltips,
@@ -36,6 +72,22 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
       }));
     }
   };
+
+// 우클릭메뉴 외부를 클릭했을 때만 닫기 + 배경색 초기화
+const menuRef = useRef(null);
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setContextMenu(null);
+      setContextRowIndex(null); // 우클릭된 행의 배경색 초기화
+    }
+  };
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
+
 
   return (
     <>
@@ -50,12 +102,21 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
           </thead>
           <tbody>
             {data && data.map((row, rowIndex) => (
-              <tr key={rowIndex}
-                onClick={() => setSelectedRowIndex(rowIndex)} // 클릭한 행의 인덱스를 상태에 저장
+              <tr
+                key={rowIndex}
+                onClick={() => {
+                  setSelectedRowIndex(rowIndex);
+                  setContextRowIndex(null); // 다른 우클릭된 행을 초기화
+                }}
+                onContextMenu={(e) => handleContextMenu(e, rowIndex)}  // 우클릭 시 메뉴 표시
                 style={{
-                  backgroundColor: selectedRowIndex === rowIndex ? 'rgb(218, 236, 245)' : 'transparent', // 선택된 행의 배경색을 변경
+                  backgroundColor: selectedRowIndex === rowIndex || contextRowIndex === rowIndex
+                    ? 'rgb(218, 236, 245)' // 선택된 행과 우클릭된 행만 색칠
+                    : 'transparent', // 나머지는 초기화
                 }}
               >
+
+
                 {columns.map((column, colIndex) => (
                   <td
                   key={colIndex}
@@ -108,6 +169,28 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
           </tbody>
         </table>
       </div>
+      {/* 우클릭 메뉴 박스 */}
+      {contextMenu && (
+        <div ref={menuRef}
+          style={{
+            position: 'absolute',
+            top: `${contextMenu.mouseY}px`,
+            left: `${contextMenu.mouseX}px`,
+            minWidth: '8%',
+            fontSize: '0.3rem',
+            backgroundColor: 'white',
+            border: '1px solid #eaeaea',
+            padding: '10px',
+            zIndex: 3
+          }}
+  
+        >
+          {contextMenu.menuItems.map((item, index) => (
+            <div key={index}>{item}</div>
+          ))} 
+          
+        </div>
+      )}  
       {/* 각 셀에 대한 Tooltip 컴포넌트 */}
       {data && data.map((row, rowIndex) =>
         columns.map((column, colIndex) => (

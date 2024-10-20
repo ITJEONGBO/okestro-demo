@@ -366,7 +366,9 @@ useEffect(() => {
           <TableOuter
             columns={TableColumnsInfo.VNIC_PROFILES} 
             data={vnicProfiles}
-            onRowClick={() => console.log('Row clicked')} 
+            onRowClick={() => {
+              navigate(`/computing/datacenters/${id}`);
+            }}
             clickableColumnIndex={[2]} 
           />
        </>
@@ -379,13 +381,15 @@ useEffect(() => {
             </div>
           
             <TableOuter
-              columns={TableColumnsInfo.CLUSTERS} 
-              data={clusters} 
+              columns={TableColumnsInfo.CLUSTERS}
+              data={clusters}
               onRowClick={() => {
                 navigate(`/computing/datacenters/${id}`);
               }}
-              clickableColumnIndex={[0]} 
+              clickableColumnIndex={[0]}
+              onContextMenuItems={() => ['1', '2', '3']}  // 간결하게 1, 2, 3 반환
             />
+
                 
        </>
         )}
