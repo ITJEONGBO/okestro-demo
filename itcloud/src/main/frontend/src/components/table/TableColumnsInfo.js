@@ -69,7 +69,7 @@ const TableColumnsInfo = {
     { header: '설명', accessor: 'description', clickable: false }
   ],
   LUN_SIMPLE: [
-    { header: '이름', accessor: 'logicalName' },
+    { header: '이름', accessor: 'name' },
     { header: '설명', accessor: 'description' },
   ],
   STORAGE_DOMAINS: [
@@ -317,9 +317,9 @@ const TableColumnsInfo = {
     { header: '호스트', accessor: 'host', clickable: true },
     { header: 'IP주소', accessor: 'ipv4', clickable: false },
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: true },
+    { header: '클러스터', accessor: 'clusterVo', clickable: true },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '데이터센터', accessor: 'datacenter', clickable: true },
+    { header: '데이터센터', accessor: 'dataCenterVo', clickable: true },
     { header: '메모리', accessor: 'memory', clickable: false },
     { header: 'CPU', accessor: 'cpu', clickable: false },
     { header: '네트워크', accessor: 'network', clickable: false },
@@ -444,6 +444,7 @@ const TableColumnsInfo = {
   ],
 
   EVENTS: [
+    // { header: 'id', accessor: 'id', clickable: false },
     { header: '알림', accessor: 'point', clickable: false },
     { header: '시간', accessor: 'time', clickable: false },
     { header: '메세지', accessor: 'description', clickable: false },

@@ -381,8 +381,12 @@ useEffect(() => {
             <TableOuter
               columns={TableColumnsInfo.CLUSTERS} 
               data={clusters} 
-              onRowClick={() => console.log('Row clicked')}
+              onRowClick={() => {
+                navigate(`/computing/datacenters/${id}`);
+              }}
+              clickableColumnIndex={[0]} 
             />
+                
        </>
         )}
         
@@ -409,7 +413,15 @@ useEffect(() => {
               <TableOuter
                 columns={TableColumnsInfo.HOSTS}
                 data={hosts}
-                onRowClick={() => console.log('Row clicked')}
+                onRowClick={(row, column, colIndex) => {
+                  if (colIndex === 1) {
+                    navigate(`/computing/hosts/${id}`);  // 1번 컬럼 클릭 시 이동할 경로
+                  } else if (colIndex === 2) {
+                    navigate(`/computing/clusters/${id}`);  // 2번 컬럼 클릭 시 이동할 경로
+                  } else if (colIndex === 3) {
+                    navigate(`/computing/datacenters/${id}`);  // 3번 컬럼 클릭 시 이동할 경로
+                  }
+                }}
                 clickableColumnIndex={[1,2,3]} 
               />
             )}

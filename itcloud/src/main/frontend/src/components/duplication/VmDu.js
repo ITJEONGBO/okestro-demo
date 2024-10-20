@@ -40,9 +40,9 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
     host: vm?.host?.name ?? '없음',
     ipv4: vm?.ipv4 ?? '알 수 없음',
     fqdn: vm?.fqdn ?? '알 수 없음',
-    cluster: vm?.cluster?.name ?? '알 수 없음',
+    clusterVo: vm?.clusterVo?.name ?? '알 수 없음',
     status: vm?.status ?? '알 수 없음',
-    datacenter: vm?.dataCenter?.name ?? '알 수 없음',
+    dataCenterVo: vm?.dataCenterVo?.name ?? '알 수 없음',
     memory: vm?.memory ? `${vm.memory} MiB` : '알 수 없음',
     cpu: vm?.cpu ? `${vm.cpu} cores` : '알 수 없음',
     network: vm?.network ?? '알 수 없음',
@@ -66,7 +66,6 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
     setSelectedModalTab('common'); 
     setIsModalOpen(true);
   };
-
   const closeModal = () => {
     setIsModalOpen(false);
     setActivePopup(null);

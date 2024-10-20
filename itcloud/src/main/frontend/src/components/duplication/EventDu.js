@@ -2,6 +2,8 @@ import React from 'react';
 import PagingTableOuter from '../table/PagingTableOuter';
 
 const EventDu = ({ columns, data, handleRowClick,showSearchBox = true  }) => {
+  
+  
   return (
     <div className="host_empty_outer">
       <PagingTableOuter

@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenter.css';
 import TableOuter from '../table/TableOuter';
-import { useClustersFromDataCenter, useDataCenter, useDomainsFromDataCenter, useHostsFromDataCenter, useNetworkById, useVMsFromDataCenter } from '../../api/RQHook';
+import { useClustersFromDataCenter, useDataCenter, useDomainsFromDataCenter, useEventsFromDataCenter, useHostsFromDataCenter, useNetworkById, useNetworksFromDataCenter, useVMsFromDataCenter } from '../../api/RQHook';
 import Path from '../Header/Path';
 import HostDu from '../duplication/HostDu';
 import VmDu from '../duplication/VmDu';
@@ -78,15 +78,10 @@ useEffect(() => {
     setInputName(event.target.value); // input의 값을 상태로 업데이트
   };
 
+  // 안씀
   const handleRowClick = (row, column) => {
-    if (column.accessor === 'domainName') {
-      navigate(`/storage-domain/${row.domainName.props.children}`);  
-    }
-    if (column.accessor === 'logicalName') {
-      navigate(`/network/${row.logicalName.props.children}`); 
-    }
-    if (column.accessor === 'clusterName') {
-      navigate(`/computing/cluster/${row.clusterName.props.children}`); 
+    if (column.accessor === 'id') {
+      navigate(`/networks/${row.id}`);  // row에서 id를 사용하여 경로로 이동
     }
   };
 
@@ -160,7 +155,7 @@ useEffect(() => {
       status: domainsStatus, 
       isLoading: isDomainsLoading, 
       isError: isDomainsError 
-    } = useDomainsFromDataCenter(dataCenter?.id, toTableItemPredicateDomains);
+    } = useNetworksFromDataCenter(dataCenter?.id, toTableItemPredicateDomains);
     
     function toTableItemPredicateDomains(domain) {
       return {
@@ -175,7 +170,38 @@ useEffect(() => {
         description: domain?.description ?? '설명 없음', // 설명
       };
     }
-
+    // 논리네트워크
+    const { 
+      data: networks, 
+      status: networksStatus, 
+      isLoading: isNetworksLoading, 
+      isError: isNetworksError 
+    } = useNetworksFromDataCenter(dataCenter?.id, toTableItemPredicateNetworks);
+    
+    function toTableItemPredicateNetworks(network) {
+      return {
+        name: network?.name ?? '없음', // 네트워크 이름을 logicalName으로 매핑
+        description: network?.description ?? '설명 없음', // 네트워크 설명
+      };
+    }
+  // 이벤트
+  const { 
+    data: events, 
+    status: eventsStatus, 
+    isLoading: isEventsLoading, 
+    isError: isEventsError 
+  } = useEventsFromDataCenter(dataCenter?.id, toTableItemPredicateEvents);
+  function toTableItemPredicateEvents(event) {
+    return {
+      // id: event?.id ?? '', 
+      icon: '',                      
+      time: event?.time ?? '',                
+      description: event?.description ?? 'No message', 
+      correlationId: event?.correlationId ?? '',
+      source: event?.source ?? 'ovirt',     
+      userEventId: event?.userEventId ?? '',   
+    };
+  }
 
   // Nav 컴포넌트
   const sections = [
@@ -212,34 +238,6 @@ useEffect(() => {
       usedSpace: '16 GiB',
       totalSpace: '99 GiB',
       description: '',
-    },
-  ];
-
-  const logicaldata = [
-    {
-      logicalName: (
-        <span
-          style={{ color: 'blue', cursor: 'pointer'}}
-          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-        >
-        ovirtmgmt
-        </span>
-      ),
-      description: 'Management Network'
-    },
-  ];
-
- 
-  const permissionData = [
-    {
-      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
-      user: 'ovirtmgmt',
-      authProvider: '',
-      namespace: '*',
-      role: 'SuperUser',
-      createdDate: '2023.12.29 AM 11:40:58',
-      inheritedFrom: '(시스템)',
     },
   ];
 
@@ -372,15 +370,18 @@ useEffect(() => {
               </div>
               <TableOuter 
                 columns={TableColumnsInfo.LUN_SIMPLE}
-                data={logicaldata}
-                onRowClick={handleRowClick} 
+                data={networks}
+                onRowClick={() => {
+                  navigate(`/networks/${id}`);
+                }}
+                clickableColumnIndex={[0]} 
               />
             </>
           )}
             {activeTab === 'events' && (
               <EventDu 
                 columns={TableColumnsInfo.EVENTS}
-                data={eventData}
+                data={events}
                 handleRowClick={() => console.log('Row clicked')}
               />
         
@@ -388,10 +389,10 @@ useEffect(() => {
 
           
           {/*삭제예정 */}      
-          {activeTab === 'permission' && (
+          {/* {activeTab === 'permission' && (
             <>
             <div className="content_header_right">
-              <button onClick={() => handleOpenModal('permission')}>추가</button> {/* 추가 버튼 */}
+              <button onClick={() => handleOpenModal('permission')}>추가</button>
               <button>제거</button>
             </div>
             <div className="host_filter_btns">
@@ -417,7 +418,7 @@ useEffect(() => {
               onRowClick={() => console.log('Row clicked')}
              />
           </>
-          )}
+          )} */}
           
 
         </div>

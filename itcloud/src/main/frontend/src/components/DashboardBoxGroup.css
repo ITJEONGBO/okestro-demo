@@ -16,7 +16,7 @@
 }
 .box { 
   width: 16.6%;
-  min-height: 100px;
+
   cursor: pointer;
   display: flex;
   justify-content: center;

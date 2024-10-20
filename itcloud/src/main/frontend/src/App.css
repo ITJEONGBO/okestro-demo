@@ -370,7 +370,7 @@ button{
 .network_new_nav{
     justify-content: space-between;
     border-bottom: 1px solid rgb(206, 206, 206);
-    height: 75vh;
+
     width: 30%;
     background-color: #FAFAFA;
     border-right: 1px solid #ddd;
@@ -446,12 +446,13 @@ button{
 }
 
 .network_new_popup form{
-    height: 69vh;
+    height: 68vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 #network_new_cluster_form{
     padding: 0.2rem 0.4rem;
+    margin-bottom: 0.3rem;
 }
 #network_new_cluster_form>span,#network_new_vnic_form>span{
     font-size: 0.35rem;
@@ -525,7 +526,7 @@ input[type="text"]:focus {
     border-radius: 3px;
     display: flex;
     color: #446dbb;
-    padding: 8px 13px;
+    padding: 0.2rem;
     justify-content: space-between;
     font-size: 0.35rem;
     font-weight: 600;

@@ -46,12 +46,17 @@ const Network = () => {
 
     const handleNetworkNameClick = (row, column) => {
         if (column.accessor === 'name') {
-            navigate(
-              `/networks/${row.id}`, 
-              { state: { name: row.name } }
-            );
+          navigate(
+            `/networks/${row.id}`, 
+            { state: { name: row.name } }
+          );
+        } else if (column.accessor === 'dataCenter') {
+          navigate(
+            `/computing/datacenters/${row.id}`
+          );
         }
-    };
+      };
+      
 
     useEffect(() => {
       window.addEventListener('resize', adjustFontSize);
