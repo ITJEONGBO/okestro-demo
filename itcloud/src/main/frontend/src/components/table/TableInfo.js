@@ -6,7 +6,7 @@ import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
  */
 const TableInfo = {
   DATACENTERS: [
-    { header: '이름', accessor: 'name', clickable: false }, 
+    { header: '이름', accessor: 'name', clickable: true }, 
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '스토리지 유형', accessor: 'storageType', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },

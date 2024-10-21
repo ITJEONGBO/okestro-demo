@@ -4,7 +4,13 @@ import { faEllipsisV, faExchange } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../Input/IconButton';
 import './HeaderButton.css';
 
-const HeaderButton = ({ title, subtitle, buttons, popupItems, titleIcon }) => {
+const HeaderButton = ({ 
+  title, 
+  subtitle, 
+  buttons = [], 
+  popupItems = [], 
+  titleIcon 
+}) => {
   const [isPopupBoxVisible, setIsPopupBoxVisible] = useState(false);
 
   const togglePopupBox = () => setIsPopupBoxVisible(!isPopupBoxVisible);
@@ -42,7 +48,11 @@ const HeaderButton = ({ title, subtitle, buttons, popupItems, titleIcon }) => {
       <div className="section_header_left">
         <div className="section_header_title">
           {titleIcon && (
-            <FontAwesomeIcon icon={titleIcon} className="title_icon" style={{ marginRight: '0.34rem' }} />
+            <FontAwesomeIcon 
+              icon={titleIcon} 
+              className="title_icon" 
+              style={{ marginRight: '0.34rem' }} 
+            />
           )}
           <div>{title}</div>
         </div>

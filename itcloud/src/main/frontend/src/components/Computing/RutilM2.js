@@ -60,7 +60,7 @@ import HostDu from '../duplication/HostDu';
 import Footer from '../footer/Footer';
 import VmDu from '../duplication/VmDu';
 
-function RutilManager() {
+function RutilM2() {
     const { id } = useParams();
 
     const {
@@ -856,7 +856,7 @@ function RutilManager() {
                 </>
             )}
 
-        {/* 데이터 센터 편집 모달 */}
+        {/* 데이터 센터 생성 모달 */}
         <Modal
           isOpen={activePopup === 'datacenter_new'}
           onRequestClose={closePopup}
@@ -4453,4 +4453,4 @@ function RutilManager() {
     );
 }
 
-export default RutilManager;
+export default RutilM2;

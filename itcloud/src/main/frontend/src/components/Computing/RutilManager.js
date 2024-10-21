@@ -4,6 +4,7 @@ import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBuilding, faTimes, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import logo from '../../img/logo.png';
 import './css/RutilManager.css';
 import Path from '../Header/Path';
 import TablesOuter from '../table/TablesOuter';
@@ -13,6 +14,7 @@ import ClusterModal from '../Modal/ClusterModal';
 import TemplateDu from '../duplication/TemplateDu';
 import HostDu from '../duplication/HostDu';
 import Footer from '../footer/Footer';
+import DeleteModal from '../Modal/DeleteModal';
 import { 
     useDashboard, 
     useDashboardCpuMemory, 
@@ -29,7 +31,6 @@ import {
     useAllNetworks, 
     useAllVnicProfiles
 } from '../../api/RQHook';
-import logo from '../../img/logo.png';
 
 function RutilManager() {
     const { id } = useParams();
@@ -52,16 +53,16 @@ function RutilManager() {
     const { data: allDataCenters }= useAllDataCenters((dataCenter) => {
         return {
             ...dataCenter,
-            // storageType: dataCenter.storageType == false ? "공유됨" : '로컬',
+            storageType: dataCenter.storageType == false ? "공유됨" : '로컬',
         };
     });
     const { data: selectedDataCenter } = useDataCenter(selectedId);
-
     const { data: allClusters } = useAllClusters((cluster) => {
         return {
             ...cluster,
         };
     });
+    const { data: selectedCluster } = useCluster(selectedId);
     const { data: allHosts } = useAllHosts((host) => {
         return {
             ...host,
@@ -72,9 +73,9 @@ function RutilManager() {
             ...vm,
             dataCenter: vm.dataCenterVo ? vm.dataCenterVo.name : '',
             dataCenterId: vm.dataCenterVo ? vm.dataCenterVo.id : null,
-            host: vm.hostVo ? vm.hostVo.name : '',  // host 필드에 hostVo.name 매핑
+            hostVo: vm.hostVo ? vm.hostVo.name : '',  // host 필드에 hostVo.name 매핑
             hostVoId: vm.hostVo ? vm.hostVo.id : null, // hostVo.id 값을 별도로 저장
-            cluster: vm.clusterVo ? vm.clusterVo.name : '',
+            clusterVo: vm.clusterVo ? vm.clusterVo.name : '',
             clusterId: vm.clusterVo ? vm.clusterVo.id : null,
             cpu: vm.usageDto ? vm.usageDto.cpuPercent+'%' : 0+'%',
             memory: vm.usageDto ? vm.usageDto.memoryPercent+'%' : 0+'%',
@@ -115,6 +116,10 @@ function RutilManager() {
         };
     });
 
+    useEffect(() => {
+        setActiveTab('general');
+    }, []);
+
     const handleTabClick = (tab) => {
         setActiveTab(tab);
         localStorage.setItem('activeTab', tab);
@@ -133,7 +138,6 @@ function RutilManager() {
     // 모달 관리
     const openCreatePopup = (type) => {
         setEditMode(false);
-        setModalData(null);
         setModalType(type);
         setIsModalOpen(true);
     };
@@ -149,9 +153,9 @@ function RutilManager() {
     };
 
     const openDeletePopup = (type) => {
-        if (selectedId) { // 선택된 ID가 있을 때만 편집 모달을 염
+        if (selectedId) { // 선택된 ID가 있을 때만 삭제 모달을 염
           setModalType(type);
-        //   setIsModalOpen(true);
+          setIsModalOpen(true);
         } else {
           alert('삭제할 데이터를 먼저 선택하세요.');
         }
@@ -166,14 +170,9 @@ function RutilManager() {
 
     const handleSubmit = (requestData) => {
         console.log(editMode ? `편집:` : `생성:`, requestData);
+        
         closePopup();
     };
-
-
-    // HeaderButton 컴포넌트
-    const buttons = [
-    ];
-
 
     // Header와 Sidebar에 쓰일 섹션과 버튼 정보
     const sections = [
@@ -194,15 +193,15 @@ function RutilManager() {
     return (
         <div id="section">
             <HeaderButton
-                titleIcon={faBuilding}
                 title="Rutil Manager"
-                additionalText="목록이름"
-                buttons={buttons}
-                popupItems={[]}
-                uploadOptions={[]}
+                titleIcon={faBuilding}
             />
             <div className="content_outer">
-                <NavButton sections={sections} activeSection={activeTab} handleSectionClick={handleTabClick} />
+                <NavButton 
+                    sections={sections} 
+                    activeSection={activeTab} 
+                    handleSectionClick={handleTabClick} 
+                />
                 <div className="host_btn_outer">
                     {activeTab !== 'general' && <Path pathElements={pathData} />}
 
@@ -215,12 +214,13 @@ function RutilManager() {
                                 </div>
                                 <div>
                                     <div>
-                                        <span>데이터센터: {dashboard?.datacenters ?? 0}</span>
-                                        <span>클러스터: {dashboard?.clusters ?? 0}</span>
-                                        <span>호스트: {dashboard?.hosts ?? 0}</span>
-                                        <span>가상머신: {dashboard?.vmsUp ?? 0} / {dashboard?.vms}</span>
-                                        <span>스토리지 도메인: {dashboard?.storageDomains ?? 0}</span>
+                                        <span>데이터센터: {dashboard?.datacenters ?? 0}</span><br/>
+                                        <span>클러스터: {dashboard?.clusters ?? 0}</span><br/>
+                                        <span>호스트: {dashboard?.hosts ?? 0}</span><br/>
+                                        <span>가상머신: {dashboard?.vmsUp ?? 0} / {dashboard?.vms}</span><br/>
+                                        <span>스토리지 도메인: {dashboard?.storageDomains ?? 0}</span><br/>
                                     </div>
+                                    <br/>
                                     <div>부팅시간(업타임): <strong>2024-**-** 20:15:45</strong></div>
                                 </div>
                             </div>
@@ -246,13 +246,19 @@ function RutilManager() {
                                 columns={TableInfo.DATACENTERS} 
                                 data={allDataCenters} 
                                 onRowClick={handleRowClick} // Row 클릭 시 ID 및 Row 데이터 저장
+                                clickableColumnIndex={[0]}
                             />
-                             <DataCenterModal
+                            <DataCenterModal
                                 isOpen={isModalOpen}
                                 onRequestClose={closePopup}
-                                onSubmit={handleSubmit}
                                 editMode={editMode}
                                 data={selectedDataCenter} // API에서 가져온 데이터 센터 정보 전달
+                            />
+                            <DeleteModal
+                                isOpen={isModalOpen}
+                                contentLabel={"데이터센터"}
+                                onRequestClose={closePopup}                                
+                                data={selectedDataCenter}
                             />
                         </>
                     )}
@@ -262,7 +268,7 @@ function RutilManager() {
                             <div className="header_right_btns">
                                 <button onClick={() => openCreatePopup('cluster')}>클러스터 생성</button>
                                 <button onClick={() => openEditPopup('cluster')}>편집</button>
-                                <button>삭제</button>
+                                <button onClick={() => openDeletePopup('cluster')}>삭제</button>
                                 
                             </div>
                             <TablesOuter 

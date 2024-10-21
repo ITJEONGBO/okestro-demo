@@ -8,7 +8,9 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Permission from '../Modal/Permission';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUser, faCheck,faTimes,
+  faUser, 
+  faCheck,
+  faTimes,
   faInfoCircle,
   faExclamationTriangle,
   faLayerGroup,
@@ -16,7 +18,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenter.css';
 import TableOuter from '../table/TableOuter';
-import { useClustersFromDataCenter, useDataCenter, useDomainsFromDataCenter, useEventsFromDataCenter, useHostsFromDataCenter, useNetworkById, useNetworksFromDataCenter, useVMsFromDataCenter } from '../../api/RQHook';
+import { 
+  useClustersFromDataCenter, 
+  useDataCenter, 
+  useDomainsFromDataCenter, 
+  useEventsFromDataCenter, 
+  useHostsFromDataCenter, 
+  useNetworkById, 
+  useNetworksFromDataCenter, 
+  useVMsFromDataCenter 
+} from '../../api/RQHook';
 import Path from '../Header/Path';
 import HostDu from '../duplication/HostDu';
 import VmDu from '../duplication/VmDu';
@@ -31,8 +42,6 @@ const DataCenterDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('clusters');
-  const [activePermissionFilter, setActivePermissionFilter] = useState('all'); // 권한관련
-
   const [prevPath, setPrevPath] = useState(location.pathname);
   const locationState = location.state  
 
@@ -66,10 +75,6 @@ useEffect(() => {
 
   const handleCloseModal = (type) => {
     setIsModalOpen((prev) => ({ ...prev, [type]: false }));
-  };
-
-  const handlePermissionFilterClick = (filter) => {
-    setActivePermissionFilter(filter);
   };
 
   const [inputName, setInputName] = useState(name); // 데이터 센터 이름 관리 상태
@@ -385,42 +390,7 @@ useEffect(() => {
                 handleRowClick={() => console.log('Row clicked')}
               />
         
-          )}
-
-          
-          {/*삭제예정 */}      
-          {/* {activeTab === 'permission' && (
-            <>
-            <div className="content_header_right">
-              <button onClick={() => handleOpenModal('permission')}>추가</button>
-              <button>제거</button>
-            </div>
-            <div className="host_filter_btns">
-              <span>Permission Filters:</span>
-              <div>
-                <button
-                  className={activePermissionFilter === 'all' ? 'active' : ''}
-                  onClick={() => handlePermissionFilterClick('all')}
-                >
-                  All
-                </button>
-                <button
-                  className={activePermissionFilter === 'direct' ? 'active' : ''}
-                  onClick={() => handlePermissionFilterClick('direct')}
-                >
-                  Direct
-                </button>
-              </div>
-            </div>
-            <TableOuter
-              columns={TableColumnsInfo.PERMISSIONS}
-              data={activePermissionFilter === 'all' ? permissionData : []}
-              onRowClick={() => console.log('Row clicked')}
-             />
-          </>
-          )} */}
-          
-
+          )}          
         </div>
         
       </div>
