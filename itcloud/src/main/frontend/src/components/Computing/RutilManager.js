@@ -237,7 +237,7 @@ function RutilManager() {
                             <div className="header_right_btns">
                                 <button onClick={() => openCreatePopup('datacenter')}>데이터 센터 생성</button>
                                 <button onClick={() => openEditPopup('datacenter')}>편집</button>
-                                <button onClick={() => openDeletePopup('datacenter')}>삭제</button>
+                                <button>삭제</button>
                             </div>
                             <div>
                                 <text>{selectedId ? `선택된 ID: ${selectedId}` : '선택된 데이터 센터가 없습니다'}</text>
@@ -254,12 +254,12 @@ function RutilManager() {
                                 editMode={editMode}
                                 data={selectedDataCenter} // API에서 가져온 데이터 센터 정보 전달
                             />
-                            <DeleteModal
+                            {/* <DeleteModal
                                 isOpen={isModalOpen}
                                 contentLabel={"데이터센터"}
                                 onRequestClose={closePopup}                                
                                 data={selectedDataCenter}
-                            />
+                            /> */}
                         </>
                     )}
 

@@ -253,20 +253,15 @@ export const useEventsFromDataCenter = (dataCenterId, mapPredicate) => useQuery(
  */
 export const useAddDataCenter = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
-  return useMutation(
-    async (dataCenterData) => {
-      const response = await ApiManager.addDataCenter(dataCenterData);
-      return response;
+  return useMutation({
+    mutationFn: async (dataCenterData) => await ApiManager.addDataCenter(dataCenterData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allDataCenters'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('allDataCenters'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
-      },
-      onError: (error) => {
-        console.error('Error adding data center:', error);
-      },
-    }
-  );
+    onError: (error) => {
+      console.error('Error adding data center:', error);
+    },  
+  });
 };
 /**
  * @name useEditDataCenter
@@ -275,22 +270,16 @@ export const useAddDataCenter = () => {
  * @returns useMutation 훅
  */
 export const useEditDataCenter = () => {
-  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
-  return useMutation(
-    async ({ dataCenterId, dataCenterData }) => {
-      const response = await ApiManager.editDataCenter(dataCenterId, dataCenterData);
-      return response;
+  const queryClient = useQueryClient();  
+  return useMutation({
+    mutationFn: async ({ dataCenterId, dataCenterData }) => await ApiManager.editDataCenter(dataCenterId, dataCenterData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allDataCenters');
     },
-    {
-      onSuccess: () => {
-        // 데이터센터 수정 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
-        queryClient.invalidateQueries('allDataCenters');
-      },
-      onError: (error) => {
-        console.error('Error editing data center:', error);
-      },
-    }
-  );
+    onError: (error) => {
+      console.error('Error editing data center:', error);
+    },
+  });
 };
 /**
  * @name useDeleteDataCenter

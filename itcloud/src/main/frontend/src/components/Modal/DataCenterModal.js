@@ -3,6 +3,10 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import HttpMethod from '../HttpMethod';
+import {
+  useAddDataCenter, 
+  useEditDataCenter
+} from '../../api/RQHook'
 
 const DataCenterModal = ({ 
   isOpen, 
@@ -17,6 +21,9 @@ const DataCenterModal = ({
   const [storageType, setStorageType] = useState(false);
   const [version, setVersion] = useState('4.7');
   const [quotaMode, setQuotaMode] = useState('DISABLED');
+
+  const { mutate: addDataCenter } = useAddDataCenter();
+  const { mutate: editDataCenter } = useEditDataCenter();
 
   // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
@@ -54,32 +61,30 @@ const DataCenterModal = ({
     };
   
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
-  
+    
     if (editMode) {
       dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
-  
-      HttpMethod({
-        method: 'put',
-        url: `/api/v1/computing/datacenters/${id}`,
-        data: JSON.stringify(dataToSubmit),  // 데이터를 JSON 형식으로 변환하여 전송
-      })
-      .then(() => {
-        onRequestClose();
-      })
-      .catch((error) => {
-        console.error("Error during form submission:", error);
+      editDataCenter({
+        dataCenterId: id,              // 전달된 id
+        dataCenterData: dataToSubmit   // 수정할 데이터
+      }, {
+        onSuccess: () => {
+          alert("데이터센터 편집 완료(alert기능구현)")
+          onRequestClose();  // 성공 시 모달 닫기
+        },
+        onError: (error) => {
+          console.error('Error editing data center:', error);
+        }
       });
     } else {
-      HttpMethod({
-        method: 'post',
-        url: '/api/v1/computing/datacenters',
-        data: JSON.stringify(dataToSubmit),  // 데이터를 JSON 형식으로 변환하여 전송
-      })
-      .then(() => {
-        onRequestClose();
-      })
-      .catch((error) => {
-        console.error("Error during form submission:", error);
+      addDataCenter(dataToSubmit, {
+        onSuccess: () => {
+          alert("데이터센터 생성 완료(alert기능구현)")
+          onRequestClose();
+        },
+        onError: (error) => {
+          console.error('Error adding data center:', error);
+        }
       });
     }
   };
@@ -103,7 +108,7 @@ const DataCenterModal = ({
 
         <div className="datacenter_new_content">
           <div>
-            <input hidden type="text" id="id" value={id} onChange={() => {}} /> {/* id는 읽기 전용이므로 onChange를 추가하지 않음 */}
+            <input type="hidden" id="id" value={id} onChange={() => {}} /> {/* id는 읽기 전용이므로 onChange를 추가하지 않음 */}
           </div>
           <div>
             <label htmlFor="name1">이름</label>
