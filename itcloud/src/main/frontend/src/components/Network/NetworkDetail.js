@@ -383,14 +383,21 @@ useEffect(() => {
             <TableOuter
               columns={TableColumnsInfo.CLUSTERS}
               data={clusters}
-              onRowClick={() => {
-                navigate(`/computing/clusters/${id}`);
-              }}
+              onRowClick={(row, column, colIndex) => {
+                const clickableCols = [0];
+                if (clickableCols.includes(colIndex)) {
+                    if (colIndex === 0) {
+                        navigate(`/computing/clusters/${row.id}`);
+                    }
+                } else {
+                  console.log('Selected Cluster ID:', row.id);
+                }
+            }}
               clickableColumnIndex={[0]}
               onContextMenuItems={() => ['1', '2', '3']}  // 간결하게 1, 2, 3 반환
             />
 
-                
+
        </>
         )}
         
@@ -419,11 +426,11 @@ useEffect(() => {
                 data={hosts}
                 onRowClick={(row, column, colIndex) => {
                   if (colIndex === 1) {
-                    navigate(`/computing/hosts/${id}`);  // 1번 컬럼 클릭 시 이동할 경로
+                    navigate(`/computing/hosts/${row.id}`);  // 1번 컬럼 클릭 시 이동할 경로
                   } else if (colIndex === 2) {
-                    navigate(`/computing/clusters/${id}`);  // 2번 컬럼 클릭 시 이동할 경로
+                    navigate(`/computing/clusters/${row.id}`);  // 2번 컬럼 클릭 시 이동할 경로
                   } else if (colIndex === 3) {
-                    navigate(`/computing/datacenters/${id}`);  // 3번 컬럼 클릭 시 이동할 경로
+                    navigate(`/computing/datacenters/${row.id}`);  // 3번 컬럼 클릭 시 이동할 경로
                   }
                 }}
                 clickableColumnIndex={[1,2,3]} 

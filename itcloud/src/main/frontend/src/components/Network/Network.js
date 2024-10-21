@@ -32,7 +32,7 @@ const Network = () => {
           id: network?.id ?? '',
           name: network?.name ?? '',
           comment: network?.comment ?? '',  // 코멘트
-          dataCenter: network?.dataCenter?.name ?? '',  // 데이터 센터
+          dataCenterVo: network?.dataCenterVo?.name ?? '',  // 데이터 센터
           description: network?.description ?? '',  // 설명
           vlan: network?.vlan ?? '',  // VLAN 태그
           label: network?.label ?? '-',  // 레이블
