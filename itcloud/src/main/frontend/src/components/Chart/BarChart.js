@@ -7,8 +7,10 @@ const BarChart = ({ names, percentages }) => {
   const [series, setSeries] = useState([{ data: [] /* 막대 값 */ }]);
   const [chartOptions, setChartOptions] = useState({
     chart: {
+      offsetY: -15,
+      offsetX: -55,
       type: 'bar',
-      height: 150  // 높이 조정
+
     },
     plotOptions: {
       bar: {
@@ -42,7 +44,9 @@ const BarChart = ({ names, percentages }) => {
       colors: ['#fff']
     },
     xaxis: {
-      categories: [], // 목록이름
+      categories: [], 
+      min: 0,
+      max: 100, 
     },
     yaxis: {
       labels: {
@@ -73,6 +77,21 @@ const BarChart = ({ names, percentages }) => {
     }
   });
 
+  // 반응형
+  const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.17); 
+  const [chartHeight, setChartHeight] = useState(window.innerHeight * 0.22); 
+  useEffect(() => {
+    const handleResize = () => {
+      setChartWidth(window.innerWidth * 0.17); // 창 너비의 50%
+      setChartHeight(window.innerHeight * 0.22); // 창 높이의 30%
+    };
+
+    window.addEventListener('resize', handleResize); // 창 크기 변경 감지
+
+    return () => {
+      window.removeEventListener('resize', handleResize); // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    };
+  }, []);
   useEffect(() => {
     setSeries([{ data: percentages }]);
     setChartOptions(prevOptions => ({
@@ -86,12 +105,14 @@ const BarChart = ({ names, percentages }) => {
 
   return (
     <div>
-      <div id="chart">
+      <div id="bar_chart">
         <ReactApexChart 
           options={chartOptions} 
           series={series}
           type="bar"
-          height={180} />
+          width={chartWidth}
+          height={chartHeight}
+          />
       </div>
       <div id="html-dist"></div>
     </div>

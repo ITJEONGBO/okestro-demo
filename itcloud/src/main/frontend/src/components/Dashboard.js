@@ -17,6 +17,7 @@ import AreaChart from './Chart/AreaChart';
 import { faCloud, faEarthAmericas, faLayerGroup, faListUl, faMicrochip, faUser } from '@fortawesome/free-solid-svg-icons';
 
 //region: RadialBarChart
+// 도넛
 const CpuApexChart = ({ cpu }) => { return (<RadialBarChart percentage={cpu} />); }
 const MemoryApexChart = ({ memory }) => { return (<RadialBarChart percentage={memory} />); }
 const StorageApexChart = ({ storage }) => { return (<RadialBarChart percentage={storage} />); }
@@ -24,6 +25,7 @@ const StorageApexChart = ({ storage }) => { return (<RadialBarChart percentage={
 
 //region: BarChart
 const CpuBarChart = ({vmCpu}) => {
+  
   return (
     <BarChart 
       names={vmCpu?.map((e) => e.name) ?? []}
@@ -50,9 +52,9 @@ const StorageMemoryBarChart = ({storageMemory}) => {
 //endregion: BarChart
 
 
-//region: AreaChart
-const SuperAreaChart = () => {
+//region: AreaChart 
   // 물결그래프
+const SuperAreaChart = () => {
   const [series, setSeries] = useState([{
     name: 'series1',
     data: [31, 40, 28, 51, 42, 109, 100] // 물결그래프 값
@@ -111,24 +113,51 @@ class HeatMapChart extends React.Component {
           data: generateData(8, { min: 0, max: 90 }),
         },
       ],
+  
       options: {
         chart: {
-          height: 140, // 높이 조정
           type: 'heatmap',
+          offsetX: 20,
         },
         dataLabels: {
           enabled: false,
         },
         colors: ['#008FFB'],
       },
+      chartWidth: window.innerWidth * 0.28,  // 초기 width
+      chartHeight: window.innerHeight * 0.17, // 초기 height
     };
+  }
+
+  // 창 크기 변경 시 차트 크기를 업데이트하는 메서드
+  updateChartSize = () => {
+    this.setState({
+      chartWidth: window.innerWidth * 0.2,  // 화면의 70% 너비
+      chartHeight: window.innerHeight * 0.17, // 화면의 30% 높이
+    });
+  }
+
+  // 컴포넌트가 마운트될 때 창 크기 변경 이벤트 리스너 추가
+  componentDidMount() {
+    window.addEventListener('resize', this.updateChartSize);
+  }
+
+  // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateChartSize);
   }
 
   render() {
     return (
       <div>
-        <div id="chart">
-          <ReactApexChart options={this.state.options} series={this.state.series} type="heatmap" height={140} />
+        <div id="heatmap_chart">
+          <ReactApexChart
+            options={this.state.options}
+            series={this.state.series}
+            type="heatmap"
+            width={this.state.chartWidth}   // 동적으로 설정된 width 사용
+            height={this.state.chartHeight} // 동적으로 설정된 height 사용
+          />
         </div>
         <div id="html-dist"></div>
       </div>
@@ -136,7 +165,6 @@ class HeatMapChart extends React.Component {
   }
 }
 //endregion: HeatMapChart
-
 
 //region: Dashboard
 const Dashboard = () => {
@@ -232,13 +260,14 @@ const Dashboard = () => {
                 {cpuMemory && <CpuApexChart cpu={cpuMemory?.totalCpuUsagePercent ?? 0} />/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
-                {vmCpu && <CpuBarChart vmCpu={vmCpu} /> /* BarChart 컴포넌트를 여기에 삽입 */}
+                {vmCpu && <CpuBarChart vmCpu={vmCpu} /> }
               </div>
             </div>
-            <span>USED { Math.floor((cpuMemory?.usedCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % / COMMIT { Math.floor((cpuMemory?.commitCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % <br/> Total { (cpuMemory?.totalCpuCore) } Core</span>
+            
+            <span>USED { Math.floor((cpuMemory?.usedCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % /  Total { (cpuMemory?.totalCpuCore) } Core</span> {/*COMMIT { Math.floor((cpuMemory?.commitCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % <br/> */}
             <div className="wave_graph">
               <h2>Per CPU</h2>
-              <div><SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}</div>
+              <div><SuperAreaChart /></div>
             </div>
           </div>
 
@@ -251,13 +280,13 @@ const Dashboard = () => {
                 {cpuMemory && <MemoryApexChart memory={cpuMemory?.totalMemoryUsagePercent}/> /* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
-                {vmMemory && <MemoryBarChart vmMemory={vmMemory} />/* BarChart 컴포넌트를 여기에 삽입 */}
+                {vmMemory && <MemoryBarChart vmMemory={vmMemory} />}
               </div>
             </div>
             <span>USED { (cpuMemory?.usedMemoryGB)?.toFixed(1) } GB / Total { (cpuMemory?.totalMemoryGB)?.toFixed(1) } GB</span>
             <div className="wave_graph">
               <h2>Per MEMORY</h2>
-              <div><SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}</div>
+              <div><SuperAreaChart /></div>
             </div>
           </div>
 
@@ -270,13 +299,13 @@ const Dashboard = () => {
                 {storage && <StorageApexChart storage = {storage?.usedPercent} /> /* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
-                {storageMemory && <StorageMemoryBarChart storageMemory={storageMemory}/> /* BarChart 컴포넌트를 여기에 삽입 */}
+                {storageMemory && <StorageMemoryBarChart storageMemory={storageMemory}/> }
               </div>
             </div>
             <span>USED {storage?.usedGB} GB / Total {storage?.freeGB} GB</span>
             <div className="wave_graph">
               <h2>Per STORAGE</h2>
-              <div><SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}</div>
+              <div><SuperAreaChart /></div>
             </div>
           </div>
         </div> {/* dash section 끝 */}

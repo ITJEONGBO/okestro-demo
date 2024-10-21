@@ -10,6 +10,7 @@
 .dash_board { 
   display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
   border-radius: 5px;     width: 96.7%;
+  overflow: hidden;
 }
 /*박스끝*/
 
@@ -37,30 +38,34 @@
     
 }
 .graphs{
-    width: 93%;
+    height: 22vh;
     display: flex;
     justify-content: space-between;
 }
 
 /*도넛*/
+/* #donut_chart{
+    width:30vw;
+    background:olive;
+}
 .graph-wrap{
     display:flex;
     gap: 50px;
-}
+    
+} */
 .circle-graph {
     position:relative;
     margin-left: 3vw;
     
 }
-.circle-graph > strong {
-    position:absolute; 
-    color: rgb(0, 0, 0);
-    font-weight: 400;
-    top:46%; 
-    left:50%; 
-    transform:translate(-50%, -50%);
-    font-size:0.6rem;
-}
+
+/* .graph-wrap{
+    width: 59%;
+    height: 100%;
+    max-width: 250px;
+    max-height: 250px;
+  
+}   */
 
 /*도넛css끝*/
 .dash_section_contents>span{

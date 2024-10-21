@@ -237,23 +237,7 @@ useEffect(() => {
     };
   }
 
-  const { 
-    data: permissions, 
-    status: permissionsStatus, 
-    isLoading: isPermissionsLoading, 
-    isError: isPermissionsError 
-  } = useAllPermissionsFromNetwork(network?.id, toTableItemPredicatePermissions);
-  function toTableItemPredicatePermissions(permission) {
-    return {
-      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,  // 사용자 아이콘
-      user: permission?.user ?? '없음',  // 사용자 이름
-      provider: permission?.provider ?? '없음',  // 인증 제공자
-      nameSpace: permission?.nameSpace ?? '없음',  // 네임스페이스
-      role: permission?.role ?? '없음',  // 역할
-      createDate: permission?.createDate ?? '없음',  // 생성 날짜
-      inheritedFrom: permission?.inheritedFrom ?? '없음',  // 상속된 위치
-    };
-  }
+
 
 
   // 클러스터 팝업(보류)

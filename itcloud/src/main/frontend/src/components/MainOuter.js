@@ -80,6 +80,11 @@ const MainOuter = ({ children }) => {
           handleClick('dashboard');  // 기본적으로 dashboard로 설정
         }
       }, [location.pathname]);
+      const getClassNames = (id) => {
+        return selectedDiv === id ? 'selected' : ''; // 선택된 항목에 대해 클래스 추가
+      };
+      
+   
       
       useEffect(() => {
         const path = location.pathname;
@@ -244,7 +249,7 @@ const {
                   <div
                       className="aside_popup_second_content"
                       style={{
-                          backgroundColor: selectedDiv === dataCenter.id ? 'rgb(218, 236, 245)' : '',
+                        backgroundColor: getBackgroundColor(dataCenter.id),
                           paddingLeft: hasClusters ? '0.4rem' : '0.8rem'
                       }}
                       onClick={() => {
@@ -276,7 +281,7 @@ const {
                               <div
                                   className="aside_popup_third_content"
                                   style={{
-                                      backgroundColor: selectedDiv === cluster.id ? 'rgb(218, 236, 245)' : '',
+                                    backgroundColor: getBackgroundColor(cluster.id),
                                       paddingLeft: hasHosts ? '0.6rem' : '1rem'
                                   }}
                                   onClick={() => {
@@ -308,7 +313,7 @@ const {
                                           <div
                                               className="aside_popup_fourth_content"
                                               style={{
-                                                  backgroundColor: selectedDiv === host.id ? 'rgb(218, 236, 245)' : '',
+                                                backgroundColor: getBackgroundColor(host.id),
                                                   paddingLeft: hasVMs ? '0.8rem' : '1.2rem'
                                               }}
                                               onClick={() => {
@@ -337,7 +342,7 @@ const {
                                                   key={vm.id}
                                                   className="aside_popup_last_content"
                                                   style={{
-                                                      backgroundColor: selectedDiv === vm.id ? 'rgb(218, 236, 245)' : '',
+                                                    backgroundColor: getBackgroundColor(vm.id),
                                                       paddingLeft: '1.5rem'
                                                   }}
                                                   onClick={() => {
@@ -394,7 +399,7 @@ const {
                           <div
                               className="aside_popup_second_content"
                               style={{ 
-                                  backgroundColor: selectedDiv === dataCenter.id ? 'rgb(218, 236, 245)' : '', 
+                                  backgroundColor: getBackgroundColor(dataCenter.id),
                                   paddingLeft: hasNetworks ? '0.4rem' : '0.8rem'
                               }}
                               onClick={() => {
@@ -423,7 +428,7 @@ const {
                                   key={network.id}
                                   className="aside_popup_third_content"
                                   style={{ 
-                                      backgroundColor: selectedDiv === network.id ? 'rgb(218, 236, 245)' : '', 
+                                      backgroundColor: getBackgroundColor(network.id),
                                       paddingLeft: '1rem' 
                                   }}
                                   onClick={() => {
@@ -483,7 +488,7 @@ const {
                           <div
                               className="aside_popup_second_content"
                               style={{
-                                  backgroundColor: selectedDiv === dataCenter.id ? 'rgb(218, 236, 245)' : '',
+                                  backgroundColor: getBackgroundColor(dataCenter.id),
                                   paddingLeft: hasDomains ? '0.4rem' : '0.8rem'
                               }}
                               onClick={() => {
@@ -515,7 +520,7 @@ const {
                                       <div
                                           className="aside_popup_third_content"
                                           style={{
-                                              backgroundColor: selectedDiv === domain.id ? 'rgb(218, 236, 245)' : '',
+                                            backgroundColor: getBackgroundColor(domain.id),
                                               paddingLeft: hasDisks ? '0.6rem' : '1rem'
                                           }}
                                           onClick={() => {
@@ -653,7 +658,6 @@ const {
 
     setAsidePopupBackgroundColor(newBackgroundColor);
 };
-
 // 저장된 항목에 맞춰 배경색 초기화
 useEffect(() => {
   const savedSelected = localStorage.getItem('selected');
@@ -661,10 +665,11 @@ useEffect(() => {
     toggleAsidePopup(savedSelected); 
   }
 }, []);
-
-    const getClassNames = (id) => {
-        return selected === id ? 'selected' : '';
-    };
+// id포함유무에 따라 배경색결정
+const getBackgroundColor = (id) => {
+    const path = location.pathname; 
+    return path.includes(id) ? 'rgb(218, 236, 245)' : '';
+};
 
 
     const handleMainClick = () => {
@@ -682,50 +687,7 @@ useEffect(() => {
         setSelected('setting');  // 'setting'이 선택되었음을 설정
         toggleAsidePopup('setting');  // 배경색을 파랑으로 변경하기 위해 호출
     };
-    
-    // 스토리지
-    // const handleFirstDivClickStorage = () => {
-    //     if (selectedDiv !== 'data_center') {
-    //         setSelectedDiv('data_center');
-    //         setSelectedDisk(null);
-    //         navigate('/storage');
-    //     }
-    // };
-    // const handleMouseEnter = (target) => {
-    //     setHoverTarget(target);
-    // };
 
-    // const handleMouseLeave = () => {
-    //     setHoverTarget(null);
-    // };
-
-    // const handleContextMenu = (event, target) => {
-    //     event.preventDefault();
-    //     setContextMenuPosition({ x: event.clientX, y: event.clientY });
-    //     setContextMenuVisible(true);
-    //     setContextMenuTarget(target);
-    // };
-    // const handleSettingNavClick = (form) => {
-    //     setActiveSettingForm(form);
-    // };
-    // const handleUserIconClick = (name) => {
-    //     navigate(`/computing/hosts/${name}`);
-    //     setSelectedDiv(name);
-    // };
-
-    // const handleMicrochipIconClick = (name) => {
-    //     setSelectedDiv(name);
-   
-    //     setIsThirdVisible(true);
-    //     navigate(`/computing/${name}`);
-    // };
-
-    // const handleStorageDiskClick = (name) => {
-    //     setSelectedDiv(name);
-   
-    //     setIsThirdVisible(true);
-    //     navigate(`/storages/${name}`);
-    // };
     return (
       <div id="main_outer" onClick={handleMainClick}>
         <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>

@@ -11,7 +11,8 @@ import {
   , faTimes, faChevronCircleRight, faDesktop, faAngleDown,
   faGlassWhiskey,
   faExclamationTriangle,
-  faCloud
+  faCloud,
+  faEllipsisV
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDomainDetail.css';
 import TableOuter from '../table/TableOuter';
@@ -283,13 +284,14 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     };
   }
 
+  // ...버튼
+  const [popupOpen, setPopupOpen] = useState(false);
+  const togglePopupMenu = () => {
+    setPopupOpen(!popupOpen);
+  };
 
 
-  const buttons = [
-    { id: 'manage_domain_btn', label: '도메인 관리', onClick: () => openModal('manageDomain') },
-    { id: 'delete_btn', label: '삭제', onClick: () => openModal('delete') },
-    { id: 'connections_btn', label: 'Connections', onClick: () => console.log('Connections button clicked') },
-  ];
+ 
   const popupItems = [
     { label: <div className="disabled">OVF 업데이트</div>, onClick: () => console.log('OVF 업데이트 clicked') },
     { label: <div className="disabled">파괴</div>, onClick: () => console.log('파괴 clicked') },
@@ -331,7 +333,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       <HeaderButton
       titleIcon={faCloud}
       title={domain?.name}
-      buttons={buttons}
+      buttons={[]}
       popupItems={popupItems}
     />
 
@@ -342,8 +344,16 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           handleSectionClick={handleTabClick} 
         />
         <div className="host_btn_outer">
+          
         <Path pathElements={pathData}/>
         {activeTab === 'general' && (
+          <>
+          <div className="header_right_btns">
+            <button onClick={() => openModal('manageDomain')}>도메인 관리</button>
+            <button onClick={() => openModal('delete')}>삭제</button>
+            <button onClick={() => console.log('Connections button clicked')}>Connections</button>
+         
+          </div>
           <div className="tables">
             <div className="table_storage_domain_detail">
             <table className="table">
@@ -397,6 +407,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
             </div> 
           </div> 
+          </>
         )}
 
         {activeTab === 'datacenters' && (
