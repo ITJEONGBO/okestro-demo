@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip'; // react-tooltip의 Tooltip 컴포넌트 사용
 import './Table.css';
 
-const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = [],onContextMenuItems = false }) => {
+const Table = ({  columns = [], data = [], onRowClick = () => {}, clickableColumnIndex = [],onContextMenuItems = false }) => {
   const [selectedRowIndex, setSelectedRowIndex] = useState(null); // 선택된 행의 인덱스를 관리
   const [tooltips, setTooltips] = useState({}); // 툴팁 상태 관리
   const tableRef = useRef(null); 
