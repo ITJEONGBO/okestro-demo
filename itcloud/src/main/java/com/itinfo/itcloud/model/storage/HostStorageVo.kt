@@ -14,13 +14,13 @@ import java.io.Serializable
  * @property id [String]
  * @property logicalUnits List<[LogicalUnitVo]>
  * @property type [StorageType]
- * @property host [IdentifiedVo]
+ * @property hostVo [IdentifiedVo]
  */
 class HostStorageVo(
     val id: String = "",
     val logicalUnits: List<LogicalUnitVo> = listOf(),
     val type: StorageType = StorageType.NFS,
-    val host: IdentifiedVo = IdentifiedVo()
+    val hostVo: IdentifiedVo = IdentifiedVo()
 ): Serializable {
     override fun toString(): String =
         gson.toJson(this)
@@ -29,8 +29,8 @@ class HostStorageVo(
         private var bId: String = "";fun id(block: () -> String?) { bId = block() ?: "" }
         private var bLogicalUnits: List<LogicalUnitVo> = listOf();fun logicalUnits(block: () -> List<LogicalUnitVo>?) { bLogicalUnits = block() ?: listOf() }
         private var bType: StorageType = StorageType.NFS;fun type(block: () -> StorageType?) { bType = block() ?: StorageType.NFS }
-        private var bHost: IdentifiedVo = IdentifiedVo();fun host(block: () -> IdentifiedVo?) { bHost = block() ?: IdentifiedVo() }
-        fun build(): HostStorageVo = HostStorageVo(bId, bLogicalUnits, bType, bHost)
+        private var bHostVo: IdentifiedVo = IdentifiedVo();fun hostVo(block: () -> IdentifiedVo?) { bHostVo = block() ?: IdentifiedVo() }
+        fun build(): HostStorageVo = HostStorageVo(bId, bLogicalUnits, bType, bHostVo)
     }
 
     companion object {
@@ -46,7 +46,7 @@ fun HostStorage.toIscsiHostStorageVo() : HostStorageVo {
         id { this@toIscsiHostStorageVo.id() }
         logicalUnits { units.toIscsiLogicalUnitVos() }
         type { this@toIscsiHostStorageVo.type() }
-        host { IdentifiedVo.builder { id { this@toIscsiHostStorageVo.host().id() } } }
+        hostVo { IdentifiedVo.builder { id { this@toIscsiHostStorageVo.host().id() } } }
     }
 }
 fun List<HostStorage>.toIscsiHostStorageVos(): List<HostStorageVo> =
@@ -60,7 +60,7 @@ fun HostStorage.toFibreHostStorageVo() : HostStorageVo {
         id { this@toFibreHostStorageVo.id() }
         logicalUnits { units.toFibreLogicalUnitVos() }
         type { this@toFibreHostStorageVo.type() }
-        host { IdentifiedVo.builder { id { this@toFibreHostStorageVo.host().id() } } }
+        hostVo { IdentifiedVo.builder { id { this@toFibreHostStorageVo.host().id() } } }
     }
 }
 fun List<HostStorage>.toFibreHostStorageVos(): List<HostStorageVo> =

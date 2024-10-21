@@ -25,9 +25,9 @@ private val log = LoggerFactory.getLogger(DataCenterVo::class.java)
  * @property quotaMode [QuotaModeType] 쿼터모드(비활성화됨, 감사, 강제적용)
  * @property status [DataCenterStatus] 상태(contend, maintenance, not_operational, problematic, uninitialized, up)
  * @property version [String]
- * @property clusters List<[IdentifiedVo]>
- * @property networks List<[IdentifiedVo]>
- * @property storageDomains List<[StorageDomainVo]>
+ * @property clusterVos List<[IdentifiedVo]>
+ * @property networkVos List<[IdentifiedVo]>
+ * @property storageDomainVos List<[StorageDomainVo]>
  * @property clusterCnt [Int]
  * @property hostCnt [Int]
  *
@@ -41,13 +41,11 @@ class DataCenterVo (
 	val quotaMode: QuotaModeType = QuotaModeType.DISABLED,
 	val status: DataCenterStatus = DataCenterStatus.NOT_OPERATIONAL,
 	val version: String = "",
-	val clusters: List<IdentifiedVo> = listOf(),
-	val networks: List<IdentifiedVo> = listOf(),
-	val storageDomains: List<StorageDomainVo> = listOf(),
+	val clusterVos: List<IdentifiedVo> = listOf(),
+	val networkVos: List<IdentifiedVo> = listOf(),
+	val storageDomainVos: List<StorageDomainVo> = listOf(),
 	val clusterCnt: Int = 0,
 	val hostCnt: Int = 0,
-
-
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -61,14 +59,13 @@ class DataCenterVo (
 		private var bQuotaMode: QuotaModeType = QuotaModeType.DISABLED;fun quotaMode(block: () -> QuotaModeType?) { bQuotaMode = block() ?: QuotaModeType.DISABLED }
 		private var bStatus: DataCenterStatus = DataCenterStatus.NOT_OPERATIONAL;fun status(block: () -> DataCenterStatus?) { bStatus = block() ?: DataCenterStatus.NOT_OPERATIONAL }
 		private var bVersion: String = "";fun version(block: () -> String?) { bVersion = block() ?: "" }
-		private var bClusters: List<IdentifiedVo> = listOf();fun clusters(block: () -> List<IdentifiedVo>?) { bClusters = block() ?: listOf() }
-		private var bNetworks: List<IdentifiedVo> = listOf();fun networks(block: () -> List<IdentifiedVo>?) { bNetworks = block() ?: listOf() }
-		private var bStorageDomains: List<StorageDomainVo> = listOf();fun storageDomains(block: () -> List<StorageDomainVo>?) { bStorageDomains = block() ?: listOf() }
-//		private var bStorageDomains: List<IdentifiedVo> = listOf();fun storageDomains(block: () -> List<IdentifiedVo>?) { bStorageDomains = block() ?: listOf() }
+		private var bClusterVos: List<IdentifiedVo> = listOf();fun clusterVos(block: () -> List<IdentifiedVo>?) { bClusterVos = block() ?: listOf() }
+		private var bNetworkVos: List<IdentifiedVo> = listOf();fun networkVos(block: () -> List<IdentifiedVo>?) { bNetworkVos = block() ?: listOf() }
+		private var bStorageDomainVos: List<StorageDomainVo> = listOf();fun storageDomainVos(block: () -> List<StorageDomainVo>?) { bStorageDomainVos = block() ?: listOf() }
 		private var bClusterCnt: Int = 0; fun clusterCnt(block: () -> Int?) { bClusterCnt = block() ?: 0 }
 		private var bHostCnt: Int = 0; fun hostCnt(block: () -> Int?) { bHostCnt = block() ?: 0 }
 
-		fun build(): DataCenterVo = DataCenterVo(bId, bName, bComment, bDescription, bStorageType, bQuotaMode, bStatus, bVersion, bClusters, bNetworks, bStorageDomains, bClusterCnt, bHostCnt)
+		fun build(): DataCenterVo = DataCenterVo(bId, bName, bComment, bDescription, bStorageType, bQuotaMode, bStatus, bVersion, bClusterVos, bNetworkVos, bStorageDomainVos, bClusterCnt, bHostCnt)
 	}
 
 	companion object {
@@ -123,7 +120,7 @@ fun DataCenter.toStorageDomainDataCenterVo(conn: Connection): DataCenterVo {
 	return DataCenterVo.builder {
 		id { this@toStorageDomainDataCenterVo.id() }
 		name { this@toStorageDomainDataCenterVo.name() }
-		storageDomains { storageDomains.toDomainStatuss(conn) }
+		storageDomainVos { storageDomains.toDomainStatuss(conn) }
 	}
 }
 fun List<DataCenter>.toStorageDomainDataCenterVos(conn: Connection): List<DataCenterVo> =
@@ -134,14 +131,12 @@ fun List<DataCenter>.toStorageDomainDataCenterVos(conn: Connection): List<DataCe
  * 데이터센터 빌더
  */
 fun DataCenterVo.toDataCenterBuilder(): DataCenterBuilder {
-	val ver = this@toDataCenterBuilder.version.split(".")
-	if (ver.size < 2) throw IllegalArgumentException("잘못된 버전정보 입력")
 
 	return DataCenterBuilder()
 		.name(this@toDataCenterBuilder.name) // 이름
 		.description(this@toDataCenterBuilder.description) // 설명
 		.local(this@toDataCenterBuilder.storageType) // 스토리지 유형
-		.version(VersionBuilder().major(ver[0].toInt()).minor(ver[1].toInt()).build())
+		.version(VersionBuilder().major(4).minor(7))
 		.quotaMode(this@toDataCenterBuilder.quotaMode)
 		.comment(this@toDataCenterBuilder.comment)
 }
@@ -171,14 +166,13 @@ fun DataCenter.toDataCenterVo(
 		it.dataCenter().id() == this@toDataCenterVo.id()
 	}
 	val storageDomains: List<StorageDomain> =
-		conn?.findAllStorageDomains()
-			?.getOrDefault(listOf())
+		conn?.findAllStorageDomains()?.getOrDefault(listOf())
 			?.filter { it.dataCentersPresent() && it.dataCenters().first().id() == this@toDataCenterVo.id() } ?: listOf()
 	val clusters: List<Cluster> = (conn?.findAllClusters()?.getOrDefault(listOf()))?.filter {
 		it.dataCenterPresent() && it.dataCenter().id() == this@toDataCenterVo.id()
 	} ?: listOf()
 
-	val storageDomainVos: List<StorageDomainVo> = if (conn == null || !findStorageDomains) listOf() else storageDomains.toStorageDomainIdNames()
+	val storageDomainVoList: List<StorageDomainVo> = if (conn == null || !findStorageDomains) listOf() else storageDomains.toStorageDomainIdNames()
 //	val storageDomainVos: List<IdentifiedVo> = if (conn == null || !findStorageDomains) listOf() else storageDomains.fromStorageDomainsToIdentifiedVos()
 	val networkVos: List<IdentifiedVo> = if (conn == null || !findNetworks) listOf() else networks.fromNetworksToIdentifiedVos()
 	val clusterVos: List<IdentifiedVo> = if (conn == null || !findClusters) listOf() else clusters.fromClustersToIdentifiedVos()
@@ -187,9 +181,9 @@ fun DataCenter.toDataCenterVo(
 		id { this@toDataCenterVo.id() }
 		name { this@toDataCenterVo.name() }
 		storageType { this@toDataCenterVo.local() }
-		clusters { clusterVos }
-		networks { networkVos }
-		storageDomains { storageDomainVos }
+		clusterVos { clusterVos }
+		networkVos { networkVos }
+		storageDomainVos { storageDomainVoList }
 	}
 }
 fun List<DataCenter>.toDataCenterVos(

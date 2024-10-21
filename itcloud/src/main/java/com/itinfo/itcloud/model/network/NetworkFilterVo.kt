@@ -11,7 +11,7 @@ import java.io.Serializable
 private val log = LoggerFactory.getLogger(NetworkFilterVo::class.java)
 
 /**
- * [NetworkFilterParameterVo]
+ * [NetworkFilterVo]
  * 
  * id [String]
  * name [String]

@@ -30,7 +30,7 @@ private val log = LoggerFactory.getLogger(DiskAttachmentVo::class.java)
  * @property detachOnly [Boolean] 완전삭제 여부 (기본 false=분리, true=완전삭제)
  *
  * @property diskImageVo [DiskImageVo] 디스크 이미지 생성
- * @property IdentifiedVo [IdentifiedVo] 가상머신
+ * @property vmVo [IdentifiedVo] 가상머신
  */
 class DiskAttachmentVo(
 	val id: String = "",
