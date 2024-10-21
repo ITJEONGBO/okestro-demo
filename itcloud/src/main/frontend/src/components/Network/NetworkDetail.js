@@ -6,7 +6,7 @@ import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
-import NetworkDetailGeneral from './NetworkDetailGeneral';
+import NetworkDetailGeneral from './networkjs/NetworkDetailGeneral';
 import './css/NetworkDetail.css';
 import Permission from '../Modal/Permission';
 import { 
@@ -41,6 +41,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 import Path from '../Header/Path';
+import NetworkVnicprofile from './networkjs/NetworkVnicprofile';
+import NetworkCluster from './networkjs/NetworkCluster';
+import NetworkHost from './networkjs/NetworkHost';
+import NetworkVm from './networkjs/NetworkVm';
+import NetworkTemplate from './networkjs/NetworkTemplate';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   
@@ -114,128 +119,128 @@ useEffect(() => {
   }, [setShouldRefresh, networkRefetch])
   
   //vnic프로파일
-  const { 
-    data: vnicProfiles,
-    status: vnicProfilesStatus,
-    isRefetching: isvnicProfilesRefetching,
-    refetch: vnicProfilesRefetch,
-    isError, 
-    error, 
-    isLoading
-  } = useAllVnicProfilesFromNetwork(network?.id, toTableItemPredicateVnicProfiles);
-  function toTableItemPredicateVnicProfiles(vnicProfile) {
-    return {
-      id: vnicProfile?.id ?? '없음',
-      name: vnicProfile?.name ?? '없음',
-      network: vnicProfile?.networkVo?.name ?? '',  // 네트워크 이름
-      dataCenter: vnicProfile?.dataCenterVo?.name ?? '',  // 데이터 센터
-      compatVersion: vnicProfile?.compatVersion ?? '없음',  // 호환 버전
-      qosName: vnicProfile?.qosName ?? '',  // QoS 이름
-      networkFilter: vnicProfile?.networkFilterVo?.name ?? '없음',  // 네트워크 필터
-      portMirroring: vnicProfile?.portMirroring ? '사용' : '사용 안함',  // 포트 미러링 여부
-      passThrough: vnicProfile?.passThrough ? '통과' : '아니요',  // 통과 여부
-      description: vnicProfile?.description ?? '없음',  // 설명
-    };
-  }
+  // const { 
+  //   data: vnicProfiles,
+  //   status: vnicProfilesStatus,
+  //   isRefetching: isvnicProfilesRefetching,
+  //   refetch: vnicProfilesRefetch,
+  //   isError, 
+  //   error, 
+  //   isLoading
+  // } = useAllVnicProfilesFromNetwork(network?.id, toTableItemPredicateVnicProfiles);
+  // function toTableItemPredicateVnicProfiles(vnicProfile) {
+  //   return {
+  //     id: vnicProfile?.id ?? '없음',
+  //     name: vnicProfile?.name ?? '없음',
+  //     network: vnicProfile?.networkVo?.name ?? '',  // 네트워크 이름
+  //     dataCenter: vnicProfile?.dataCenterVo?.name ?? '',  // 데이터 센터
+  //     compatVersion: vnicProfile?.compatVersion ?? '없음',  // 호환 버전
+  //     qosName: vnicProfile?.qosName ?? '',  // QoS 이름
+  //     networkFilter: vnicProfile?.networkFilterVo?.name ?? '없음',  // 네트워크 필터
+  //     portMirroring: vnicProfile?.portMirroring ? '사용' : '사용 안함',  // 포트 미러링 여부
+  //     passThrough: vnicProfile?.passThrough ? '통과' : '아니요',  // 통과 여부
+  //     description: vnicProfile?.description ?? '없음',  // 설명
+  //   };
+  // }
 
   // 클러스터
-  const { 
-    data: clusters, 
-    status: clustersStatus, 
-    isLoading: isClustersLoading, 
-    isError: isClustersError 
-  } = useAllClustersFromNetwork(network?.id, toTableItemPredicateClusters);
-  function toTableItemPredicateClusters(cluster) {
-    return {
-      id: cluster?.id ?? '없음',
-      name: cluster?.name ?? '없음',
-      description: cluster?.description ?? '없음',
-      version: cluster?.version ?? '없음',
-      connectedNetwork: cluster?.connected ? <input type="checkbox" checked /> : <input type="checkbox" />,
-      networkStatus: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
-      requiredNetwork: cluster?.requiredNetwork ? <input type="checkbox" checked /> : <input type="checkbox" />,
-      networkRole: cluster?.networkRole ?? '',
-    };
-  }
+  // const { 
+  //   data: clusters, 
+  //   status: clustersStatus, 
+  //   isLoading: isClustersLoading, 
+  //   isError: isClustersError 
+  // } = useAllClustersFromNetwork(network?.id, toTableItemPredicateClusters);
+  // function toTableItemPredicateClusters(cluster) {
+  //   return {
+  //     id: cluster?.id ?? '없음',
+  //     name: cluster?.name ?? '없음',
+  //     description: cluster?.description ?? '없음',
+  //     version: cluster?.version ?? '없음',
+  //     connectedNetwork: cluster?.connected ? <input type="checkbox" checked /> : <input type="checkbox" />,
+  //     networkStatus: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
+  //     requiredNetwork: cluster?.requiredNetwork ? <input type="checkbox" checked /> : <input type="checkbox" />,
+  //     networkRole: cluster?.networkRole ?? '',
+  //   };
+  // }
 
   //호스트
-  const { 
-    data: hosts, 
-    status: hostsStatus, 
-    isLoading: isHostsLoading, 
-    isError: isHostsError 
-  } = useAllHostsFromNetwork(network?.id, toTableItemPredicateHosts);  
-  function toTableItemPredicateHosts(host) {
-    const status = host?.status ?? '';
-    const icon = status === 'UP' 
-    ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem',transform: 'rotate(270deg)' }} />
-    : status === 'DOWN' 
-    ? <FontAwesomeIcon icon={faPlay} fixedWidth  style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)'}}/>
-    : '';
-    return {
-      id: host?.id ?? '',      
-      icon: icon,
-      status: status,  
-      name: host?.name ?? 'Unknown',           
-      cluster: host?.clusterVo?.name ?? 'N/A',
-      dataCenter: host?.dataCenterVo?.name ?? 'N/A',
-      networkDeviceStatus: host?.hostNicVos?.[0]?.status ?? 'Unknown', 
-      networkDevice: host?.hostNicVos?.[0]?.name ?? 'N/A', 
-      speed: host?.hostNicVos?.[0]?.speed ?? 'N/A', 
-      rx: host?.hostNicVos?.[0]?.rxSpeed ?? 'N/A', 
-      tx: host?.hostNicVos?.[0]?.txSpeed ?? 'N/A', 
-      totalRx: host?.hostNicVos?.[0]?.rxTotalSpeed ?? 'N/A', 
-      totalTx: host?.hostNicVos?.[0]?.txTotalSpeed ?? 'N/A', 
-    };
-  }
+  // const { 
+  //   data: hosts, 
+  //   status: hostsStatus, 
+  //   isLoading: isHostsLoading, 
+  //   isError: isHostsError 
+  // } = useAllHostsFromNetwork(network?.id, toTableItemPredicateHosts);  
+  // function toTableItemPredicateHosts(host) {
+  //   const status = host?.status ?? '';
+  //   const icon = status === 'UP' 
+  //   ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem',transform: 'rotate(270deg)' }} />
+  //   : status === 'DOWN' 
+  //   ? <FontAwesomeIcon icon={faPlay} fixedWidth  style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)'}}/>
+  //   : '';
+  //   return {
+  //     id: host?.id ?? '',      
+  //     icon: icon,
+  //     status: status,  
+  //     name: host?.name ?? 'Unknown',           
+  //     cluster: host?.clusterVo?.name ?? 'N/A',
+  //     dataCenter: host?.dataCenterVo?.name ?? 'N/A',
+  //     networkDeviceStatus: host?.hostNicVos?.[0]?.status ?? 'Unknown', 
+  //     networkDevice: host?.hostNicVos?.[0]?.name ?? 'N/A', 
+  //     speed: host?.hostNicVos?.[0]?.speed ?? 'N/A', 
+  //     rx: host?.hostNicVos?.[0]?.rxSpeed ?? 'N/A', 
+  //     tx: host?.hostNicVos?.[0]?.txSpeed ?? 'N/A', 
+  //     totalRx: host?.hostNicVos?.[0]?.rxTotalSpeed ?? 'N/A', 
+  //     totalTx: host?.hostNicVos?.[0]?.txTotalSpeed ?? 'N/A', 
+  //   };
+  // }
 
   //가상머신
-  const { 
-    data: vms, 
-    status: vmsStatus, 
-    isLoading: isVmsLoading, 
-    isError: isVmsError 
-  } = useAllVmsFromNetwork(network?.id, toTableItemPredicateVms);
-  function toTableItemPredicateVms(vm) {
-    const status = vms?.status ?? '';
-    const icon = status === 'UP' 
-    ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem',transform: 'rotate(270deg)' }} />
-    : status === 'DOWN' 
-    ? <FontAwesomeIcon icon={faChevronDown} fixedWidth  style={{ color: 'magenta', fontSize: '1.5rem', transform: 'rotate(90deg)'}}/>
-    : '';
-    return {
-      id: vm?.id ?? '없음',  // 가상 머신 ID
-      name: vm?.name ?? '없음',  // 가상 머신 이름
-      cluster: vm?.clusterVo?.name ?? '없음',  // 클러스터 이름
-      ipAddress: vm?.ipAddress ?? '없음',  // IP 주소
-      fqdn:  vm?.fqdn ?? '',
-      icon: icon,
-      status: status, 
-      vnic: vm?.vnic ?? '',  // vNIC 이름
-      vnicRx: vm?.vnicRx ?? '',  // vNIC 수신 속도
-      vnicTx: vm?.vnicTx ?? '',  // vNIC 송신 속도
-      totalRx: vm?.totalRx ?? '',  // 총 수신 데이터
-      totalTx: vm?.totalTx ?? '',  // 총 송신 데이터
-      description: vm?.description ?? '없음'  // 가상 머신 설명
-    };
-  }
+  // const { 
+  //   data: vms, 
+  //   status: vmsStatus, 
+  //   isLoading: isVmsLoading, 
+  //   isError: isVmsError 
+  // } = useAllVmsFromNetwork(network?.id, toTableItemPredicateVms);
+  // function toTableItemPredicateVms(vm) {
+  //   const status = vms?.status ?? '';
+  //   const icon = status === 'UP' 
+  //   ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem',transform: 'rotate(270deg)' }} />
+  //   : status === 'DOWN' 
+  //   ? <FontAwesomeIcon icon={faChevronDown} fixedWidth  style={{ color: 'magenta', fontSize: '1.5rem', transform: 'rotate(90deg)'}}/>
+  //   : '';
+  //   return {
+  //     id: vm?.id ?? '없음',  // 가상 머신 ID
+  //     name: vm?.name ?? '없음',  // 가상 머신 이름
+  //     cluster: vm?.clusterVo?.name ?? '없음',  // 클러스터 이름
+  //     ipAddress: vm?.ipAddress ?? '없음',  // IP 주소
+  //     fqdn:  vm?.fqdn ?? '',
+  //     icon: icon,
+  //     status: status, 
+  //     vnic: vm?.vnic ?? '',  // vNIC 이름
+  //     vnicRx: vm?.vnicRx ?? '',  // vNIC 수신 속도
+  //     vnicTx: vm?.vnicTx ?? '',  // vNIC 송신 속도
+  //     totalRx: vm?.totalRx ?? '',  // 총 수신 데이터
+  //     totalTx: vm?.totalTx ?? '',  // 총 송신 데이터
+  //     description: vm?.description ?? '없음'  // 가상 머신 설명
+  //   };
+  // }
 
   //템플릿
-  const { 
-    data: templates, 
-    status: templatesStatus, 
-    isLoading: isTemplatesLoading, 
-    isError: isTemplatesError 
-  } = useAllTemplatesFromNetwork(network?.id, toTableItemPredicateTemplates);
-  function toTableItemPredicateTemplates(template) {
-    return {
-      name: template?.name ?? '없음',  // 템플릿 이름
-      nicId: template?.nicId ?? '없음',  // 템플릿 버전
-      status: template?.status ?? '없음',  // 템플릿 상태
-      clusterName: template?.clusterName ?? '없음',  // 클러스터 이름
-      nicName: template?.nicName ?? '없음',  // vNIC 이름
-    };
-  }
+  // const { 
+  //   data: templates, 
+  //   status: templatesStatus, 
+  //   isLoading: isTemplatesLoading, 
+  //   isError: isTemplatesError 
+  // } = useAllTemplatesFromNetwork(network?.id, toTableItemPredicateTemplates);
+  // function toTableItemPredicateTemplates(template) {
+  //   return {
+  //     name: template?.name ?? '없음',  // 템플릿 이름
+  //     nicId: template?.nicId ?? '없음',  // 템플릿 버전
+  //     status: template?.status ?? '없음',  // 템플릿 상태
+  //     clusterName: template?.clusterName ?? '없음',  // 클러스터 이름
+  //     nicName: template?.nicName ?? '없음',  // vNIC 이름
+  //   };
+  // }
 
 
 
@@ -316,6 +321,24 @@ useEffect(() => {
 
   ];
   const pathData = [network?.name, sections.find(section => section.id === activeTab)?.label];
+  const renderSectionContent = () => {
+    switch (activeTab) {
+      case 'general':
+        return <NetworkDetailGeneral network={network} />;
+      case 'vnicProfiles':
+        return <NetworkVnicprofile network={network} />;
+      case 'clusters':
+        return <NetworkCluster network={network} />;
+      case 'hosts':
+        return <NetworkHost network={network} />;
+      case 'vms':
+        return <NetworkVm network={network} />;
+      case 'templates':
+        return <NetworkTemplate network={network} />;
+      default:
+        return <NetworkDetailGeneral network={network} />;
+    }
+  };
   return (
     <div className="content_detail_section">
       <HeaderButton
@@ -334,11 +357,12 @@ useEffect(() => {
 
       <div className="host_btn_outer">
         <Path pathElements={pathData} />
-        {
+        {renderSectionContent()}
+        {/* {
           activeTab === 'general' && <NetworkDetailGeneral network={network} />
-        }
+        } */}
          
-        {
+        {/* {
           activeTab === 'vnicProfiles' && (
         <>
           <div className="header_right_btns">
@@ -346,19 +370,21 @@ useEffect(() => {
               <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
               <button onClick={() => openPopup('delete')} >제거</button>
           </div>
-          {/* vNIC 프로파일 */}
+        
           <TableOuter
             columns={TableColumnsInfo.VNIC_PROFILES} 
             data={vnicProfiles}
-            onRowClick={() => {
+            onRowClick={(row) => {
+
+         
               navigate(`/computing/datacenters/${id}`);
             }}
             clickableColumnIndex={[2]} 
           />
        </>
-        )}
+        )} */}
 
-        {activeTab === 'clusters' && (
+        {/* {activeTab === 'clusters' && (
         <>
             <div className="header_right_btns">
                 <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
@@ -378,14 +404,14 @@ useEffect(() => {
                 }
             }}
               clickableColumnIndex={[0]}
-              onContextMenuItems={() => ['1', '2', '3']}  // 간결하게 1, 2, 3 반환
+              onContextMenuItems={() => ['1', '2', '3']}
             />
 
 
        </>
-        )}
+        )} */}
         
-        {activeTab === 'hosts' && (
+        {/* {activeTab === 'hosts' && (
         <>
             <div className="header_right_btns">
                     <button onClick={() => openPopup('host_network_popup')}>호스트 네트워크 설정</button>
@@ -429,9 +455,8 @@ useEffect(() => {
               />
             )}
        </>
-       
-        )}
-
+        )} */}
+{/* 
         {activeTab === 'vms' && (
         <>
               <div className="header_right_btns">
@@ -460,7 +485,7 @@ useEffect(() => {
                   />
                 )}
 
-                {/* 정지중 테이블 */}
+             
                 {activeVmFilter === 'stopped' && (
                   <TableOuter
                     columns={TableColumnsInfo.VMS_STOP}
@@ -470,13 +495,13 @@ useEffect(() => {
                 )}
               </>
        
-        )}
+        )} */}
 
-        {activeTab === 'templates' && (
+        {/* {activeTab === 'templates' && (
         <>
             <div className="header_right_btns">
                 <button onClick={() => openPopup('delete')}>제거</button>
-                {/* <button onClick={() => console.log(network?.name)}>Log Network Name</button> */}
+               
             </div>
 
             <TableOuter 
@@ -485,7 +510,7 @@ useEffect(() => {
               onRowClick={() => console.log('Row clicked')} 
             />
         </>
-        )}
+        )} */}
 
         {/*삭제예정 */}
         {/* {activeTab === 'permission' && (

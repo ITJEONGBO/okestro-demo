@@ -689,10 +689,14 @@ export const useAllTemplatesFromNetwork = (networkId, mapPredicate) => useQuery(
   refetchOnWindowFocus: true,
   queryKey: ['templateFromNetwork', networkId], 
   queryFn: async () => {
-    console.log(`useAllTemplatesFromNetwork ... ${networkId}`);
-    const res = await ApiManager.findAllTemplatesFromNetwork(networkId); 
+    if (!networkId) {
+      throw new Error('Network ID is missing'); 
+    }
+    console.log(`Fetching templates for Network ID: ${networkId}`);
+    const res = await ApiManager.findAllTemplatesFromNetwork(networkId);
+    console.log('API Response:', res); // API 응답 확인
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
 })
 /**
  * @name useAllPermissionsFromNetwork
@@ -821,7 +825,7 @@ export const useAllDataCenterFromDomain = (storageDomainId, mapPredicate) => use
   refetchOnWindowFocus: true,
   queryKey: ['AllDataCenterFromDomain', storageDomainId], 
   queryFn: async () => {
-    console.log(`useAllTemplatesFromNetwork ... ${storageDomainId}`);
+    console.log(`useAllDataCenterFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }

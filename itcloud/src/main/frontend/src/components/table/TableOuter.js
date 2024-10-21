@@ -3,7 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
 import './Table.css';
 
-const TableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol = false, clickableColumnIndex, showSearchBox = false,onContextMenuItems  }) => {
+const TableOuter = ({ columns = [], data = [], onRowClick, shouldHighlight1stCol = false, clickableColumnIndex, showSearchBox = false, onContextMenuItems }) => {
+  
   return (
     <div className="section_table_outer">
       {showSearchBox && ( // showSearchBox가 true일 때만 렌더링
@@ -15,11 +16,11 @@ const TableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol = false, 
       )}
       
       <Table 
-        columns={columns} 
-        data={data}
+        columns={columns}  
+        data={data}   // data가 없으면 Table 컴포넌트에서 처리
         onRowClick={onRowClick} 
-        clickableColumnIndex={clickableColumnIndex} // 클릭 가능 컬럼 전달
-        shouldHighlight1stCol={shouldHighlight1stCol} // 첫 번째 컬럼 강조 여부 (필요 시)
+        clickableColumnIndex={clickableColumnIndex} 
+        shouldHighlight1stCol={shouldHighlight1stCol} 
         onContextMenuItems={onContextMenuItems}
       />
     </div>
