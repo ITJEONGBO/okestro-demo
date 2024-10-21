@@ -384,7 +384,7 @@ useEffect(() => {
               columns={TableColumnsInfo.CLUSTERS}
               data={clusters}
               onRowClick={() => {
-                navigate(`/computing/datacenters/${id}`);
+                navigate(`/computing/clusters/${id}`);
               }}
               clickableColumnIndex={[0]}
               onContextMenuItems={() => ['1', '2', '3']}  // 간결하게 1, 2, 3 반환

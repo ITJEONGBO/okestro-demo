@@ -96,17 +96,30 @@ const Network = () => {
                     <button onClick={() => openPopup('editNetwork')}>편집</button>
                     <button onClick={() => openPopup('delete')}> 삭제</button>
                 </div>
-                  <TableOuter
-                    columns={TableColumnsInfo.NETWORKS} 
-                    data={networkdata} 
-                    onRowClick={handleNetworkNameClick} 
-                    clickableColumnIndex={[0,2]} 
+                <TableOuter
+                    columns={TableColumnsInfo.NETWORKS}
+                    data={networkdata}
+                    onRowClick={(row, column, colIndex) => {
+                        const clickableCols = [0, 2];
+                        if (clickableCols.includes(colIndex)) {
+                            if (colIndex === 0) {
+                                navigate(`/networks/${row.id}`, { state: { name: row.name } });
+                            } else if (colIndex === 2) {
+                                navigate(`/computing/datacenters/${row.id}`);
+                            }
+                        } else {
+                        console.log('Selected Row ID:', row.id);
+                        }
+                    }}
+                    clickableColumnIndex={[0, 2]} // 0번과 2번 열에서 클릭 시 navigate 처리
                     onContextMenuItems={(rowData) => [
                         <div key="1" onClick={() => openPopup('newNetwork')}>1</div>,
                         <div key="2" onClick={() => console.log('2번 클릭', rowData)}>2</div>,
                         <div key="3" onClick={() => console.log('3번 클릭', rowData)}>3</div>
-                      ]}
-                  />
+                    ]}
+                />
+
+
                 
             </div>
 

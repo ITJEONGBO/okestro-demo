@@ -16,8 +16,8 @@ const Table = ({  columns = [], data = [], onRowClick = () => {}, clickableColum
     if (onContextMenuItems) {
       const menuItems = onContextMenuItems(rowData);
       setContextMenu({
-        mouseX: e.clientX - 240,
-        mouseY: e.clientY - 40,
+        mouseX: e.clientX - 320,
+        mouseY: e.clientY - 47,
         menuItems,
       });
     }
@@ -26,24 +26,24 @@ const Table = ({  columns = [], data = [], onRowClick = () => {}, clickableColum
   };
   
   
-// 테이블 외부 클릭 시 선택된 행 초기화, 단 메뉴 박스를 제외
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (
-      tableRef.current && 
-      !tableRef.current.contains(event.target) && 
-      (!menuRef.current || !menuRef.current.contains(event.target))  // 메뉴 박스를 제외
-    ) {
-      if (contextRowIndex !== selectedRowIndex) {
-        setSelectedRowIndex(null); 
+  // 테이블 외부 클릭 시 선택된 행 초기화, 단 메뉴 박스를 제외
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        tableRef.current && 
+        !tableRef.current.contains(event.target) && 
+        (!menuRef.current || !menuRef.current.contains(event.target))  // 메뉴 박스를 제외
+      ) {
+        if (contextRowIndex !== selectedRowIndex) {
+          setSelectedRowIndex(null); 
+        }
       }
-    }
-  };
-  document.addEventListener('mousedown', handleClickOutside);
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, [contextRowIndex, selectedRowIndex]);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [contextRowIndex, selectedRowIndex]);
 
 
 
@@ -63,20 +63,20 @@ useEffect(() => {
     }
   };
 
-// 우클릭메뉴 외부를 클릭했을 때만 닫기 + 배경색 초기화
-const menuRef = useRef(null);
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setContextMenu(null);
-      setContextRowIndex(null); // 우클릭된 행의 배경색 초기화
-    }
-  };
-  document.addEventListener('mousedown', handleClickOutside);
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  };
-}, []);
+  // 우클릭메뉴 외부를 클릭했을 때만 닫기 + 배경색 초기화
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setContextMenu(null);
+        setContextRowIndex(null); // 우클릭된 행의 배경색 초기화
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
 
   return (
@@ -97,6 +97,7 @@ useEffect(() => {
                 onClick={() => {
                   setSelectedRowIndex(rowIndex);
                   setContextRowIndex(null); // 다른 우클릭된 행을 초기화
+                  onRowClick(row); // 클릭한 행의 전체 데이터를 onRowClick에 전달 (행 클릭 시 ID만 출력)
                 }}
                 onContextMenu={(e) => handleContextMenu(e, rowIndex)}  // 우클릭 시 메뉴 표시
                 style={{
@@ -129,7 +130,7 @@ useEffect(() => {
                   onClick={(e) => {
                     if (clickableColumnIndex.includes(colIndex)) {
                       e.stopPropagation();
-                      onRowClick(row, column, colIndex);
+                      onRowClick(row, column, colIndex); // clickableColumnIndex에 해당하는 열 클릭 시 이동 처리
                     }
                   }}
                   onMouseOver={(e) => {
@@ -181,7 +182,7 @@ useEffect(() => {
           
         </div>
       )}  
-      {/* 각 셀에 대한 Tooltip 컴포넌트 */}
+      {/*Tooltip */}
       {data && data.map((row, rowIndex) =>
         columns.map((column, colIndex) => (
           tooltips[`${rowIndex}-${colIndex}`] && (

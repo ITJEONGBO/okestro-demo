@@ -41,11 +41,16 @@ const Storage = () => {
   };
 
 
-  const handleDomainNameClick = (row, column) => {
-        if (column.accessor === 'name') {
-          navigate(`/storages/domains/${row.id}`);
-          }
-        }
+  const handleDomainNameClick = (row, column, colIndex) => {
+    const clickableCols = [2]; 
+    if (clickableCols.includes(colIndex)) {
+      if (colIndex === 2) {
+        navigate(`/storages/domains/${row.id}`, { state: { name: row.name } });
+      }
+    } else {
+      console.log('Selected Row ID:', row.id);
+    }
+  };
 
   // 팝업 테이블 컴포넌트
   const data = [

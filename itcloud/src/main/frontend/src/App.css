@@ -598,7 +598,7 @@ input[type="text"]:focus {
     background: #fff;
     top: 50%;
     height: 66.4vh;
-    width: 39%;
+    width: 43%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
