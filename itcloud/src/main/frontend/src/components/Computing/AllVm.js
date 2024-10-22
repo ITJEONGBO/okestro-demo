@@ -54,53 +54,44 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
  };
 
 
-  const handleRowClick = (row, column) => {
-    if (column.accessor === 'name') {
-      navigate(`/computing/vms/${row.id}`); // 해당 이름을 URL로 전달하며 HostDetail로 이동합니다.
-    }
-  };
+ 
 
    // 탭 상태 정의 (기본 값: 'ipv4')
    const [selectedModalTab, setSelectedModalTab] = useState('common');
    // 탭 클릭 핸들러
-   const handleTabModalClick = (tab) => {
-     setSelectedModalTab(tab);
-   };
- 
+
  
 
-//    const { 
-//     data: vms, 
-//     status: vmsStatus,
-//     isRefetching: isVMsRefetching,
-//     refetch: refetchVMs, 
-//     isError: isVMsError, 
-//     error: vmsError, 
-//     isLoading: isVMsLoading,
-// } = useAllVMs(toTableItemPredicateVMs);
+   const { 
+    data: vms, 
+    status: vmsStatus,
+    isRefetching: isVMsRefetching,
+    refetch: refetchVMs, 
+    isError: isVMsError, 
+    error: vmsError, 
+    isLoading: isVMsLoading,
+} = useAllVMs(toTableItemPredicateVMs);
 
-// function toTableItemPredicateVMs(vm) {
-//     return {
-//         status: vm?.status ?? 'Unknown',       
-//         id: vm?.id ?? '',
-//         icon: '',                                   
-//         name: vm?.name ?? 'Unknown',               
-//         comment: vm?.comment ?? '',                 
-//         host: vm?.hostVo?.name ?? 'Unknown',         
-//         ipv4: vm?.ipv4?.[0] ?? 'Unknown', 
-//         fqdn: vm?.fqdn ?? '',                      
-//         cluster: vm?.clusterVo?.name ?? 'Unknown',        
-//         datacenter: vm?.dataCenterVo?.name ?? 'Unknown', 
-//         memory: vm?.memoryInstalled ?? '',  
-//         cpu: vm?.cpu ?? '',  
-//         clusterVo: vm?.clusterVo?.id ?? '',
-//         network: vm?.network ?? '',  
-//         upTime: vm?.upTime ?? '',                    
-//         description: vm?.description ?? 'No description',  
-//     };
-// }
-
-
+function toTableItemPredicateVMs(vm) {
+    return {
+        status: vm?.status ?? 'Unknown',       
+        id: vm?.id ?? '',
+        icon: '🖥️',                                   
+        name: vm?.name ?? 'Unknown',               
+        comment: vm?.comment ?? '',                 
+        host: vm?.hostVo?.name ?? 'Unknown',         
+        ipv4: vm?.ipv4?.[0] ?? 'Unknown', 
+        fqdn: vm?.fqdn ?? '',                      
+        cluster: vm?.clusterVo?.name ?? 'Unknown',        
+        datacenter: vm?.dataCenterVo?.name ?? 'Unknown', 
+        memory: vm?.memoryInstalled ?? '',  
+        cpu: vm?.cpu ?? '',  
+        clusterVo: vm?.clusterVo?.id ?? '',
+        network: vm?.network ?? '',  
+        upTime: vm?.upTime ?? '',                    
+        description: vm?.description ?? 'No description',  
+    };
+}
 
   return (
     <div id="section">
@@ -158,14 +149,12 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
           </div>
         </div> */}
    <VmDu 
-
-  columns={TableColumnsInfo.VM_CHART} 
-  handleRowClick={handleRowClick}  
-  openPopup={openPopup} 
-  setActiveTab={setActiveTab}
-  togglePopup={togglePopup} 
-  isPopupOpen={isPopupOpen} 
-/>
+        columns={TableColumnsInfo.VM_CHART} 
+        data={vms}
+        openPopup={openPopup} 
+        togglePopup={togglePopup} 
+        isPopupOpen={isPopupOpen} 
+      />
       </div>
   
            

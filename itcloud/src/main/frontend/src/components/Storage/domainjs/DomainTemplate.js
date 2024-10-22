@@ -1,9 +1,11 @@
-import { useAllTemplateFromDomain } from "../../../api/RQHook";
+import {useAllTemplateFromDomain} from "../../../api/RQHook";
 import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
 
-// 애플리케이션 섹션
-const Template = (domain) => {
+
+
+const DomainTemplate = ({ domain }) => {
+
     const { 
         data: templates, 
         status: templatesStatus, 
@@ -19,18 +21,19 @@ const Template = (domain) => {
           creationDate: template?.creationDate ?? '알 수 없음',
         };
       }
-  
+    
+
     return (
         <>
-          <div className="host_empty_outer">
-            <TableOuter 
-              columns={TableColumnsInfo.TEMPLATE_FROM_DOMAIN}
-              data={templates}
-              onRowClick={() => console.log('Row clicked')} 
-            />
-          </div>
-        </>
+        <div className="host_empty_outer">
+          <TableOuter 
+            columns={TableColumnsInfo.TEMPLATE_FROM_DOMAIN}
+            data={templates}
+            onRowClick={() => console.log('Row clicked')} 
+          />
+        </div>
+      </>
     );
   };
   
-  export default Template;
+  export default DomainTemplate;

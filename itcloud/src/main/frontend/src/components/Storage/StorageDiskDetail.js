@@ -16,6 +16,9 @@ import './css/StorageDiskDetail.css';
 import { useAllDisk, useAllStorageDomainFromDisk, useAllVmsFromDisk, useDiskById } from '../../api/RQHook';
 import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
+import DiskGeneral from './diskjs/DiskGeneral';
+import DiskVm from './diskjs/DiskVm';
+import DiskStorage from './diskjs/DiskStorage';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const navigate = useNavigate();
@@ -98,6 +101,8 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     };
   }, []);
 
+
+  
   // api
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const { 
@@ -115,49 +120,60 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   }, [shouldRefresh, diskRefetch]);
 
   // 가상머신
-  const { 
-    data: vms, 
-    status: vmsStatus, 
-    isLoading: isVmsLoading, 
-    isError: isVmsError,
-  } = useAllVmsFromDisk(disk?.id, toTableItemPredicateVMs);
-  function toTableItemPredicateVMs(vm) { 
-    return {
-      name: vm?.name ?? '없음',  // 가상머신 이름
-      cluster: vm?.cluster?.name ?? '없음',  // 클러스터
-      ipAddress: vm?.ipAddress ?? '없음',  // IP 주소
-      fqdn: vm?.fqdn ?? '없음',  // FQDN
-      memory: vm?.memory ? `${vm.memory} MB` : '알 수 없음',  // 메모리 (MB)
-      cpu: vm?.cpu?.cores ?? '알 수 없음',  // CPU 코어 수
-      network: vm?.network?.name ?? '없음',  // 네트워크 이름
-      status: vm?.status ?? '알 수 없음',  // 가상머신 상태
-      uptime: vm?.uptime ?? '알 수 없음',  // 가상머신 업타임
-    };
-  }
+  // const { 
+  //   data: vms, 
+  //   status: vmsStatus, 
+  //   isLoading: isVmsLoading, 
+  //   isError: isVmsError,
+  // } = useAllVmsFromDisk(disk?.id, toTableItemPredicateVMs);
+  // function toTableItemPredicateVMs(vm) { 
+  //   return {
+  //     name: vm?.name ?? '없음',  // 가상머신 이름
+  //     cluster: vm?.cluster?.name ?? '없음',  // 클러스터
+  //     ipAddress: vm?.ipAddress ?? '없음',  // IP 주소
+  //     fqdn: vm?.fqdn ?? '없음',  // FQDN
+  //     memory: vm?.memory ? `${vm.memory} MB` : '알 수 없음',  // 메모리 (MB)
+  //     cpu: vm?.cpu?.cores ?? '알 수 없음',  // CPU 코어 수
+  //     network: vm?.network?.name ?? '없음',  // 네트워크 이름
+  //     status: vm?.status ?? '알 수 없음',  // 가상머신 상태
+  //     uptime: vm?.uptime ?? '알 수 없음',  // 가상머신 업타임
+  //   };
+  // }
 
   // 스토리지(????정보안뜸)
-  const { 
-    data: storageDomains, 
-    status: storageDomainsStatus, 
-    isLoading: isStorageDomainsLoading, 
-    isError: isStorageDomainsError,
-  } = useAllStorageDomainFromDisk(disk?.id, toTableItemPredicateStorage);
-  function toTableItemPredicateStorage(storageDomain) { 
-    return {
-      icon1: '',
-      icon2: '',
-      name: storageDomain?.name ?? '없음',
-      domainType: storageDomain?.domainType ?? '없음',
-      status: storageDomain?.status ?? '알 수 없음',
-      freeSpace: storageDomain?.freeSpace ? `${(storageDomain.freeSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
-      usedSpace: storageDomain?.usedSpace ? `${(storageDomain.usedSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
-      totalSpace: storageDomain?.totalSpace ? `${(storageDomain.totalSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
-      description: storageDomain?.description ?? '없음',
-    };
-  }
+  // const { 
+  //   data: storageDomains, 
+  //   status: storageDomainsStatus, 
+  //   isLoading: isStorageDomainsLoading, 
+  //   isError: isStorageDomainsError,
+  // } = useAllStorageDomainFromDisk(disk?.id, toTableItemPredicateStorage);
+  // function toTableItemPredicateStorage(storageDomain) { 
+  //   return {
+  //     icon1: '',
+  //     icon2: '',
+  //     name: storageDomain?.name ?? '없음',
+  //     domainType: storageDomain?.domainType ?? '없음',
+  //     status: storageDomain?.status ?? '알 수 없음',
+  //     freeSpace: storageDomain?.freeSpace ? `${(storageDomain.freeSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
+  //     usedSpace: storageDomain?.usedSpace ? `${(storageDomain.usedSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
+  //     totalSpace: storageDomain?.totalSpace ? `${(storageDomain.totalSpace / 1024).toFixed(2)} GiB` : '알 수 없음',
+  //     description: storageDomain?.description ?? '없음',
+  //   };
+  // }
     
-    const pathData = [disk?.alias, sections.find((section) => section.id === activeTab)?.label]; 
-
+  const pathData = [disk?.alias, sections.find((section) => section.id === activeTab)?.label]; 
+  const renderSectionContent = () => {
+    switch (activeTab) {
+      case 'general':
+        return <DiskGeneral disk={disk} />;
+      case 'vms':
+        return <DiskVm disk={disk} />;
+      case 'storagdDomains':
+        return <DiskStorage disk={disk} />;
+      default:
+        return <DiskGeneral disk={disk} />;
+    }
+  };
 
 
   return (
@@ -180,7 +196,8 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
         
         <div className="host_btn_outer">
           <Path pathElements={pathData} />
-          {activeTab ===  'general' && (
+          {renderSectionContent()}
+          {/* {activeTab ===  'general' && (
             <div className="tables">
               <div className="table_container_center">
                 <table className="table">
@@ -214,9 +231,9 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                 </table>
               </div>
             </div>
-          )}
+          )} */}
 
-          {activeTab === 'vms' && (
+          {/* {activeTab === 'vms' && (
            
               <PagingTableOuter 
                 columns={TableColumnsInfo.VMS_FROM_DISK} 
@@ -225,9 +242,9 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                 showSearchBox={false}
               />
            
-          )}
+          )} */}
 
-          {activeTab === 'storagdDomains' && (
+          {/* {activeTab === 'storagdDomains' && (
               <PagingTableOuter 
                 columns={TableColumnsInfo.STORAGES_FROM_DISK} 
                 data={storageDomains}
@@ -235,7 +252,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                 showSearchBox={false}
               />
             
-          )}
+          )} */}
 
         
         </div>

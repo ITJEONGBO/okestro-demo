@@ -45,8 +45,10 @@ const NetworkTemplate = ({ network }) => {
         <TableOuter 
           columns={TableColumnsInfo.TEMPLATES}
           data={templates}
-          emptyMessage="내용이 없습니다" // 데이터가 없을 때 표시할 메시지
           onRowClick={() => console.log('Row clicked')} 
+          onContextMenuItems={() => [
+            <div key="네트워크 템플릿 제거" onClick={() => console.log()}>제거</div>
+          ]}
         />
       </>
     );

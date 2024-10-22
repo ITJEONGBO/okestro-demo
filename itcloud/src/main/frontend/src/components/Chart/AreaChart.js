@@ -29,12 +29,12 @@ const AreaChart = ({ series, datetimes }) => {
   });
 
   //반응형
-  const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.28);  // 초기 너비를 화면의 70%로 설정
+  const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.31);  // 초기 너비를 화면의 70%로 설정
   const [chartHeight, setChartHeight] = useState(window.innerHeight * 0.18); // 초기 높이를 화면의 30%로 설정
 
   useEffect(() => {
     const handleResize = () => {
-      setChartWidth(window.innerWidth * 0.28);  // 화면 너비의 70%로 설정
+      setChartWidth(window.innerWidth * 0.31);  // 화면 너비의 70%로 설정
       setChartHeight(window.innerHeight * 0.18); // 화면 높이의 30%로 설정
     };
 

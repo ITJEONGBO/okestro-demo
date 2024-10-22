@@ -7,12 +7,10 @@ import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faExclamation, faPlusCircle, faMinusCircle, faChevronLeft, faCheck
-  , faTimes, faChevronCircleRight, faDesktop, faAngleDown,
+  faTimes, faChevronCircleRight, 
   faGlassWhiskey,
   faExclamationTriangle,
-  faCloud,
-  faEllipsisV
+  faCloud
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDomainDetail.css';
 import TableOuter from '../table/TableOuter';
@@ -21,6 +19,13 @@ import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
 import { useAllDataCenterFromDomain, useAllDiskFromDomain, useAllDiskSnapshotFromDomain, useAllEventFromDomain, useAllTemplateFromDomain, useDomainById } from '../../api/RQHook';
 import EventDu from '../duplication/EventDu';
+import DomainGeneral from './domainjs/DomainGeneral';
+import DomainDatacenter from './domainjs/DomainDatacenter';
+import DomainVm from './domainjs/DomainVm';
+import DomainDisk from './domainjs/DomainDisk';
+import DomainDiskSnaphot from './domainjs/DomainDiskSnaphot';
+import DomainTemplate from './domainjs/DomainTemplate';
+import DomainEvent from './domainjs/DomainEvent';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   // url값 바꿔주기 section에따라
@@ -87,16 +92,15 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     setActiveLunTab(tab); 
   };
    
-  // 데이터센터 박스떨어지게
-  const [isFirstRowExpanded, setFirstRowExpanded] = useState(false);
-  const [isSecondRowExpanded, setSecondRowExpanded] = useState(false);
-  const toggleFirstRow = () => {
-    setFirstRowExpanded(!isFirstRowExpanded);
-  };
-
-  const toggleSecondRow = () => {
-    setSecondRowExpanded(!isSecondRowExpanded);
-  };
+  // 가상머신 박스떨어지게
+  // const [isFirstRowExpanded, setFirstRowExpanded] = useState(false);
+  // const [isSecondRowExpanded, setSecondRowExpanded] = useState(false);
+  // const toggleFirstRow = () => {
+  //   setFirstRowExpanded(!isFirstRowExpanded);
+  // };
+  // const toggleSecondRow = () => {
+  //   setSecondRowExpanded(!isSecondRowExpanded);
+  // };
 
 
 //임시(팝업데이터)
@@ -166,11 +170,28 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
 
   // 옵션박스 열고닫기
-  const [isUploadOptionBoxVisible, setUploadOptionBoxVisible] = useState(false);
-  const toggleUploadOptionBox = () => {
-    setUploadOptionBoxVisible(!isUploadOptionBoxVisible);
-  };
-
+  // const [isUploadOptionBoxVisible, setUploadOptionBoxVisible] = useState(false);
+  // const toggleUploadOptionBox = () => {
+  //   setUploadOptionBoxVisible(!isUploadOptionBoxVisible);
+  // };
+  // 바탕클릭하면 옵션박스 닫기
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (
+  //       isUploadOptionBoxVisible &&
+  //       !event.target.closest('.upload_option_box') &&
+  //       !event.target.closest('.upload_option_boxbtn')
+  //     ) {
+  //       setUploadOptionBoxVisible(false);
+  //     }
+  //   };
+    
+  //   //
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [isUploadOptionBoxVisible]);
   
   //일반
   const [shouldRefresh, setShouldRefresh] = useState(false);
@@ -189,100 +210,101 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   }, [shouldRefresh, domainRefetch]);
 
   //데이터센터(???????정보안나옴)
-  const { 
-    data: dataCenters, 
-    status: dataCentersStatus, 
-    isLoading: isDataCentersLoading, 
-    isError: isDataCentersError,
-  } = useAllDataCenterFromDomain(domain?.id, toTableItemPredicateDataCenters);
-  function toTableItemPredicateDataCenters(dataCenter) {
-    return {
-      id: dataCenter?.id ?? '없음',
-      name: dataCenter?.name ?? '',
-      status:dataCenter?.status ?? '',
-      domainTypeMaster: dataCenter?.domainTypeMaster ? '활성화' : '비활성화'
-    };
-  }
+  // const { 
+  //   data: dataCenters, 
+  //   status: dataCentersStatus, 
+  //   isLoading: isDataCentersLoading, 
+  //   isError: isDataCentersError,
+  // } = useAllDataCenterFromDomain(domain?.id, toTableItemPredicateDataCenters);
+  // function toTableItemPredicateDataCenters(dataCenter) {
+  //   return {
+  //     id: dataCenter?.id ?? '없음',
+  //     name: dataCenter?.name ?? '',
+  //     status:dataCenter?.status ?? '',
+  //     domainTypeMaster: dataCenter?.domainTypeMaster ? '활성화' : '비활성화'
+  //   };
+  // }
+
   //디스크
-  const { 
-    data: disks, 
-    status: disksStatus, 
-    isLoading: isDisksLoading, 
-    isError: isDisksError,
-  } = useAllDiskFromDomain(domain?.id, toTableItemPredicateDisks);
-  function toTableItemPredicateDisks(disk) {
-    return {
-      alias: disk?.alias ?? '없음',  // 별칭
-      icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
-      icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
-      virtualSize: disk?.virtualSize ? `${disk.virtualSize} GiB` : '알 수 없음', 
-      actualSize: disk?.actualSize ? `${disk.actualSize} GiB` : '알 수 없음',
-      allocationPolicy: disk?.allocationPolicy ?? '알 수 없음', 
-      storageDomain: disk?.storageDomain ?? '없음',  
-      creationDate: disk?.creationDate ?? '알 수 없음', 
-      lastUpdate: disk?.lastUpdate ?? '알 수 없음',
-      icon3: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
-      connectionTarget: disk?.connectionTarget ?? '없음',
-      status: disk?.status ?? '알 수 없음',
-      type: disk?.type ?? '알 수 없음', 
-      description: disk?.description ?? '없음', 
-    };
-  }
+  // const { 
+  //   data: disks, 
+  //   status: disksStatus, 
+  //   isLoading: isDisksLoading, 
+  //   isError: isDisksError,
+  // } = useAllDiskFromDomain(domain?.id, toTableItemPredicateDisks);
+  // function toTableItemPredicateDisks(disk) {
+  //   return {
+  //     alias: disk?.alias ?? '없음',  // 별칭
+  //     icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
+  //     icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
+  //     virtualSize: disk?.virtualSize ? `${disk.virtualSize} GiB` : '알 수 없음', 
+  //     actualSize: disk?.actualSize ? `${disk.actualSize} GiB` : '알 수 없음',
+  //     allocationPolicy: disk?.allocationPolicy ?? '알 수 없음', 
+  //     storageDomain: disk?.storageDomain ?? '없음',  
+  //     creationDate: disk?.creationDate ?? '알 수 없음', 
+  //     lastUpdate: disk?.lastUpdate ?? '알 수 없음',
+  //     icon3: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
+  //     connectionTarget: disk?.connectionTarget ?? '없음',
+  //     status: disk?.status ?? '알 수 없음',
+  //     type: disk?.type ?? '알 수 없음', 
+  //     description: disk?.description ?? '없음', 
+  //   };
+  // }
 
   //디스크 스냅샷
-  const { 
-    data: diskSnapshots, 
-    status: diskSnapshotsStatus, 
-    isLoading: isDiskSnapshotsLoading, 
-    isError: isDiskSnapshotsError,
-  } = useAllDiskSnapshotFromDomain(domain?.id, toTableItemPredicateDiskSnapshots);
-  function toTableItemPredicateDiskSnapshots(diskSnapshot) {
-    return {
-      size: diskSnapshot?.size ? `${diskSnapshot.size} GiB` : '알 수 없음',
-      creationDate: diskSnapshot?.creationDate ?? '알 수 없음',
-      snapshotCreationDate: diskSnapshot?.snapshotCreationDate ?? '알 수 없음',
-      diskAlias: diskSnapshot?.diskAlias ?? '없음',
-      snapshotDescription: diskSnapshot?.snapshotDescription ?? '없음',
-      target: diskSnapshot?.target ?? '없음',
-      status: diskSnapshot?.status ?? '알 수 없음',
-      diskSnapshotId: diskSnapshot?.diskSnapshotId ?? '없음',
-    };
-  }
+  // const { 
+  //   data: diskSnapshots, 
+  //   status: diskSnapshotsStatus, 
+  //   isLoading: isDiskSnapshotsLoading, 
+  //   isError: isDiskSnapshotsError,
+  // } = useAllDiskSnapshotFromDomain(domain?.id, toTableItemPredicateDiskSnapshots);
+  // function toTableItemPredicateDiskSnapshots(diskSnapshot) {
+  //   return {
+  //     size: diskSnapshot?.size ? `${diskSnapshot.size} GiB` : '알 수 없음',
+  //     creationDate: diskSnapshot?.creationDate ?? '알 수 없음',
+  //     snapshotCreationDate: diskSnapshot?.snapshotCreationDate ?? '알 수 없음',
+  //     diskAlias: diskSnapshot?.diskAlias ?? '없음',
+  //     snapshotDescription: diskSnapshot?.snapshotDescription ?? '없음',
+  //     target: diskSnapshot?.target ?? '없음',
+  //     status: diskSnapshot?.status ?? '알 수 없음',
+  //     diskSnapshotId: diskSnapshot?.diskSnapshotId ?? '없음',
+  //   };
+  // }
 
   //템플릿
-  const { 
-    data: templates, 
-    status: templatesStatus, 
-    isLoading: isTemplatesLoading, 
-    isError: isTemplatesError,
-  } = useAllTemplateFromDomain(domain?.id, toTableItemPredicateTemplates);
-  function toTableItemPredicateTemplates(template) {
-    return {
-      alias: template?.alias ?? '없음',
-      disk: template?.disk ?? '없음',
-      virtualSize: template?.virtualSize ? `${template.virtualSize} GiB` : '알 수 없음',
-      actualSize: template?.actualSize ? `${template.actualSize} GiB` : '알 수 없음',
-      creationDate: template?.creationDate ?? '알 수 없음',
-    };
-  }
+  // const { 
+  //   data: templates, 
+  //   status: templatesStatus, 
+  //   isLoading: isTemplatesLoading, 
+  //   isError: isTemplatesError,
+  // } = useAllTemplateFromDomain(domain?.id, toTableItemPredicateTemplates);
+  // function toTableItemPredicateTemplates(template) {
+  //   return {
+  //     alias: template?.alias ?? '없음',
+  //     disk: template?.disk ?? '없음',
+  //     virtualSize: template?.virtualSize ? `${template.virtualSize} GiB` : '알 수 없음',
+  //     actualSize: template?.actualSize ? `${template.actualSize} GiB` : '알 수 없음',
+  //     creationDate: template?.creationDate ?? '알 수 없음',
+  //   };
+  // }
 
   // 이벤트
-  const { 
-    data: events, 
-    status: eventsStatus, 
-    isLoading: isEventsLoading, 
-    isError: isEventsError 
-  } = useAllEventFromDomain(domain?.id, toTableItemPredicateEvents);
-  function toTableItemPredicateEvents(event) {
-    return {
-      icon: '',                      
-      time: event?.time ?? '',                
-      description: event?.description ?? 'No message', 
-      correlationId: event?.correlationId ?? '',
-      source: event?.source ?? 'ovirt',     
-      userEventId: event?.userEventId ?? '',   
-    };
-  }
+  // const { 
+  //   data: events, 
+  //   status: eventsStatus, 
+  //   isLoading: isEventsLoading, 
+  //   isError: isEventsError 
+  // } = useAllEventFromDomain(domain?.id, toTableItemPredicateEvents);
+  // function toTableItemPredicateEvents(event) {
+  //   return {
+  //     icon: '',                      
+  //     time: event?.time ?? '',                
+  //     description: event?.description ?? 'No message', 
+  //     correlationId: event?.correlationId ?? '',
+  //     source: event?.source ?? 'ovirt',     
+  //     userEventId: event?.userEventId ?? '',   
+  //   };
+  // }
 
   // ...버튼
   const [popupOpen, setPopupOpen] = useState(false);
@@ -300,7 +322,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   ];
   const sections = [
     { id: 'general', label: '일반' },
-    { id: 'datacenters', label: '데이터 센터' },
+    { id: 'dataCenters', label: '데이터 센터' },
     { id: 'vms', label: '가상머신' },
     { id: 'disks', label: '디스크' },
     { id: 'diskSnapshots', label: '디스크 스냅샷' },
@@ -309,25 +331,28 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   ];
 
   const pathData = [domain?.name, sections.find(section => section.id === activeTab)?.label];
+  const renderSectionContent = () => {
+    switch (activeTab) {
+      case 'general':
+        return <DomainGeneral domain={domain} />;
+      case 'dataCenters':
+        return <DomainDatacenter domain={domain} />;
+      case 'vms':
+        return <DomainVm domain={domain} />;
+      case 'disks':
+        return <DomainDisk domain={domain} />;  
+      case 'diskSnapshots':
+        return <DomainDiskSnaphot domain={domain} />;
+      case 'templates':
+        return <DomainTemplate domain={domain} />;
+      case 'events':
+        return <DomainEvent domain={domain} />;
+      default:
+        return <DomainGeneral domain={domain} />;
+    }
+  };
 
-  // 바탕클릭하면 옵션박스 닫기
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        isUploadOptionBoxVisible &&
-        !event.target.closest('.upload_option_box') &&
-        !event.target.closest('.upload_option_boxbtn')
-      ) {
-        setUploadOptionBoxVisible(false);
-      }
-    };
-    
-    //
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isUploadOptionBoxVisible]);
+
   return (
     <div className="content_detail_section">
       <HeaderButton
@@ -346,7 +371,8 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <div className="host_btn_outer">
           
         <Path pathElements={pathData}/>
-        {activeTab === 'general' && (
+        {renderSectionContent()}
+        {/* {activeTab === 'general' && (
           <>
           <div className="header_right_btns">
             <button onClick={() => openModal('manageDomain')}>도메인 관리</button>
@@ -408,9 +434,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </div> 
           </div> 
           </>
-        )}
+        )} */}
 
-        {activeTab === 'datacenters' && (
+        {/* {activeTab === 'datacenters' && (
           <>
            
               <div className="header_right_btns">
@@ -426,10 +452,10 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 onRowClick={() => console.log('Row clicked')} 
               />
           </>
-        )}
+        )} */}
 
-        {/*밑에딸린 박스 편집 */}
-        {activeTab === 'vms' && (
+        
+        {/* {activeTab === 'vms' && (
           <>
  <div className="host_empty_outer">
       <div className="section_table_outer">
@@ -459,7 +485,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </tr>
           </tbody>
 
-          {/* 첫번째 하위 행 */}
+          
           {isFirstRowExpanded && (
             <>
               <tbody className="detail_machine_second">
@@ -477,7 +503,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 </tr>
               </tbody>
 
-              {/* 두번째 하위 행 */}
+              
               {isSecondRowExpanded && (
                 <tbody className="detail_machine_last">
                   <tr>
@@ -499,8 +525,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       </div>
     </div>
           </>
-        )}
-        {activeTab === 'disks' && (
+        )} */}
+
+        {/* {activeTab === 'disks' && (
         <>
             <div className="header_right_btns">
                 <button  onClick={() => openModal('move')}>이동</button>
@@ -510,7 +537,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                   <i class={faAngleDown} onClick={toggleUploadOptionBox}fixedWidth/>
                 </button>
                 <button>다운로드</button>
-                {/*업로드 버튼 옵션박스 */}
+                
                 {isUploadOptionBoxVisible &&(
                 <div className='upload_option_box'>
                   <div>시작</div>
@@ -527,9 +554,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               onRowClick={() => console.log('Row clicked')}
             />
        </>
-        )}
+        )} */}
 
-        {activeTab === 'diskSnapshots' && (
+        {/* {activeTab === 'diskSnapshots' && (
         <>
             <div className="header_right_btns">
                 <button onClick={() => openModal('delete')}>제거</button>
@@ -541,8 +568,8 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               onRowClick={() => console.log('Row clicked')}
             />
         </>
-        )}
-        {activeTab === 'templates' && (
+        )} */}
+        {/* {activeTab === 'templates' && (
           <>
           <div className="host_empty_outer">
             <TableOuter 
@@ -552,14 +579,14 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             />
           </div>
         </>
-        )}
-        {activeTab === 'events' && (
+        )} */}
+        {/* {activeTab === 'events' && (
           <EventDu 
           columns={TableColumnsInfo.EVENTS}
           data={events}
           handleRowClick={() => console.log('Row clicked')}
       />
-        )}
+        )} */}
 
         {/* 권한(삭제예정)*/}
         {/* {activeTab === 'permission' && (

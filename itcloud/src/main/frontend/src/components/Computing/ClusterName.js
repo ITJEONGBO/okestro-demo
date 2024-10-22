@@ -301,8 +301,7 @@ function ClusterName() {
                 <>
                     <HeaderButton
                         titleIcon={faEarthAmericas}
-                        title="클러스터"
-                        subtitle={cluster?.name}
+                        title={cluster?.name}
                         additionalText="목록이름"
                         buttons={buttons}
                         popupItems={[]}

@@ -186,6 +186,18 @@ const {
     };
 
  
+    useEffect(() => {
+        if (location.pathname === '/') {
+            setAsidePopupVisible(false);  // 대시보드일 때 aside_popup을 닫음
+        }
+    }, [location.pathname]);
+
+    // 대시보드 경로일 때 aside_popup을 열지 않도록 처리
+    const handleAsidePopupBtnClick = () => {
+        if (location.pathname !== '/') {  // 대시보드 경로가 아닌 경우에만 토글 가능
+            setAsidePopupVisible(prev => !prev);
+        }
+    };
 
     const handleClick = (id) => {
         setSelected(id);  // selected 값을 변경
@@ -677,9 +689,7 @@ const getBackgroundColor = (id) => {
         setContextMenuTarget(null);
     };
 
-    const handleAsidePopupBtnClick = () => {
-        setAsidePopupVisible(!asidePopupVisible);
-    };
+    
 
 
     const handleSettingIconClick = () => {
@@ -698,7 +708,11 @@ const getBackgroundColor = (id) => {
                         <div
                             id="aside_popup_dashboard_btn"
                             className={getClassNames('dashboard')}
-                            onClick={() => handleClick('dashboard')}
+                            onClick={() => {
+                                if (location.pathname !== '/') {  // 대시보드 경로가 아닌 경우에만 동작
+                                    setAsidePopupVisible(true);
+                                }
+                            }}
                             style={{ backgroundColor: asidePopupBackgroundColor.dashboard }}
                         >
                             <FontAwesomeIcon icon={faThLarge} fixedWidth/>
@@ -772,7 +786,6 @@ const getBackgroundColor = (id) => {
                 </div>
             </div>
             <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
-               
                 {renderAsidePopupContent()}
             </div>
         </div>

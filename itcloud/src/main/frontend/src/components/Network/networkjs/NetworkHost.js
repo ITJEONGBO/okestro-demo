@@ -82,6 +82,9 @@ const NetworkHost = ({ network }) => {
               }
             }}
             clickableColumnIndex={[1,2,3]} 
+            onContextMenuItems={() => [
+              <div key="호스트 네트워크 설정" onClick={() => console.log()}>호스트 네트워크 설정</div>,
+            ]}
           />
         )}
 

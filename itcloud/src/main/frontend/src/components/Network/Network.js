@@ -14,6 +14,7 @@ import Footer from '../footer/Footer';
 import { adjustFontSize } from '../../UIEvent';
 import { useAllNetworks } from '../../api/RQHook';
 import './css/Network.css';
+import TableInfo from '../table/TableInfo';
 
 Modal.setAppElement('#root');
 const Network = () => {
@@ -30,13 +31,14 @@ const Network = () => {
       function toTableItemPredicateNetworks(network) {
         return {
           id: network?.id ?? '',
+          dataCenterId: network?.datacenterVo?.id ?? '',  // 데이터 센터의 ID     
           name: network?.name ?? '',
           comment: network?.comment ?? '',  // 코멘트
-          dataCenterVo: network?.dataCenterVo?.name ?? '',  // 데이터 센터
+          datacenterVo: network?.datacenterVo?.name ?? '',  // 데이터 센터
           description: network?.description ?? '',  // 설명
           vlan: network?.vlan ?? '',  // VLAN 태그
           label: network?.label ?? '-',  // 레이블
-          mtu: network?.mtu ?? '',  // MTU
+          port: network?.port ?? '',  // port
         };
       }
       
@@ -44,18 +46,18 @@ const Network = () => {
     const [activePopup, setActivePopup] = useState(null);
     const navigate = useNavigate();
 
-    const handleNetworkNameClick = (row, column) => {
-        if (column.accessor === 'name') {
-          navigate(
-            `/networks/${row.id}`, 
-            { state: { name: row.name } }
-          );
-        } else if (column.accessor === 'dataCenter') {
-          navigate(
-            `/computing/datacenters/${row.id}`
-          );
-        }
-      };
+    // const handleNetworkNameClick = (row, column) => {
+    //     if (column.accessor === 'name') {
+    //       navigate(
+    //         `/networks/${row.id}`, 
+    //         { state: { name: row.name } }
+    //       );
+    //     } else if (column.accessor === 'dataCenter') {
+    //       navigate(
+    //         `/computing/datacenters/${row.id}`
+    //       );
+    //     }
+    //   };
       
 
     useEffect(() => {
@@ -97,25 +99,21 @@ const Network = () => {
                     <button onClick={() => openPopup('delete')}> 삭제</button>
                 </div>
                 <TableOuter
-                    columns={TableColumnsInfo.NETWORKS}
+                    columns={TableInfo.NETWORKS}
                     data={networkdata}
                     onRowClick={(row, column, colIndex) => {
-                        const clickableCols = [0, 2];
-                        if (clickableCols.includes(colIndex)) {
-                            if (colIndex === 0) {
-                                navigate(`/networks/${row.id}`, { state: { name: row.name } });
-                            } else if (colIndex === 2) {
-                                navigate(`/computing/datacenters/${row.id}`);
-                            }
-                        } else {
-                        console.log('Selected Row ID:', row.id);
+                        if (colIndex === 0) {
+                          navigate(`/networks/${row.id}`);  // 1번 컬럼 클릭 시 이동할 경로
+                        } else if (colIndex === 2) {
+                          navigate(`/computing/datacenters/${row.dataCenterId}`);  // 2번 컬럼 클릭 시 이동할 경로
                         }
-                    }}
+                      }}
                     clickableColumnIndex={[0, 2]} // 0번과 2번 열에서 클릭 시 navigate 처리
                     onContextMenuItems={(rowData) => [
-                        <div key="1" onClick={() => openPopup('newNetwork')}>1</div>,
-                        <div key="2" onClick={() => console.log('2번 클릭', rowData)}>2</div>,
-                        <div key="3" onClick={() => console.log('3번 클릭', rowData)}>3</div>
+                        <div key="새로 만들기" onClick={() => console.log()}>새로 만들기</div>,
+                        <div key="가져오기" onClick={() => console.log()}>가져오기</div>,
+                        <div key="편집" onClick={() => console.log()}>편집</div>,
+                        <div key="삭제" onClick={() => console.log()}>삭제</div>
                     ]}
                 />
 

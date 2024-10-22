@@ -231,8 +231,15 @@ function toTableItemPredicateDomains(domaindata) {
                   columns={TableColumnsInfo.STORAGE_DOMAINS} 
                   data={domaindata} 
                   onRowClick={handleDomainNameClick} 
-                  clickableColumnIndex={[2]} // 첫 번째와 세 번째 컬럼을 클릭 가능하게 설정
-                  showSearchBox={true} // 검색 박스를 표시
+                  clickableColumnIndex={[2]}
+                  showSearchBox={true} 
+                  onContextMenuItems={() => [
+                    <div key="도메인 생성" onClick={() => console.log()}>도메인 생성</div>,
+                    <div key="도메인 가져오기" onClick={() => console.log()}>도메인 가져오기</div>,
+                    <div key="도메인 관리" onClick={() => console.log()}>도메인 관리</div>,
+                    <div key="삭제" onClick={() => console.log()}>삭제</div>,
+                    <div key="디스크" onClick={() => console.log()}>디스크</div>,
+                  ]}
                 />
               </>
         

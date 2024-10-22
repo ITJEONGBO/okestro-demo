@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
@@ -8,7 +7,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import ApiManager from '../../api/ApiManager';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown, faChevronDown, faChevronLeft, faDatabase, faExclamationTriangle, faRefresh, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faDatabase, faExclamationTriangle, faTimes} from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 import './css/AllDisk.css';
 import { useAllDisks } from '../../api/RQHook';
@@ -110,17 +109,12 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
   });
 
 
-  const handleRowClick = (row, column) => {
-        if (column.accessor === 'alias') {
-            navigate(
-              `/storages/disks/${row.id}`, 
-              { state: { name: row.name } }
-            );
-        }
-    };
+  const handleRowClick = (row, column, colIndex) => {
+    if (colIndex === 0) {
+      navigate(`/storages/disks/${row.id}`);  // 1번 컬럼 클릭 시 이동할 경로
+    }
+  }
 
-
-  
   return (
     <div id="section">
       <HeaderButton

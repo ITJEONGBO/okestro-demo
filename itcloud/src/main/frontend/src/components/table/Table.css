@@ -54,6 +54,7 @@
   white-space: nowrap; /* 텍스트를 한 줄로 표시 */
   overflow: hidden; /* 넘치는 텍스트 숨기기 */
   text-overflow: ellipsis; /* 넘치는 텍스트는 ...으로 표시 */
+
 }
 .custom-table tbody tr {
   cursor: pointer; /* 모든 tr에 cursor: pointer 적용 */
@@ -102,6 +103,13 @@
   cursor: pointer;
   font-size: 0.3rem;
 }
-.Contextbox>div{
-  padding:0.2rem;
+.my_context_menu > div {
+  padding: 0.06rem;
+  border-bottom: 1px solid #d3d3d3;
+  padding-right: 1.3rem;
+  cursor:pointer;
+  font-size:0.28rem;
+}
+.my_context_menu > div:hover {
+  background-color:#ededed;
 }

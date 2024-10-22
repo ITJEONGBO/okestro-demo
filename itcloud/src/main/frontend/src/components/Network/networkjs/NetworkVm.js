@@ -6,8 +6,7 @@ import { useNavigate} from 'react-router-dom';
 import { useState } from 'react'; 
 import { faChevronDown,faPlay } from "@fortawesome/free-solid-svg-icons";
 
-// 애플리케이션 섹션
-const NetworkVm = (network) => {
+const NetworkVm = ({network}) => {
     const navigate = useNavigate();
     // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
@@ -26,11 +25,11 @@ const NetworkVm = (network) => {
     isError: isVmsError 
   } = useAllVmsFromNetwork(network?.id, toTableItemPredicateVms);
   function toTableItemPredicateVms(vm) {
-    const status = vms?.status ?? '';
+    const status = vm?.status ?? '';
     const icon = status === 'UP' 
     ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem',transform: 'rotate(270deg)' }} />
     : status === 'DOWN' 
-    ? <FontAwesomeIcon icon={faChevronDown} fixedWidth  style={{ color: 'magenta', fontSize: '1.5rem', transform: 'rotate(90deg)'}}/>
+    ? <FontAwesomeIcon icon={faPlay} fixedWidth  style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)'}}/>
     : '';
     return {
       id: vm?.id ?? '없음',  // 가상 머신 ID
@@ -69,10 +68,13 @@ const NetworkVm = (network) => {
       </div>
       {activeVmFilter === 'running' && (
           <TableOuter
-            columns={TableColumnsInfo.VMS}
+            columns={TableColumnsInfo.VMS_NIC}
             data={vms}
             onRowClick={() => console.log('Row clicked')}
             clickableColumnIndex={[1]} 
+            onContextMenuItems={() => [
+              <div key="제거" onClick={() => console.log()}>제거</div>,
+            ]}
           />
         )}
 

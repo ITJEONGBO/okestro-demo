@@ -168,16 +168,17 @@ const Table = ({  columns = [], data = [], onRowClick = () => {}, clickableColum
       {/* 우클릭 메뉴 박스 */}
       {contextMenu && (
         <div ref={menuRef}
+          className='my_context_menu'
           style={{
             position: 'absolute',
             top: `${contextMenu.mouseY}px`,
             left: `${contextMenu.mouseX}px`,
-            minWidth: '8%',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.16)',
             fontSize: '0.3rem',
             backgroundColor: 'white',
             border: '1px solid #eaeaea',
-            padding: '10px',
-            zIndex: 3
+            zIndex: '3',
+            borderRadius:'1px'
           }}
   
         >

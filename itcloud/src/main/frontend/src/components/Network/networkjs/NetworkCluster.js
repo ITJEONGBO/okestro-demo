@@ -52,7 +52,9 @@ const NetworkCluster = ({ network }) => {
             }
         }}
           clickableColumnIndex={[0]}
-          onContextMenuItems={() => ['1', '2', '3']}
+          onContextMenuItems={() => [
+            <div key="네트워크 관리" onClick={() => console.log()}>네트워크 관리</div>,
+          ]}
         />
 
 

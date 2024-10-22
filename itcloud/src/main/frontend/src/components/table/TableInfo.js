@@ -120,7 +120,7 @@ const TableInfo = {
   NETWORKS: [
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '데이터센터', accessor: 'dataCenter', clickable: false },
+    { header: '데이터센터', accessor: 'datacenterVo', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
     { header: '역할', accessor: 'role', clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
@@ -221,7 +221,7 @@ const TableInfo = {
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
     { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
     { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
-    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '생성 일자', accessor: 'createDate', clickable: false },
     { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
     { header: '', accessor: 'icon3', clickable: false },
     { header: '연결 대상', accessor: 'connectionTarget', clickable: false },

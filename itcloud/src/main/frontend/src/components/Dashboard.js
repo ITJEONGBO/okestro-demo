@@ -124,7 +124,7 @@ class HeatMapChart extends React.Component {
         },
         colors: ['#008FFB'],
       },
-      chartWidth: window.innerWidth * 0.28,  // 초기 width
+      chartWidth: window.innerWidth * 0.3,  // 초기 width
       chartHeight: window.innerHeight * 0.17, // 초기 height
     };
   }
@@ -132,7 +132,7 @@ class HeatMapChart extends React.Component {
   // 창 크기 변경 시 차트 크기를 업데이트하는 메서드
   updateChartSize = () => {
     this.setState({
-      chartWidth: window.innerWidth * 0.2,  // 화면의 70% 너비
+      chartWidth: window.innerWidth * 0.3,  // 화면의 70% 너비
       chartHeight: window.innerHeight * 0.17, // 화면의 30% 높이
     });
   }

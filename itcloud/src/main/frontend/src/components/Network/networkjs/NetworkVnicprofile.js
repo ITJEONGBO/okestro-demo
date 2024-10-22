@@ -5,7 +5,7 @@ import { useNavigate} from 'react-router-dom';
 import { useState } from 'react'; 
 
 // 애플리케이션 섹션
-const NetworkVnicprofile = (network) => {
+const NetworkVnicprofile = ({network}) => {
     const navigate = useNavigate();
     // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
@@ -21,8 +21,10 @@ const NetworkVnicprofile = (network) => {
         isLoading
       } = useAllVnicProfilesFromNetwork(network?.id, toTableItemPredicateVnicProfiles);
       function toTableItemPredicateVnicProfiles(vnicProfile) {
+        console.log('vnicProfile data:', vnicProfile);
         return {
           id: vnicProfile?.id ?? '없음',
+          dataCenterId: vnicProfile?.dataCenterVo?.id ?? '', 
           name: vnicProfile?.name ?? '없음',
           network: vnicProfile?.networkVo?.name ?? '',  // 네트워크 이름
           dataCenterVo: vnicProfile?.dataCenterVo?.name ?? '',  // 데이터 센터
@@ -45,10 +47,17 @@ const NetworkVnicprofile = (network) => {
         <TableOuter
           columns={TableColumnsInfo.VNIC_PROFILES} 
           data={vnicProfiles}
-          onRowClick={(row) => {
-            navigate(`/computing/datacenters/${network.id}`);
+          onRowClick={(row, column, colIndex) => {
+            if (colIndex === 2) {
+              navigate(`/computing/datacenters/${row.dataCenterId}`);
+            } 
           }}
           clickableColumnIndex={[2]} 
+          onContextMenuItems={() => [
+            <div key="새로 만들기" onClick={() => console.log()}>새로 만들기</div>,
+            <div key="편집" onClick={() => console.log()}>편집</div>,
+            <div key="제거" onClick={() => console.log()}>제거</div>,
+          ]}
         />
      </>
     );

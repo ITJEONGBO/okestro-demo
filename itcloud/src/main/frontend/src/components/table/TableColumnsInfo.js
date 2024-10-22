@@ -339,7 +339,7 @@ const TableColumnsInfo = {
   ],
 
   VMS: [
-    { header: '상태', accessor: 'status', clickable: false },
+    { header: '', accessor: 'icon', clickable: false },
     // { header: '엔진', accessor: 'engine', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
@@ -355,11 +355,11 @@ const TableColumnsInfo = {
     { header: '설명', accessor: 'description', clickable: false }
   ],
   VMS_NIC: [
+    { header: '상태', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: 'vNIC 상태', accessor: 'icon', clickable: false },
     { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: 'vNIC Rx', accessor: 'vnicRx', clickable: false },
     { header: 'vNIC Tx', accessor: 'vnicTx', clickable: false },

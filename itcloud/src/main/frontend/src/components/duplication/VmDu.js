@@ -5,11 +5,19 @@ import TableOuter from '../table/TableOuter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV, faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import { useAllVMs, useVMsFromDataCenter } from '../../api/RQHook';
 import VncViewer from '../Vnc/VncViewer';
 import { createRoot } from 'react-dom/client';
 
-const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActiveTab: parentSetActiveTab, togglePopup, isPopupOpen, dataCenterId, showTemplateButton = true,  }) => {
+const VmDu = ({
+  columns,
+  handleRowClick: parentHandleRowClick,
+  openPopup,
+  setActiveTab: parentSetActiveTab,
+  togglePopup,
+  isPopupOpen,
+  showTemplateButton = true,
+  data 
+}) => {
   const navigate = useNavigate();
   
   const [activePopup, setActivePopup] = useState(null);
@@ -17,42 +25,35 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
   const [activeSection, setActiveSection] = useState('common');
 
   const openModal = () => setIsModalOpen(true);
+  const [selectedData, setSelectedData] = useState([]);  // 초기 값을 빈 배열로 설정
 
-
-  // 모든가상머신목록
-  const { 
-    data: vms, 
-    status: vmsStatus,
-    isRefetching: isVMsRefetching,
-    refetch: refetchVMs, 
-    isError: isVMsError, 
-    error: vmsError, 
-    isLoading: isVMsLoading,
-  } = useAllVMs(toTableItemPredicateVMs);
+  useEffect(() => {
+    if (data && Array.isArray(data)) {
+      setSelectedData(data);  // data prop이 변경될 때 selectedData로 설정
+    }
+  }, [data]);
 
  //데이터센터id
- const { data: vmsByDataCenter, status, isLoading, isError } = useVMsFromDataCenter(dataCenterId,toTableItemPredicateVMs); 
- function toTableItemPredicateVMs(vm) {
-  return {
-    icon: '🖥️', // 이모티콘은 고정적으로 추가
-    name: vm?.name ?? '없음',
-    comment: vm?.comment ?? '없음',
-    host: vm?.host?.name ?? '없음',
-    ipv4: vm?.ipv4 ?? '알 수 없음',
-    fqdn: vm?.fqdn ?? '알 수 없음',
-    clusterVo: vm?.clusterVo?.name ?? '알 수 없음',
-    status: vm?.status ?? '알 수 없음',
-    dataCenterVo: vm?.dataCenterVo?.name ?? '알 수 없음',
-    memory: vm?.memory ? `${vm.memory} MiB` : '알 수 없음',
-    cpu: vm?.cpu ? `${vm.cpu} cores` : '알 수 없음',
-    network: vm?.network ?? '알 수 없음',
-    upTime: vm?.upTime ?? '알 수 없음',
-    description: vm?.description ?? '알 수 없음',
-  };
-} 
+//  const { data: vmsByDataCenter, status, isLoading, isError } = useVMsFromDataCenter(dataCenterId,toTableItemPredicateVMs); 
+//  function toTableItemPredicateVMs(vm) {
+//   return {
+//     icon: '🖥️', // 이모티콘은 고정적으로 추가
+//     name: vm?.name ?? '없음',
+//     comment: vm?.comment ?? '없음',
+//     host: vm?.host?.name ?? '없음',
+//     ipv4: vm?.ipv4 ?? '알 수 없음',
+//     fqdn: vm?.fqdn ?? '알 수 없음',
+//     clusterVo: vm?.clusterVo?.name ?? '알 수 없음',
+//     status: vm?.status ?? '알 수 없음',
+//     dataCenterVo: vm?.dataCenterVo?.name ?? '알 수 없음',
+//     memory: vm?.memory ? `${vm.memory} MiB` : '알 수 없음',
+//     cpu: vm?.cpu ? `${vm.cpu} cores` : '알 수 없음',
+//     network: vm?.network ?? '알 수 없음',
+//     upTime: vm?.upTime ?? '알 수 없음',
+//     description: vm?.description ?? '알 수 없음',
+//   };
+// } 
 
-  // 데이터선택
-  const selectedData = dataCenterId ? vmsByDataCenter : vms;
    
     
 
@@ -95,6 +96,7 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
       navigate(`/computing/vms/${row.id}`);
     }
   };
+
 
   const [selectedModalTab, setSelectedModalTab] = useState('common');
   const handleTabModalClick = (tab) => {
@@ -170,9 +172,9 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
 
       <TableOuter 
         columns={columns}
-        data={selectedData}
-        onRowClick={handleRowClick}
-        showSearchBox={true}
+        data={data} // 데이터가 배열인지 확인
+        onRowClick={handleRowClick} // 행 클릭 시 호출되는 함수
+        showSearchBox={true}  // 검색창 표시 여부
         clickableColumnIndex={[1, 6,8]} // 첫 번째와 세 번째 컬럼을 클릭 가능하게 설정
         shouldHighlight1stCol={true} // 첫 번째 컬럼을 강조
       />
