@@ -154,7 +154,7 @@ function RutilManager() {
 
     const openDeletePopup = (type) => {
         if (selectedId) { // 선택된 ID가 있을 때만 삭제 모달을 염
-          setModalType(type);
+            setModalType(`delete_${type}`);
           setIsModalOpen(true);
         } else {
           alert('삭제할 데이터를 먼저 선택하세요.');
@@ -237,7 +237,7 @@ function RutilManager() {
                             <div className="header_right_btns">
                                 <button onClick={() => openCreatePopup('datacenter')}>데이터 센터 생성</button>
                                 <button onClick={() => openEditPopup('datacenter')}>편집</button>
-                                <button>삭제</button>
+                                <button onClick={() => openDeletePopup('datacenter')}>삭제</button>
                             </div>
                             <div>
                                 <text>{selectedId ? `선택된 ID: ${selectedId}` : '선택된 데이터 센터가 없습니다'}</text>
@@ -248,18 +248,22 @@ function RutilManager() {
                                 onRowClick={handleRowClick} // Row 클릭 시 ID 및 Row 데이터 저장
                                 clickableColumnIndex={[0]}
                             />
-                            <DataCenterModal
-                                isOpen={isModalOpen}
-                                onRequestClose={closePopup}
-                                editMode={editMode}
-                                data={selectedDataCenter} // API에서 가져온 데이터 센터 정보 전달
-                            />
-                            {/* <DeleteModal
-                                isOpen={isModalOpen}
-                                contentLabel={"데이터센터"}
-                                onRequestClose={closePopup}                                
-                                data={selectedDataCenter}
-                            /> */}
+                            {modalType === 'datacenter' && isModalOpen && (
+                                <DataCenterModal
+                                    isOpen={isModalOpen}
+                                    onRequestClose={closePopup}
+                                    editMode={editMode}
+                                    data={selectedDataCenter} // API에서 가져온 데이터 센터 정보 전달
+                                />
+                            )}
+                            {modalType === 'delete_datacenter' && isModalOpen && (
+                                <DeleteModal
+                                    isOpen={isModalOpen}
+                                    contentLabel={"데이터센터"}
+                                    onRequestClose={closePopup}                                
+                                    data={selectedDataCenter}
+                                />
+                            )}
                         </>
                     )}
 

@@ -205,7 +205,7 @@ const TableColumnsInfo = {
   VNIC_PROFILES: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '네트워크', accessor: 'network', clickable: false },
-    { header: '데이터 센터', accessor: 'datacenter', clickable: false },
+    { header: '데이터 센터', accessor: 'dataCenterVo', clickable: false },
     { header: '호환 버전', accessor: 'compatVersion', clickable: false },
     { header: 'QoS 이름', accessor: 'qosName', clickable: false },
     { header: '네트워크 필터', accessor: 'networkFilter', clickable: false },
@@ -257,8 +257,8 @@ const TableColumnsInfo = {
   HOSTS: [
     { header: '', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: false },
-    { header: '데이터 센터', accessor: 'datacenter', clickable: false },
+    { header: '클러스터', accessor: 'clusterVo', clickable: false },
+    { header: '데이터 센터', accessor: 'dataCenterVo', clickable: false },
     { header: '네트워크 장치 상태', accessor: 'networkDeviceStatus', clickable: false },
     { header: '비동기', accessor: 'async', clickable: false },
     { header: '네트워크 장치', accessor: 'networkDevice', clickable: false },

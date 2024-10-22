@@ -25,7 +25,7 @@ const NetworkVnicprofile = (network) => {
           id: vnicProfile?.id ?? '없음',
           name: vnicProfile?.name ?? '없음',
           network: vnicProfile?.networkVo?.name ?? '',  // 네트워크 이름
-          dataCenter: vnicProfile?.dataCenterVo?.name ?? '',  // 데이터 센터
+          dataCenterVo: vnicProfile?.dataCenterVo?.name ?? '',  // 데이터 센터
           compatVersion: vnicProfile?.compatVersion ?? '없음',  // 호환 버전
           qosName: vnicProfile?.qosName ?? '',  // QoS 이름
           networkFilter: vnicProfile?.networkFilterVo?.name ?? '없음',  // 네트워크 필터

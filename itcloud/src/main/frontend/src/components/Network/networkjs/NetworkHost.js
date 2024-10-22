@@ -32,12 +32,14 @@ const NetworkHost = ({ network }) => {
         ? <FontAwesomeIcon icon={faPlay} fixedWidth  style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)'}}/>
         : '';
         return {
-          id: host?.id ?? '',      
+          id: host?.id ?? '', 
+          clusterId: host?.clusterVo?.id ?? '',  // 클러스터의 ID
+          dataCenterId: host?.dataCenterVo?.id ?? '',  // 데이터 센터의 ID     
           icon: icon,
           status: status,  
           name: host?.name ?? 'Unknown',           
-          cluster: host?.clusterVo?.name ?? 'N/A',
-          dataCenter: host?.dataCenterVo?.name ?? 'N/A',
+          clusterVo: host?.clusterVo?.name ?? 'N/A',
+          dataCenterVo: host?.dataCenterVo?.name ?? 'N/A',
           networkDeviceStatus: host?.hostNicVos?.[0]?.status ?? 'Unknown', 
           networkDevice: host?.hostNicVos?.[0]?.name ?? 'N/A', 
           speed: host?.hostNicVos?.[0]?.speed ?? 'N/A', 
@@ -74,9 +76,9 @@ const NetworkHost = ({ network }) => {
               if (colIndex === 1) {
                 navigate(`/computing/hosts/${row.id}`);  // 1번 컬럼 클릭 시 이동할 경로
               } else if (colIndex === 2) {
-                navigate(`/computing/clusters/${row.id}`);  // 2번 컬럼 클릭 시 이동할 경로
+                navigate(`/computing/clusters/${row.clusterId}`);  // 2번 컬럼 클릭 시 이동할 경로
               } else if (colIndex === 3) {
-                navigate(`/computing/datacenters/${row.id}`);  // 3번 컬럼 클릭 시 이동할 경로
+                navigate(`/computing/datacenters/${row.dataCenterId}`);  // 3번 컬럼 클릭 시 이동할 경로
               }
             }}
             clickableColumnIndex={[1,2,3]} 
