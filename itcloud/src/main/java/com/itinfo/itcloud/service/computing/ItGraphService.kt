@@ -64,9 +64,6 @@ interface ItGraphService {
 	// 가상머신 목록 - 그래프
 	fun vmPercent(vmId: String, vmNicId: String): UsageDto
 
-	// Rutil Manager - 일반 ( 버전, 빌드날짜, 부팅시간(업타임=hostedVM) )
-	fun rutilInfo(): RutilVo
-
 }
 
 @Service
@@ -177,20 +174,6 @@ class GraphServiceImpl(
 		val networkRate = vmInterfaceSamplesHistoryEntity.receiveRatePercent.toInt()
 		usageDto.networkPercent = networkRate
 		return usageDto
-	}
-
-	override fun rutilInfo(): RutilVo {
-		log.info("rutilInfo ... ")
-		val date: Date =
-			conn.findVms()
-				.first { it.origin() == "managed_hosted_engine" }
-				.creationTime()
-
-		val rutil: RutilVo = RutilVo.builder {
-			bootTime { ovirtDf.format(date) }
-		}
-
-		return rutil
 	}
 
 	companion object {

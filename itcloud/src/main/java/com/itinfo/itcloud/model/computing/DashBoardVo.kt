@@ -1,12 +1,14 @@
 package com.itinfo.itcloud.model.computing
 
 import com.itinfo.itcloud.gson
+import com.itinfo.itcloud.ovirtDf
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.StorageDomainStatus
 import org.ovirt.engine.sdk4.types.StorageType
 import org.slf4j.LoggerFactory
 import java.io.Serializable
+import java.util.Date
 
 private val log = LoggerFactory.getLogger(DashBoardVo::class.java)
 
@@ -28,6 +30,7 @@ private val log = LoggerFactory.getLogger(DashBoardVo::class.java)
  * @property eventsAlert
  * @property eventsError
  * @property eventsWarning
+ * @property bootTime
  */
 class DashBoardVo (
     val datacenters: Int = 0,
@@ -45,6 +48,8 @@ class DashBoardVo (
     val eventsAlert: Int = 0,
     val eventsError: Int = 0,
     val eventsWarning: Int = 0,
+    val bootTime: String = "",
+
 ): Serializable {
     override fun toString(): String =
         gson.toJson(this)
@@ -65,7 +70,8 @@ class DashBoardVo (
         private var bEventAlert: Int = 0; fun eventsAlert(block: () -> Int?) { bEventAlert = block() ?: 0}
         private var bEventError: Int = 0; fun eventsError(block: () -> Int?) { bEventError = block() ?: 0}
         private var bEventsWarning: Int = 0; fun eventsWarning(block: () -> Int?) { bEventsWarning = block() ?: 0}
-        fun build(): DashBoardVo = DashBoardVo(bDatacenters, bDatacentersUp, bDatacentersDown, bClusters, bHosts, bHostsUp, bHostsDown, bVms, bVmsUp, bVmsDown, bStorageDomains, bEvents, bEventAlert, bEventError, bEventsWarning)
+        private var bBootTime: String = ""; fun bootTime(block: () -> String?) {bBootTime=block()?:""}
+        fun build(): DashBoardVo = DashBoardVo(bDatacenters, bDatacentersUp, bDatacentersDown, bClusters, bHosts, bHostsUp, bHostsDown, bVms, bVmsUp, bVmsDown, bStorageDomains, bEvents, bEventAlert, bEventError, bEventsWarning, bBootTime)
     }
 
     companion object {
@@ -120,6 +126,11 @@ fun Connection.toDashboardVo(): DashBoardVo {
         this@toDashboardVo.findAllEvents(searchQuery = "severity=warning and time > Today")
             .getOrDefault(listOf())
             .size
+    val date: Date =
+        this@toDashboardVo.findVms()
+        .first { it.origin() == "managed_hosted_engine" }
+        .creationTime()
+
 
     return DashBoardVo.builder {
         datacenters { dataCenters }
@@ -137,5 +148,6 @@ fun Connection.toDashboardVo(): DashBoardVo {
         eventsAlert { eventsAlert }
         eventsError { eventsError }
         eventsWarning { eventsWarning }
+        bootTime { ovirtDf.format(date) }
     }
 }

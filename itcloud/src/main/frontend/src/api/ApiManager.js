@@ -2,6 +2,7 @@ import ENDPOINTS from "./Endpoints"
 import DEFAULT_VALUES from "./DefaultValues"
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { data } from "jquery";
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -21,7 +22,7 @@ const makeAPICall = async ({method = "GET", url, data, defaultValues}) => {
       headers: { 
         // TODO: access_token으로 모든 API 처리하기
       },
-      data: data
+      data: method === "GET" || method === "DELETE" ? null : data,
     }); 
     res.headers.get(`access_token`) && localStorage.setItem('token', res.headers.get(`access_token`)) // 로그인이 처음으로 성공했을 때 진행
     return res.data?.body
@@ -285,7 +286,6 @@ const ApiManager = {
         method: "PUT",
         url: ENDPOINTS.EDIT_DATA_CENTER(dataCenterId),
         data: dataCenterData, // PUT 요청 시 전송할 데이터
-        defaultValues: DEFAULT_VALUES.EDIT_DATA_CENTER
       });
     },
   /**
@@ -299,7 +299,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_DATA_CENTER(dataCenterId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.DELETE_DATA_CENTER
+      data: dataCenterId
     });
   },
   //endregion: DataCenter

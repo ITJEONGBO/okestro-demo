@@ -289,21 +289,15 @@ export const useEditDataCenter = () => {
  */
 export const useDeleteDataCenter = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
-  return useMutation(
-    async (dataCenterId) => {
-      const response = await ApiManager.deleteDataCenter(dataCenterId);
-      return response;
+  return useMutation({ 
+    mutationFn: async (dataCenterId) => await ApiManager.deleteDataCenter(dataCenterId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allDataCenters');
     },
-    {
-      onSuccess: () => {
-        // 데이터센터 삭제 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
-        queryClient.invalidateQueries('allDataCenters');
-      },
-      onError: (error) => {
-        console.error('Error deleting data center:', error);
-      },
-    }
-  );
+    onError: (error) => {
+      console.error('Error deleting data center:', error);
+    },
+  });
 };
 
 //endregion: DataCenter
@@ -335,17 +329,16 @@ export const useAllClusters = (mapPredicate) => useQuery({
  */
 export const useCluster = (clusterId) => useQuery({
   refetchOnWindowFocus: true,  // 윈도우 포커스 시 데이터 리프레시
-  queryKey: ['clusterById', clusterId],  // queryKey에 clusterId를 포함시켜 clusterId가 변경되면 다시 요청
+  queryKey: ['cluster', clusterId],  // queryKey에 clusterId를 포함시켜 clusterId가 변경되면 다시 요청
   queryFn: async () => {
     if (!clusterId) return {};  // clusterId가 없을 때 빈 객체 반환
     console.log(`useCluster ... ${clusterId}`);
-    const res = await ApiManager.findAllClusterById(clusterId);  // clusterId에 따라 API 호출
+    const res = await ApiManager.findCluster(clusterId);  // clusterId에 따라 API 호출
     return res ?? {};  // 반환값이 없으면 빈 객체 반환
   },
   staleTime: 0,  // 항상 최신 데이터를 유지
   cacheTime: 0,  // 캐시를 유지하지 않고 매번 새로운 데이터를 요청
 });
-
 /**
  * @name useLogicalFromCluster
  * @description 클러스터 내 논리네트워크 목록조회 useQuery훅

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import HttpMethod from '../HttpMethod';
 import {
   useAddDataCenter, 
   useEditDataCenter
@@ -55,7 +54,7 @@ const DataCenterModal = ({
       name,
       comment,
       description,
-      storageType: storageType === '로컬',
+      storageType,
       version,
       quotaMode,
     };

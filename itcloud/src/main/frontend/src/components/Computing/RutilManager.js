@@ -40,7 +40,8 @@ function RutilManager() {
     const [activeDiskType, setActiveDiskType] = useState('all');
     const [activeContentType, setActiveContentType] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalType, setModalType] = useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 삭제 모달 상태 추가
+    const [modalType, setModalType] = useState(null);    
     const [selectedId, setSelectedId] = useState(null); // 모든 타입의 ID를 저장
     const [selectedRow, setSelectedRow] = useState(null); // 선택된 row 전체 저장
     const [editMode, setEditMode] = useState(false);
@@ -138,41 +139,37 @@ function RutilManager() {
     // 모달 관리
     const openCreatePopup = (type) => {
         setEditMode(false);
-        setModalType(type);
         setIsModalOpen(true);
+        setModalType(type);
+        setModalData(null);
     };
 
     const openEditPopup = (type) => {
         if (selectedId) { // 선택된 ID가 있을 때만 편집 모달을 염
-          setEditMode(true);
-          setModalType(type);
-          setIsModalOpen(true);
+            setEditMode(true);
+            setIsModalOpen(true);
+            setModalType(type);
         } else {
           alert('편집할 데이터를 먼저 선택하세요.');
         }
     };
 
     const openDeletePopup = (type) => {
-        if (selectedId) { // 선택된 ID가 있을 때만 삭제 모달을 염
-            setModalType(`delete_${type}`);
-          setIsModalOpen(true);
+        if (selectedId) {
+            setIsDeleteModalOpen(true);            // 삭제 모달 열기
         } else {
           alert('삭제할 데이터를 먼저 선택하세요.');
         }
-    };
+      };
 
     const closePopup = () => {
         setIsModalOpen(false);
         setModalType(null);
+        setIsDeleteModalOpen(false);
         setSelectedId(null);
         setModalData(null);
     };
-
-    const handleSubmit = (requestData) => {
-        console.log(editMode ? `편집:` : `생성:`, requestData);
-        
-        closePopup();
-    };
+    
 
     // Header와 Sidebar에 쓰일 섹션과 버튼 정보
     const sections = [
@@ -221,7 +218,7 @@ function RutilManager() {
                                         <span>스토리지 도메인: {dashboard?.storageDomains ?? 0}</span><br/>
                                     </div>
                                     <br/>
-                                    <div>부팅시간(업타임): <strong>2024-**-** 20:15:45</strong></div>
+                                    <div>부팅시간(업타임): <strong>{dashboard?.bootTime ?? ""}</strong></div>
                                 </div>
                             </div>
                             <div className="type_info_boxs">
@@ -240,7 +237,7 @@ function RutilManager() {
                                 <button onClick={() => openDeletePopup('datacenter')}>삭제</button>
                             </div>
                             <div>
-                                <text>{selectedId ? `선택된 ID: ${selectedId}` : '선택된 데이터 센터가 없습니다'}</text>
+                                <span>{selectedId ? `선택된 ID: ${selectedId}` : '선택된 데이터 센터가 없습니다'}</span>
                             </div>
                             <TablesOuter 
                                 columns={TableInfo.DATACENTERS} 
@@ -248,22 +245,18 @@ function RutilManager() {
                                 onRowClick={handleRowClick} // Row 클릭 시 ID 및 Row 데이터 저장
                                 clickableColumnIndex={[0]}
                             />
-                            {modalType === 'datacenter' && isModalOpen && (
-                                <DataCenterModal
-                                    isOpen={isModalOpen}
-                                    onRequestClose={closePopup}
-                                    editMode={editMode}
-                                    data={selectedDataCenter} // API에서 가져온 데이터 센터 정보 전달
-                                />
-                            )}
-                            {modalType === 'delete_datacenter' && isModalOpen && (
-                                <DeleteModal
-                                    isOpen={isModalOpen}
-                                    contentLabel={"데이터센터"}
-                                    onRequestClose={closePopup}                                
-                                    data={selectedDataCenter}
-                                />
-                            )}
+                            <DataCenterModal
+                                isOpen={isModalOpen}
+                                onRequestClose={closePopup}
+                                editMode={editMode}
+                                data={selectedDataCenter} // API에서 가져온 데이터 센터 정보 전달
+                            />
+                            <DeleteModal
+                                isOpen={isDeleteModalOpen}
+                                onRequestClose={closePopup}
+                                contentLabel={'데이터센터'}
+                                data={selectedDataCenter}  // 삭제할 데이터 전달
+                            />
                         </>
                     )}
 
@@ -283,7 +276,7 @@ function RutilManager() {
                             <ClusterModal
                                 isOpen={isModalOpen}
                                 onRequestClose={closePopup}
-                                onSubmit={handleSubmit}
+                                // onSubmit={handleSubmit}
                                 editMode={editMode}          // editMode 전달
                                 data={modalData}             // 편집할 데이터 전달
                             />
@@ -291,10 +284,10 @@ function RutilManager() {
                     )}
 
                     {activeTab === 'host' && (
-                        <HostDu 
+                        <TablesOuter 
+                            columns={TableInfo.HOSTS} 
                             data={allHosts} 
-                            columns={TableInfo.HOSTS_ALL_DATA} 
-                            handleRowClick={handleRowClick} 
+                            onRowClick={handleRowClick}  
                         />
                     )}
 
@@ -309,10 +302,10 @@ function RutilManager() {
                     )}
 
                     {activeTab === 'template' && (
-                        <TemplateDu 
+                        <TablesOuter 
+                            columns={TableInfo.TEMPLATES} 
                             data={allTemplates} 
-                            columns={TableInfo.TEMPLATE_CHART} 
-                            handleRowClick={handleRowClick} 
+                            onRowClick={handleRowClick} 
                         />
                     )}
 
@@ -361,22 +354,12 @@ function RutilManager() {
                                 </div>
                             </div>
 
-                            {activeDiskType === 'all' && 
-                                <TablesOuter 
-                                    columns={TableInfo.ALL_DISK} 
-                                    data={allDisks} 
-                                    onRowClick={handleRowClick} 
-                                    showSearchBox={true} 
-                                />
-                            }
-                            {activeDiskType === 'image' && 
-                                <TablesOuter 
-                                    columns={TableInfo.IMG_DISK} 
-                                    data={allDisks} 
-                                    onRowClick={handleRowClick} 
-                                    showSearchBox={true} 
-                                />
-                            }
+                            <TablesOuter 
+                                columns={TableInfo.DISKS} 
+                                data={allDisks} 
+                                onRowClick={handleRowClick} 
+                                showSearchBox={true} 
+                            />
                         </>
                     )}
 
