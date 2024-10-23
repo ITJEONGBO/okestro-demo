@@ -11,13 +11,6 @@ const NetworkTemplate = ({ network }) => {
     const openPopup = (popupType) => setActivePopup(popupType);
     const closePopup = () => setActivePopup(null);
 
-    useEffect(() => {
-      if (!network?.id) {
-        console.error('Network ID is undefined or missing');
-      } else {
-        console.log('Fetching templates for Network ID:', network.id);
-      }
-    }, [network?.id]);
 
     const { 
       data: templates = [], 

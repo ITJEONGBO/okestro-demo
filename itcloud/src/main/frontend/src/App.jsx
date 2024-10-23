@@ -10,7 +10,7 @@ import MainOuter from './components/MainOuter';
 import AllDomain from './components/Storage/AllDomain';
 import Network from './components/Network/Network';
 import Setting from './components/Setting/Setting';
-import Vm from './components/Computing/Vm';
+import Vm from './components/Computing/VmDetail';
 import Cluster from './components/Computing/Cluster';
 import ClusterName from './components/Computing/ClusterName';
 import Host from './components/Computing/Host';
@@ -31,6 +31,7 @@ import AllDisk from './components/Storage/AllDisk';
 import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 import Error from './components/Error';
+import VmDetail from './components/Computing/VmDetail';
 
 
 
@@ -107,8 +108,8 @@ const App = () => {
               <Route path="/computing/datacenters/:id/:section" element={<DataCenter />} />
               
               <Route path="/computing/vms" element={<AllVm />} />
-              <Route path="/computing/vms/:id" element={<Vm />} />
-              <Route path="/computing/vms/:id/:section" element={<Vm />} />
+              <Route path="/computing/vms/:id" element={<VmDetail />} />
+              <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
               
               <Route path="/computing/host" element={<Host />} />
               <Route path="/computing/hosts/:id" element={<HostDetail />}/>

@@ -311,9 +311,11 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const togglePopupMenu = () => {
     setPopupOpen(!popupOpen);
   };
-
-
- 
+  const buttons = [
+    { id: 'manageDomain_btn', label: '도메인 관리', onClick: () => openModal('manageDomain') },
+    { id: 'delete_btn', label: '삭제', onClick: () => openModal('delete') },
+    { id: 'connections_btn', label: 'Connections', onClick: () => console.log('Connections button clicked') }
+  ];
   const popupItems = [
     { label: <div className="disabled">OVF 업데이트</div>, onClick: () => console.log('OVF 업데이트 clicked') },
     { label: <div className="disabled">파괴</div>, onClick: () => console.log('파괴 clicked') },
@@ -358,7 +360,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       <HeaderButton
       titleIcon={faCloud}
       title={domain?.name}
-      buttons={[]}
+      buttons={buttons}
       popupItems={popupItems}
     />
 

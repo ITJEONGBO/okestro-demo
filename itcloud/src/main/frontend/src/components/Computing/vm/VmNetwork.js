@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 
 
 // 네트워크 인터페이스
-const NetworkSection = () => {
+const VmNetwork = () => {
 
     // const { name} = useParams(); 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -265,5 +265,5 @@ const NetworkSection = () => {
       </>
     );
   };
-  export default NetworkSection;
+  export default VmNetwork;
   

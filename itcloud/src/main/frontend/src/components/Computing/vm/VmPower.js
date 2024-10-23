@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 import TableOuter from '../../table/TableOuter';
-const PowerSection = () => {
+const VmPower = () => {
 
     const [activePermissionFilter, setActivePermissionFilter] = useState('all');
     const handlePermissionFilterClick = (filter) => setActivePermissionFilter(filter);
@@ -62,4 +62,4 @@ const PowerSection = () => {
     
     );
   };
-export default PowerSection;
+export default VmPower;

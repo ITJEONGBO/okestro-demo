@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGlassWhiskey, faCaretUp, faEllipsisV, faSearch, faChevronCircleRight
   , faTimes, faPencil, faArrowUp,
-  faDatabase
+  faDatabase,
+  faPlay
 } from '@fortawesome/free-solid-svg-icons'
 import { adjustFontSize } from '../../UIEvent';
 import HeaderButton from '../button/HeaderButton';
@@ -16,6 +17,7 @@ import Permission from '../Modal/Permission';
 import './css/AllDomain.css';
 import Table from '../table/Table';
 import { useAllStorageDomains } from '../../api/RQHook';
+import TableInfo from '../table/TableInfo';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
@@ -42,9 +44,9 @@ const Storage = () => {
 
 
   const handleDomainNameClick = (row, column, colIndex) => {
-    const clickableCols = [2]; 
+    const clickableCols = [1]; 
     if (clickableCols.includes(colIndex)) {
-      if (colIndex === 2) {
+      if (colIndex === 1) {
         navigate(`/storages/domains/${row.id}`, { state: { name: row.name } });
       }
     } else {
@@ -130,10 +132,15 @@ const {
 } = useAllStorageDomains(toTableItemPredicateDomains);
 
 function toTableItemPredicateDomains(domaindata) {
+  const status = domaindata?.status ?? '';
+  const icon = status === 'ACTIVE' 
+  ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem',transform: 'rotate(270deg)' }} />
+  : <FontAwesomeIcon icon={faPlay} fixedWidth  style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)'}}/>
+
   return {
+    icon: icon,
     id: domaindata?.id ?? '',
     status: domaindata?.status ?? '',
-    icon: '',  // 아이콘이 제공되면 해당 값으로 교체
     name: domaindata?.name ?? 'Unknown',
     comment: domaindata?.comment ?? '',
     domainType: domaindata?.domainType ?? 'Unknown',
@@ -228,10 +235,10 @@ function toTableItemPredicateDomains(domaindata) {
 
                 {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
                 <TableOuter
-                  columns={TableColumnsInfo.STORAGE_DOMAINS} 
+                  columns={TableInfo.STORAGE_DOMAINS} 
                   data={domaindata} 
                   onRowClick={handleDomainNameClick} 
-                  clickableColumnIndex={[2]}
+                  clickableColumnIndex={[1]}
                   showSearchBox={true} 
                   onContextMenuItems={() => [
                     <div key="도메인 생성" onClick={() => console.log()}>도메인 생성</div>,

@@ -38,7 +38,7 @@ const Network = () => {
           description: network?.description ?? '',  // 설명
           vlan: network?.vlan ?? '',  // VLAN 태그
           label: network?.label ?? '-',  // 레이블
-          port: network?.port ?? '',  // port
+          mtu: network?.mtu ?? '',  // port
         };
       }
       

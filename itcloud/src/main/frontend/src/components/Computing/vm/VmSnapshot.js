@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
+import { useSnapshotFromVM } from '../../../api/RQHook';
 
-// 스냅샷
-const SnapshotSection = () => {
+// 스냅샷(각각 밑에 열리는 창 만들어야함)
+const VmSnapshot = ({vm}) => {
   const [activePopup, setActivePopup] = useState(null);
   const openPopup = (popupType) => {
       setActivePopup(popupType);
@@ -14,6 +15,27 @@ const SnapshotSection = () => {
   const closePopup = () => {
       setActivePopup(null);
   };
+
+  const { 
+    data: snapshots, 
+    status: snapshotsStatus, 
+    isLoading: isSnapshotsLoading, 
+    isError: isSnapshotsError 
+  } = useSnapshotFromVM(vm?.id, toTableItemPredicateSnapshots);  
+  
+  function toTableItemPredicateSnapshots(snapshot) {
+    return {
+      id: snapshot?.id ?? '', 
+      vmId: snapshot?.vm?.id ?? '',  
+      name: snapshot?.description ?? 'Unknown', 
+      status: snapshot?.snapshotStatus ?? 'Unknown',  
+      created: snapshot?.creationDate ?? 'N/A', 
+      vmStatus: snapshot?.vm?.status ?? 'N/A', 
+      memorySize: snapshot?.memorySize ?? 'N/A', 
+      diskSize: snapshot?.diskSize ?? 'N/A', 
+    };
+  }
+
     return (
       <>
           <div className="header_right_btns">
@@ -25,6 +47,7 @@ const SnapshotSection = () => {
             <button className='disabled'>복제</button>
             <button className='disabled'>템플릿 생성</button>
           </div>
+
           <div className="snapshot_content">
             <div className="snapshot_content_left">
               <div><FontAwesomeIcon icon={faCamera} fixedWidth/></div>
@@ -120,9 +143,9 @@ const SnapshotSection = () => {
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
-      </Modal>
+          </Modal>
       </>
     );
   };
 
-  export default SnapshotSection;
+  export default VmSnapshot;

@@ -144,11 +144,15 @@ export const useClustersFromDataCenter = (dataCenterId, mapPredicate) => useQuer
   refetchOnWindowFocus: true,
   queryKey: ['clustersFromDataCenter', dataCenterId], 
   queryFn: async () => {
-    console.log(`clustersFromDataCenter ... ${dataCenterId}`);
+    console.log(`clustersFromDataCenter ... ${dataCenterId}`);  // 로그 추가
     const res = await ApiManager.findAllClustersFromDataCenter(dataCenterId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+    return res?.map(mapPredicate) ?? []; // 데이터 가공
+  },
+  staleTime: 0, 
+  cacheTime: 0,
+  enabled: !!dataCenterId, // dataCenterId가 있을 때만 쿼리를 실행
 });
+
 /**
  * @name useHostsFromDataCenter
  * @description 데이터센터 내 호스트 목록조회 useQuery훅
@@ -185,7 +189,10 @@ export const useVMsFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
     console.log(`vmsFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findAllVmsFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!dataCenterId, // dataCenterId가 있을 때만 쿼리 실행
+  staleTime: 0,
+  cacheTime: 0,
 });
 /**
  * @name useDomainsFromDataCenter
@@ -242,7 +249,10 @@ export const useEventsFromDataCenter = (dataCenterId, mapPredicate) => useQuery(
     console.log(`eventsFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findAllEventsFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!dataCenterId, // dataCenterId가 있을 때만 쿼리 실행
+  staleTime: 0,
+  cacheTime: 0,
 });
 
 /**
@@ -552,7 +562,7 @@ export const usePermissionFromHost = (hostId, mapPredicate) => useQuery({
 })
 //endregion: Host
 
-//region: VM/TEMPLATE ----------------가상머신/템플릿---------------------
+//region: VM ----------------가상머신---------------------
 /**
  * @name useAllVMs
  * @description 가상머신 목록조회 useQuery훅
@@ -568,7 +578,76 @@ export const useAllVMs = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+/**
+ * @name useVmById
+ * @description 가상머신 상세조회 useQuery 훅
+ * 
+ * @param {string} vmId 가상머신 ID
+ * @returns useQuery 훅
+ */
+export const useVmById = (vmId) => useQuery({
+  queryKey: ['VmById', vmId],
+  queryFn: async () => {
+    if (!vmId) return {};  
+    console.log(`vmId ID: ${vmId}`);
+    const res = await ApiManager.findVM(vmId);
+    return res ?? {};
+  },
+  staleTime: 0,
+  cacheTime: 0,
+});
 
+
+/**
+ * @name useSnapshotFromVM
+ * @description 가상머신 내 스냅샷 목록조회 useQuery훅
+ * 
+ * @param {string} vmId 가상머신ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findSnapshotsFromVM
+ */
+export const useSnapshotFromVM = (vmId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['SnapshotFromVM', vmId], 
+  queryFn: async () => {
+    console.log(`useSnapshotFromVM ... ${vmId}`);
+    const res = await ApiManager.findSnapshotsFromVM(vmId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!vmId, 
+  staleTime: 0,
+  cacheTime: 0,
+});
+
+/**
+ * @name useApplicationFromVM
+ * @description 가상머신 내 어플리케이션 목록조회 useQuery훅
+ * 
+ * @param {string} vmId 가상머신ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findApplicationsFromVM
+ */
+export const useApplicationFromVM = (vmId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['ApplicationFromVM', vmId], 
+  queryFn: async () => {
+    console.log(`useApplicationFromVM ... ${vmId}`);
+    const res = await ApiManager.findApplicationsFromVM(vmId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!vmId, 
+  staleTime: 0,
+  cacheTime: 0,
+});
+
+
+//endregion: VM
+
+//region: TEMPLATE ----------------템플릿---------------------
 /**
  * @name useAllTemplates
  * @description 템플릿 목록조회 useQuery훅
@@ -584,7 +663,8 @@ export const useAllTemplates = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 });
-//endregion: VM/TEMPLATE
+//endregion: TEMPLATE
+
 
 
 //region: Network -----------------네트워크---------------------
@@ -810,7 +890,10 @@ export const useAllDataCenterFromDomain = (storageDomainId, mapPredicate) => use
     console.log(`useAllDataCenterFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!storageDomainId,
+  staleTime: 0,
+  cacheTime: 0,
 })
 
 /**
@@ -849,7 +932,10 @@ export const useAllDiskSnapshotFromDomain = (storageDomainId, mapPredicate) => u
     console.log(`useAllDiskSnapshotFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllDiskSnapshotsFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
+  },
+  enabled: !!storageDomainId,
+  staleTime: 0,
+  cacheTime: 0,
 })
 /**
  * @name useAllTemplateFromDomain

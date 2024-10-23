@@ -4,11 +4,11 @@ import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
 import { useNavigate} from 'react-router-dom';
 import { useState,useEffect } from 'react'; 
-import { faAngleDown, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown, faChevronLeft, faPlay } from "@fortawesome/free-solid-svg-icons";
 import TableInfo from "../../table/TableInfo";
 
 const DomainDisk = ({ domain }) => {
-
+    const navigate = useNavigate();
     // 모달 관련 상태 및 함수
     const [activePopup, setActivePopup] = useState(null);
     const openModal = (popupType) => setActivePopup(popupType);
@@ -43,7 +43,9 @@ const DomainDisk = ({ domain }) => {
     isError: isDisksError,
   } = useAllDiskFromDomain(domain?.id, toTableItemPredicateDisks);
   function toTableItemPredicateDisks(disk) {
+
     return {
+      id: disk?.id ?? '', 
       alias: disk?.alias ?? '없음',  // 별칭
       icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
       icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
@@ -84,6 +86,12 @@ const DomainDisk = ({ domain }) => {
         <TableOuter 
           columns={TableInfo.DISKS_FROM_STORAGE_DOMAIN}
           data={disks}
+          onRowClick={(row, column, colIndex) => {
+            if (colIndex === 0) {
+              navigate(`/storages/disks/${row.id}`);  // 1번 컬럼 클릭 시 이동할 경로
+            }
+          }}
+          clickableColumnIndex={[0]} 
           onContextMenuItems={() => [
             <div key="이동" onClick={() => console.log()}>이동</div>,
             <div key="복사" onClick={() => console.log()}>복사</div>,

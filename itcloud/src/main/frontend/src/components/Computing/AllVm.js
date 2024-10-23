@@ -76,6 +76,9 @@ function toTableItemPredicateVMs(vm) {
     return {
         status: vm?.status ?? 'Unknown',       
         id: vm?.id ?? '',
+        hostId: vm?.hostVo?.id ?? '',  // 클러스터의 ID
+        clusterId: vm?.clusterVo?.id ?? '',  // 클러스터의 ID
+        dataCenterId: vm?.dataCenterVo?.id ?? '',  // 데이터 센터의 ID 
         icon: '🖥️',                                   
         name: vm?.name ?? 'Unknown',               
         comment: vm?.comment ?? '',                 
@@ -152,8 +155,18 @@ function toTableItemPredicateVMs(vm) {
         columns={TableColumnsInfo.VM_CHART} 
         data={vms}
         openPopup={openPopup} 
-        togglePopup={togglePopup} 
-        isPopupOpen={isPopupOpen} 
+        togglePopup={togglePopup}
+        onRowClick={(row, column, colIndex) => {
+        if (colIndex === 1) {
+          navigate(`/computing/vms/${row.id}`); 
+        }else if (colIndex === 3) {
+            navigate(`/computing/hosts/${row.hostId}`); 
+        }else if (colIndex === 6) {
+            navigate(`/computing/clusters/${row.clusterId}`); 
+        }else if (colIndex === 8) {
+            navigate(`/computing/datacenters/${row.dataCenterId}`); 
+        }
+      }}
       />
       </div>
   

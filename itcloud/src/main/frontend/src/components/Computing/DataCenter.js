@@ -32,6 +32,12 @@ import Path from '../Header/Path';
 import HostDu from '../duplication/HostDu';
 import VmDu from '../duplication/VmDu';
 import EventDu from '../duplication/EventDu';
+import DatacenterCluster from './datacenter/DatacenterCluster';
+import DatacenterHost from './datacenter/DatacenterHost';
+import DatacenterVm from './datacenter/DatacenterVm';
+import DatacenterStorage from './datacenter/DatacenterStorage';
+import DatacenterNetwork from './datacenter/DatacenterNetwork';
+import DatacenterEvent from './datacenter/DatacenterEvent';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -107,6 +113,7 @@ useEffect(() => {
 
 
   //api
+  const [shouldRefresh, setShouldRefresh] = useState(false);
   const { 
     data: dataCenter,
     status: dataCenterStatus,
@@ -115,98 +122,99 @@ useEffect(() => {
     isError: isDataCenterError,
     error: dataCenterError,
     isLoading: isDataCenterLoading,
-  } = useDataCenter(dataCenterId);
+  } = useDataCenter(id);
+  useEffect(() => {
+    dataCenterRefetch()
+  }, [setShouldRefresh, dataCenterRefetch]);
 
-  
+
   // 클러스터
-  const { 
-    data: clusters, 
-    status: clustersStatus, 
-    isLoading: isClustersLoading, 
-    isError: isClustersError 
-  } = useClustersFromDataCenter(dataCenter?.id, toTableItemPredicateClusters);
-  function toTableItemPredicateClusters(cluster) {
-    return {
-      name: cluster?.name ?? '없음',
-      description: cluster?.description ?? '없음',
-      version: cluster?.version ?? '없음',
-    };
-  }
+  // const { 
+  //   data: clusters, 
+  //   status: clustersStatus, 
+  //   isLoading: isClustersLoading, 
+  //   isError: isClustersError 
+  // } = useClustersFromDataCenter(dataCenter?.id, toTableItemPredicateClusters);
+  // function toTableItemPredicateClusters(cluster) {
+  //   return {
+  //     name: cluster?.name ?? '없음',
+  //     description: cluster?.description ?? '없음',
+  //     version: cluster?.version ?? '없음',
+  //   };
+  // }
   // 호스트
-  const { 
-    data: hosts, 
-    status: hostsStatus, 
-    isLoading: isHostsLoading, 
-    isError: isHostsError 
-  } = useHostsFromDataCenter(dataCenter?.id, toTableItemPredicateHosts);
-  function toTableItemPredicateHosts(host) {
-    return {
-      name: host?.name ?? '없음',
-      comment: host?.comment ?? '없음',
-      hostNameIP: host?.hostNameIP ?? '알 수 없음',
-      clusterVo: host?.clusterVo?.name ?? '알 수 없음',
-      dataCenterVo: host?.dataCenterVo?.name ?? '알 수 없음',
-      status: host?.status ?? '알 수 없음',
-      vm: host?.vm ?? '#',
-      memory: host?.memory ? `${host.memory} GiB` : '#',
-      cpu: host?.cpu ?? '#',
-      network: host?.network ?? '#',
-      spmStatus: host?.spmStatus ?? '알 수 없음',
-    };
-  }
+  // const { 
+  //   data: hosts, 
+  //   status: hostsStatus, 
+  //   isLoading: isHostsLoading, 
+  //   isError: isHostsError 
+  // } = useHostsFromDataCenter(dataCenter?.id, toTableItemPredicateHosts);
+  // function toTableItemPredicateHosts(host) {
+  //   return {
+  //     name: host?.name ?? '없음',
+  //     comment: host?.comment ?? '없음',
+  //     hostNameIP: host?.hostNameIP ?? '알 수 없음',
+  //     clusterVo: host?.clusterVo?.name ?? '알 수 없음',
+  //     dataCenterVo: host?.dataCenterVo?.name ?? '알 수 없음',
+  //     status: host?.status ?? '알 수 없음',
+  //     vm: host?.vm ?? '#',
+  //     memory: host?.memory ? `${host.memory} GiB` : '#',
+  //     cpu: host?.cpu ?? '#',
+  //     network: host?.network ?? '#',
+  //     spmStatus: host?.spmStatus ?? '알 수 없음',
+  //   };
+  // }
     // 스토리지
-    const { 
-      data: domains, 
-      status: domainsStatus, 
-      isLoading: isDomainsLoading, 
-      isError: isDomainsError 
-    } = useNetworksFromDataCenter(dataCenter?.id, toTableItemPredicateDomains);
-    
-    function toTableItemPredicateDomains(domain) {
-      return {
-        icon: '📁', // 첫 번째 이모티콘을 고정적으로 표시
-        icon2: '💾', // 두 번째 이모티콘을 고정적으로 표시
-        name: domain?.name ?? '없음', // 도메인 이름
-        domainType: domain?.domainType ?? '없음', // 도메인 유형
-        status: domain?.status ?? '알 수 없음', // 상태
-        availableSize: domain?.availableSize ?? '알 수 없음', // 여유 공간 (GiB)
-        usedSize: domain?.usedSize ?? '알 수 없음', // 사용된 공간
-        diskSize: domain?.diskSize ?? '알 수 없음', // 전체 공간 (GiB)
-        description: domain?.description ?? '설명 없음', // 설명
-      };
-    }
+    // const { 
+    //   data: domains, 
+    //   status: domainsStatus, 
+    //   isLoading: isDomainsLoading, 
+    //   isError: isDomainsError 
+    // } = useNetworksFromDataCenter(dataCenter?.id, toTableItemPredicateDomains);
+    // function toTableItemPredicateDomains(domain) {
+    //   return {
+    //     icon: '📁', // 첫 번째 이모티콘을 고정적으로 표시
+    //     icon2: '💾', // 두 번째 이모티콘을 고정적으로 표시
+    //     name: domain?.name ?? '없음', // 도메인 이름
+    //     domainType: domain?.domainType ?? '없음', // 도메인 유형
+    //     status: domain?.status ?? '알 수 없음', // 상태
+    //     availableSize: domain?.availableSize ?? '알 수 없음', // 여유 공간 (GiB)
+    //     usedSize: domain?.usedSize ?? '알 수 없음', // 사용된 공간
+    //     diskSize: domain?.diskSize ?? '알 수 없음', // 전체 공간 (GiB)
+    //     description: domain?.description ?? '설명 없음', // 설명
+    //   };
+    // }
     // 논리네트워크
-    const { 
-      data: networks, 
-      status: networksStatus, 
-      isLoading: isNetworksLoading, 
-      isError: isNetworksError 
-    } = useNetworksFromDataCenter(dataCenter?.id, toTableItemPredicateNetworks);
-    
-    function toTableItemPredicateNetworks(network) {
-      return {
-        name: network?.name ?? '없음', // 네트워크 이름을 logicalName으로 매핑
-        description: network?.description ?? '설명 없음', // 네트워크 설명
-      };
-    }
+    // const { 
+    //   data: networks, 
+    //   status: networksStatus, 
+    //   isLoading: isNetworksLoading, 
+    //   isError: isNetworksError 
+    // } = useNetworksFromDataCenter(dataCenter?.id, toTableItemPredicateNetworks);
+    // function toTableItemPredicateNetworks(network) {
+    //   return {
+    //     name: network?.name ?? '없음', // 네트워크 이름을 logicalName으로 매핑
+    //     description: network?.description ?? '설명 없음', // 네트워크 설명
+    //   };
+    // }
   // 이벤트
-  const { 
-    data: events, 
-    status: eventsStatus, 
-    isLoading: isEventsLoading, 
-    isError: isEventsError 
-  } = useEventsFromDataCenter(dataCenter?.id, toTableItemPredicateEvents);
-  function toTableItemPredicateEvents(event) {
-    return {
-      // id: event?.id ?? '', 
-      icon: '',                      
-      time: event?.time ?? '',                
-      description: event?.description ?? 'No message', 
-      correlationId: event?.correlationId ?? '',
-      source: event?.source ?? 'ovirt',     
-      userEventId: event?.userEventId ?? '',   
-    };
-  }
+  // const { 
+  //   data: events, 
+  //   status: eventsStatus, 
+  //   isLoading: isEventsLoading, 
+  //   isError: isEventsError 
+  // } = useEventsFromDataCenter(dataCenter?.id, toTableItemPredicateEvents);
+  // function toTableItemPredicateEvents(event) {
+  //   return {
+  //     // id: event?.id ?? '', 
+  //     icon: '',                      
+  //     time: event?.time ?? '',                
+  //     description: event?.description ?? 'No message', 
+  //     correlationId: event?.correlationId ?? '',
+  //     source: event?.source ?? 'ovirt',     
+  //     userEventId: event?.userEventId ?? '',   
+  //   };
+  // }
 
   // Nav 컴포넌트
   const sections = [
@@ -246,20 +254,29 @@ useEffect(() => {
     },
   ];
 
-  const eventData = [
-    {
-      statusIcon: <FontAwesomeIcon icon={faCheck} style={{ color: 'green' }} fixedWidth/>,
-      time: '2024. 7. 29. PM 3:31:41',
-      message: 'Image Download with disk he_metadata was cancelled.',
-      correlationId: '2568d791:c08...',
-      source: 'oVirt',
-      customEventId: '',
-    },
-  ];
+
 
 
 
   const pathData = [dataCenter?.name, sections.find(section => section.id === activeTab)?.label];
+  const renderSectionContent = () => {
+    switch (activeTab) {
+      case 'clusters':
+        return <DatacenterCluster dataCenter={dataCenter} />;
+      case 'hosts':
+        return <DatacenterHost dataCenter={dataCenter} />;
+      case 'vms':
+        return <DatacenterVm dataCenter={dataCenter} />;
+      case 'storageDomains':
+        return <DatacenterStorage dataCenter={dataCenter} />;
+      case 'networks':
+        return <DatacenterNetwork dataCenter={dataCenter} />;
+      case 'events':
+        return <DatacenterEvent dataCenter={dataCenter} />;
+      default:
+        return <DatacenterCluster dataCenter={dataCenter} />;
+    }
+  };
   return (
     <div className="content_detail_section">
 
@@ -279,7 +296,8 @@ useEffect(() => {
         
         <div className="empty_nav_outer">
           <Path pathElements={pathData} />
-          {activeTab === 'clusters' && (
+          {renderSectionContent()}
+          {/* {activeTab === 'clusters' && (
               <>
                 <div className="header_right_btns">
                   <button onClick={() => handleOpenModal('cluster_new')}>새로 만들기</button>
@@ -293,10 +311,10 @@ useEffect(() => {
                 />
             </>
           
-          )}
-          {activeTab === 'hosts' && (
+          )} */}
+          {/* {activeTab === 'hosts' && (
             <>
-            {/* <div className="header_right_btns">
+            <div className="header_right_btns">
                 <button onClick={() => handleOpenModal('host_new')}>새로 만들기</button>
                 <button onClick={() => handleOpenModal('host_new')}>편집</button>
                 <button onClick={() => handleOpenModal('host_new')}>삭제</button>
@@ -304,12 +322,8 @@ useEffect(() => {
                 <button onClick={() => handleOpenModal('host_new')}>설치</button>
                 <button onClick={() => handleOpenModal('host_new')}>호스트 네트워크 복사</button>
             </div>
-              <TableOuter 
-                columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} 
-                data={hosts}
-                onRowClick={() => console.log('Row clicked')} 
-              />
-             */}
+  
+            
              <HostDu 
                 data={hosts} 
                 columns={TableColumnsInfo.HOSTS_ALL_DATA} 
@@ -318,8 +332,8 @@ useEffect(() => {
                 
               />
             </>
-          )}
-          {activeTab === 'vms' && (
+          )} */}
+          {/* {activeTab === 'vms' && (
             <>
             <VmDu 
                // 가상머신 데이터를 전달
@@ -332,8 +346,8 @@ useEffect(() => {
               dataCenterId={dataCenter?.id} 
             />
             </>
-          )}
-           {activeTab === 'storageDomains' && (
+          )} */}
+           {/* {activeTab === 'storageDomains' && (
             <>
               <div className="header_right_btns">
                 <button>새로 만들기</button>
@@ -348,7 +362,7 @@ useEffect(() => {
                 onRowClick={handleRowClick}
               />
             </>
-          )}
+          )} */}
            {activeTab === 'storage_disk' && (
             <>
               <div className="header_right_btns">
@@ -366,7 +380,7 @@ useEffect(() => {
             </>
           )}
 
-          {activeTab === 'networks' && (
+          {/* {activeTab === 'networks' && (
             <>
               <div className="header_right_btns">
                 <button>새로 만들기</button>
@@ -382,15 +396,15 @@ useEffect(() => {
                 clickableColumnIndex={[0]} 
               />
             </>
-          )}
-            {activeTab === 'events' && (
+          )} */}
+            {/* {activeTab === 'events' && (
               <EventDu 
                 columns={TableColumnsInfo.EVENTS}
                 data={events}
                 handleRowClick={() => console.log('Row clicked')}
               />
         
-          )}          
+          )}           */}
         </div>
         
       </div>

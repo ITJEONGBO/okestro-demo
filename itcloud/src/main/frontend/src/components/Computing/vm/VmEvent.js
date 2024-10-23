@@ -5,7 +5,7 @@ import EventDu from '../../duplication/EventDu';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 
 // 이벤트 섹션
-const EventSection = () => {
+const VmEvent = () => {
     const columns = [
       { header: '', accessor: 'icon', clickable: false },
       { header: '시간', accessor: 'time', clickable: false },
@@ -39,5 +39,5 @@ const EventSection = () => {
     );
   };
   
-  export default EventSection;
+  export default VmEvent;
   

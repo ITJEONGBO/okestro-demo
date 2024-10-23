@@ -8,7 +8,7 @@ import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useHostById, useHostdeviceFromHost } from '../../../api/RQHook';
 
 // 이벤트 섹션
-const EventSection = () => {
+const VmHostDevice = () => {
   const [activePopup, setActivePopup] = useState(null);
   const openPopup = (popupType) => setActivePopup(popupType);
   const closePopup = () => setActivePopup(null);
@@ -186,5 +186,5 @@ const EventSection = () => {
     );
   };
   
-  export default EventSection;
+  export default VmHostDevice;
   

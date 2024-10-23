@@ -11,21 +11,42 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import './css/Vm.css';
 import Footer from '../footer/Footer';
-import ApplicationSection from './vm/ApplicationSection';
-import DiskSection from './vm/DiskSection';
-import EventSection from './vm/EventSection';
-import NetworkSection from './vm/NetworkSection';
-import SnapshotSection from './vm/SnapshotSection';
-import HostDevice from './vm/HostDevice'; 
 import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
+import NavButton from '../navigation/NavButton';
+import { useVmById } from '../../api/RQHook';
+import Path from '../Header/Path';
+import VmGeneral from './vm/VmGeneral';
+import VmHostDevice from './vm/VmHostDevice';
+import VmEvent from './vm/VmEvent';
+import VmApplication from './vm/VmApplication';
+import VmSnapshot from './vm/VmSnapshot';
+import VmNetwork from './vm/VmNetwork';
+import VmDisk from './vm/VmDisk';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
 
-const Vm = () => {
-    const { id } = useParams();
+const VmDetail = () => {
+    const { id,section } = useParams();
+    const [activeNavTab, setActiveNavTab] = useState('general'); 
+    const handleNavTabClick = (tab) => {
+      setActiveNavTab(tab);
+      if (tab !== 'general') {
+        navigate(`/computing/vms/${id}/${tab}`);
+      } else {
+        navigate(`/computing/vms/${id}`);
+      }
+    };
+    useEffect(() => {
+      if (!section) {
+        setActiveNavTab('general');
+      } else {
+        setActiveNavTab(section);
+      }
+    }, [section]); 
+
     const openPopup = (popupType) => {
         setActivePopup(popupType);
         setActiveSection('common'); // 팝업을 열 때 항상 '일반' 섹션으로 설정
@@ -40,7 +61,7 @@ const Vm = () => {
         setSelectedModalTab('common'); // 편집모달창 초기화
     };
  
-  const [selectedPopupTab, setSelectedPopupTab] = useState('cluster_common_btn');
+
 
 const [activePopup, setActivePopup] = useState(null);
 const closePopup = () => {
@@ -62,16 +83,40 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
  };
 
 
+
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
+  const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
+  const handleSectionClick = (name) => {
+    setActiveSection(name);
+    navigate(`/computing/vms/${id}/${name}`);
+  };
+
+  const toggleFooterContent = () => {
+    setFooterContentVisibility(!isFooterContentVisible);
+  };
+
+  const handleFooterTabClick = (tab) => {
+    setSelectedFooterTab(tab);
+  };
+  const [activeTab, setActiveTab] = useState('img');
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+  const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 연결 팝업 상태
+  const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
+  
+
+
   const sections = [
     { id: 'general', label: '일반' },
-    { id: 'disk', label: '디스크' },
-    { id: 'snapshot', label: '스냅샷' },
+    { id: 'disks', label: '디스크' },
+    { id: 'snapshots', label: '스냅샷' },
     { id: 'network', label: '네트워크 인터페이스' },
-    { id: 'application', label: '애플리케이션' },
-    // { id: 'guest_info', label: '게스트 정보' },
-    // { id: 'power', label: '권한' },
-    { id: 'host_device', label: '호스트 장치' },
-    { id: 'event', label: '이벤트' }
+    { id: 'applications', label: '애플리케이션' },
+    { id: 'hostDevices', label: '호스트 장치' },
+    { id: 'events', label: '이벤트' }
 
   ];
   
@@ -100,294 +145,43 @@ const buttons = [
     { id: 'export_to_data', label: 'Export to Data Domain' },
     { id: 'export_ova', label: 'OVA로 내보내기' ,onClick: () => openPopup('OVA') }
   ];
+
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+  const { 
+    data: vm,
+    status: vmStatus,
+    isRefetching: isVmRefetching,
+    refetch: vmRefetch, 
+    isError: isVmError,
+    error: vmError, 
+    isLoading: isVmLoading,
+  } = useVmById(id);
+  useEffect(() => {
+    if (shouldRefresh) {
+      vmRefetch();
+    }
+  }, [shouldRefresh, vmRefetch]);
   
-  const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
-  const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 
-
-
-  const handleSectionClick = (name) => {
-    setActiveSection(name);
-    navigate(`/computing/vms/${id}/${name}`);
-  };
-
-  const toggleFooterContent = () => {
-    setFooterContentVisibility(!isFooterContentVisible);
-  };
-
-  const handleFooterTabClick = (tab) => {
-    setSelectedFooterTab(tab);
-  };
-  const [activeTab, setActiveTab] = useState('img');
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
-  const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 연결 팝업 상태
-  const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
-  
-  // 편집 팝업
-        useEffect(() => {
-          const showEditPopup = () => {
-              setActiveSection('common_outer');
-              const editPopupBg = document.getElementById('edit_popup_bg');
-              if (editPopupBg) {
-                  editPopupBg.style.display = 'block';
-              }
-          }
-
-          const editButton = document.getElementById('network_first_edit_btn');
-          if (editButton) {
-              editButton.addEventListener('click', showEditPopup);
-          }
-
-          return () => {
-              if (editButton) {
-                  editButton.removeEventListener('click', showEditPopup);
-              }
-          };
-      }, []);
-
-      // 편집 팝업 기본 섹션 스타일 적용
-      useEffect(() => {
-          const defaultElement = document.getElementById('common_outer_btn');
-          if (defaultElement) {
-              defaultElement.style.backgroundColor = '#EDEDED';
-              defaultElement.style.color = '#1eb8ff';
-              defaultElement.style.borderBottom = '1px solid blue';
-          }
-      }, []);
-
-      // 편집 팝업 스타일 변경
-      const handleSectionChange = (section) => {
-          setActiveSection(section);
-          const elements = document.querySelectorAll('.edit_aside > div');
-          elements.forEach(el => {
-              el.style.backgroundColor = '#FAFAFA';
-              el.style.color = 'black';
-              el.style.borderBottom = 'none';
-          });
-
-          const activeElement = document.getElementById(`${section}_btn`);
-          if (activeElement) {
-              activeElement.style.backgroundColor = '#EDEDED';
-              activeElement.style.color = '#1eb8ff';
-              activeElement.style.borderBottom = '1px solid blue';
-          }
-      };
-      const showEditPopup = () => {
-        setActiveSection('common_outer');
-        const editPopupBg = document.getElementById('edit_popup_bg');
-        if (editPopupBg) {
-          editPopupBg.style.display = 'block';
-        }
-    };
+  const pathData = [vm?.name, sections.find(section => section.id === activeNavTab)?.label];
   const renderSectionContent = () => {
-    switch (activeSection) {
+    switch (activeNavTab) {
+      case 'general':
+        return <VmGeneral vm={vm}/>;
+      case 'disks':
+        return <VmDisk vm={vm} />;
       case 'network':
-        return <NetworkSection/>;
-      case 'disk':
-        return <DiskSection />;
-      case 'snapshot':
-        return <SnapshotSection />;
-      case 'application':
-        return <ApplicationSection/>;
-    //   case 'guest_info':
-    //     return <GuestInfoSection />;
-    //   case 'power':
-    //     return <PowerSection/>;
-      case 'event':
-        return <EventSection />;
-      case 'host_device':
-        return <HostDevice />;
+        return <VmNetwork vm={vm}/>;
+      case 'snapshots':
+        return <VmSnapshot vm={vm}/>;
+      case 'applications':
+        return <VmApplication vm={vm}/>;
+      case 'events':
+        return <VmEvent vm={vm}/>;
+      case 'hostDevices':
+        return <VmHostDevice vm={vm}/>;
       default:
-        return (
-       
-        <>
-        <div className='vm_detail_general_boxs'>
-            <div className='detail_general_box'>
-                <table className="table">
-                    <tbody>
-                    <tr>
-                        <th>전원상태</th>
-                        <td>전원 켜짐</td>
-                    </tr>
-                    <tr>
-                        <th>게스트 운영 체제</th>
-                        <td>Red Hat Enterprise Linux 8.x x64</td>
-                    </tr>
-                    <tr>
-                        <th>게스트 에이전트</th>
-                        <td>실행 중, 버전 : 123456(최신)</td>
-                    </tr>
-                    <tr>
-                        <th>업타임</th>
-                        <td>28 days</td>
-                    </tr>
-                    <tr>
-                        <th>FQDN</th>
-                        <td>on20-ap01</td>
-                    </tr>
-                    <tr>
-                        <th>실행 호스트</th>
-                        <td>클러스터 내 호스트</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div className='detail_general_box'>
-                
-                <div>VM하드웨어</div>
-                <table className="table">
-                    <tbody>
-                    <tr>
-                        <th>CPU</th>
-                        <td>2(2:1:1)</td>
-                    </tr>
-                    <tr>
-                        <th>메모리</th>
-                        <td>16GB</td>
-                    </tr>
-                    <tr>
-                        <th>하드 디스크1</th>
-                        <td>300 GB | 씬 프로비전<br/>hosted-engine</td>
-                    </tr>
-                    <tr>
-                        <th>네트워트 어댑터1</th>
-                        <td>ovirt-mgmgt</td>
-                    </tr>
-                    <tr>
-                        <th>칩셋/펌웨어 유형</th>
-                        <td>BIOS Q35 칩셋</td>
-                    </tr>
-                  
-                    </tbody>
-                </table>
-            </div>
-            <div className='detail_general_mini_box'>
-                <div>용량 및 사용량</div>
-                <div className='capacity_outer'>
-                    <div className='capacity'>
-                        <div>CPU</div>
-                        <div className='capacity_box'>
-                            <div>20%</div>
-                            <div>사용됨</div>
-                            <div>10CPU<br/>할당됨</div>
-                        </div>
-                    </div>
-                    <div className='capacity'>
-                        <div>메모리</div>
-                        <div className='capacity_box'>
-                            <div>20%</div>
-                            <div>사용됨</div>
-                            <div>10CPU<br/>할당됨</div>
-                        </div>
-                    </div>
-                    <div className='capacity'>
-                        <div>스토리지</div>
-                        <div className='capacity_box'>
-                            <div>20%</div>
-                            <div>사용됨</div>
-                            <div>10CPU<br/>할당됨</div>
-                        </div>
-                    </div>
-                </div>  
-            </div>
-
-            <div className='detail_general_mini_box'>
-                <div>관련개체</div>
-                <div className='capacity_outer'>
-                    <div className='capacity'>
-                        <div>클러스터</div>
-                        <div className='related_object'>
-                            <div><FontAwesomeIcon icon={faTimes} fixedWidth/></div>
-                            <span class="text-blue-500 font-bold">ITITINFO</span>
-                        </div>
-                    </div>
-                    <div className='capacity'>
-                        <div>호스트</div>
-                        <div className='related_object'>
-                            <div><FontAwesomeIcon icon={faTimes} fixedWidth/></div>
-                            <span class="text-blue-500 font-bold">192.168.0.4</span>
-                        </div>
-                    </div>
-                    <div className='capacity'>
-                        <div>네트워크</div>
-                        <div className='related_object'>
-                            <div><FontAwesomeIcon icon={faTimes} fixedWidth/></div>
-                            <span>ovirt-mgmt</span>
-                        </div>
-                    </div>
-                    <div className='capacity'>
-                        <div>스토리지 도메인</div>
-                        <div className='related_object'>
-                            <div><FontAwesomeIcon icon={faTimes} fixedWidth/></div>
-                            <span >hosted-engine</span>
-                        </div>
-                    </div>
-                
-            </div>
-            </div>
-        </div>
-
-        <div className='detail_general_boxs_bottom'>
-        <div className="tables">
-            <div className="table_container_center">
-              <table className="table">
-                <tbody>
-                  <tr>
-                    <th>유형:</th>
-                    <td>Linux</td>
-                  </tr>
-                  <tr>
-                    <th>아키텍처:</th>
-                    <td>x86_64</td>
-                  </tr>
-                  <tr>
-                    <th>운영체제:</th>
-                    <td>ContOs Linux7</td>
-                  </tr>
-                  <tr>
-                    <th>커널버전:</th>
-                    <td>3.10.38343344</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="table_container_center">
-              <table className="table">
-                <tbody>
-                  <tr>
-                    <th>시간대:</th>
-                    <td>KST(UTC+09:00)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="table_container_center">
-              <table className="table">
-                <tbody>
-                  <tr>
-                    <th>로그인된 사용자:</th>
-                    <td>root</td>
-                  </tr>
-                  <tr>
-                    <th>콘솔 사용자:</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>콘솔 클라이언트IP:</th>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-        </>
-        );
+        return <VmGeneral vm={vm}/>;
     }
   };
 
@@ -395,27 +189,18 @@ const buttons = [
     <div id="section">
        <HeaderButton
       titleIcon={faMicrochip}
-      title="가상머신"
-      subtitle="#"
+      title={vm?.name}
       buttons={buttons}
       popupItems={popupItems}
     />
       <div className="content_outer">
-        <div className="content_header">
-          <div className="content_header_left">
-            {sections.map((sec) => (
-              <div
-                key={sec.id}
-                className={activeSection === sec.id ? 'active' : ''}
-                onClick={() => handleSectionClick(sec.id)}
-              >
-                {sec.label}
-              </div>
-            ))}
-          </div>
-        </div>
+        <NavButton 
+            sections={sections} 
+            activeSection={activeNavTab} 
+            handleSectionClick={handleNavTabClick}  
+          />
         <div className="host_btn_outer">
-            
+          {activeNavTab !== 'general' && <Path pathElements={pathData} />}
           {renderSectionContent()}
         </div>
       </div>
@@ -1858,4 +1643,4 @@ const buttons = [
   );
 };
 
-export default Vm;
+export default VmDetail;

@@ -7,7 +7,7 @@ import TableColumnsInfo from '../../table/TableColumnsInfo';
 
 
 // 디스크
-const DiskSection = () => {
+const VmDisk = () => {
 
     const [isJoinDiskModalOpen, setIsJoinDiskModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('img');
@@ -568,4 +568,4 @@ const DiskSection = () => {
         </>
     );
   };
-  export default DiskSection;
+  export default VmDisk;

@@ -22,11 +22,11 @@ const DomainDiskSnaphot = ({ domain }) => {
       function toTableItemPredicateDiskSnapshots(diskSnapshot) {
         return {
           id: diskSnapshot?.id ?? '',
-          size: diskSnapshot?.size ? `${diskSnapshot.size} GiB` : '알 수 없음',
+          actualSize: diskSnapshot?.actualSize ? `${diskSnapshot.actualSize} GiB` : '알 수 없음',
           creationDate: diskSnapshot?.creationDate ?? '알 수 없음',
           snapshotCreationDate: diskSnapshot?.snapshotCreationDate ?? '알 수 없음',
-          diskAlias: diskSnapshot?.diskAlias ?? '없음',
-          snapshotDescription: diskSnapshot?.snapshotDescription ?? '없음',
+          alias: diskSnapshot?.alias ?? '없음',
+          description: diskSnapshot?.description ?? '없음',
           target: diskSnapshot?.target ?? '없음',
           status: diskSnapshot?.status ?? '알 수 없음',
           diskSnapshotId: diskSnapshot?.diskSnapshotId ?? '없음',

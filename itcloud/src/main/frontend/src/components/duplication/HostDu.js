@@ -6,7 +6,7 @@ import TableOuter from '../table/TableOuter';
 import './css/HostDu.css';
 import Modal from 'react-modal';
 
-const HostDu = ({ data, columns, handleRowClick,togglePopup }) => {
+const HostDu = ({ data, columns, onRowClick,togglePopup,onContextMenuItems }) => {
 
   // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
@@ -99,9 +99,10 @@ const closePopup = () => {
       <TableOuter
         columns={columns} 
         data={data} 
-        onRowClick={handleRowClick} 
+        onRowClick={onRowClick} 
         className="host_table"
         clickableColumnIndex={[0,3,4]} 
+        onContextMenuItems={onContextMenuItems} 
       />
 
       {/* 호스트 새로 만들기 */}

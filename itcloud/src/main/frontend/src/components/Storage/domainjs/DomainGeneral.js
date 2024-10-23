@@ -6,12 +6,7 @@ const DomainGeneral = ({ domain }) => {
     const closeModal = () => setActivePopup(null);
     return (
         <>
-        <div className="header_right_btns">
-          <button onClick={() => openModal('manageDomain')}>도메인 관리</button>
-          <button onClick={() => openModal('delete')}>삭제</button>
-          <button onClick={() => console.log('Connections button clicked')}>Connections</button>
-       
-        </div>
+
         <div className="tables">
           <div className="table_storage_domain_detail">
           <table className="table">

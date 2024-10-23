@@ -10,13 +10,13 @@ import { createRoot } from 'react-dom/client';
 
 const VmDu = ({
   columns,
-  handleRowClick: parentHandleRowClick,
-  openPopup,
+  onRowClick,
   setActiveTab: parentSetActiveTab,
   togglePopup,
   isPopupOpen,
   showTemplateButton = true,
-  data 
+  data ,
+
 }) => {
   const navigate = useNavigate();
   
@@ -25,37 +25,8 @@ const VmDu = ({
   const [activeSection, setActiveSection] = useState('common');
 
   const openModal = () => setIsModalOpen(true);
-  const [selectedData, setSelectedData] = useState([]);  // 초기 값을 빈 배열로 설정
 
-  useEffect(() => {
-    if (data && Array.isArray(data)) {
-      setSelectedData(data);  // data prop이 변경될 때 selectedData로 설정
-    }
-  }, [data]);
 
- //데이터센터id
-//  const { data: vmsByDataCenter, status, isLoading, isError } = useVMsFromDataCenter(dataCenterId,toTableItemPredicateVMs); 
-//  function toTableItemPredicateVMs(vm) {
-//   return {
-//     icon: '🖥️', // 이모티콘은 고정적으로 추가
-//     name: vm?.name ?? '없음',
-//     comment: vm?.comment ?? '없음',
-//     host: vm?.host?.name ?? '없음',
-//     ipv4: vm?.ipv4 ?? '알 수 없음',
-//     fqdn: vm?.fqdn ?? '알 수 없음',
-//     clusterVo: vm?.clusterVo?.name ?? '알 수 없음',
-//     status: vm?.status ?? '알 수 없음',
-//     dataCenterVo: vm?.dataCenterVo?.name ?? '알 수 없음',
-//     memory: vm?.memory ? `${vm.memory} MiB` : '알 수 없음',
-//     cpu: vm?.cpu ? `${vm.cpu} cores` : '알 수 없음',
-//     network: vm?.network ?? '알 수 없음',
-//     upTime: vm?.upTime ?? '알 수 없음',
-//     description: vm?.description ?? '알 수 없음',
-//   };
-// } 
-
-   
-    
 
 
 
@@ -89,12 +60,6 @@ const VmDu = ({
   const [popupOpen, setPopupOpen] = useState(false);
   const togglePopupMenu = () => {
     setPopupOpen(!popupOpen);
-  };
-
-  const handleRowClick = (row, column) => {
-    if (column.accessor === 'name') {
-      navigate(`/computing/vms/${row.id}`);
-    }
   };
 
 
@@ -173,10 +138,17 @@ const VmDu = ({
       <TableOuter 
         columns={columns}
         data={data} // 데이터가 배열인지 확인
-        onRowClick={handleRowClick} // 행 클릭 시 호출되는 함수
+        onRowClick={onRowClick} // 행 클릭 시 호출되는 함수
         showSearchBox={true}  // 검색창 표시 여부
-        clickableColumnIndex={[1, 6,8]} // 첫 번째와 세 번째 컬럼을 클릭 가능하게 설정
+        clickableColumnIndex={[1,3,6,8]}
         shouldHighlight1stCol={true} // 첫 번째 컬럼을 강조
+        onContextMenuItems={() => [
+          <div key="새로 만들기" onClick={() => console.log()}>새로 만들기</div>,
+          <div key="편집" onClick={() => console.log()}>편집</div>,
+          <div key="삭제" onClick={() => console.log()}>삭제</div>,
+          <div key="설치" onClick={() => console.log()}>설치</div>,
+          <div key="호스트 네트워크 복사" onClick={() => console.log()}>호스트 네트워크 복사</div>,
+        ]}
       />
 
         {/* 새로만들기팝업 */}

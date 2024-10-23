@@ -100,7 +100,7 @@ const TableInfo = {
   ],
   // 디스크 DISKS
   APPLICATIONS_FROM_VM: [
-    { header: '설치된 애플리케이션', accessor: 'application' }
+    { header: '설치된 애플리케이션', accessor: 'name' }
   ],
   // 호스트 장치 DEVICE_FROM_HOST
 
@@ -125,8 +125,7 @@ const TableInfo = {
     { header: '역할', accessor: 'role', clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
     { header: '레이블', accessor: 'label', clickable: false },
-    { header: '공급자', accessor: 'provider', clickable: false },
-    { header: '포트분리', accessor: 'port', clickable: false },
+    { header: 'MTU', accessor: 'mtu', clickable: false },
   ],
   // vnic 프로파일 VNIC_PROFILES
   CLUSTERS_FRON_NETWORK: [
@@ -186,7 +185,6 @@ const TableInfo = {
 
 
   STORAGE_DOMAINS: [
-    { header: '상태', accessor: 'status' },
     { header: '', accessor: 'icon' },
     { header: '도메인 이름', accessor: 'name' },
     { header: '코멘트', accessor: 'comment' },
@@ -230,11 +228,11 @@ const TableInfo = {
     { header: '설명', accessor: 'description', clickable: false },
   ],
   DISK_SNAPSHOT_FROM_STORAGE_DOMAIN: [
-    { header: '크기', accessor: 'size', clickable: false },
+    { header: '크기', accessor: 'actualSize', clickable: false },
     { header: '생성 일자', accessor: 'creationDate', clickable: false },
     { header: '스냅샷 생성일', accessor: 'snapshotCreationDate', clickable: false },
-    { header: '디스크 별칭', accessor: 'diskAlias', clickable: false },
-    { header: '스냅샷 설명', accessor: 'snapshotDescription', clickable: false },
+    { header: '디스크 별칭', accessor: 'alias', clickable: false },
+    { header: '스냅샷 설명', accessor: 'description', clickable: false },
     { header: '연결 대상', accessor: 'target', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
@@ -418,8 +416,8 @@ const TableInfo = {
     { header: '이름', accessor: 'name', clickable: false },
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '호스트이름/IP', accessor: 'hostNameIP', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: true },
-    { header: '데이터센터', accessor: 'dataCenter', clickable: true },
+    { header: '클러스터', accessor: 'clusterVo', clickable: true },
+    { header: '데이터센터', accessor: 'dataCenterVo', clickable: true },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '가상머신', accessor: 'vm', clickable: false },
     { header: '메모리', accessor: 'memory', clickable: false },
@@ -431,12 +429,12 @@ const TableInfo = {
     { header: '', accessor: 'icon', clickable: false },  // 이모티콘 칸
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '호스트', accessor: 'host', clickable: true },
+    { header: '호스트', accessor: 'hostVo', clickable: true },
     { header: 'IP주소', accessor: 'ipv4', clickable: false },
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: true },
+    { header: '클러스터', accessor: 'clusterVo', clickable: true },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '데이터센터', accessor: 'datacenter', clickable: true },
+    { header: '데이터센터', accessor: 'dataCenterVo', clickable: true },
     { header: '메모리', accessor: 'memory', clickable: false },
     { header: 'CPU', accessor: 'cpu', clickable: false },
     { header: '네트워크', accessor: 'network', clickable: false },
