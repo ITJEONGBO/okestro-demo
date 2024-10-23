@@ -71,10 +71,10 @@ class ClusterVo(
     val comment: String = "",
     val isConnected: Boolean = false,
     val ballooningEnabled: Boolean = false,
-    val biosType: BiosType = BiosType.CLUSTER_DEFAULT,
-    val cpuArc: Architecture = Architecture.UNDEFINED,
+    val biosType: String /*BiosType*/ = "",
+    val cpuArc: String/*Architecture*/ = "",
     val cpuType: String = "",
-    val errorHandling: MigrateOnError = MigrateOnError.MIGRATE,
+    val errorHandling: String/*MigrateOnError*/ = "",
     val fipsMode: FipsMode = FipsMode.UNDEFINED,
     val firewallType: FirewallType = FirewallType.FIREWALLD,
     val glusterService: Boolean = false,
@@ -111,10 +111,10 @@ class ClusterVo(
 		private var bComment: String = "";fun comment(block: () -> String?) { bComment = block() ?: "" }
 		private var bIsConnected: Boolean = false; fun isConnected(block: () -> Boolean?) { bIsConnected = block() ?: false }
 		private var bBallooningEnabled: Boolean = false; fun ballooningEnabled(block: () -> Boolean?) { bBallooningEnabled = block() ?: false }
-		private var bBiosType: BiosType = BiosType.CLUSTER_DEFAULT; fun biosType(block: () -> BiosType?) { bBiosType = block() ?: BiosType.CLUSTER_DEFAULT }
-		private var bCpuArc: Architecture = Architecture.UNDEFINED; fun cpuArc(block: () -> Architecture?) { bCpuArc = block() ?: Architecture.UNDEFINED }
+		private var bBiosType: String = ""; fun biosType(block: () -> String?) { bBiosType = block() ?: "" }
+		private var bCpuArc: String = ""; fun cpuArc(block: () -> String?) { bCpuArc = block() ?: "" }
 		private var bCpuType: String = ""; fun cpuType(block: () -> String?) { bCpuType = block() ?: "" }
-		private var bErrorHandling: MigrateOnError = MigrateOnError.MIGRATE; fun errorHandling(block: () -> MigrateOnError?) { bErrorHandling = block() ?: MigrateOnError.MIGRATE }
+		private var bErrorHandling: String = ""; fun errorHandling(block: () -> String?) { bErrorHandling = block() ?: "" }
 		private var bFipsMode: FipsMode = FipsMode.UNDEFINED; fun fipsMode(block: () -> FipsMode?) { bFipsMode = block() ?: FipsMode.UNDEFINED}
 		private var bFirewallType: FirewallType = FirewallType.FIREWALLD; fun firewallType(block: () -> FirewallType?) { bFirewallType = block() ?: FirewallType.FIREWALLD}
 		private var bGlusterService: Boolean = false; fun glusterService(block: () -> Boolean?) { bGlusterService = block() ?: false }
@@ -183,8 +183,8 @@ fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
 		name { this@toClusterInfo.name() }
 		description {this@toClusterInfo.description() }
 		comment { this@toClusterInfo.comment() }
-		biosType { this@toClusterInfo.biosType() }
-		cpuArc { this@toClusterInfo.cpu().architecture() }
+		biosType { this@toClusterInfo.biosType().toString() }
+		cpuArc { this@toClusterInfo.cpu().architecture().toString() }
 		cpuType { if (this@toClusterInfo.cpuPresent()) this@toClusterInfo.cpu().type() else null }
 		firewallType { this@toClusterInfo.firewallType() }
 		haReservation { this@toClusterInfo.haReservation() }
@@ -228,32 +228,32 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 	return ClusterBuilder()
 		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.datacenterVo.id).build()) // 필수
 		.name(this@toClusterBuilder.name) // 필수
-		.cpu(CpuBuilder().architecture(this@toClusterBuilder.cpuArc).type(this@toClusterBuilder.cpuType)) // 필수
+		.cpu(CpuBuilder().architecture(Architecture.fromValue(this@toClusterBuilder.cpuArc)).type(this@toClusterBuilder.cpuType)) // 필수
 		.description(this@toClusterBuilder.description)
 		.comment(this@toClusterBuilder.comment)
 		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.networkVo.id).build())
-		.biosType(this@toClusterBuilder.biosType)
+		.biosType(BiosType.fromValue(this@toClusterBuilder.biosType))
 		.fipsMode(FipsMode.DISABLED)
 		.version(VersionBuilder().major(4).minor(7).build())
 		.switchType(SwitchType.LEGACY)  // 편집에선 선택불가
 		.firewallType(FirewallType.FIREWALLD)
-		.logMaxMemoryUsedThreshold(this@toClusterBuilder.logMaxMemory)
-		.logMaxMemoryUsedThresholdType(this@toClusterBuilder.logMaxMemoryType)
 		.virtService(true)
 		.glusterService(false)
-		.errorHandling(ErrorHandlingBuilder().onError(this@toClusterBuilder.errorHandling))
-		// HELP: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
-		.migration(
-			MigrationOptionsBuilder()
-				.bandwidth(MigrationBandwidthBuilder().assignmentMethod(this@toClusterBuilder.bandwidth))
-				.encrypted(this@toClusterBuilder.encrypted)
-		)
-		.fencingPolicy(
-			FencingPolicyBuilder()
-				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
-				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
-		)
+		.errorHandling(ErrorHandlingBuilder().onError(MigrateOnError.fromValue(this@toClusterBuilder.errorHandling)))
 		.externalNetworkProviders(conn.findAllOpenStackNetworkProviders().getOrDefault(listOf()).first())
+//		.logMaxMemoryUsedThreshold(this@toClusterBuilder.logMaxMemory)
+//		.logMaxMemoryUsedThresholdType(this@toClusterBuilder.logMaxMemoryType)
+		// HELP: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
+//		.migration(
+//			MigrationOptionsBuilder()
+//				.bandwidth(MigrationBandwidthBuilder().assignmentMethod(this@toClusterBuilder.bandwidth))
+//				.encrypted(this@toClusterBuilder.encrypted)
+//		)
+//		.fencingPolicy(
+//			FencingPolicyBuilder()
+//				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
+//				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
+//		)
 }
 
 /**
@@ -315,10 +315,10 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 		comment { this@toClusterVo.comment() }
 //		isConnected { this@toClusterVo. }
 		ballooningEnabled { this@toClusterVo.ballooningEnabled() }
-		biosType { this@toClusterVo.biosType() }
-		cpuArc { this@toClusterVo.cpu().architecture() }
+		biosType { this@toClusterVo.biosType().toString() }
+		cpuArc { this@toClusterVo.cpu().architecture().toString() }
 		cpuType { if (this@toClusterVo.cpuPresent()) this@toClusterVo.cpu().type() else null }
-		errorHandling { this@toClusterVo.errorHandling().onError() }
+		errorHandling { this@toClusterVo.errorHandling().onError().toString() }
 		fipsMode { this@toClusterVo.fipsMode() }
 		firewallType { this@toClusterVo.firewallType() }
 		glusterService { this@toClusterVo.glusterService() }

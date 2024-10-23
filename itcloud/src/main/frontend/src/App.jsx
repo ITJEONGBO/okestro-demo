@@ -58,11 +58,11 @@ const App = () => {
 
     // Cleanup on component unmount
     return () => {
-      /* 
       if (STOMP) {
-        STOMP.disconnect();
+        STOMP.disconnect(() => {
+          console.log('Disconnected from STOMP');
+        });
       }
-      */
     };
   }, []);
 
@@ -102,8 +102,10 @@ const App = () => {
           <Header setAuthenticated={setAuthenticated} />
           <MainOuter>
             <Routes>
-            <Route path="/" element={<Dashboard />} />
-              <Route path="/computing/datacenters" element={<Computing />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/computing/rutil-manager" element={<RutilManager />} />
+              {/* <Route path="/computing/datacenters" element={<Computing />} /> */}
+              {/* <Route path="/computing/datacenters" element={<DataCenters />} /> */}
               <Route path="/computing/datacenters/:id" element={<DataCenter />} />
               <Route path="/computing/datacenters/:id/:section" element={<DataCenter />} />
               

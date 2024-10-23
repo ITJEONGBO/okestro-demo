@@ -36,6 +36,7 @@ export const useDashboard = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['dashboard'],
   queryFn: async () => {
+    console.log(`useDashboard ...`);
     const res = await ApiManager.getDashboard()
     // setShouldRefresh(prevValue => false)
     return res
@@ -47,6 +48,7 @@ export const useDashboardCpuMemory = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['dashboardCpuMemory'],
   queryFn: async () => {
+    console.log(`useDashboardCpuMemory ...`);
     const res = await ApiManager.getCpuMemory()
     // setShouldRefresh(prevValue => false)
     return res ?? []
@@ -67,6 +69,7 @@ export const useDashboardVmCpu = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['dashboardVmCpu'],
   queryFn: async () => {
+    console.log(`useDashboardVmCpu ...`);
     const res = await ApiManager.getVmCpu()
     // setShouldRefresh(prevValue => false)
     return res ?? []
@@ -77,6 +80,7 @@ export const useDashboardVmMemory = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['dashboardVmMemory'],
   queryFn: async () => {
+    console.log(`useDashboardVmMemory ...`);
     const res = await ApiManager.getVmMemory()
     // setShouldRefresh(prevValue => false)
     return res ?? []
@@ -87,6 +91,7 @@ export const useDashboardStorageMemory = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['dashboardStorageMemory'],
   queryFn: async () => {
+    console.log(`useDashboardStorageMemory ...`);
     const res = await ApiManager.getStorageMemory()
     // setShouldRefresh(prevValue => false)
     return res ?? []
@@ -107,6 +112,7 @@ export const useAllDataCenters = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['allDataCenters'],
   queryFn: async () => {
+    console.log(`useAllDataCenters ...`);
     const res = await ApiManager.findAllDataCenters()
     // setShouldRefresh(prevValue => false)
     return res?.map((e) => mapPredicate(e)) ?? []
@@ -122,6 +128,7 @@ export const useDataCenter = (dataCenterId) => useQuery({
   refetchOnWindowFocus: true,  // 윈도우가 포커스될 때마다 데이터 리프레시
   queryKey: ['dataCenter', dataCenterId],  // queryKey에 dataCenterId를 포함시켜 dataCenterId가 변경되면 다시 요청
   queryFn: async () => {
+    console.log(`useDataCenter ...`);
     if (!dataCenterId) return {};  // dataCenterId가 없는 경우 빈 객체 반환
     const res = await ApiManager.findDataCenter(dataCenterId);  // dataCenterId에 따라 API 호출
     return res ?? {};  // 데이터를 반환, 없는 경우 빈 객체 반환
@@ -144,7 +151,7 @@ export const useClustersFromDataCenter = (dataCenterId, mapPredicate) => useQuer
   refetchOnWindowFocus: true,
   queryKey: ['clustersFromDataCenter', dataCenterId], 
   queryFn: async () => {
-    console.log(`clustersFromDataCenter ... ${dataCenterId}`);  // 로그 추가
+    console.log(`clustersFromDataCenter ...`);
     const res = await ApiManager.findAllClustersFromDataCenter(dataCenterId); 
     return res?.map(mapPredicate) ?? []; // 데이터 가공
   },
@@ -324,6 +331,7 @@ export const useAllClusters = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['allClusters'],
   queryFn: async () => {
+    console.log(`useAllClusters ...`);
     const res = await ApiManager.findAllClusters()
     // const res = await ApiManager.findAllClustersFromDataCenter()
     // setShouldRefresh(prevValue => false)
@@ -444,6 +452,61 @@ export const useEventFromCluster = (clusterId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
+
+/**
+ * @name useAddCluster
+ * @description 클러스터 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddCluster = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (clusterData) => await ApiManager.addCluster(clusterData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allClusters'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
+    },
+    onError: (error) => {
+      console.error('Error adding cluster:', error);
+    },  
+  });
+};
+/**
+ * @name useEditCluster
+ * @description 클러스터 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditCluster = () => {
+  const queryClient = useQueryClient();  
+  return useMutation({
+    mutationFn: async ({ clusterId, clusterData }) => await ApiManager.editCluster(clusterId, clusterData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allClusters');
+    },
+    onError: (error) => {
+      console.error('Error editing cluster:', error);
+    },
+  });
+};
+/**
+ * @name useDeleteCluster
+ * @description 클러스터 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteCluster = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({ 
+    mutationFn: async (clusterId) => await ApiManager.deleteCluster(clusterId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allClusters');
+    },
+    onError: (error) => {
+      console.error('Error deleting cluster:', error);
+    },
+  });
+};
 //endregion: Cluster
 
 //region: Host ----------------호스트---------------------

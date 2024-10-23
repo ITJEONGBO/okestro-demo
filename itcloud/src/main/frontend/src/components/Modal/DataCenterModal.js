@@ -8,11 +8,12 @@ import {
 } from '../../api/RQHook'
 
 const DataCenterModal = ({ 
-  isOpen, 
-  onRequestClose, 
+  isOpen,
+  onRequestClose,
   editMode = false,  // 기본이 생성모드
   data = {}          // 부모 컴포넌트에서 전달된 데이터
 }) => {
+  console.log("DataCenterModal ")
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
@@ -27,13 +28,13 @@ const DataCenterModal = ({
   // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
     if (editMode && data) {
-      setId(data.id || '');
-      setName(data.name || '');
-      setComment(data.comment || '');
-      setDescription(data.description || '');
-      setStorageType(data.storageType ? '로컬' : '공유됨');  // true/false에 따른 저장 방식
-      setVersion(data.version || '4.7');
-      setQuotaMode(data.quotaMode || 'DISABLED');
+      setId(data.id);
+      setName(data.name);
+      setComment(data.comment);
+      setDescription(data.description);
+      setStorageType(data.storageType === true);  // true/false에 따른 저장 방식
+      setVersion(data.version);
+      setQuotaMode(data.quotaMode);
     } else {
       resetForm();
     }
@@ -99,7 +100,7 @@ const DataCenterModal = ({
     >
       <div className="datacenter_new_popup">
         <div className="popup_header">
-          <h1>{editMode ? '데이터 센터 편집' : '새로운 데이터 센터'}</h1>
+          <h1>{editMode ? '데이터 센터 편집' : '새 데이터 센터'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
@@ -141,7 +142,7 @@ const DataCenterModal = ({
             <select
               id="storageType"
               value={storageType}
-              onChange={(e) => setStorageType(e.target.value)} // onChange 핸들러 추가
+              onChange={(e) => setStorageType(e.target.value === "true")} // onChange 핸들러 수정
             >
               <option value="false">공유됨</option>
               <option value="true">로컬</option>
@@ -173,7 +174,7 @@ const DataCenterModal = ({
 
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>
-          <button onClick={handleFormSubmit}>OK</button>
+          <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>

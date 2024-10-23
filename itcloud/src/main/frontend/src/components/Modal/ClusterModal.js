@@ -2,44 +2,165 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  useAddCluster, 
+  useEditCluster, 
+  useAllDataCenters, 
+  useNetworksFromDataCenter
+} from '../../api/RQHook'
 
 const ClusterModal = ({ 
   isOpen, 
   onRequestClose, 
-  onSubmit, 
   editMode = false, 
-  clusterData = {} 
+  data = {} 
 }) => {
+  console.log("ClusterModal ")
+  const [id, setId] = useState('');
+  const [datacenterVoId, setDatacenterVoId] = useState('');  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [comment, setComment] = useState('');
-  const [selectedPopupTab, setSelectedPopupTab] = useState('cluster_common_btn');
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [networkVoId, setNetworkVoId] = useState('');  
+  const [cpuArc, setCpuArc] = useState('');
+  const [cpuType, setCpuType] = useState('');
+  const [biosType, setBiosType] = useState('');
+  const [errorHandling, setErrorHandling] = useState('');
+  
+  const { mutate: addCluster } = useAddCluster();
+  const { mutate: editCluster } = useEditCluster();
+
+  // 데이터센터
+  const {
+    data: datacenters,
+    status: datacentersStatus,
+    isRefetching: isDatacentersRefetching,
+    refetch: refetchDatacenters,
+    isError: isDatacentersError,
+    error: datacentersError,
+    isLoading: isDatacentersLoading
+  } = useAllDataCenters((e) => {
+      return {
+          ...e,
+      }
+  });
+
+  // 네트워크
+  const {
+    data: networks,
+    status: networksStatus,
+    isRefetching: isNetworksRefetching,
+    refetch: refetchNetworks,
+    isError: isNetworksError,
+    error: networksError,
+    isLoading: isNetworksLoading
+  } = useNetworksFromDataCenter(datacenterVoId, (e) => {
+    return {
+        ...e,
+    }
+});
+
 
   // 편집 모드일 때 기존 데이터를 불러와서 입력 필드에 채움
   useEffect(() => {
-    if (editMode && clusterData) {
-      setName(clusterData.name || '');
-      setDescription(clusterData.description || '');
-      setComment(clusterData.comment || '');
+    if (editMode && data) {
+      setId(data.id);
+      setDatacenterVoId(data.datacenterVo?.id);
+      setName(data.name);
+      setDescription(data.description);
+      setComment(data.comment);
+      setNetworkVoId(data.networkVo?.id);
+      setCpuArc(data.cpuArc);
+      setCpuType(data.cpuType);
+      setBiosType(data.biosType);
+      setErrorHandling(data.errorHandling);
+    } else{
+      resetForm();
     }
-  }, [editMode, clusterData]);
+  }, [editMode, data]);
+  
+
+  const resetForm = () => {
+    setDatacenterVoId('')
+    setName('');
+    setDescription('');
+    setComment('');
+    setNetworkVoId('');
+    setCpuArc('undefined');
+    setCpuType('default');
+    setBiosType('cluster_default');
+    setErrorHandling('migrate');
+  };
+
+  useEffect(() => {
+    if (datacenterVoId) {
+      refetchNetworks();
+    }
+  }, [datacenterVoId, refetchNetworks]);
 
   // 폼 제출 핸들러
   const handleFormSubmit = () => {
-    const requestData = {
+    const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
+    if (!selectedDataCenter) {
+      alert("데이터 센터를 선택해주세요."); // Prompt user to select a data center
+      return;
+    }
+
+    const dataToSubmit = {
+      // datacenterVoId,
+      datacenterVo: {
+        id: selectedDataCenter.id,
+        name: selectedDataCenter.name,
+      },
       name,
       description,
       comment,
+      networkVo: {
+        id: networkVoId,
+      },
+      cpuArc,
+      cpuType,
+      // cpu: {
+      //   architecture: cpuArc,
+      //   type: cpuType,
+      // },
+      biosType,
+      errorHandling
     };
-    onSubmit(requestData); // 부모 컴포넌트로 데이터를 전달
+    console.log("Form Data: ", dataToSubmit);
+
+    if (editMode) {
+      dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
+      editCluster({
+        clusterId: id,              // 전달된 id
+        clusterData: dataToSubmit   // 수정할 데이터
+      }, {
+        onSuccess: () => {
+          alert("클러스터 편집 완료(alert기능구현)")
+          onRequestClose();  // 성공 시 모달 닫기
+        },
+        onError: (error) => {
+          console.error('Error editing cluster:', error);
+        }
+      });
+    } else {
+      addCluster(dataToSubmit, {
+        onSuccess: () => {
+          alert("클러스터 생성 완료(alert기능구현)")
+          onRequestClose();
+        },
+        onError: (error) => {
+          console.error('Error adding cluster:', error);
+        }
+      });
+    }
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      contentLabel={editMode ? '클러스터 편집' : '새 클러스터'}
+      contentLabel={editMode ? '클러스터 편집' : '생성'}
       className="Modal"
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
@@ -52,107 +173,135 @@ const ClusterModal = ({
           </button>
         </div>
 
-        <div className="flex">
-          <div className="network_new_nav">
-            <div
-              id="cluster_common_btn"
-              className={selectedPopupTab === 'cluster_common_btn' ? 'active-tab' : 'inactive-tab'}
-              onClick={() => setSelectedPopupTab('cluster_common_btn')}
-            >
-              일반
-            </div>
-            <div
-              id="cluster_migration_btn"
-              className={selectedPopupTab === 'cluster_migration_btn' ? 'active-tab' : 'inactive-tab'}
-              onClick={() => setSelectedPopupTab('cluster_migration_btn')}
-            >
-              마이그레이션 정책
-            </div>
+        <div className="network_new_nav">
+          <div>
+            <input type="hidden" id="id" value={id} onChange={() => {}} /> {/* id는 읽기 전용이므로 onChange를 추가하지 않음 */}
           </div>
 
-          {/* 일반 탭 */}
-          {selectedPopupTab === 'cluster_common_btn' && (
-            <form className="cluster_common_form py-1">
-              <div className="network_form_group">
-                <label htmlFor="data_center">데이터 센터</label>
-                <select id="data_center">
-                  <option value="default">Default</option>
-                </select>
-              </div>
+          <div className="datacenter_new_content">
+          <label htmlFor="data_center">데이터 센터</label>
+            <select
+              id="data_center"
+              value={datacenterVoId}
+              onChange={(e) => setDatacenterVoId(e.target.value)}
+              disabled={isDatacentersLoading}
+            >
+              <option value="">선택</option>
+              {datacenters &&
+                datacenters.map((dc) => (
+                  <option key={dc.id} value={dc.id}>
+                    {dc.name}
+                  </option>
+                ))}
+            </select>
+            <span>{datacenterVoId}</span>
+          </div>
+          {/* 선 */}
+          <div>
+            <label htmlFor="name">이름</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+          </div>
+             
+          <div>
+            <label htmlFor="description">설명</label>
+            <input
+              type="text"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
 
-              <div className="network_form_group">
-                <div>
-                  <label htmlFor="name">이름</label>
-                </div>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
+          <div>
+            <label htmlFor="comment">코멘트</label>
+            <input
+              type="text"
+              id="comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+          </div>
 
-              <div className="network_form_group">
-                <label htmlFor="description">설명</label>
-                <input
-                  type="text"
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
+          <div>
+            <label htmlFor="network">관리 네트워크</label>
+            <select
+              id="network"
+              value={networkVoId}
+              onChange={(e) => setNetworkVoId(e.target.value)}
+              disabled={isNetworksLoading || !datacenterVoId}
+            >
+              <option value="">선택</option>
+              {networks &&
+                networks.map((n) => (
+                  <option key={n.id} value={n.id}>
+                    {n.name}
+                  </option>
+                ))}
+            </select>
+            <span>{networkVoId}</span>
+          </div>
 
-              <div className="network_form_group">
-                <label htmlFor="comment">코멘트</label>
-                <input
-                  type="text"
-                  id="comment"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                />
-              </div>
-              {/* 나머지 폼 필드 생략 */}
-            </form>
-          )}
+          <div>
+          <label htmlFor="cpuArc">CPU 아키텍처</label>
+            <select
+              id="cpuArc"
+              value={cpuArc}
+              onChange={(e) => setCpuArc(e.target.value)}
+            >
+              <option value="undefined">undefined</option>
+              <option value="x86_64">x86_64</option>
+              <option value="ppc64">ppc64</option>
+              <option value="s390x">s390x</option>
+            </select>
+          </div>
 
-          {/* 마이그레이션 정책 탭 */}
-          {selectedPopupTab === 'cluster_migration_btn' && (
-            <form className="py-2">
-              <div className="network_form_group">
-                <label htmlFor="migration_policy">마이그레이션 정책</label>
-                <select id="migration_policy">
-                  <option value="default">Default</option>
-                </select>
-              </div>
+          <div>
+            <label htmlFor="cpuType">CPU 유형</label>
+            <select
+              id="cpuType"
+              value={cpuType}
+              onChange={(e) => setCpuType(e.target.value)}
+            >
+              <option value="default">Default</option>
+              <option value="Intel Nehalem Family">Intel Nehalem Family</option>
+              {/* TODO CPU 유형 목록이 들어가야함 */}
+            </select>
+          </div>
+          
+          <div>
+          <label htmlFor="biosType">칩셋/펌웨어 유형</label>
+            <select
+              id="biosType"
+              value={biosType}
+              onChange={(e) => setBiosType(e.target.value)}
+            >
+              <option value="cluster_default">cluster_default</option>
+              <option value="i440fx_sea_bios">i440fx_sea_bios</option>
+              <option value="q35_ovmf">q35_ovmf</option>
+              <option value="q35_sea_bios">q35_sea_bios</option>
+              <option value="q35_secure_boot">q35_secure_boot</option>
+            </select>
+          </div>
 
-              <div className="p-1.5">
-                <span className="font-bold">최소 다운타임</span>
-                <div>
-                  일반적인 상황에서 가상 머신을 마이그레이션할 수 있는 정책입니다.
-                </div>
-              </div>
+          {/* <div>
+            <input type='checkbox' >BIOS를 사용하여...</input>
+          </div>
 
-              <div className="p-1.5 mb-1">
-                <span className="font-bold">대역폭</span>
-                <div className="cluster_select_box">
-                  <div className="flex">
-                    <label htmlFor="bandwidth_policy">마이그레이션 정책</label>
-                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }} />
-                  </div>
-                  <select id="bandwidth_policy">
-                    <option value="default">Default</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* 나머지 마이그레이션 필드 생략 */}
-            </form>
-          )}
+          <div>
+            <input type='radio' >가상머신을 </input>
+            <input type='radio' >고가용성 가상머신만 </input>
+            <input type='radio' >가상머신은 </input>
+          </div> */}
         </div>
 
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>
-          <button onClick={handleFormSubmit}>OK</button>
+          <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>
@@ -161,540 +310,3 @@ const ClusterModal = ({
 };
 
 export default ClusterModal;
-
-
-{/* 클러스터 새로 만들기 팝업 */}
-{/* <Modal
-isOpen={activePopup === 'cluster_new'}
-onRequestClose={closePopup}
-contentLabel="새로 만들기"
-className="Modal"
-overlayClassName="Overlay"
-shouldCloseOnOverlayClick={false}
->
-<div className="cluster_new_popup">
-    <div className="popup_header">
-        <h1 class="text-sm">새 클러스터</h1>
-        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-    </div>
-
-    <div className='flex'>
-<div className="network_new_nav">
-
-<div
-    id="cluster_common_btn"
-    className={selectedPopupTab === 'cluster_common_btn' ? 'active-tab' : 'inactive-tab'}
-    onClick={() => setSelectedPopupTab('cluster_common_btn')}  // 여기서 상태를 업데이트
->
-    일반
-</div>
-<div
-    id="cluster_migration_btn"
-    className={selectedPopupTab === 'cluster_migration_btn' ? 'active-tab' : 'inactive-tab'}
-    onClick={() => setSelectedPopupTab('cluster_migration_btn')}  // 상태 업데이트
->
-마이그레이션 정책
-</div>
-</div>
-*/}
-
-{/* 일반 */}
-// {selectedPopupTab === 'cluster_common_btn' && (
-// <form className="cluster_common_form py-1">
-//     <div className="network_form_group">
-//     <label htmlFor="data_center">데이터 센터</label>
-//     <select id="data_center">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <div>
-//         <label htmlFor="name">이름</label>
-//     </div>
-//     <input type="text" id="name" />
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="description">설명</label>
-//     <input type="text" id="description" />
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="comment">코멘트</label>
-//     <input type="text" id="comment" />
-//     </div>
-
-//     {/* id 편집 */}
-//     <div className="network_form_group">
-//     <label htmlFor="management_network">관리 네트워크</label>
-//     <select id="management_network">
-//         <option value="ovirtmgmt">ovirtmgmt</option>
-//         <option value="ddd">ddd</option>
-//         <option value="hosted_engine">hosted_engine</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="cpu_architecture">CPU 아키텍처</label>
-//     <select id="cpu_architecture">
-//         <option value="정의되지 않음">정의되지 않음</option>
-//         <option value="x86_64">x86_64</option>
-//         <option value="ppc64">ppc64</option>
-//         <option value="s390x">s390x</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="cpu_type">CPU 유형</label>
-//     <select id="cpu_type">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형</label>
-//     <select id="chipset_firmware_type">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <input type="checkbox" id="bios_change" name="bios_change" />
-//     <label htmlFor="bios_change">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="fips_mode">FIPS 모드</label>
-//     <select id="fips_mode">
-//         <option value="자동 감지">자동 감지</option>
-//         <option value="비활성화됨">비활성화됨</option>
-//         <option value="활성화됨">활성화됨</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="compatibility_version">호환 버전</label>
-//     <select id="compatibility_version">
-//         <option value="4.7">4.7</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="switch_type">스위치 유형</label>
-//     <select id="switch_type">
-//         <option value="Linux Bridge">Linux Bridge</option>
-//         <option value="OVS (기술 프리뷰)">OVS (기술 프리뷰)</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="firewall_type">방화벽 유형</label>
-//     <select id="firewall_type">
-//         <option value="iptables">iptables</option>
-//         <option value="firewalld">firewalld</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="default_network_provider">기본 네트워크 공급자</label>
-//     <select id="default_network_provider">
-//         <option value="기본 공급자가 없습니다.">기본 공급자가 없습니다.</option>
-//         <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="max_memory_limit">로그인 최대 메모리 한계</label>
-//     <select id="max_memory_limit">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <input type="checkbox" id="virt_service_enabled" name="virt_service_enabled" />
-//     <label htmlFor="virt_service_enabled">Virt 서비스 활성화</label>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <input type="checkbox" id="gluster_service_enabled" name="gluster_service_enabled" />
-//     <label htmlFor="gluster_service_enabled">Gluster 서비스 활성화</label>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <span>추가 난수 생성기 소스:</span>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <input type="checkbox" id="dev_hwrng_source" name="dev_hwrng_source" />
-//     <label htmlFor="dev_hwrng_source">/dev/hwrng 소스</label>
-//     </div>
-// </form>
-
-// )}
-
-{/* 마이그레이션 정책 */}
-// {selectedPopupTab === 'cluster_migration_btn' && (
-// <form className="py-2">
-//     <div className="network_form_group">
-//     <label htmlFor="migration_policy">마이그레이션 정책</label>
-//     <select id="migration_policy">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div class="p-1.5">
-//     <span class="font-bold">최소 다운타임</span>
-//     <div>
-//         일반적인 상황에서 가상 머신을 마이그레이션할 수 있는 정책입니다. 가상 머신에 심각한 다운타임이 발생하면 안 됩니다. 가상 머신 마이그레이션이 오랫동안 수렴되지 않으면 마이그레이션이 중단됩니다. 게스트 에이전트 후크 메커니즘을 사용할 수 있습니다.
-//     </div>
-//     </div>
-
-//     <div class="p-1.5 mb-1">
-//     <span class="font-bold">대역폭</span>
-//     <div className="cluster_select_box">
-//         <div class="flex">
-//         <label htmlFor="bandwidth_policy">마이그레이션 정책</label>
-//         <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }} />
-//         </div>
-//         <select id="bandwidth_policy">
-//         <option value="default">Default</option>
-//         </select>
-//     </div>
-//     </div>
-
-//     <div className="px-1.5 flex relative">
-//     <span className="font-bold">복구정책</span>
-//     <FontAwesomeIcon
-//         icon={faInfoCircle}
-//         style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }}
-//         onMouseEnter={() => setShowTooltip(true)} // 마우스를 올리면 툴팁을 보여줌
-//         onMouseLeave={() => setShowTooltip(false)} // 마우스를 떼면 툴팁을 숨김
-//     />
-//     {showTooltip && (
-//         <div className="tooltip-box">
-//         마이그레이션 암호화에 대한 설명입니다.
-//         </div>
-//     )}
-//     </div>
-
-//     <div className='host_text_radio_box px-1.5 py-0.5'>
-//     <input type="radio" id="password_option" name="encryption_option" />
-//     <label htmlFor="password_option">암호</label>
-//     </div>
-
-//     <div className='host_text_radio_box px-1.5 py-0.5'>
-//     <input type="radio" id="certificate_option" name="encryption_option" />
-//     <label htmlFor="certificate_option">암호</label>
-//     </div>
-
-//     <div className='host_text_radio_box px-1.5 py-0.5 mb-2'>
-//     <input type="radio" id="none_option" name="encryption_option" />
-//     <label htmlFor="none_option">암호</label>
-//     </div>
-
-//     <div class="m-1.5">
-//     <span class="font-bold">추가 속성</span>
-//     <div className="cluster_select_box">
-//         <label htmlFor="encryption_usage">마이그레이션 암호화 사용</label>
-//         <select id="encryption_usage">
-//         <option value="default">시스템 기본값 (암호화하지 마십시오)</option>
-//         <option value="encrypt">암호화</option>
-//         <option value="no_encrypt">암호화하지 마십시오</option>
-//         </select>
-//     </div>
-    
-//     <div className="cluster_select_box">
-//         <label htmlFor="parallel_migration">마이그레이션 암호화 사용</label>
-//         <select id="parallel_migration">
-//         <option value="default">Disabled</option>
-//         <option value="auto">Auto</option>
-//         <option value="auto_parallel">Auto Parallel</option>
-//         <option value="custom">Custom</option>
-//         </select>
-//     </div>
-
-//     <div className="cluster_select_box">
-//         <label htmlFor="migration_encryption_text">마이그레이션 암호화 사용</label>
-//         <input type="text" id="migration_encryption_text" />
-//     </div>
-//     </div>
-// </form>
-
-// )}
-// </div>   
-
-//     <div className="edit_footer">
-//         <button style={{ display: 'none' }}></button>
-//         <button>OK</button>
-//         <button onClick={closePopup}>취소</button>
-//     </div>
-// </div>
-// </Modal>
-{/*클러스터(편집) 팝업 */}
-{/* <Modal
-isOpen={activePopup === 'cluster_detail_edit'}
-onRequestClose={closePopup}
-contentLabel="새로 만들기"
-className="Modal"
-overlayClassName="Overlay"
-shouldCloseOnOverlayClick={false}
->
-<div className="cluster_new_popup">
-<div className="popup_header">
-<h1>클러스터 수정</h1>
-<button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-</div>
-
-<div className='flex'>
-<div className="network_new_nav">
-
-<div
-    id="cluster_common_btn"
-    className={selectedPopupTab === 'cluster_common_btn' ? 'active-tab' : 'inactive-tab'}
-    onClick={() => setSelectedPopupTab('cluster_common_btn')}  // 여기서 상태를 업데이트
->
-    일반
-</div>
-<div
-    id="cluster_migration_btn"
-    className={selectedPopupTab === 'cluster_migration_btn' ? 'active-tab' : 'inactive-tab'}
-    onClick={() => setSelectedPopupTab('cluster_migration_btn')}  // 상태 업데이트
->
-마이그레이션 정책
-</div>
-</div> */}
-
-{/* 일반 */}
-// {selectedPopupTab === 'cluster_common_btn' && (
-// <form className="cluster_common_form py-1">
-//     <div className="network_form_group">
-//     <label htmlFor="data_center">데이터 센터</label>
-//     <select id="data_center">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <div>
-//         <label htmlFor="name">이름</label>
-//     </div>
-//     <input type="text" id="name" />
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="description">설명</label>
-//     <input type="text" id="description" />
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="comment">코멘트</label>
-//     <input type="text" id="comment" />
-//     </div>
-
-//     {/* id 편집 */}
-//     <div className="network_form_group">
-//     <label htmlFor="management_network">관리 네트워크</label>
-//     <select id="management_network">
-//         <option value="ovirtmgmt">ovirtmgmt</option>
-//         <option value="ddd">ddd</option>
-//         <option value="hosted_engine">hosted_engine</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="cpu_architecture">CPU 아키텍처</label>
-//     <select id="cpu_architecture">
-//         <option value="정의되지 않음">정의되지 않음</option>
-//         <option value="x86_64">x86_64</option>
-//         <option value="ppc64">ppc64</option>
-//         <option value="s390x">s390x</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="cpu_type">CPU 유형</label>
-//     <select id="cpu_type">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형</label>
-//     <select id="chipset_firmware_type">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <input type="checkbox" id="bios_change" name="bios_change" />
-//     <label htmlFor="bios_change">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="fips_mode">FIPS 모드</label>
-//     <select id="fips_mode">
-//         <option value="자동 감지">자동 감지</option>
-//         <option value="비활성화됨">비활성화됨</option>
-//         <option value="활성화됨">활성화됨</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="compatibility_version">호환 버전</label>
-//     <select id="compatibility_version">
-//         <option value="4.7">4.7</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="switch_type">스위치 유형</label>
-//     <select id="switch_type">
-//         <option value="Linux Bridge">Linux Bridge</option>
-//         <option value="OVS (기술 프리뷰)">OVS (기술 프리뷰)</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="firewall_type">방화벽 유형</label>
-//     <select id="firewall_type">
-//         <option value="iptables">iptables</option>
-//         <option value="firewalld">firewalld</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="default_network_provider">기본 네트워크 공급자</label>
-//     <select id="default_network_provider">
-//         <option value="기본 공급자가 없습니다.">기본 공급자가 없습니다.</option>
-//         <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
-//     </select>
-//     </div>
-
-//     <div className="network_form_group">
-//     <label htmlFor="max_memory_limit">로그인 최대 메모리 한계</label>
-//     <select id="max_memory_limit">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <input type="checkbox" id="virt_service_enabled" name="virt_service_enabled" />
-//     <label htmlFor="virt_service_enabled">Virt 서비스 활성화</label>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <input type="checkbox" id="gluster_service_enabled" name="gluster_service_enabled" />
-//     <label htmlFor="gluster_service_enabled">Gluster 서비스 활성화</label>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <span>추가 난수 생성기 소스:</span>
-//     </div>
-
-//     <div className="network_checkbox_type2">
-//     <input type="checkbox" id="dev_hwrng_source" name="dev_hwrng_source" />
-//     <label htmlFor="dev_hwrng_source">/dev/hwrng 소스</label>
-//     </div>
-// </form>
-
-// )}
-
-{/* 마이그레이션 정책 */}
-// {selectedPopupTab === 'cluster_migration_btn' && (
-// <form className="py-2">
-//     <div className="network_form_group">
-//     <label htmlFor="migration_policy">마이그레이션 정책</label>
-//     <select id="migration_policy">
-//         <option value="default">Default</option>
-//     </select>
-//     </div>
-
-//     <div class="p-1.5">
-//     <span class="font-bold">최소 다운타임</span>
-//     <div>
-//         일반적인 상황에서 가상 머신을 마이그레이션할 수 있는 정책입니다. 가상 머신에 심각한 다운타임이 발생하면 안 됩니다. 가상 머신 마이그레이션이 오랫동안 수렴되지 않으면 마이그레이션이 중단됩니다. 게스트 에이전트 후크 메커니즘을 사용할 수 있습니다.
-//     </div>
-//     </div>
-
-//     <div class="p-1.5 mb-1">
-//     <span class="font-bold">대역폭</span>
-//     <div className="cluster_select_box">
-//         <div class="flex">
-//         <label htmlFor="bandwidth_policy">마이그레이션 정책</label>
-//         <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }} />
-//         </div>
-//         <select id="bandwidth_policy">
-//         <option value="default">Default</option>
-//         </select>
-//     </div>
-//     </div>
-
-//     <div className="px-1.5 flex relative">
-//     <span className="font-bold">복구정책</span>
-//     <FontAwesomeIcon
-//         icon={faInfoCircle}
-//         style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }}
-//         onMouseEnter={() => setShowTooltip(true)} // 마우스를 올리면 툴팁을 보여줌
-//         onMouseLeave={() => setShowTooltip(false)} // 마우스를 떼면 툴팁을 숨김
-//     />
-//     {showTooltip && (
-//         <div className="tooltip-box">
-//         마이그레이션 암호화에 대한 설명입니다.
-//         </div>
-//     )}
-//     </div>
-
-//     <div className='host_text_radio_box px-1.5 py-0.5'>
-//     <input type="radio" id="password_option" name="encryption_option" />
-//     <label htmlFor="password_option">암호</label>
-//     </div>
-
-//     <div className='host_text_radio_box px-1.5 py-0.5'>
-//     <input type="radio" id="certificate_option" name="encryption_option" />
-//     <label htmlFor="certificate_option">암호</label>
-//     </div>
-
-//     <div className='host_text_radio_box px-1.5 py-0.5 mb-2'>
-//     <input type="radio" id="none_option" name="encryption_option" />
-//     <label htmlFor="none_option">암호</label>
-//     </div>
-
-//     <div class="m-1.5">
-//     <span class="font-bold">추가 속성</span>
-//     <div className="cluster_select_box">
-//         <label htmlFor="encryption_usage">마이그레이션 암호화 사용</label>
-//         <select id="encryption_usage">
-//         <option value="default">시스템 기본값 (암호화하지 마십시오)</option>
-//         <option value="encrypt">암호화</option>
-//         <option value="no_encrypt">암호화하지 마십시오</option>
-//         </select>
-//     </div>
-    
-//     <div className="cluster_select_box">
-//         <label htmlFor="parallel_migration">마이그레이션 암호화 사용</label>
-//         <select id="parallel_migration">
-//         <option value="default">Disabled</option>
-//         <option value="auto">Auto</option>
-//         <option value="auto_parallel">Auto Parallel</option>
-//         <option value="custom">Custom</option>
-//         </select>
-//     </div>
-
-//     <div className="cluster_select_box">
-//         <label htmlFor="migration_encryption_text">마이그레이션 암호화 사용</label>
-//         <input type="text" id="migration_encryption_text" />
-//     </div>
-//     </div>
-// </form>
-
-// )}
-// </div>
-
-{/* <div className="edit_footer">
-<button style={{ display: 'none' }}></button>
-<button>OK</button>
-<button onClick={closePopup}>취소</button>
-</div>
-</div>
-</Modal> */}

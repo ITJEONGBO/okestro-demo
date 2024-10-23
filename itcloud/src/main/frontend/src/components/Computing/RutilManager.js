@@ -4,17 +4,9 @@ import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBuilding, faTimes, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-import logo from '../../img/logo.png';
 import './css/RutilManager.css';
 import Path from '../Header/Path';
-import TablesOuter from '../table/TablesOuter';
-import TableInfo from '../table/TableInfo';
-import DataCenterModal from '../Modal/DataCenterModal';
-import ClusterModal from '../Modal/ClusterModal';
-import TemplateDu from '../duplication/TemplateDu';
-import HostDu from '../duplication/HostDu';
 import Footer from '../footer/Footer';
-import DeleteModal from '../Modal/DeleteModal';
 import { 
     useDashboard, 
     useDashboardCpuMemory, 
@@ -31,6 +23,9 @@ import {
     useAllNetworks, 
     useAllVnicProfiles
 } from '../../api/RQHook';
+import DataCenters from './DataCenters';
+import Clusters from './Clusters';
+import Info from './Rutil/Info';
 
 function RutilManager() {
     const { id } = useParams();
@@ -47,75 +42,76 @@ function RutilManager() {
     const [editMode, setEditMode] = useState(false);
     const [modalData, setModalData] = useState(null);
 
-    // API Hook: 데이터 가져오기
-    const { data: dashboard } = useDashboard();
-    const { data: cpuMemory } = useDashboardCpuMemory();
-    const { data: storage } = useDashboardStorage();
-    const { data: allDataCenters }= useAllDataCenters((dataCenter) => {
-        return {
-            ...dataCenter,
-            storageType: dataCenter.storageType == false ? "공유됨" : '로컬',
-        };
-    });
-    const { data: selectedDataCenter } = useDataCenter(selectedId);
-    const { data: allClusters } = useAllClusters((cluster) => {
-        return {
-            ...cluster,
-        };
-    });
-    const { data: selectedCluster } = useCluster(selectedId);
-    const { data: allHosts } = useAllHosts((host) => {
-        return {
-            ...host,
-        };
-    });
-    const { data: allVMs } = useAllVMs((vm) => {
-        return {
-            ...vm,
-            dataCenter: vm.dataCenterVo ? vm.dataCenterVo.name : '',
-            dataCenterId: vm.dataCenterVo ? vm.dataCenterVo.id : null,
-            hostVo: vm.hostVo ? vm.hostVo.name : '',  // host 필드에 hostVo.name 매핑
-            hostVoId: vm.hostVo ? vm.hostVo.id : null, // hostVo.id 값을 별도로 저장
-            clusterVo: vm.clusterVo ? vm.clusterVo.name : '',
-            clusterId: vm.clusterVo ? vm.clusterVo.id : null,
-            cpu: vm.usageDto ? vm.usageDto.cpuPercent+'%' : 0+'%',
-            memory: vm.usageDto ? vm.usageDto.memoryPercent+'%' : 0+'%',
-            networkPer: vm.usageDto ? vm.usageDto.networkPercent+'%' : 0+'%',
-        };
-    });
-    const { data: allTemplates } = useAllTemplates((template) => {
-        return {
-            ...template,
-            id: template?.id ?? '',
-            name: template?.name ?? 'Unknown', 
-            status: template?.status ?? 'Unknown',                // 템플릿 상태
-            version: template?.version ?? 'N/A',                  // 템플릿 버전 정보
-            description: template?.description ?? 'No description',// 템플릿 설명
-            cpuType: template?.cpuType ?? 'CPU 정보 없음',         // CPU 유형 정보
-            hostCount: template?.hostCount ?? 0,                  // 템플릿에 연결된 호스트 수
-            vmCount: template?.vmCount ?? 0,                      // 템플릿에 연결된 VM 수
-        };
-    });
-    const { data: allStorageDomains } = useAllStorageDomains((storageDomain) => {
-        return {
-            ...storageDomain,
-        };
-    });
-    const { data: allDisks } = useAllDisks((disk) => {
-        return {
-            ...disk,
-        };
-    });
-    const { data: allNetworks } = useAllNetworks((network) => {
-        return {
-          ...network,
-        };
-    });
-    const { data: allVnicProfiles } = useAllVnicProfiles((vnicProfile) => {
-        return {
-            ...vnicProfile,
-        };
-    });
+    // // API Hook: 데이터 가져오기
+    // const { data: dashboard } = useDashboard();
+    // const { data: cpuMemory } = useDashboardCpuMemory();
+    // const { data: storage } = useDashboardStorage();
+
+    // const { data: allDataCenters }= useAllDataCenters((dataCenter) => {
+    //     return {
+    //         ...dataCenter,
+    //         storageType: dataCenter.storageType == false ? "공유됨" : '로컬',
+    //     };
+    // });
+    // const { data: selectedDataCenter } = useDataCenter(selectedId);
+    // const { data: allClusters } = useAllClusters((cluster) => {
+    //     return {
+    //         ...cluster,
+    //     };
+    // });
+    // const { data: selectedCluster } = useCluster(selectedId);
+    // const { data: allHosts } = useAllHosts((host) => {
+    //     return {
+    //         ...host,
+    //     };
+    // });
+    // const { data: allVMs } = useAllVMs((vm) => {
+    //     return {
+    //         ...vm,
+    //         dataCenter: vm.dataCenterVo ? vm.dataCenterVo.name : '',
+    //         dataCenterId: vm.dataCenterVo ? vm.dataCenterVo.id : null,
+    //         hostVo: vm.hostVo ? vm.hostVo.name : '',  // host 필드에 hostVo.name 매핑
+    //         hostVoId: vm.hostVo ? vm.hostVo.id : null, // hostVo.id 값을 별도로 저장
+    //         clusterVo: vm.clusterVo ? vm.clusterVo.name : '',
+    //         clusterId: vm.clusterVo ? vm.clusterVo.id : null,
+    //         cpu: vm.usageDto ? vm.usageDto.cpuPercent+'%' : 0+'%',
+    //         memory: vm.usageDto ? vm.usageDto.memoryPercent+'%' : 0+'%',
+    //         networkPer: vm.usageDto ? vm.usageDto.networkPercent+'%' : 0+'%',
+    //     };
+    // });
+    // const { data: allTemplates } = useAllTemplates((template) => {
+    //     return {
+    //         ...template,
+    //         id: template?.id ?? '',
+    //         name: template?.name ?? 'Unknown', 
+    //         status: template?.status ?? 'Unknown',                // 템플릿 상태
+    //         version: template?.version ?? 'N/A',                  // 템플릿 버전 정보
+    //         description: template?.description ?? 'No description',// 템플릿 설명
+    //         cpuType: template?.cpuType ?? 'CPU 정보 없음',         // CPU 유형 정보
+    //         hostCount: template?.hostCount ?? 0,                  // 템플릿에 연결된 호스트 수
+    //         vmCount: template?.vmCount ?? 0,                      // 템플릿에 연결된 VM 수
+    //     };
+    // });
+    // const { data: allStorageDomains } = useAllStorageDomains((storageDomain) => {
+    //     return {
+    //         ...storageDomain,
+    //     };
+    // });
+    // const { data: allDisks } = useAllDisks((disk) => {
+    //     return {
+    //         ...disk,
+    //     };
+    // });
+    // const { data: allNetworks } = useAllNetworks((network) => {
+    //     return {
+    //       ...network,
+    //     };
+    // });
+    // const { data: allVnicProfiles } = useAllVnicProfiles((vnicProfile) => {
+    //     return {
+    //         ...vnicProfile,
+    //     };
+    // });
 
     useEffect(() => {
         setActiveTab('general');
@@ -173,19 +169,45 @@ function RutilManager() {
 
     // Header와 Sidebar에 쓰일 섹션과 버튼 정보
     const sections = [
-        { id: 'general', label: '일반' },
-        { id: 'data_center', label: '데이터센터' },
-        { id: 'cluster', label: '클러스터' },
-        { id: 'host', label: '호스트' },
-        { id: 'virtual_machine', label: '가상머신' },
-        { id: 'template', label: '템플릿' },
-        { id: 'storage_domain', label: '스토리지 도메인' },
-        { id: 'disk', label: '디스크' },
-        { id: 'network', label: '네트워크' },
-        { id: 'vnic_profile', label: 'vNIC 프로파일' },
+        { id: 'info', label: '일반' },
+        { id: 'data_centers', label: '데이터센터' },
+        { id: 'clusters', label: '클러스터' },
+        { id: 'hosts', label: '호스트' },
+        { id: 'vms', label: '가상머신' },
+        { id: 'templates', label: '템플릿' },
+        { id: 'storage_domains', label: '스토리지 도메인' },
+        { id: 'disks', label: '디스크' },
+        { id: 'networks', label: '네트워크' },
+        { id: 'vnic_profiles', label: 'vNIC 프로파일' },
     ];
-
     const pathData = ['Rutil Manager', sections.find(section => section.id === activeTab)?.label];
+    
+    const renderSectionContent = () => {
+        switch (activeTab) {
+          case 'info':
+            return <Info />;
+          case 'data_centers':
+            return <DataCenters />;
+          case 'clusters':
+            return <Clusters />;
+        //   case 'hosts':
+        //     return <NetworkHost network={network} />;
+        //   case 'vms':
+        //     return <NetworkVm network={network} />;
+        //   case 'templates':
+        //     return <NetworkTemplate network={network} />;
+        //   case 'storage_domains':
+        //     return <NetworkTemplate network={network} />;
+        //   case 'disks':
+        //     return <NetworkTemplate network={network} />;
+        //   case 'networks':
+        //     return <NetworkTemplate network={network} />;
+        //   case 'vnic_profiles':
+        //     return <NetworkTemplate network={network} />;
+          default:
+            return <Info />;
+        }
+      };
 
     return (
         <div id="section">
@@ -193,6 +215,14 @@ function RutilManager() {
                 title="Rutil Manager"
                 titleIcon={faBuilding}
             />
+            {/* <HeaderButton
+                title="데이터 센터"
+                subtitle=""
+                // buttons={sectionHeaderButtons}
+                popupItems={[]}
+                openModal={[]}
+                togglePopup={() => {}}
+            /> */}
             <div className="content_outer">
                 <NavButton 
                     sections={sections} 
@@ -200,7 +230,11 @@ function RutilManager() {
                     handleSectionClick={handleTabClick} 
                 />
                 <div className="host_btn_outer">
-                    {activeTab !== 'general' && <Path pathElements={pathData} />}
+                    <Path pathElements={pathData} />
+                    {renderSectionContent()}
+
+
+                    {/* {activeTab !== 'general' && <Path pathElements={pathData} />}
 
                     {activeTab === 'general' && (
                         <div className="rutil_general">
@@ -231,7 +265,11 @@ function RutilManager() {
 
                     {activeTab === 'data_center' && (
                         <>
-                            <div className="header_right_btns">
+                        <DataCenters  /> */}
+
+
+                        
+                            {/* <div className="header_right_btns">
                                 <button onClick={() => openCreatePopup('datacenter')}>데이터 센터 생성</button>
                                 <button onClick={() => openEditPopup('datacenter')}>편집</button>
                                 <button onClick={() => openDeletePopup('datacenter')}>삭제</button>
@@ -239,6 +277,7 @@ function RutilManager() {
                             <div>
                                 <span>{selectedId ? `선택된 ID: ${selectedId}` : '선택된 데이터 센터가 없습니다'}</span>
                             </div>
+                            
                             <TablesOuter 
                                 columns={TableInfo.DATACENTERS} 
                                 data={allDataCenters} 
@@ -256,13 +295,14 @@ function RutilManager() {
                                 onRequestClose={closePopup}
                                 contentLabel={'데이터센터'}
                                 data={selectedDataCenter}  // 삭제할 데이터 전달
-                            />
-                        </>
-                    )}
+                            /> */}
+                        {/* </> */}
+                    {/* )}
 
                     {activeTab === 'cluster' && (
                         <>
-                            <div className="header_right_btns">
+                        <Cluster /> */}
+                            {/* <div className="header_right_btns">
                                 <button onClick={() => openCreatePopup('cluster')}>클러스터 생성</button>
                                 <button onClick={() => openEditPopup('cluster')}>편집</button>
                                 <button onClick={() => openDeletePopup('cluster')}>삭제</button>
@@ -279,11 +319,11 @@ function RutilManager() {
                                 // onSubmit={handleSubmit}
                                 editMode={editMode}          // editMode 전달
                                 data={modalData}             // 편집할 데이터 전달
-                            />
-                        </>
-                    )}
+                            /> */}
+                        {/* </>
+                    )} */}
 
-                    {activeTab === 'host' && (
+                    {/* {activeTab === 'host' && (
                         <TablesOuter 
                             columns={TableInfo.HOSTS} 
                             data={allHosts} 
@@ -381,7 +421,7 @@ function RutilManager() {
                                 onRowClick={handleRowClick} 
                             />
                         </>
-                    )}
+                    )} */}
                 </div>
             </div>
 

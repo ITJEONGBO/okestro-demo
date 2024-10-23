@@ -46,7 +46,7 @@ class ItResponseBodyAdvice: ResponseBodyAdvice<Any> {
 		}
 		*/
 		val servletResponse: HttpServletResponse = (response as ServletServerHttpResponse).servletResponse
-		log.debug("{}", body)
+//		log.debug("{}", body)
 		return when(servletResponse.status) {
 			in 200 .. 299 -> {
 				log.info("... 성공")

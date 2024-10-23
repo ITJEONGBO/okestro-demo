@@ -190,6 +190,7 @@ class ClusterServiceImpl(
 	@Throws(Error::class)
 	override fun add(clusterVo: ClusterVo): ClusterVo? {
 		log.info("add ... ")
+//		log.info("{}", MigrateOnError.fromValue(clusterVo.errorHandling))
 		val res: Cluster? =
 			conn.addCluster(
 				clusterVo.toAddClusterBuilder(conn)

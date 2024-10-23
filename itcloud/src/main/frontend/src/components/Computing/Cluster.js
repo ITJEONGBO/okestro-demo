@@ -10,9 +10,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faArrowUp,
     faInfoCircle,
-  faPencil,
-  faRefresh,
-  faTimes
+    faPencil,
+    faRefresh,
+    faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import './css/Cluster.css';
 
