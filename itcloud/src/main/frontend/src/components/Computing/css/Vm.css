@@ -220,10 +220,6 @@
     justify-content: right;
     width: 60%;
 }
-.snapshot_content_right>div{
-    margin-left: 4%;
-    font-size: 0.34rem;
-}
 
 #migration_footer>button:last-child{
     color:#0066CC ;
@@ -674,6 +670,25 @@ input[disabled] {
     margin-left: 4%;
     font-size: 0.34rem;
 }
+.snap_hidden_content {
+    display: none;
+    overflow: hidden;
+  }
+  
+  .snap_hidden_content.active {
+    display: block;
+    max-height: 30vh;
+    border: 1px solid #b9b9b9;
+    border-top: none;
+    color:gray;
+    padding: 0.3rem;
+    font-size: 0.34rem;
+  }
+  .snap_table{
+    height: 100%;
+    text-align: left;
+    color:gray;
+  }
 /*스냅샷 생성팝업*/
 .snap_create_outer{
     display: none;
