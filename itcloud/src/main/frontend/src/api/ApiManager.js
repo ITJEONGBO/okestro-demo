@@ -154,6 +154,19 @@ const ApiManager = {
     method: "GET", 
     url: ENDPOINTS.GET_STORAGE_MEMORY()
   }),
+
+   /**
+   * @name ApiManager.getVm
+   * @description vm 불러오는 값
+   * 
+   * @returns 
+   * 
+   * @see Dashboard.js (components)
+   */
+   getVm: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_VM()
+  }),
   //endregion: Dashboard
 
   //region: DataCenter

@@ -46,6 +46,8 @@ const Cluster = () => {
   } = useAllClusters((e) => {
     return {
         ...e,
+        hostCnt: e?.hostSize.allCnt,
+        vmCnt: e?.vmSize.allCnt,
     }
   });
 

@@ -96,7 +96,20 @@ class GraphController {
 		log.info("----- storageChart")
 		return ResponseEntity.ok(graph.storageChart())
 	}
-	
+
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="VM의 사용량 그래프",
+		notes="VM의 사용량 그래프"
+	)
+	@GetMapping("/vmList")
+	@ResponseBody
+	fun vmListChart(): ResponseEntity<List<UsageDto>> {
+		log.info("----- vmListChart")
+		return ResponseEntity.ok(graph.vmMemoryListChart())
+	}
+
 	companion object {
 		private val log by LoggerDelegate()
 	}

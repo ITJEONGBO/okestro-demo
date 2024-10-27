@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 import './AreaChart.css'
 
 const AreaChart = ({ series, datetimes }) => {
+  
 
   const [options, setOptions] = useState({
     chart: {
@@ -23,7 +24,7 @@ const AreaChart = ({ series, datetimes }) => {
     },
     tooltip: {
       x: {
-        format: 'dd/MM/yy HH:mm'
+        format: 'yy/MM/dd HH:mm'
       },
     },
   });

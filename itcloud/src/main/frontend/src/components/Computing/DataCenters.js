@@ -87,8 +87,6 @@ const DataCenters = () => {
     );
 };
 
-
-
 export default DataCenters;
 
 {/* 

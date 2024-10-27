@@ -93,17 +93,17 @@ class ItClusterServiceTest {
 	fun should_add_update_and_remove_Cluster() {
 		log.debug("should_addCluster ... ")
 		val addCluster: ClusterVo = ClusterVo.builder {
-			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
+			datacenterVo { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "testCluster" }
-			cpuArc { Architecture.X86_64 }
+			cpuArc { Architecture.X86_64.toString() }
 			cpuType { "Intel Nehalem Family" }
 			description { "testDescription" }
 			comment { "testComment" }
-			network { NetworkVo.builder { id { networkId } } }
-			biosType { BiosType.Q35_SEA_BIOS }
+			networkVo { NetworkVo.builder { id { networkId } } }
+			biosType { BiosType.Q35_SEA_BIOS.toString() }
 			logMaxMemory { 90 }
 			logMaxMemoryType { LogMaxMemoryUsedThresholdType.PERCENTAGE }
-			errorHandling { MigrateOnError.MIGRATE }
+			errorHandling { MigrateOnError.MIGRATE.toString() }
 			bandwidth { MigrationBandwidthAssignmentMethod.AUTO }
 			encrypted { InheritableBoolean.INHERIT }
 		}
@@ -113,27 +113,27 @@ class ItClusterServiceTest {
 
 		assertThat(addResult, `is`(not(nullValue())))
 		assertThat(addResult?.id, `is`(not(nullValue())))
-		assertThat(addResult?.dataCenter?.id, `is`(addCluster.dataCenter.id))
+		assertThat(addResult?.datacenterVo?.id, `is`(addCluster.datacenterVo.id))
 		assertThat(addResult?.name, `is`(addCluster.name))
 		assertThat(addResult?.description, `is`(addCluster.description))
 		assertThat(addResult?.comment, `is`(addCluster.comment))
-		assertThat(addResult?.network?.id, `is`(addCluster.network.id))
+		assertThat(addResult?.networkVo?.id, `is`(addCluster.networkVo.id))
 		assertThat(addResult?.biosType, `is`(addCluster.biosType))
 
 		log.debug("should_updateCluster ... ")
 		val updateCluster: ClusterVo = ClusterVo.builder {
 			id { addResult?.id }
-			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
+			datacenterVo { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "testCluster1" }
-			cpuArc { Architecture.X86_64 }
+			cpuArc { Architecture.X86_64.toString() }
 			cpuType { "Intel Nehalem Family" }
 			description { "testDescription" }
 			comment { "testComment" }
-			network { NetworkVo.builder { id { networkId } } }
-			biosType { BiosType.Q35_SEA_BIOS }
+			networkVo { NetworkVo.builder { id { networkId } } }
+			biosType { BiosType.Q35_SEA_BIOS.toString() }
 			logMaxMemory { 90 }
 			logMaxMemoryType { LogMaxMemoryUsedThresholdType.PERCENTAGE }
-			errorHandling { MigrateOnError.MIGRATE }
+			errorHandling { MigrateOnError.MIGRATE.toString() }
 			bandwidth { MigrationBandwidthAssignmentMethod.AUTO }
 			encrypted { InheritableBoolean.INHERIT }
 		}
@@ -143,11 +143,11 @@ class ItClusterServiceTest {
 
 		assertThat(updateResult, `is`(not(nullValue())))
 		assertThat(updateResult?.id, `is`(updateCluster.id))
-		assertThat(updateResult?.dataCenter?.id, `is`(updateCluster.dataCenter.id))
+		assertThat(updateResult?.datacenterVo?.id, `is`(updateCluster.datacenterVo.id))
 		assertThat(updateResult?.name, `is`(updateCluster.name))
 		assertThat(updateResult?.description, `is`(updateCluster.description))
 		assertThat(updateResult?.comment, `is`(updateCluster.comment))
-		assertThat(updateResult?.network?.id, `is`(updateCluster.network.id))
+		assertThat(updateResult?.networkVo?.id, `is`(updateCluster.networkVo.id))
 		assertThat(updateResult?.biosType, `is`(updateCluster.biosType))
 
 		log.debug("should_removeCluster ... ")
@@ -168,14 +168,14 @@ class ItClusterServiceTest {
 	fun should_add_networkProvider_Cluster() {
 		log.debug("should_add_networkProvider_Cluster ... ")
 		val addCluster: ClusterVo = ClusterVo.builder {
-			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
+			datacenterVo { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "testCluster2" }
-			cpuArc { Architecture.X86_64 }
+			cpuArc { Architecture.X86_64.toString() }
 			cpuType { "Intel Nehalem Family" }
 			description { "networkProvider" }
 			comment { "testComment" }
-			network { NetworkVo.builder { id { networkId } } }// 관리 네트워크 ovirtmgmt
-			biosType { BiosType.Q35_SEA_BIOS }
+			networkVo { NetworkVo.builder { id { networkId } } }// 관리 네트워크 ovirtmgmt
+			biosType { BiosType.Q35_SEA_BIOS.toString() }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
 			switchType { SwitchType.LEGACY }
@@ -184,7 +184,7 @@ class ItClusterServiceTest {
 			logMaxMemoryType { LogMaxMemoryUsedThresholdType.PERCENTAGE }
 			virtService { true }
 			glusterService { false }
-			errorHandling { MigrateOnError.MIGRATE }
+			errorHandling { MigrateOnError.MIGRATE.toString() }
 			bandwidth { MigrationBandwidthAssignmentMethod.AUTO }
 			encrypted { InheritableBoolean.INHERIT }
 			networkProvider { true }
@@ -197,11 +197,11 @@ class ItClusterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result?.id, `is`(not(nullValue())))
-		assertThat(result?.dataCenter?.id, `is`(addCluster.dataCenter.id))
+		assertThat(result?.datacenterVo?.id, `is`(addCluster.datacenterVo.id))
 		assertThat(result?.name, `is`(addCluster.name))
 		assertThat(result?.description, `is`(addCluster.description))
 		assertThat(result?.comment, `is`(addCluster.comment))
-		assertThat(result?.network?.id, `is`(addCluster.network.id))
+		assertThat(result?.networkVo?.id, `is`(addCluster.networkVo.id))
 		assertThat(result?.biosType, `is`(addCluster.biosType))
 		assertThat(result?.fipsMode, `is`(addCluster.fipsMode))
 		assertThat(result?.version, `is`(addCluster.version))
@@ -283,7 +283,7 @@ class ItClusterServiceTest {
 		log.debug("should_addNetworkFromCluster ... ")
 		val networkVo: NetworkVo =
 			NetworkVo.builder {
-				dataCenter {
+				datacenterVo {
 					IdentifiedVo.builder {
 						id { dataCenterId }
 					}

@@ -98,6 +98,17 @@ export const useDashboardStorageMemory = (mapPredicate) => useQuery({
     // return res?.map((e) => mapPredicate(e)) ?? []
   }
 });
+export const useDashboardVm = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardVm'],
+  queryFn: async () => {
+    console.log(`useDashboardVm ...`);
+    const res = await ApiManager.getVm()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+});
 //endregion
 
 

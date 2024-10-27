@@ -6,6 +6,7 @@ import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.computing.findCpuPercent
 import com.itinfo.itcloud.model.computing.findMemoryPercent
 import com.itinfo.itcloud.model.computing.findNetworkPercent
+import com.itinfo.itcloud.ovirtDf
 import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
 import com.itinfo.itcloud.repository.history.entity.StorageDomainSamplesHistoryEntity
 import com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity
@@ -19,6 +20,9 @@ import org.ovirt.engine.sdk4.types.Statistic
 import org.ovirt.engine.sdk4.types.StorageDomain
 import org.ovirt.engine.sdk4.types.Vm
 import java.io.Serializable
+import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.util.Date
 
 /**
  * [UsageDto]
@@ -28,6 +32,7 @@ import java.io.Serializable
  * @property cpuPercent [Int]
  * @property memoryPercent [Int]
  * @property networkPercent [Int]
+ * @property time [String]
  */
 class UsageDto (
     val id: String = "",
@@ -35,6 +40,8 @@ class UsageDto (
     val cpuPercent: Int = 0,
     val memoryPercent: Int = 0,
     var networkPercent: Int = 0,
+    var time: LocalDateTime? = null,
+//    var time: String = ""
 ): Serializable {
     override fun toString(): String = gson.toJson(this)
 
@@ -44,8 +51,10 @@ class UsageDto (
         private var bCpuPercent: Int = 0; fun cpuPercent(block: () -> Int?) {bCpuPercent = block() ?: 0}
         private var bMemoryPercent: Int = 0; fun memoryPercent(block: () -> Int?) {bMemoryPercent = block() ?: 0}
         private var bNetworkPercent: Int = 0; fun networkPercent(block: () -> Int?) {bNetworkPercent = block() ?: 0}
+        private var bTime: LocalDateTime? = null;fun time(block: () -> LocalDateTime?) { bTime = block() }
+//        private var bTime: String = ""; fun time(block: () -> String?) {bTime = block() ?: ""}
 
-        fun build(): UsageDto = UsageDto( bId, bName, bCpuPercent, bMemoryPercent, bNetworkPercent)
+        fun build(): UsageDto = UsageDto( bId, bName, bCpuPercent, bMemoryPercent, bNetworkPercent, bTime)
     }
 
     companion object {
@@ -56,8 +65,9 @@ class UsageDto (
 
 fun VmSamplesHistoryEntity.toVmCpuUsageDto(conn: Connection): UsageDto {
     val vm: Vm =
-        conn.findVm(this@toVmCpuUsageDto.vmId.toString())
-            .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+        conn.findVm(this@toVmCpuUsageDto.vmId.toString()).getOrNull()
+            ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+
     return UsageDto.builder {
         name { vm.name() }
         cpuPercent { this@toVmCpuUsageDto.cpuUsagePercent }
@@ -69,7 +79,8 @@ fun List<VmSamplesHistoryEntity>.toVmCpuUsageDtos(conn: Connection): List<UsageD
 
 fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto? {
     val vm: Vm =
-        conn.findVm(this@toVmMemUsageDto.vmId.toString()).getOrNull() ?: return null
+        conn.findVm(this@toVmMemUsageDto.vmId.toString()).getOrNull()
+            ?: return null
     return UsageDto.builder {
         name { vm.name() }
         memoryPercent { this@toVmMemUsageDto.memoryUsagePercent }
@@ -77,6 +88,24 @@ fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto? {
 }
 fun List<VmSamplesHistoryEntity>.toVmMemUsageDtos(conn: Connection): List<UsageDto?> =
     this@toVmMemUsageDtos.map { it.toVmMemUsageDto(conn) }
+
+
+fun VmSamplesHistoryEntity.toVmUsageDto(conn: Connection): UsageDto {
+    val vm: Vm =
+        conn.findVm(this@toVmUsageDto.vmId.toString()).getOrNull()
+            ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+//    val date: Date = Timestamp.valueOf(this@toVmUsageDto.historyDatetime)
+
+    return UsageDto.builder {
+        name { vm.name() }
+        cpuPercent { this@toVmUsageDto.cpuUsagePercent }
+        memoryPercent { this@toVmUsageDto.memoryUsagePercent }
+        time { this@toVmUsageDto.historyDatetime }
+//        time { ovirtDf.format(date) }
+    }
+}
+fun List<VmSamplesHistoryEntity>.toVmUsageDtos(conn: Connection): List<UsageDto> =
+    this@toVmUsageDtos.map { it.toVmUsageDto(conn) }
 
 
 fun StorageDomainSamplesHistoryEntity.toStorageChart(conn: Connection): UsageDto {

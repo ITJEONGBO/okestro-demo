@@ -2,29 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBuilding, faTimes, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import './css/RutilManager.css';
 import Path from '../Header/Path';
 import Footer from '../footer/Footer';
-import { 
-    useDashboard, 
-    useDashboardCpuMemory, 
-    useDashboardStorage,
-    useAllDataCenters, 
-    useDataCenter,
-    useAllClusters, 
-    useCluster,
-    useAllHosts, 
-    useAllVMs, 
-    useAllTemplates, 
-    useAllStorageDomains, 
-    useAllDisks, 
-    useAllNetworks, 
-    useAllVnicProfiles
-} from '../../api/RQHook';
 import DataCenters from './DataCenters';
 import Clusters from './Clusters';
+import Hosts from './Hosts';
 import Info from './Rutil/Info';
 
 function RutilManager() {
@@ -190,8 +174,8 @@ function RutilManager() {
             return <DataCenters />;
           case 'clusters':
             return <Clusters />;
-        //   case 'hosts':
-        //     return <NetworkHost network={network} />;
+          case 'hosts':
+            return <Hosts />;
         //   case 'vms':
         //     return <NetworkVm network={network} />;
         //   case 'templates':

@@ -201,16 +201,22 @@ class ItGraphServiceTest {
         println(result)
     }
 
+
+    /**
+     * [should_vmMemoryChart]
+     * [ItGraphService.vmMemoryChart]에 대한 단위테스트
+     *
+     * @see ItGraphService.vmMemoryChart
+     **/
     @Test
-    fun should_rutilInfo() {
-        log.debug("should_rutilInfo ... ")
-        val result: RutilVo =
-            service.rutilInfo()
+    fun should_vmMemoryListChart() {
+        log.debug("should_vmMemoryListChart ... ")
+        val result: List<UsageDto> =
+            service.vmMemoryListChart()
 
         assertThat(result, `is`(not(nullValue())))
         println(result)
     }
-
 
     companion object{
         private val log by LoggerDelegate()

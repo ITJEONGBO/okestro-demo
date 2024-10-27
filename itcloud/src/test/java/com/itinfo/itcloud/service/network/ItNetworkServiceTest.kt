@@ -94,7 +94,7 @@ class ItNetworkServiceTest {
 	fun should_add_update_and_remove_network() {
 		log.debug("should_add ... ")
 		val addNetworkVo: NetworkVo = NetworkVo.builder {
-			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
+			datacenterVo { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "gs" }
 			description { "asdfasdf" }
 			comment { "t" }
@@ -102,8 +102,8 @@ class ItNetworkServiceTest {
 			portIsolation { false }
 			mtu { 0 }
 			vlan { 0 }
-			openStackNetwork { null }
-			clusters {
+			openStackNetworkVo { null }
+			clusterVos {
 				Arrays.asList(
 					ClusterVo.builder {
 						id { "023c79d8-3819-11ef-bf08-00163e6c8feb" }
@@ -127,7 +127,7 @@ class ItNetworkServiceTest {
 
 		log.debug("should_update ... ")
 		val updateNetworkVo: NetworkVo = NetworkVo.builder {
-			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
+			datacenterVo { IdentifiedVo.builder { id { dataCenterId } } }
 			id { addResult?.id }
 			name { "asdf5" }
 			description { "t2" }

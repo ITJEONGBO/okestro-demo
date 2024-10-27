@@ -15,6 +15,7 @@ const ENDPOINTS = {
   GET_VM_CPU: () =>             `/api/v1/dashboard/vmCpu`,
   GET_VM_MEMORY: () =>          `/api/v1/dashboard/vmMemory`,
   GET_STORAGE_MEMORY: () =>     `/api/v1/dashboard/storageMemory`,
+  GET_VM: () =>          `/api/v1/dashboard/vmList`,
   //endregion: Dashboard
   
   //region: DataCenter

@@ -21,6 +21,10 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 interface ItGraphService {
+	/**
+	 * 전체 사용량 정보
+	 * 데이터센터, 클러스터, 호스트, 가상머신 ...
+	 */
 	fun getDashboard(): DashBoardVo
 	/**
 	 * 전체 사용량 - Host (CPU, Memory  % ) 원 그래프
@@ -64,6 +68,13 @@ interface ItGraphService {
 	// 가상머신 목록 - 그래프
 	fun vmPercent(vmId: String, vmNicId: String): UsageDto
 
+
+	/**
+	 * 전체 가상머신 cpu 사용량
+	 * 밑의 사각형?
+	 * @return
+	 */
+	fun vmMemoryListChart(): List<UsageDto>
 }
 
 @Service
@@ -174,6 +185,12 @@ class GraphServiceImpl(
 		val networkRate = vmInterfaceSamplesHistoryEntity.receiveRatePercent.toInt()
 		usageDto.networkPercent = networkRate
 		return usageDto
+	}
+
+	override fun vmMemoryListChart(): List<UsageDto> {
+		log.info("vmMemoryListChart ... ")
+		val vmSampleHistoryEntities: List<VmSamplesHistoryEntity> = vmSamplesHistoryRepository.findVmMemoryListChart()
+		return vmSampleHistoryEntities.toVmUsageDtos(conn)
 	}
 
 	companion object {
