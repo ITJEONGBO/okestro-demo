@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter  as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Login from './page/Login';
 import Dashboard from './components/Dashboard';
 import Example from './components/Example';
 import Header from './components/Header/Header';
-import Computing from './components/Computing/Computing';
 import MainOuter from './components/MainOuter';
 import AllDomain from './components/Storage/AllDomain';
 import Network from './components/Network/Network';
 import Setting from './components/Setting/Setting';
-import Vm from './components/Computing/VmDetail';
-import Cluster from './components/Computing/Cluster';
 import ClusterName from './components/Computing/ClusterName';
 import Host from './components/Computing/Host';
 import HostDetail from './components/Computing/HostDetail';
@@ -32,6 +28,7 @@ import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
+import AllCluster from './components/Computing/AllCluster';
 
 
 
@@ -120,7 +117,7 @@ const App = () => {
               <Route path="/computing/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
 
-              <Route path="/computing/clusters" element={<Cluster />} />
+              <Route path="/computing/clusters" element={<AllCluster />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} />
               <Route path="/computing/clusters/:id/:section" element={<ClusterName />} />  
 

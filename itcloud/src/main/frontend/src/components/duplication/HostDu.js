@@ -317,6 +317,42 @@ const closePopup = () => {
         </div>
       </div>
       </Modal>
+      {/*관리(유지보수) 팝업 */}
+      <Modal
+        isOpen={activePopup === 'maintenance'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="host_maintenance_popup">
+          <div className="popup_header">
+            <h1>호스트 유지관리 모드</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='maintenance_content'>
+            <div>
+             다음 호스트를 유지관리 모드로 설정하시겠습니까?
+            </div>
+            <div>
+            - rutilvm-dev.host01
+            </div>
+            <div className="network_form_group">
+                        <label htmlFor="description">설명</label>
+                        <input type="text" id="description" />
+                        </div>
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
       {/*삭제 팝업 */}
       <Modal
         isOpen={activePopup === 'delete'}

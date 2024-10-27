@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
@@ -18,7 +18,7 @@ import './css/Cluster.css';
 
 Modal.setAppElement('#root');
 
-const Cluster = () => {
+const AllCluster = () => {
   const navigate = useNavigate();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -381,4 +381,4 @@ const Cluster = () => {
   );
 };
 
-export default Cluster;
+export default AllCluster;
