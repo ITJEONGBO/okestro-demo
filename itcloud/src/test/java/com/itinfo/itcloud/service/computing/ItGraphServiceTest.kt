@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
 import com.itinfo.itcloud.model.computing.RutilVo
 import com.itinfo.itcloud.repository.history.dto.HostUsageDto
+import com.itinfo.itcloud.repository.history.dto.LineDto
 import com.itinfo.itcloud.repository.history.dto.StorageUsageDto
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import org.hamcrest.MatcherAssert.assertThat
@@ -76,7 +77,7 @@ class ItGraphServiceTest {
         log.debug("should_totalCpuMemoryList ... ")
         val result: List<HostUsageDto> =
             service.totalCpuMemoryList(
-                UUID.fromString("1d3a2fdb-0873-4837-8eaa-28cca20ffb12"),
+                UUID.fromString("e33e7f72-a2a5-4152-962a-a7ef804acbb4"),
                 5
             )
 
@@ -127,6 +128,38 @@ class ItGraphServiceTest {
         log.debug("should_storageChart... ")
         val result: List<UsageDto> =
             service.storageChart()
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
+
+    /**
+     * [should_vmCpuPerChart]
+     * [ItGraphService.vmCpuPerChart]에 대한 단위테스트
+     *
+     * @see ItGraphService.vmMemoryChart
+     **/
+    @Test
+    fun should_vmCpuPerChart() {
+        log.debug("should_vmCpuPerChart ... ")
+        val result: List<LineDto> =
+            service.vmCpuPerChart()
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
+
+    /**
+     * [should_vmMemoryPerChart]
+     * [ItGraphService.vmMemoryPerChart]에 대한 단위테스트
+     *
+     * @see ItGraphService.vmMemoryPerChart
+     **/
+    @Test
+    fun should_vmMemoryPerChart() {
+        log.debug("should_vmMemoryPerChart ... ")
+        val result: List<LineDto> =
+            service.vmMemoryPerChart()
 
         assertThat(result, `is`(not(nullValue())))
         println(result)
@@ -201,22 +234,6 @@ class ItGraphServiceTest {
         println(result)
     }
 
-
-    /**
-     * [should_vmMemoryChart]
-     * [ItGraphService.vmMemoryChart]에 대한 단위테스트
-     *
-     * @see ItGraphService.vmMemoryChart
-     **/
-    @Test
-    fun should_vmMemoryListChart() {
-        log.debug("should_vmMemoryListChart ... ")
-        val result: List<UsageDto> =
-            service.vmMemoryListChart()
-
-        assertThat(result, `is`(not(nullValue())))
-        println(result)
-    }
 
     companion object{
         private val log by LoggerDelegate()

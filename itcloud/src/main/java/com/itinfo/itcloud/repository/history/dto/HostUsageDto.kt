@@ -82,59 +82,50 @@ fun List<HostSamplesHistoryEntity>.toHostUsageDtos(): List<HostUsageDto> =
 
 fun List<Host>.toHostUsageDto(conn: Connection, hostSamplesHistoryEntities: List<HostSamplesHistoryEntity>): HostUsageDto {
     val hostAll: List<Host> = conn.findAllHosts().getOrDefault(listOf())
-
+    val vmAll = conn.findAllVms().getOrDefault(listOf())
     val hostCnt = this@toHostUsageDto.size
-    val total: Double = hostAll.sumOf { it.memoryAsLong()?.toDouble() ?: 0.0 } / GB
 
-    val used: Double = this@toHostUsageDto
-        .flatMap { conn.findAllStatisticsFromHost(it.id()).getOrDefault(listOf()) }
-        .filter { "memory.used" == it.name() }
-        .sumOf { stat: Statistic -> stat.values().firstOrNull()?.datum()?.toDouble() ?: 0.0 } / GB
+    // 총 메모리 계산
+    val totalMemoryGB: Double = hostAll.sumOf { it.memoryAsLong()?.toDouble() ?: 0.0 } / GB
+
+    // 사용 중인 메모리 계산
+    val usedMemoryGB = this@toHostUsageDto
+        .asSequence() // 시퀀스를 사용해 지연 평가로 효율성 증가
+        .flatMap { conn.findAllStatisticsFromHost(it.id()).getOrDefault(listOf()).asSequence() }
+        .filter { it.name() == "memory.used" }
+        .sumOf { it.values().firstOrNull()?.datum()?.toDouble() ?: 0.0 } / GB
 
     val totalCpuCore: Int =
-        conn.findAllHosts()
-            .getOrDefault(listOf())
-            .sumOf { it.cpu().topology().coresAsInteger() * it.cpu().topology().socketsAsInteger()* it.cpu().topology().threadsAsInteger() }
+        hostAll.sumOf { it.cpu().topology().coresAsInteger() * it.cpu().topology().socketsAsInteger() * it.cpu().topology().threadsAsInteger() }
 
     val commitCpuCore: Int =
-        conn.findAllVms()
-            .getOrDefault(listOf())
-            .sumOf { vm ->
-                if(vm.cpuPresent()) {
-                    vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger()
-                }else
-                    0
-            }
+        vmAll.sumOf {
+            if(it.cpuPresent()) {it.cpu().topology().coresAsInteger() * it.cpu().topology().socketsAsInteger() * it.cpu().topology().threadsAsInteger()}
+            else 0
+        }
 
     val usedCpuCore: Int =
-        conn.findAllVms()
-            .getOrDefault(listOf())
-            .filter { it.status() == VmStatus.UP }
-            .sumOf { vm ->
-                if(vm.cpuPresent()) {
-                    vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger()
-                }else
-                    0
+        vmAll.filter { it.status() == VmStatus.UP }
+            .sumOf {
+                if(it.cpuPresent()) { it.cpu().topology().coresAsInteger() * it.cpu().topology().socketsAsInteger() * it.cpu().topology().threadsAsInteger() }
+                else 0
             }
 
-    val free = total - used
-    var totalCpu = 0.0
-    var totalMemory = 0.0
-    var time: LocalDateTime? = null
-    for (usage in hostSamplesHistoryEntities.toHostUsageDtos()) {
-        totalCpu += usage.totalCpuUsagePercent
-        totalMemory += usage.totalMemoryUsagePercent
-        time = usage.historyDatetime
+    val freeMemoryGB = totalMemoryGB - usedMemoryGB
+
+    val (totalCpuUsage, totalMemoryUsage, historyTime) =
+        hostSamplesHistoryEntities.toHostUsageDtos()
+            .fold(Triple(0.0, 0.0, null as LocalDateTime?)) { acc, usage ->
+                Triple(acc.first + usage.totalCpuUsagePercent, acc.second + usage.totalMemoryUsagePercent, usage.historyDatetime)
     }
 
-    log.debug("totalCpuMemory ... ${totalCpu}, ${this@toHostUsageDto.size}")
     return HostUsageDto.builder {
-        historyDatetime { time }
-        totalCpuUsagePercent { Math.round(totalCpu / hostCnt).toDouble() }
-        totalMemoryUsagePercent { Math.round(totalMemory / hostCnt).toDouble() }
-        totalMemoryGB { total }
-        usedMemoryGB { used }
-        freeMemoryGB { free }
+        historyDatetime { historyTime }
+        totalCpuUsagePercent { Math.round(totalCpuUsage / hostCnt).toDouble() }
+        totalMemoryUsagePercent { Math.round(totalMemoryUsage / hostCnt).toDouble() }
+        totalMemoryGB { totalMemoryGB }
+        usedMemoryGB { usedMemoryGB }
+        freeMemoryGB { freeMemoryGB }
         totalCpuCore { totalCpuCore }
         commitCpuCore { commitCpuCore }
         usedCpuCore { usedCpuCore }

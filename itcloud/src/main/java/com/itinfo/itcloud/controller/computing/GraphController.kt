@@ -34,7 +34,7 @@ class GraphController {
 	@ApiOperation(
 		httpMethod="GET",
 		value="호스트 사용정보",
-		notes="호스트 사용정보를 조회한다"
+		notes="호스트 cpu, memory 사용정보를 조회한다"
 	)
 	@GetMapping("/cpumemory")
 	@ResponseBody
@@ -98,17 +98,17 @@ class GraphController {
 	}
 
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="VM의 Per 그래프",
-		notes="VM의 Per 그래프"
-	)
-	@GetMapping("/vmPerList")
-	@ResponseBody
-	fun vmPerList(): ResponseEntity<List<UsageDto>> {
-		log.info("----- vmPerList")
-		return ResponseEntity.ok(graph.vmPerListChart())
-	}
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="VM의 Per 그래프",
+//		notes="VM의 Per 그래프"
+//	)
+//	@GetMapping("/vmPerList")
+//	@ResponseBody
+//	fun vmPerList(): ResponseEntity<List<UsageDto>> {
+//		log.info("----- vmPerList")
+//		return ResponseEntity.ok(graph.vmCpuPerChart())
+//	}
 
 	@ApiOperation(
 		httpMethod="GET",
