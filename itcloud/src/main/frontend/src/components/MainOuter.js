@@ -315,7 +315,8 @@ const {
                                   <FontAwesomeIcon icon={faEarthAmericas} fixedWidth />
                                   <span>{cluster.name}</span>
                               </div>
-
+          
+                            
                               {/* 네 번째 레벨 (Hosts) */}
                               {isClusterOpen && Array.isArray(cluster.hosts) && cluster.hosts.map((host) => {
                                   const isHostOpen = openHosts[host.id] || false;
@@ -369,6 +370,24 @@ const {
                                       </div>
                                   );
                               })}
+                              
+                            {/* vmDowns 정보 추가 */}
+                            {isClusterOpen && Array.isArray(cluster.vmDowns) && cluster.vmDowns.map((vmDown) => (
+                                <div
+                                    key={vmDown.id}
+                                    className="aside_popup_fourth_content " // vmDown을 위한 추가 스타일
+                                    style={{
+                                        paddingLeft: '1.2rem'
+                                    }}
+                                    onClick={() => {
+                                        setSelectedDiv(vmDown.id);
+                                        navigate(`/computing/vmDowns/${vmDown.id}`);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faMicrochip} fixedWidth />
+                                    <span>{vmDown.name} (다운)</span>
+                                </div>
+                            ))}
                           </div>
                       );
                   })}

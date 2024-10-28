@@ -231,6 +231,15 @@ function toTableItemPredicateDomains(domaindata) {
                 <button onClick={() => openPopup('delete')}>삭제</button>
                 <button>LUN 새로고침</button>
                 <button onClick={() => navigate('/storages/disks')}>디스크</button>
+                <button className="content_header_popup_btn" onClick={togglePopup}>
+                <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
+                {isPopupOpen && (
+                  <div className="content_header_popup">
+                    <div onClick={() => openPopup()}>파괴</div>
+                    <div onClick={() => openPopup('')}>마스터 스토리지 도메인으로 선택</div>
+                  </div>
+                )}
+                </button>
               </div>
 
                 {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}

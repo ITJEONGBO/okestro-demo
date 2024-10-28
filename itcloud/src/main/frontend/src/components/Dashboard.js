@@ -147,6 +147,7 @@ const Dashboard = () => {
     <>
       {/* 대시보드 section */}
       <div className="dash_board">
+
         <DashboardBoxGroup 
           boxItems={[
             { icon: faLayerGroup, title: "데이터센터", cntTotal: dashboard?.datacenters ?? 0, cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/datacenters' },
@@ -157,6 +158,7 @@ const Dashboard = () => {
             { icon: faListUl, title: "이벤트", cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
           ]}
         />
+
         <div className="dash_section">
           <div className="dash_section_contents">
             <h1>CPU</h1>

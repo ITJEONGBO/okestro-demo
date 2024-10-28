@@ -446,7 +446,7 @@ button{
 }
 
 .network_new_popup form{
-    height: 68vh;
+    height: 69.3vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }

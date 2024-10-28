@@ -166,7 +166,6 @@ const TableInfo = {
   ],
   TEMPLATES_FROM_NETWORK: [
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '버전', accessor: 'nicId', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '클러스터', accessor: 'clusterName', clickable: false },
     { header: 'vNic', accessor: 'nicName', clickable: false },

@@ -202,7 +202,7 @@ const Network = () => {
                                         <input type="text" id="valn_tagging_input" disabled />
                                     </div>
                                     <div className="network_checkbox_type2">
-                                        <input type="checkbox" id="vm_network" name="vm_network" />
+                                        <input type="checkbox" id="vm_network" name="vm_network" checked/>
                                         <label htmlFor="vm_network">가상 머신 네트워크</label>
                                     </div>
                                     <div className="network_checkbox_type2">
@@ -223,12 +223,7 @@ const Network = () => {
                                         </div>
                                     
                                     </div>
-                                    <div className="network_form_group">
-                                        <label htmlFor="host_network_qos">호스트 네트워크 QoS</label>
-                                        <select id="host_network_qos">
-                                            <option value="default">[제한없음]</option>
-                                        </select>
-                                </div>
+                        
                                  
                                
                                     <div className="network_checkbox_type2">
@@ -697,7 +692,7 @@ const Network = () => {
                                     <input type="text" id="valn_tagging_input" disabled />
                                 </div>
                                 <div className="network_checkbox_type2">
-                                    <input type="checkbox" id="vm_network" name="vm_network" />
+                                    <input type="checkbox" id="vm_network" name="vm_network" checked/>
                                     <label htmlFor="vm_network">가상 머신 네트워크</label>
                                 </div>
                                 <div className="network_checkbox_type2">

@@ -106,6 +106,7 @@ const App = () => {
               <Route path="/computing/datacenters/:id" element={<DataCenter />} />
               <Route path="/computing/datacenters/:id/:section" element={<DataCenter />} />
               
+              
               <Route path="/computing/vms" element={<AllVm />} />
               <Route path="/computing/vms/:id" element={<VmDetail />} />
               <Route path="/computing/vms/:id/:section" element={<VmDetail />} />

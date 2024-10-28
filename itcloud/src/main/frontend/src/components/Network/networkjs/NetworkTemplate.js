@@ -3,6 +3,7 @@ import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react'; 
+import TableInfo from "../../table/TableInfo";
 
 // 애플리케이션 섹션
 const NetworkTemplate = ({ network }) => {
@@ -36,7 +37,7 @@ const NetworkTemplate = ({ network }) => {
         </div>
 
         <TableOuter 
-          columns={TableColumnsInfo.TEMPLATES}
+          columns={TableInfo.TEMPLATES_FROM_NETWORK}
           data={templates}
           onRowClick={() => console.log('Row clicked')} 
           onContextMenuItems={() => [
