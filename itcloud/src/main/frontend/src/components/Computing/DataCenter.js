@@ -32,12 +32,12 @@ import Path from '../Header/Path';
 import HostDu from '../duplication/HostDu';
 import VmDu from '../duplication/VmDu';
 import EventDu from '../duplication/EventDu';
-import DatacenterCluster from './datacenter/DatacenterCluster';
-import DatacenterHost from './datacenter/DatacenterHost';
-import DatacenterVm from './datacenter/DatacenterVm';
-import DatacenterStorage from './datacenter/DatacenterStorage';
-import DatacenterNetwork from './datacenter/DatacenterNetwork';
-import DatacenterEvent from './datacenter/DatacenterEvent';
+import DatacenterCluster from './datacenterjs/DatacenterCluster';
+import DatacenterHost from './datacenterjs/DatacenterHost';
+import DatacenterVm from './datacenterjs/DatacenterVm';
+import DatacenterStorage from './datacenterjs/DatacenterStorage';
+import DatacenterNetwork from './datacenterjs/DatacenterNetwork';
+import DatacenterEvent from './datacenterjs/DatacenterEvent';
 
 // React Modal 설정
 Modal.setAppElement('#root');

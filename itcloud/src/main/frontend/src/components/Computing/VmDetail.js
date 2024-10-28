@@ -16,13 +16,13 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import NavButton from '../navigation/NavButton';
 import { useVmById } from '../../api/RQHook';
 import Path from '../Header/Path';
-import VmGeneral from './vm/VmGeneral';
-import VmHostDevice from './vm/VmHostDevice';
-import VmEvent from './vm/VmEvent';
-import VmApplication from './vm/VmApplication';
-import VmSnapshot from './vm/VmSnapshot';
-import VmNetwork from './vm/VmNetwork';
-import VmDisk from './vm/VmDisk';
+import VmGeneral from './vmjs/VmGeneral';
+import VmHostDevice from './vmjs/VmHostDevice';
+import VmEvent from './vmjs/VmEvent';
+import VmApplication from './vmjs/VmApplication';
+import VmSnapshot from './vmjs/VmSnapshot';
+import VmNetwork from './vmjs/VmNetwork';
+import VmDisk from './vmjs/VmDisk';
 
 // React Modal 설정
 Modal.setAppElement('#root');

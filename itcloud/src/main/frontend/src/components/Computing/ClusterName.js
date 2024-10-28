@@ -15,7 +15,7 @@ import {
   faEarthAmericas,
 } from '@fortawesome/free-solid-svg-icons'
 import './css/ClusterName.css';
-import './vm/VmDisk.js';
+import './vmjs/VmDisk.js';
 import TableOuter from '../table/TableOuter';
 import Path from '../Header/Path';
 import HostDu from '../duplication/HostDu.js';
