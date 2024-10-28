@@ -30,13 +30,9 @@ class TreeNavigationalHost (
 
 fun Host.toNavigationalWithStorageDomains(conn: Connection): TreeNavigationalHost {
     val vms: List<Vm> =
-        conn.findAllVms()
-            .getOrDefault(listOf())
-            .filter {
-                (it.hostPresent() && it.host().id() == this@toNavigationalWithStorageDomains.id()) ||
-                        (it.placementPolicy().hostsPresent() &&
-                         it.placementPolicy().hosts().any { h -> h?.id() == this@toNavigationalWithStorageDomains.id() })
-            }
+        conn.findAllVms(searchQuery = "status=up").getOrDefault(listOf())
+            .filter { it.hostPresent() && it.host().id() == this@toNavigationalWithStorageDomains.id() }
+
     return TreeNavigationalHost.builder {
         id { this@toNavigationalWithStorageDomains.id() }
         name { this@toNavigationalWithStorageDomains.name() }
