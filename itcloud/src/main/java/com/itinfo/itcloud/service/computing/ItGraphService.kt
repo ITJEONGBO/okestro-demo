@@ -69,12 +69,11 @@ interface ItGraphService {
 	fun vmPercent(vmId: String, vmNicId: String): UsageDto
 
 
-	/**
-	 * 전체 가상머신 cpu 사용량
-	 * 밑의 사각형?
-	 * @return
-	 */
-	fun vmMemoryListChart(): List<UsageDto>
+	// 전체 가상머신 cpu/memory 사용량
+	fun vmPerListChart(): List<UsageDto>
+
+	fun vmMetricChart(): List<UsageDto>
+
 }
 
 @Service
@@ -105,9 +104,7 @@ class GraphServiceImpl(
 
 	override fun totalStorage(): StorageUsageDto {
 		log.info("totalStorage ... ")
-		val storageDomains: List<StorageDomain> =
-			conn.findAllStorageDomains()
-				.getOrDefault(listOf())
+		val storageDomains: List<StorageDomain> = conn.findAllStorageDomains().getOrDefault(listOf())
 		return storageDomains.toStorageUsageDto(conn)
 	}
 
@@ -187,9 +184,15 @@ class GraphServiceImpl(
 		return usageDto
 	}
 
-	override fun vmMemoryListChart(): List<UsageDto> {
-		log.info("vmMemoryListChart ... ")
-		val vmSampleHistoryEntities: List<VmSamplesHistoryEntity> = vmSamplesHistoryRepository.findVmMemoryListChart()
+	override fun vmPerListChart(): List<UsageDto> {
+		log.info("vmPerListChart ... ")
+		val vmSampleHistoryEntities: List<VmSamplesHistoryEntity> = vmSamplesHistoryRepository.findVmUsageListChart()
+		return vmSampleHistoryEntities.toVmUsageDtos(conn)
+	}
+
+	override fun vmMetricChart(): List<UsageDto> {
+		log.info("vmMetricChart ... ")
+		val vmSampleHistoryEntities: List<VmSamplesHistoryEntity> = vmSamplesHistoryRepository.findVmMetricListChart()
 		return vmSampleHistoryEntities.toVmUsageDtos(conn)
 	}
 

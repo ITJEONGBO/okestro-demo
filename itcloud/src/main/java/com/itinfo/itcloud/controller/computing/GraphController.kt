@@ -100,14 +100,26 @@ class GraphController {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="VM의 사용량 그래프",
-		notes="VM의 사용량 그래프"
+		value="VM의 Per 그래프",
+		notes="VM의 Per 그래프"
 	)
-	@GetMapping("/vmList")
+	@GetMapping("/vmPerList")
 	@ResponseBody
-	fun vmListChart(): ResponseEntity<List<UsageDto>> {
-		log.info("----- vmListChart")
-		return ResponseEntity.ok(graph.vmMemoryListChart())
+	fun vmPerList(): ResponseEntity<List<UsageDto>> {
+		log.info("----- vmPerList")
+		return ResponseEntity.ok(graph.vmPerListChart())
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="VM의 Metric 그래프",
+		notes="VM의 Metric 그래프"
+	)
+	@GetMapping("/vmMetricList")
+	@ResponseBody
+	fun vmMetricList(): ResponseEntity<List<UsageDto>> {
+		log.info("----- vmMetricList")
+		return ResponseEntity.ok(graph.vmMetricChart())
 	}
 
 	companion object {

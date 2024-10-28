@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import './BarChart.css'
@@ -11,6 +10,9 @@ const BarChart = ({ names, percentages }) => {
       offsetX: -55,
       type: 'bar',
 
+    },
+    grid: {
+      show: false, // Hide grid lines
     },
     plotOptions: {
       bar: {
@@ -44,14 +46,27 @@ const BarChart = ({ names, percentages }) => {
       colors: ['#fff']
     },
     xaxis: {
-      categories: [], 
+      categories: [],
       min: 0,
-      max: 100, 
+      max: 100,
+      lineWidth: 0,
+      labels: {
+        show: false // Hide x-axis labels
+      },
+      gridLineWidth: 0, // Remove x-axis grid lines
+      tickWidth: 0, // Remove x-axis tick marks 
+      axisBorder: {
+        show: false // Hide x-axis line
+      },
+      axisTicks: {
+        show: false // Hide x-axis ticks
+      }
     },
     yaxis: {
       labels: {
         show: false // y축 레이블을 제거합니다.
-      }
+      },
+      gridLineWidth: 0, // Remove y-axis grid lines
     },
     title: {
       text: '', // 제목을 제거합니다.

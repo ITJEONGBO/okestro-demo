@@ -3,12 +3,9 @@ import ReactApexChart from 'react-apexcharts';
 import './AreaChart.css'
 
 const AreaChart = ({ series, datetimes }) => {
-  
-
   const [options, setOptions] = useState({
     chart: {
       type: 'area',
-
       offsetX: 15,
     },
     colors: ['#1597E5', '#69DADB', 'rgb(231, 190, 231)'],
@@ -21,6 +18,10 @@ const AreaChart = ({ series, datetimes }) => {
     xaxis: {
       type: 'datetime',
       categories: datetimes
+    },
+    yaxis: {
+      min: 0,      // 최소값 고정
+      max: 100,    // 최대값 고정
     },
     tooltip: {
       x: {

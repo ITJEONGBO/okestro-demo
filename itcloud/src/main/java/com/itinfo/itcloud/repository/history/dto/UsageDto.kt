@@ -94,9 +94,9 @@ fun VmSamplesHistoryEntity.toVmUsageDto(conn: Connection): UsageDto {
     val vm: Vm =
         conn.findVm(this@toVmUsageDto.vmId.toString()).getOrNull()
             ?: throw ErrorPattern.VM_NOT_FOUND.toException()
-//    val date: Date = Timestamp.valueOf(this@toVmUsageDto.historyDatetime)
 
     return UsageDto.builder {
+        id { vm.id() }
         name { vm.name() }
         cpuPercent { this@toVmUsageDto.cpuUsagePercent }
         memoryPercent { this@toVmUsageDto.memoryUsagePercent }
@@ -114,6 +114,7 @@ fun StorageDomainSamplesHistoryEntity.toStorageChart(conn: Connection): UsageDto
             .getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
     val totalGB = (this@toStorageChart.availableDiskSizeGb + this@toStorageChart.usedDiskSizeGb).toDouble()
     return UsageDto.builder {
+        id { storageDomain.id() }
         name { storageDomain.name() }
         memoryPercent { ((this@toStorageChart.usedDiskSizeGb / totalGB) * 100).toInt() }
     }

@@ -17,7 +17,7 @@ const HeatMapChart = () => {
     height: window.innerHeight * 0.17,
   });
 
-  const [series] = useState([
+  const [series, setSeries] = useState([
     {
       name: 'Metric1',
       data: generateData(8, { min: 0, max: 90 }),

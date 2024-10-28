@@ -39,7 +39,7 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 	// vm 사용량 순위
 	fun findFirstByVmStatusOrderByCpuUsagePercentDesc(vmStatus: Int): List<VmSamplesHistoryEntity>
 
-@Query(
+	@Query(
 		value =
 			"WITH RankedVMs AS (" +
 					"SELECT *, ROW_NUMBER() OVER (PARTITION BY vm_id ORDER BY history_datetime DESC) AS rn " +
@@ -48,8 +48,22 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 					") SELECT * " +
 					"FROM RankedVMs " +
 					"WHERE rn <= 10 " +
-					"ORDER BY vm_id, cpu_usage_percent DESC",
+					"ORDER BY vm_id, history_Datetime DESC",
 		nativeQuery = true
 	)
-	fun findVmMemoryListChart(): List<VmSamplesHistoryEntity>
+	fun findVmUsageListChart(): List<VmSamplesHistoryEntity>
+
+	@Query(
+		value =
+		"SELECT DISTINCT v.vm_id, v.* FROM Vm_Samples_History v " +
+				"JOIN vm_configuration c ON v.vm_id = c.vm_id WHERE v.vm_status = 1 " +
+				"AND v.history_Datetime = ( SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id) " +
+				"AND NOT EXISTS ( SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name LIKE '%HostedEngineLocal%' ) " +
+				"ORDER BY history_Datetime desc ",
+		nativeQuery = true
+	)
+	fun findVmMetricListChart(): List<VmSamplesHistoryEntity>
+
+
+
 }

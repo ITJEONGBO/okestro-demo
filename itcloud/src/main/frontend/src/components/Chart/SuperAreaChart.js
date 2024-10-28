@@ -8,29 +8,21 @@ const SuperAreaChart = ({ type, vmUsage = [] }) => {
   useEffect(() => {
     const seriesData = {};
     const timeData = [];
-
-    if(type === 'cpu'){
-        vmUsage.forEach(item => {
-            if (!seriesData[item.name]) {
-            seriesData[item.name] = { name: item.name, data: [] };
-            }
-            seriesData[item.name].data.push(item.cpuPercent);
-            timeData.push(item.time);
-        })
-    }
-    else{
-        vmUsage.forEach(item => {
-            if (!seriesData[item.name]) {
-            seriesData[item.name] = { name: item.name, data: [] };
-            }
-            seriesData[item.name].data.push(item.memoryPercent);
-            timeData.push(item.time);
-            
-        })
-    }
-      setSeries(Object.values(seriesData));
-      setDatetimes(timeData.reverse());
     
+    vmUsage.forEach(item => {
+        if (!seriesData[item.name]) {
+          seriesData[item.name] = { name: item.name, data: [] };
+        }
+        if(type === 'cpu'){
+          seriesData[item.name].data.push(item.cpuPercent);
+        }else{
+          seriesData[item.name].data.push(item.memoryPercent);
+        }
+        timeData.push(item.time);
+    })
+    
+    setSeries(Object.values(seriesData));
+    setDatetimes(timeData);
   }, [vmUsage]);
 
   return (

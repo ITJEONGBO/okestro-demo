@@ -156,16 +156,28 @@ const ApiManager = {
   }),
 
    /**
-   * @name ApiManager.getVm
+   * @name ApiManager.getPerVm
    * @description vm 불러오는 값
    * 
    * @returns 
    * 
    * @see Dashboard.js (components)
    */
-   getVm: async () => makeAPICall({
+   getPerVm: async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.GET_VM()
+    url: ENDPOINTS.GET_PER_VM()
+  }),
+   /**
+   * @name ApiManager.getMetricVm
+   * @description vm 불러오는 값
+   * 
+   * @returns 
+   * 
+   * @see Dashboard.js (components)
+   */
+   getMetricVm: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_METRIC_VM()
   }),
   //endregion: Dashboard
 

@@ -52,8 +52,7 @@ class StorageUsageDto(
 
 fun List<StorageDomain>.toStorageUsageDto(conn: Connection): StorageUsageDto {
 	val storageDomains: List<StorageDomain> =
-		conn.findAllStorageDomains()
-			.getOrDefault(listOf())
+		conn.findAllStorageDomains().getOrDefault(listOf())
 			.filter { it.availablePresent() }
 	val free: Double = storageDomains.filter { it.availablePresent() }.sumOf { it.availableAsLong()?.toDouble() ?: 0.0 } / GB
 	val used: Double = storageDomains.filter { it.usedPresent() }.sumOf { it.usedAsLong()?.toDouble() ?: 0.0 } / GB

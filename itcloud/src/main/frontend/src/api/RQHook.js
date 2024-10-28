@@ -98,12 +98,29 @@ export const useDashboardStorageMemory = (mapPredicate) => useQuery({
     // return res?.map((e) => mapPredicate(e)) ?? []
   }
 });
-export const useDashboardVm = (mapPredicate) => useQuery({
+/**
+ * 
+ * @param {*} mapPredicate 
+ * @returns 
+ */
+export const useDashboardPerVm = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['dashboardVm'],
+  queryKey: ['dashboardPerVm'],
   queryFn: async () => {
-    console.log(`useDashboardVm ...`);
-    const res = await ApiManager.getVm()
+    console.log(`dashboardPerVm ...`);
+    const res = await ApiManager.getPerVm()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+});
+
+export const useDashboardMetricVm = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardMetricVm'],
+  queryFn: async () => {
+    console.log(`useDashboardMetricVm ...`);
+    const res = await ApiManager.getMetricVm()
     // setShouldRefresh(prevValue => false)
     return res ?? []
     // return res?.map((e) => mapPredicate(e)) ?? []

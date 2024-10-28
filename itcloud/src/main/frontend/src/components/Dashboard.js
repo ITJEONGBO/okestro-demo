@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ReactApexChart from 'react-apexcharts';
 import { adjustFontSize } from '../UIEvent';
 import DashboardBoxGroup from './DashboardBoxGroup';
 import './Dashboard.css'
@@ -8,7 +7,8 @@ import {
   useDashboardCpuMemory,
   useDashboardStorage,
   useDashboardStorageMemory,
-  useDashboardVm,
+  useDashboardPerVm,
+  useDashboardMetricVm,
   useDashboardVmCpu, 
   useDashboardVmMemory
  } from '../api/RQHook';
@@ -116,14 +116,25 @@ const Dashboard = () => {
   } = useDashboardStorageMemory()
 
   const {
-    data: vmUsage,
-    status: vmUsageStatus,
-    isRefetching: isVmUsageRefetching,
-    refetch: vmUsageRefetch, 
-    isError: isVmUsageError, 
-    error: vmUsageError, 
-    isLoading: isVmUsageoading,
-  } = useDashboardVm()
+    data: vmPer,
+    status: vmPerStatus,
+    isRefetching: isVmPerRefetching,
+    refetch: vmPerRefetch, 
+    isError: isVmPerError, 
+    error: vmPerError, 
+    isLoading: isVmPeroading,
+  } = useDashboardPerVm()
+
+  
+  const {
+    data: vmMetric,
+    status: vmMetricStatus,
+    isRefetching: isVmMetricRefetching,
+    refetch: vmMetricRefetch, 
+    isError: isVmMetricError, 
+    error: vmMetricError, 
+    isLoading: isVmMetricoading,
+  } = useDashboardMetricVm()
 
 
   useEffect(() => {
@@ -138,12 +149,12 @@ const Dashboard = () => {
       <div className="dash_board">
         <DashboardBoxGroup 
           boxItems={[
-            { icon: faLayerGroup,title: "Datacenter", cntTotal: dashboard?.datacenters ?? [], cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/datacenter' },
-            { icon: faEarthAmericas, title: "Cluster", cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/datacenter' },
-            { icon: faUser, title: "Host", cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/host' },
-            { icon: faCloud, title: "StorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storages/domains' },
-            { icon: faMicrochip, title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vms' },
-            { icon: faListUl, title: "Event", cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
+            { icon: faLayerGroup, title: "데이터센터", cntTotal: dashboard?.datacenters ?? 0, cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/datacenters' },
+            { icon: faEarthAmericas, title: "클러스터", cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/clusters' },
+            { icon: faUser, title: "호스트", cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/hosts' },
+            { icon: faCloud, title: "스토리지 도메인", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storages/domains' },
+            { icon: faMicrochip, title: "가상머신", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vms' },
+            { icon: faListUl, title: "이벤트", cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
           ]}
         />
         <div className="dash_section">
@@ -162,16 +173,14 @@ const Dashboard = () => {
             <span>USED { Math.floor((cpuMemory?.usedCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % /  Total { (cpuMemory?.totalCpuCore) } Core</span> {/*COMMIT { Math.floor((cpuMemory?.commitCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % <br/> */}
             <div className="wave_graph">
               <h2>Per CPU</h2>
-              <div><SuperAreaChart type={'cpu'} vmUsage={vmUsage} /></div>
+              <div><SuperAreaChart type={'cpu'} vmUsage={vmPer} /></div>
             </div>
           </div>
 
           <div className="dash_section_contents">
             <h1>MEMORY</h1>
             <div className="graphs">
-              <div className="graph-wrap active-on-visible" 
-                data-active-on-visible-callback-func-name="CircleRun"
-              >
+              <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
                 {cpuMemory && <MemoryApexChart memory={cpuMemory?.totalMemoryUsagePercent}/> /* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
@@ -181,16 +190,14 @@ const Dashboard = () => {
             <span>USED { (cpuMemory?.usedMemoryGB)?.toFixed(1) } GB / Total { (cpuMemory?.totalMemoryGB)?.toFixed(1) } GB</span>
             <div className="wave_graph">
               <h2>Per MEMORY</h2>
-              <div><SuperAreaChart vmUsage={vmUsage} /></div>
+              <div><SuperAreaChart vmUsage={vmPer} /></div>
             </div>
           </div>
 
           <div className="dash_section_contents" style={{ borderRight: 'none' }}>
             <h1>STORAGE</h1>
             <div className="graphs">
-              <div className="graph-wrap active-on-visible" 
-                data-active-on-visible-callback-func-name="CircleRun"
-              >
+              <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
                 {storage && <StorageApexChart storage = {storage?.usedPercent} /> /* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
@@ -199,25 +206,25 @@ const Dashboard = () => {
             </div>
             <span>USED {storage?.usedGB} GB / Total {storage?.freeGB} GB</span>
             <div className="wave_graph">
-              <h2>Per STORAGE</h2>
-              <div><SuperAreaChart vmUsage={vmUsage} /></div>
+              <h2>Per Network</h2>
+              <div><SuperAreaChart vmUsage={vmPer} /></div>
             </div>
           </div>
-        </div> {/* dash section 끝 */}
+        </div>
         
         <div className="bar">
           <div>
             <span>CPU</span>
-            <div><HeatMapChart /></div>
+            <div><HeatMapChart type={'cpu'} vmMetrics={vmMetric} /></div>
           </div>
           <div>
             <span>MEMORY</span>
-            <div><HeatMapChart /></div>
+            <div><HeatMapChart vmMetrics={vmMetric} /></div>
           </div>
           <div>
-            <span>Ethernet</span>
-            <div><HeatMapChart /></div>
-          </div>  
+            <span>StorageDomain</span>
+            <div><HeatMapChart vmMetrics={vmMetric} /></div>
+          </div>
         </div>
       </div> {/* 대시보드 section끝 */}
     </>
