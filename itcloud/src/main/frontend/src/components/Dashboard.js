@@ -136,24 +136,22 @@ const Dashboard = () => {
     <>
       {/* 대시보드 section */}
       <div className="dash_board">
-        {dashboard && <DashboardBoxGroup 
+        <DashboardBoxGroup 
           boxItems={[
             { icon: faLayerGroup,title: "Datacenter", cntTotal: dashboard?.datacenters ?? [], cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/datacenter' },
-            { icon: faEarthAmericas, title: "Cluster",    cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/datacenter' },
-            {icon: faUser, title: "Host",       cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/host' },
-            {icon: faCloud, title: "StorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storages/domains' },
-            {icon: faMicrochip, title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vms' },
-            {icon: faListUl, title: "Event",       cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
+            { icon: faEarthAmericas, title: "Cluster", cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/datacenter' },
+            { icon: faUser, title: "Host", cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/host' },
+            { icon: faCloud, title: "StorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storages/domains' },
+            { icon: faMicrochip, title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vms' },
+            { icon: faListUl, title: "Event", cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
           ]}
-
-        />}
+        />
         <div className="dash_section">
           <div className="dash_section_contents">
             <h1>CPU</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" 
-                data-active-on-visible-callback-func-name="CircleRun"
-              >
+                data-active-on-visible-callback-func-name="CircleRun">
                 {cpuMemory && <CpuApexChart cpu={cpuMemory?.totalCpuUsagePercent ?? 0} />/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
