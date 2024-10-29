@@ -23,9 +23,8 @@ const ClusterEvent = ({ cluster }) => {
         const severity= event?.severity ?? '';
         const icon = severity === 'NORMAL' 
         ? <FontAwesomeIcon icon={faCheckCircle} fixedWidth style={{ color: 'green', fontSize: '0.3rem' }} />
-        : severity === 'ERROR' 
-        ? <FontAwesomeIcon icon={faTimesCircle} fixedWidth style={{ color: 'red', fontSize: '0.3rem' }} />
-        : '';
+        : <FontAwesomeIcon icon={faTimesCircle} fixedWidth style={{ color: 'red', fontSize: '0.3rem' }} />
+   
 
         return {
           severity: icon,               

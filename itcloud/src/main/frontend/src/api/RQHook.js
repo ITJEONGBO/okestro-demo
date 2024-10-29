@@ -598,7 +598,7 @@ export const useHostById = (hostId) => useQuery({
   queryFn: async () => {
     if (!hostId) return {};
     console.log(`useHostById ... ${hostId}`)
-    const res = await ApiManager.findAllHostById(hostId)
+    const res = await ApiManager.findHost(hostId)
     return res ?? {}
   },
   staleTime: 0, 
@@ -621,7 +621,7 @@ export const useVmFromHost = (hostId, mapPredicate) => useQuery({
   queryKey: ['VmFromHost', hostId], 
   queryFn: async () => {
     console.log(`useVmFromHost ... ${hostId}`);
-    const res = await ApiManager.findVmFromHost(hostId); 
+    const res = await ApiManager.findVmsFromHost(hostId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
@@ -640,7 +640,7 @@ export const useHostdeviceFromHost = (hostId, mapPredicate) => useQuery({
   queryKey: ['HostdeviceFromHost', hostId], 
   queryFn: async () => {
     console.log(`useHostdeviceFromHost ... ${hostId}`);
-    const res = await ApiManager.findHostdeviceFromHost(hostId); 
+    const res = await ApiManager.findHostNicsFromHost(hostId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })

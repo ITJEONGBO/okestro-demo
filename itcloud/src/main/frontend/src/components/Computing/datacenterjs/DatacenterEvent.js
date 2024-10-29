@@ -1,6 +1,8 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {useEventsFromDataCenter} from "../../../api/RQHook";
 import EventDu from "../../duplication/EventDu";
-import TableColumnsInfo from "../../table/TableColumnsInfo";
+import { faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import TableInfo from "../../table/TableInfo";
 
 
 
@@ -13,8 +15,12 @@ const DatacenterEvent = ({ dataCenter }) => {
         isError: isEventsError 
       } = useEventsFromDataCenter(dataCenter?.id, toTableItemPredicateEvents);
       function toTableItemPredicateEvents(event) {
+        const severity= event?.severity ?? '';
+        const icon = severity === 'NORMAL' 
+        ? <FontAwesomeIcon icon={faCheckCircle} fixedWidth style={{ color: 'green', fontSize: '0.3rem' }} />
+        : <FontAwesomeIcon icon={faTimesCircle} fixedWidth style={{ color: 'red', fontSize: '0.3rem' }} />
         return {
-          icon: '',                      
+          severity: icon,                      
           time: event?.time ?? '',                
           description: event?.description ?? 'No message', 
           correlationId: event?.correlationId ?? '',
@@ -25,7 +31,7 @@ const DatacenterEvent = ({ dataCenter }) => {
 
     return (
         <EventDu 
-            columns={TableColumnsInfo.EVENTS}
+            columns={TableInfo.EVENTS}
             data={events}
             handleRowClick={() => console.log('Row clicked')}
         />

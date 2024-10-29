@@ -145,7 +145,6 @@ function HostDetail() {
     isLoading: isHostsLoading, 
     isError: isHostsError 
   } = useVmFromHost(host?.id, toTableItemPredicateHosts);
-  
   function toTableItemPredicateHosts(host) {
     return {
       icon: <FontAwesomeIcon icon={faUniversity} fixedWidth />,
@@ -209,6 +208,7 @@ function HostDetail() {
     },
   ];
 
+  // 네트워크
   const networkdata = [
     {
       icon: <FontAwesomeIcon icon={faUniversity} fixedWidth />,
@@ -240,47 +240,6 @@ function HostDetail() {
       mdevType: device?.mdevType ?? '해당 없음',
     };
   }
-  
-
-    // 권한(삭제예정)
-    // const { 
-    //   data: permissions, 
-    //   status: permissionsStatus, 
-    //   isLoading: isPermissionsLoading, 
-    //   isError: isPermissionsError 
-    // } = usePermissionFromHost(host?.id, toTableItemPredicatePermissions);
-    // function toTableItemPredicatePermissions(permission) {
-    //   return {
-    //     icon: <FontAwesomeIcon icon={faUser} fixedWidth/>, 
-    //     user: permission?.user ?? '없음',  
-    //     provider: permission?.provider ?? '없음',  
-    //     nameSpace: permission?.nameSpace ?? '없음', 
-    //     role: permission?.role ?? '없음',  
-    //     createDate: permission?.createDate ?? '없음',  
-    //     inheritedFrom: permission?.inheritedFrom ?? '없음', 
-    //   };
-    // }
-
-      // 이벤트
-      const { 
-        data: events, 
-        status: eventsStatus, 
-        isLoading: isEventsLoading, 
-        isError: isEventsError 
-      } = useEventFromHost(host?.id, toTableItemPredicateEvents);
-      function toTableItemPredicateEvents(event) {
-        return {
-          icon: <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }} fixedWidth />,
-          time: event?.time ?? 'Unknown',
-          description: event?.description ?? 'No message available',
-          correlationId: event?.correlationId ?? 'N/A',
-          source: event?.source ?? 'Unknown',
-          userEventId: event?.userEventId ?? 'N/A',
-        };
-      }
-
-    //
- 
 
 
   // 토글 방식으로 열고 닫기(관리)
@@ -393,8 +352,7 @@ function HostDetail() {
         <div id='section'>
              <HeaderButton
       titleIcon={faUser}
-      title="호스트"
-      subtitle={host?.name}
+      title={host?.name}
       additionalText="목록이름"
       buttons={buttons}
       popupItems={popupItems}
@@ -762,12 +720,12 @@ function HostDetail() {
                 {/* 이벤트 */}
                 {activeTab === 'event' && (
                 <div className="host_btn_outer">
-                  <Path pathElements={pathData}/>
+                  {/* <Path pathElements={pathData}/>
                   <EventDu 
                     columns={TableColumnsInfo.EVENTS}
                     data={events}
                     handleRowClick={() => console.log('Row clicked')}
-                  />
+                  /> */}
                 </div>
                 )}
                
