@@ -9,6 +9,7 @@ import com.itinfo.itcloud.repository.history.dto.StorageUsageDto
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,6 +18,14 @@ import java.util.*
 @SpringBootTest
 class ItGraphServiceTest {
     @Autowired private lateinit var service: ItGraphService
+
+    private lateinit var hostVm: String // hostVm
+
+    @BeforeEach
+    fun setup() {
+        hostVm = "932fd5bb-e06c-4d3a-91fc-48c926eee484"
+    }
+
 
     /**
      * [should_getDashboard]
@@ -61,25 +70,6 @@ class ItGraphServiceTest {
         log.debug("should_totalStorage ... ")
         val result: StorageUsageDto =
             service.totalStorage()
-
-        assertThat(result, `is`(not(nullValue())))
-        println(result)
-    }
-
-    /**
-     * [should_totalCpuMemoryList]
-     * [ItGraphService.totalCpuMemoryList]에 대한 단위테스트
-     *
-     * @see ItGraphService.totalCpuMemoryList
-     **/
-    @Test
-    fun should_totalCpuMemoryList() {
-        log.debug("should_totalCpuMemoryList ... ")
-        val result: List<HostUsageDto> =
-            service.totalCpuMemoryList(
-                UUID.fromString("e33e7f72-a2a5-4152-962a-a7ef804acbb4"),
-                5
-            )
 
         assertThat(result, `is`(not(nullValue())))
         println(result)
@@ -166,6 +156,77 @@ class ItGraphServiceTest {
     }
 
     /**
+     * [should_vmNetworkPerChart]
+     * [ItGraphService.vmNetworkPerChart]에 대한 단위테스트
+     *
+     * @see ItGraphService.vmNetworkPerChart
+     **/
+    @Test
+    fun should_vmNetworkPerChart() {
+        log.debug("should_vmNetworkPerChart ... ")
+        val result: List<LineDto> =
+            service.vmNetworkPerChart()
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
+
+
+    /**
+     * [should_vmMetricChart]
+     * [ItGraphService.vmMetricChart]에 대한 단위테스트
+     *
+     * @see ItGraphService.vmMetricChart
+     **/
+    @Test
+    fun should_vmMetricChart() {
+        log.debug("should_vmMetricChart ... ")
+        val result: List<UsageDto> =
+            service.vmMetricChart()
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
+
+    /**
+     * [should_storageMetricChart]
+     * [ItGraphService.storageMetricChart]에 대한 단위테스트
+     *
+     * @see ItGraphService.storageMetricChart
+     **/
+    @Test
+    fun should_storageMetricChart() {
+        log.debug("should_storageMetricChart ... ")
+        val result: List<UsageDto> =
+            service.storageMetricChart()
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
+
+
+
+
+    /**
+     * [should_totalHostCpuMemoryList]
+     * [ItGraphService.totalHostCpuMemoryList]에 대한 단위테스트
+     *
+     * @see ItGraphService.totalHostCpuMemoryList
+     **/
+    @Test
+    fun should_totalHostCpuMemoryList() {
+        log.debug("should_totalCpuMemoryList ... ")
+        val result: List<HostUsageDto> =
+            service.totalHostCpuMemoryList(
+                UUID.fromString("e33e7f72-a2a5-4152-962a-a7ef804acbb4"),
+                5
+            )
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
+
+    /**
      * [should_hostCpuChart]
      * [ItGraphService.hostCpuChart]에 대한 단위테스트
      *
@@ -224,11 +285,10 @@ class ItGraphServiceTest {
     @Test
     fun should_vmPercent() {
         log.debug("should_vmPercent ... ")
-        val vmId = "9181fa0b-d031-4dbd-a031-6de2e2913eb6"
-        val vmNicId = "c4ade3a7-347f-47f3-8d76-e7a52adece96"
+        val vmNicId = "b1b04d65-91c3-4bb9-99ee-2f5e84ef107e"
 
         val result: UsageDto =
-            service.vmPercent(vmId, vmNicId)
+            service.vmPercent(hostVm, vmNicId)
 
         assertThat(result, `is`(not(nullValue())))
         println(result)

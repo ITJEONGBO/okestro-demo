@@ -156,17 +156,42 @@ const ApiManager = {
   }),
 
    /**
-   * @name ApiManager.getPerVm
+   * @name ApiManager.getPerVmCpu
    * @description vm 불러오는 값
    * 
    * @returns 
    * 
    * @see Dashboard.js (components)
    */
-   getPerVm: async () => makeAPICall({
+   getPerVmCpu: async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.GET_PER_VM()
+    url: ENDPOINTS.GET_PER_VM_CPU()
   }),
+   /**
+   * @name ApiManager.getPerVmMemory
+   * @description vm 불러오는 값
+   * 
+   * @returns 
+   * 
+   * @see Dashboard.js (components)
+   */
+   getPerVmMemory: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_PER_VM_MEMORY()
+  }),
+  /**
+  * @name ApiManager.getPerVmNetwork
+  * @description vm 불러오는 값
+  * 
+  * @returns 
+  * 
+  * @see Dashboard.js (components)
+  */
+  getPerVmNetwork: async () => makeAPICall({
+   method: "GET", 
+   url: ENDPOINTS.GET_PER_VM_NETWORK()
+ }),
+
    /**
    * @name ApiManager.getMetricVm
    * @description vm 불러오는 값
@@ -178,6 +203,19 @@ const ApiManager = {
    getMetricVm: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.GET_METRIC_VM()
+  }),
+  
+   /**
+   * @name ApiManager.getMetricStorage
+   * @description 스토리지 불러오는 값
+   * 
+   * @returns 
+   * 
+   * @see Dashboard.js (components)
+   */
+   getMetricStorage: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_METRIC_STORAGE()
   }),
   //endregion: Dashboard
 

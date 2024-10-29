@@ -7,7 +7,9 @@ import {
   useDashboardCpuMemory,
   useDashboardStorage,
   useDashboardStorageMemory,
-  useDashboardPerVm,
+  useDashboardPerVmCpu,
+  useDashboardPerVmMemory,
+  useDashboardPerVmNetwork,
   useDashboardMetricVm,
   useDashboardVmCpu, 
   useDashboardVmMemory
@@ -116,15 +118,34 @@ const Dashboard = () => {
   } = useDashboardStorageMemory()
 
   const {
-    data: vmPer,
-    status: vmPerStatus,
-    isRefetching: isVmPerRefetching,
-    refetch: vmPerRefetch, 
-    isError: isVmPerError, 
-    error: vmPerError, 
-    isLoading: isVmPeroading,
-  } = useDashboardPerVm()
+    data: vmCpuPer,
+    status: vmCpuPerStatus,
+    isRefetching: isVmCpuPerRefetching,
+    refetch: vmCpuPerRefetch, 
+    isError: isVmCpuPerError, 
+    error: vmCpuPerError, 
+    isLoading: isVmCpuPeroading,
+  } = useDashboardPerVmCpu()
 
+  const {
+    data: vmMemoryPer,
+    status: vmMemoryPerStatus,
+    isRefetching: isVmMemoryPerRefetching,
+    refetch: vmMemoryPerRefetch, 
+    isError: isVmMemoryPerError, 
+    error: vmMemoryPerError, 
+    isLoading: isVmMemoryPeroading,
+  } = useDashboardPerVmMemory()
+
+  const {
+    data: vmNetworkPer,
+    status: vmNetworkPerStatus,
+    isRefetching: isVmNetworkPerRefetching,
+    refetch: vmNetworkPerRefetch, 
+    isError: isVmNetworkPerError, 
+    error: vmNetworkPerError, 
+    isLoading: isVmvPeroading,
+  } = useDashboardPerVmNetwork()
   
   const {
     data: vmMetric,
@@ -163,8 +184,7 @@ const Dashboard = () => {
           <div className="dash_section_contents">
             <h1>CPU</h1>
             <div className="graphs">
-              <div className="graph-wrap active-on-visible" 
-                data-active-on-visible-callback-func-name="CircleRun">
+              <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
                 {cpuMemory && <CpuApexChart cpu={cpuMemory?.totalCpuUsagePercent ?? 0} />/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
@@ -175,7 +195,7 @@ const Dashboard = () => {
             <span>USED { Math.floor((cpuMemory?.usedCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % /  Total { (cpuMemory?.totalCpuCore) } Core</span> {/*COMMIT { Math.floor((cpuMemory?.commitCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % <br/> */}
             <div className="wave_graph">
               <h2>Per CPU</h2>
-              <div><SuperAreaChart type={'cpu'} vmUsage={vmPer} /></div>
+              <div><SuperAreaChart vmPer={vmCpuPer} /></div>
             </div>
           </div>
 
@@ -192,7 +212,7 @@ const Dashboard = () => {
             <span>USED { (cpuMemory?.usedMemoryGB)?.toFixed(1) } GB / Total { (cpuMemory?.totalMemoryGB)?.toFixed(1) } GB</span>
             <div className="wave_graph">
               <h2>Per MEMORY</h2>
-              <div><SuperAreaChart vmUsage={vmPer} /></div>
+              <div><SuperAreaChart vmPer={vmMemoryPer} /></div>
             </div>
           </div>
 
@@ -209,7 +229,7 @@ const Dashboard = () => {
             <span>USED {storage?.usedGB} GB / Total {storage?.freeGB} GB</span>
             <div className="wave_graph">
               <h2>Per Network</h2>
-              <div><SuperAreaChart vmUsage={vmPer} /></div>
+              <div><SuperAreaChart vmPer={vmNetworkPer} /></div>
             </div>
           </div>
         </div>

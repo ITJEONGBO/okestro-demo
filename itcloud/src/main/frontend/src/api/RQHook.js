@@ -98,17 +98,35 @@ export const useDashboardStorageMemory = (mapPredicate) => useQuery({
     // return res?.map((e) => mapPredicate(e)) ?? []
   }
 });
-/**
- * 
- * @param {*} mapPredicate 
- * @returns 
- */
-export const useDashboardPerVm = (mapPredicate) => useQuery({
+
+export const useDashboardPerVmCpu = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['dashboardPerVm'],
+  queryKey: ['dashboardPerVmCpu'],
   queryFn: async () => {
-    console.log(`dashboardPerVm ...`);
-    const res = await ApiManager.getPerVm()
+    console.log(`dashboardPerVmCpu ...`);
+    const res = await ApiManager.getPerVmCpu()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+});
+export const useDashboardPerVmMemory = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardPerVmMemory'],
+  queryFn: async () => {
+    console.log(`dashboardPerVmMemory ...`);
+    const res = await ApiManager.getPerVmMemory()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+});
+export const useDashboardPerVmNetwork = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardPerVmNetwork'],
+  queryFn: async () => {
+    console.log(`dashboardPerVmNetwork ...`);
+    const res = await ApiManager.getPerVmNetwork()
     // setShouldRefresh(prevValue => false)
     return res ?? []
     // return res?.map((e) => mapPredicate(e)) ?? []
@@ -121,9 +139,16 @@ export const useDashboardMetricVm = (mapPredicate) => useQuery({
   queryFn: async () => {
     console.log(`useDashboardMetricVm ...`);
     const res = await ApiManager.getMetricVm()
-    // setShouldRefresh(prevValue => false)
     return res ?? []
-    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+});
+export const useDashboardMetricStorage = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardMetricStorage'],
+  queryFn: async () => {
+    console.log(`useDashboardMetricStorage ...`);
+    const res = await ApiManager.getMetricStorage()
+    return res ?? []
   }
 });
 //endregion

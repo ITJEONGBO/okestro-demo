@@ -3,8 +3,10 @@ package com.itinfo.itcloud.repository.history.dto
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.gson
+import com.itinfo.itcloud.model.computing.findNetworkListPercent
 import com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity
 import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.findAllStatisticsFromVm
 import com.itinfo.util.ovirt.findVm
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Vm
@@ -64,13 +66,22 @@ fun List<VmSamplesHistoryEntity>.toVmMemoryLineDtos(conn: Connection): List<Line
     }
 
     return vmDataMap.map { (vmId, dataList) ->
-        val vm: Vm =
-            conn.findVm(vmId).getOrNull()
+        val vm: Vm = conn.findVm(vmId).getOrNull()
                 ?: throw ErrorPattern.VM_NOT_FOUND.toException()
         LineDto.builder {
             name { vm.name() }
             dataList { dataList }
             time { vmTimeMap[vmId] ?: listOf() }
+        }
+    }
+}
+
+fun List<Vm>.toVmNetworkLineDtos(conn: Connection): List<LineDto> {
+    return this@toVmNetworkLineDtos.map { vm ->
+        val statistics = conn.findAllStatisticsFromVm(vm.id())
+        LineDto.builder {
+            name { vm.name() }
+            dataList { statistics.findNetworkListPercent() }
         }
     }
 }

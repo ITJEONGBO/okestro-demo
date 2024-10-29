@@ -1,16 +1,17 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.DashBoardVo
+import com.itinfo.itcloud.model.computing.findNetworkListPercent
 import com.itinfo.itcloud.model.computing.toDashboardVo
 import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.*
 import com.itinfo.itcloud.repository.history.entity.*
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.util.ovirt.findAllHosts
-import com.itinfo.util.ovirt.findAllStorageDomains
-import org.ovirt.engine.sdk4.types.Host
-import org.ovirt.engine.sdk4.types.StorageDomain
+import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
+import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -29,7 +30,7 @@ interface ItGraphService {
 	 * 원 그래프
 	 * 5분마다 한번씩 불려지게 해야함
 	 *
-	 * @return 호스트 cpu, memory 사용량
+	 * @return [HostUsageDto] 호스트 cpu, memory 사용량
 	 */
 	fun totalCpuMemory(): HostUsageDto
 	/**
@@ -37,48 +38,66 @@ interface ItGraphService {
 	 * 원 그래프
 	 * 5분마다 한번씩 불려지게 해야함
 	 *
-	 * @return 스토리지 사용량
+	 * @return [StorageUsageDto] 스토리지 사용량
 	 */
 	fun totalStorage(): StorageUsageDto
 
 	/**
 	 * 가상머신 cpu 사용량 3
 	 * 막대그래프
-	 * @return
+	 * @return List<[UsageDto]>
 	 */
 	fun vmCpuChart(): List<UsageDto>
 	/**
 	 * 가상머신 memory 사용량 3
 	 * 막대그래프
-	 * @return
+	 * @return List<[UsageDto]>
 	 */
 	fun vmMemoryChart(): List<UsageDto>
 	/**
 	 * 스토리지 도메인 memory 사용량 3
 	 * 막대그래프
-	 * @return
+	 * @return List<[UsageDto]>
 	 */
 	fun storageChart(): List<UsageDto>
 
 	/**
 	 * 가상머신 cpu 사용량 top3
 	 * 선그래프
-	 * @return
+	 * @return List<[LineDto]>
 	 */
 	fun vmCpuPerChart(): List<LineDto>
 	/**
 	 * 가상머신 memory 사용량 top3
 	 * 선그래프
-	 * @return
+	 * @return List<[LineDto]>
 	 */
 	fun vmMemoryPerChart(): List<LineDto>
 	/**
+	 * 가상머신 memory 사용량 top3
+	 * 선그래프
+	 * @return List<[LineDto]>
+	 */
+	fun vmNetworkPerChart(): List<LineDto>
+	/**
 	 * 전체 가상머신 cpu/memory 사용량
 	 * 매트릭
-	 * @return
+	 * @return List<[UsageDto]>
 	 */
 	fun vmMetricChart(): List<UsageDto>
+	/**
+	 * 스토리지 도메인 사용량
+	 * 매트릭
+	 * @return List<[UsageDto]>
+	 */
+	fun storageMetricChart(): List<UsageDto>
 
+	/**
+	 * 전체 사용량(CPU, Memory %) 선 그래프
+	 * @param hostId 호스트 id
+	 * @return 10분마다 그래프에 찍히게?
+	 */
+	fun totalHostCpuMemoryList(hostId: UUID, limit: Int): List<HostUsageDto>
 
 	// 호스트 사용량 top3
 	fun hostCpuChart(): List<UsageDto>
@@ -87,12 +106,6 @@ interface ItGraphService {
 	fun hostPercent(hostId: String, hostNicId: String): UsageDto
 	// 가상머신 목록 - 그래프
 	fun vmPercent(vmId: String, vmNicId: String): UsageDto
-	/**
-	 * 전체 사용량(CPU, Memory %) 선 그래프
-	 * @param hostId 호스트 id
-	 * @return 10분마다 그래프에 찍히게?
-	 */
-	fun totalCpuMemoryList(hostId: UUID, limit: Int): List<HostUsageDto>
 
 }
 
@@ -158,16 +171,27 @@ class GraphServiceImpl(
 		return vmSampleHistoryEntities.toVmMemoryLineDtos(conn)
 	}
 
+	override fun vmNetworkPerChart(): List<LineDto> {
+		val vmList: List<Vm> = conn.findAllVms(searchQuery = "status=up").getOrDefault(listOf())
+		return vmList.toVmNetworkLineDtos(conn)
+	}
+
 	override fun vmMetricChart(): List<UsageDto> {
 		log.info("vmMetricChart ... ")
 		val vmSampleHistoryEntities: List<VmSamplesHistoryEntity> = vmSamplesHistoryRepository.findVmMetricListChart()
 		return vmSampleHistoryEntities.toVmUsageDtos(conn)
 	}
 
+	override fun storageMetricChart(): List<UsageDto> {
+		log.info("storageMetricChart ... ")
+		val storageDomainSampleHistoryEntities: List<StorageDomainSamplesHistoryEntity> = storageDomainSamplesHistoryRepository.findStorageChart(null)
+		return storageDomainSampleHistoryEntities.toStorageCharts(conn)
+	}
+
 
 	// 일단 쓰는 곳 없음
-	override fun totalCpuMemoryList(hostId: UUID, limit: Int): List<HostUsageDto> {
-		log.info("totalCpuMemoryList ... ")
+	override fun totalHostCpuMemoryList(hostId: UUID, limit: Int): List<HostUsageDto> {
+		log.info("totalHostCpuMemoryList ... ")
 		val page: Pageable = PageRequest.of(0, limit)
 		val hostSamplesHistoryEntities: List<HostSamplesHistoryEntity> =
 			hostSamplesHistoryRepository.findByHostIdOrderByHistoryDatetimeDesc(hostId, page)

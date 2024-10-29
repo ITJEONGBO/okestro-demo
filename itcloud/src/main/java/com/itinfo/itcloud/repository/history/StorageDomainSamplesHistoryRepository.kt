@@ -20,5 +20,5 @@ interface StorageDomainSamplesHistoryRepository : JpaRepository<StorageDomainSam
    			ORDER BY s.used_disk_size_gb desc
    			""", nativeQuery = true
 	)
-	fun findStorageChart(page: Pageable): List<StorageDomainSamplesHistoryEntity>
+	fun findStorageChart(page: Pageable?): List<StorageDomainSamplesHistoryEntity>
 }

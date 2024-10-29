@@ -16,7 +16,7 @@ const AreaChart = ({ series, datetimes }) => {
       curve: 'smooth'
     },
     xaxis: {
-      type: 'datetime',
+      type: 'String',
       categories: datetimes
     },
     yaxis: {

@@ -818,8 +818,8 @@ fun List<Statistic>.findCpuPercent(): Int? {
  * vm MemoryPercent 반환
  */
 fun List<Statistic>.findMemoryPercent(): Int? {
-    val cpuUsageStatistic = this@findMemoryPercent.firstOrNull { it.name() == "memory.usage.history" }
-    return cpuUsageStatistic?.values()?.firstOrNull()?.datum()?.toInt()
+    val memoryUsageStatistic = this@findMemoryPercent.firstOrNull { it.name() == "memory.usage.history" }
+    return memoryUsageStatistic?.values()?.firstOrNull()?.datum()?.toInt()
 }
 
 /**
@@ -828,6 +828,14 @@ fun List<Statistic>.findMemoryPercent(): Int? {
 fun List<Statistic>.findNetworkPercent(): Int? {
     val cpuUsageStatistic = this@findNetworkPercent.firstOrNull { it.name() == "network.usage.history" }
     return cpuUsageStatistic?.values()?.firstOrNull()?.datum()?.toInt()
+}
+
+/**
+ * vm NetworkPercent
+ */
+fun List<Statistic>.findNetworkListPercent(): List<Int>? {
+    val networkUsageStatistic = this@findNetworkListPercent.firstOrNull { it.name() == "network.usage.history" }
+    return networkUsageStatistic?.values()?.take(10)?.map { it.datum().toInt() }
 }
 
 

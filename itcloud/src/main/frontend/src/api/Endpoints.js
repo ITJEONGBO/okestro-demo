@@ -15,8 +15,13 @@ const ENDPOINTS = {
   GET_VM_CPU: () =>             `/api/v1/dashboard/vmCpu`,
   GET_VM_MEMORY: () =>          `/api/v1/dashboard/vmMemory`,
   GET_STORAGE_MEMORY: () =>     `/api/v1/dashboard/storageMemory`,
-  GET_PER_VM: () =>             `/api/v1/dashboard/vmPerList`,
+
+  GET_PER_VM_CPU: () =>         `/api/v1/dashboard/vmCpuPerList`,
+  GET_PER_VM_MEMORY: () =>      `/api/v1/dashboard/vmMemoryPerList`,
+  GET_PER_VM_NETWORK: () =>      `/api/v1/dashboard/vmNetworkPerList`,
+
   GET_METRIC_VM: () =>          `/api/v1/dashboard/vmMetricList`,
+  GET_METRIC_STORAGE: () =>          `/api/v1/dashboard/storageMetricList`,
   //endregion: Dashboard
   
   //region: DataCenter

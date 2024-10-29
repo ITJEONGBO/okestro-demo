@@ -3,6 +3,7 @@ package com.itinfo.itcloud.controller.computing
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
 import com.itinfo.itcloud.repository.history.dto.HostUsageDto
+import com.itinfo.itcloud.repository.history.dto.LineDto
 import com.itinfo.itcloud.repository.history.dto.StorageUsageDto
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.computing.ItGraphService
@@ -91,24 +92,54 @@ class GraphController {
 		return ResponseEntity.ok(graph.vmMemoryChart())
 	}
 
+	@ApiOperation(
+		httpMethod="GET",
+		value="스토리지도메인 메모리 총 사용량 정보",
+		notes="스토리지도메인의 메모리 총 사용량 정보를 조회한다"
+	)
 	@GetMapping("/storageMemory")
+	@ResponseBody
 	fun storageChart(): ResponseEntity<List<UsageDto>> {
 		log.info("----- storageChart")
 		return ResponseEntity.ok(graph.storageChart())
 	}
 
+	@ApiOperation(
+		httpMethod="GET",
+		value="VM cpu Per 그래프",
+		notes="VM의 cpu Per 그래프"
+	)
+	@GetMapping("/vmCpuPerList")
+	@ResponseBody
+	fun vmCpuPerChart(): ResponseEntity<List<LineDto>> {
+		log.info("----- vmCpuPerChart")
+		return ResponseEntity.ok(graph.vmCpuPerChart())
+	}
 
-//	@ApiOperation(
-//		httpMethod="GET",
-//		value="VM의 Per 그래프",
-//		notes="VM의 Per 그래프"
-//	)
-//	@GetMapping("/vmPerList")
-//	@ResponseBody
-//	fun vmPerList(): ResponseEntity<List<UsageDto>> {
-//		log.info("----- vmPerList")
-//		return ResponseEntity.ok(graph.vmCpuPerChart())
-//	}
+	@ApiOperation(
+		httpMethod="GET",
+		value="VM memory Per 그래프",
+		notes="VM의 memory Per 그래프"
+	)
+	@GetMapping("/vmMemoryPerList")
+	@ResponseBody
+	fun vmMemoryPerChart(): ResponseEntity<List<LineDto>> {
+		log.info("----- vmMemoryPerChart")
+		return ResponseEntity.ok(graph.vmMemoryPerChart())
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="VM network Per 그래프",
+		notes="VM의 network Per 그래프"
+	)
+	@GetMapping("/vmNetworkPerList")
+	@ResponseBody
+	fun vmNetworkPerChart(): ResponseEntity<List<LineDto>> {
+		log.info("----- vmNetworkPerChart")
+		return ResponseEntity.ok(graph.vmNetworkPerChart())
+	}
+
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -120,6 +151,18 @@ class GraphController {
 	fun vmMetricList(): ResponseEntity<List<UsageDto>> {
 		log.info("----- vmMetricList")
 		return ResponseEntity.ok(graph.vmMetricChart())
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="storage의 Metric 그래프",
+		notes="storage의 Metric 그래프"
+	)
+	@GetMapping("/storageMetricList")
+	@ResponseBody
+	fun storageMetricChart(): ResponseEntity<List<UsageDto>> {
+		log.info("----- storageMetricChart")
+		return ResponseEntity.ok(graph.storageMetricChart())
 	}
 
 	companion object {
