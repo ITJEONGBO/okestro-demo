@@ -11,6 +11,7 @@ const Info = ({  }) => {
     const { data: dashboard } = useDashboard();
     const { data: cpuMemory } = useDashboardCpuMemory();
     const { data: storage } = useDashboardStorage();
+    
     return (
         <div className="rutil_general">
             <div className="rutil_general_first_contents">

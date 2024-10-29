@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/Computing.css';
-import TableInfo from '../table/TableInfo';
-import TablesOuter from '../table/TablesOuter';
-import DataCenterModal from '../Modal/DataCenterModal';
-import DeleteModal from '../Modal/DeleteModal';
-import { useAllDataCenters, useDataCenter } from '../../api/RQHook';
+import '../css/Computing.css';
+import TableInfo from '../../table/TableInfo';
+import TablesOuter from '../../table/TablesOuter';
+import DataCenterModal from '../../Modal/DataCenterModal';
+import DeleteModal from '../../Modal/DeleteModal';
+import { useAllDataCenters, useDataCenter } from '../../../api/RQHook';
 
-const DataCenters = () => {
+const DataCenters = ({}) => {
     const navigate = useNavigate();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -30,8 +30,8 @@ const DataCenters = () => {
     const openDeleteModal = () => setIsDeleteModalOpen(true);
     const closeDeleteModal = () => setIsDeleteModalOpen(false);
 
-    const handleNameClick = (name) => {
-        navigate(`/computing/datacenters/${name}`);
+    const handleNameClick = (id) => {
+        navigate(`/computing/datacenters/${id}`);
     };
 
     // const sectionHeaderButtons = [
@@ -58,31 +58,31 @@ const DataCenters = () => {
 
     return (
         <>
-        <div className="header_right_btns">
-            <button onClick= {openCreateModal}>새로 만들기</button>
-            <button onClick= {() =>openEditModal(selectedDataCenter)}>편집</button>
-            <button onClick= {openDeleteModal}>제거</button>
-        </div>
+            <div className="header_right_btns">
+                <button onClick= {openCreateModal}>새로 만들기</button>
+                <button onClick= {() =>openEditModal(selectedDataCenter)}>편집</button>
+                <button onClick= {openDeleteModal}>제거</button>
+            </div>
 
-        <TablesOuter
-            columns={TableInfo.DATACENTERS}
-            data={datacenters}
-            shouldHighlight1stCol={true}
-            onRowClick={(row) => setSelectedDataCenter(row)}
-        />
+            <TablesOuter
+                columns={TableInfo.DATACENTERS}
+                data={datacenters}
+                shouldHighlight1stCol={true}
+                onRowClick={(row) => setSelectedDataCenter(row)}
+            />
 
-        <DataCenterModal 
-            isOpen={isCreateModalOpen || isEditModalOpen}
-            onRequestClose={isCreateModalOpen ? closeCreateModal : closeEditModal}
-            editMode={isEditModalOpen}
-            data={selectedDataCenter}
-        />
-        <DeleteModal
-            isOpen={isDeleteModalOpen}
-            onRequestClose={closeDeleteModal}
-            contentLabel={'데이터센터'}
-            data={selectedDataCenter}  // 삭제할 데이터 전달
-        />
+            <DataCenterModal 
+                isOpen={isCreateModalOpen || isEditModalOpen}
+                onRequestClose={isCreateModalOpen ? closeCreateModal : closeEditModal}
+                editMode={isEditModalOpen}
+                data={selectedDataCenter}
+            />
+            <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onRequestClose={closeDeleteModal}
+                contentLabel={'데이터센터'}
+                data={selectedDataCenter}  // 삭제할 데이터 전달
+            />
         </>
     );
 };

@@ -29,6 +29,8 @@ import Event from './components/Event';
 import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
 import AllCluster from './components/Computing/AllCluster';
+import DataCenters from './components/Computing/Rutil/DataCenters';
+import Clusters from './components/Computing/Clusters'
 
 
 
@@ -101,6 +103,9 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/computing/rutil-manager" element={<RutilManager />} />
+              <Route path="/computing/rutil-manager/dataCenters" element={<DataCenters />} />
+              <Route path="/computing/rutil-manager/clusters" element={<Clusters />} />
+
               {/* <Route path="/computing/datacenters" element={<Computing />} /> */}
               {/* <Route path="/computing/datacenters" element={<DataCenters />} /> */}
               <Route path="/computing/datacenters/:id" element={<DataCenter />} />
@@ -141,7 +146,7 @@ const App = () => {
               <Route path="/error" element={<Error />} />
  
               {/*임시(삭제예정) */}
-              <Route path="/computing/rutil-manager" element={<RutilManager />} />
+              {/* <Route path="/computing/rutil-manager" element={<RutilManager />} /> */}
               <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
               <Route path="/example" element={<Example />} />
               <Route path="/storages/disks/domain" element={<StorageDomainDetail />} />
