@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/Computing.css';
-import TableInfo from '../table/TableInfo';
-import TablesOuter from '../table/TablesOuter';
-import HostModal from '../Modal/HostModal'
-import DeleteModal from '../Modal/DeleteModal';
-import { useAllHosts } from '../../api/RQHook';
+import '../css/Computing.css';
+import TableInfo from '../../table/TableInfo';
+import TablesOuter from '../../table/TablesOuter';
+import HostModal from '../../Modal/HostModal'
+import DeleteModal from '../../Modal/DeleteModal';
+import { useAllHosts } from '../../../api/RQHook';
 
 const Hosts = () => {
     const navigate = useNavigate();

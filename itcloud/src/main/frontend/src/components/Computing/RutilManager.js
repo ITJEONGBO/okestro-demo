@@ -7,37 +7,19 @@ import './css/RutilManager.css';
 import Path from '../Header/Path';
 import Footer from '../footer/Footer';
 import DataCenters from './Rutil/DataCenters';
-import Clusters from './Clusters';
-import Hosts from './Hosts';
+import Clusters from './Rutil/Clusters';
+import Hosts from './Rutil/Hosts';
 import Info from './Rutil/Info';
 
 function RutilManager() {
     const {section } = useParams();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('info')
-
-    useEffect(() => {
-        if (!section) {
-          setActiveTab('info');
-        } else {
-          setActiveTab(section);
-        }
-      }, [section]); 
-
-      const handleTabClick = (tab) => {
-        if (tab === 'info') {
-            navigate(`/computing/rutil-manager`);
-        } else {
-            navigate(`/computing/rutil-manager/${tab}`);
-        }
-        setActiveTab(tab);
-    };
-
+    const [activeTab, setActiveTab] = useState('info') // 기본 탭은 info로 
 
     // Header와 Sidebar에 쓰일 섹션과 버튼 정보
     const sections = [
         { id: 'info', label: '일반' },
-        { id: 'dataCenters', label: '데이터센터' },
+        { id: 'datacenters', label: '데이터센터' },
         { id: 'clusters', label: '클러스터' },
         { id: 'hosts', label: '호스트' },
         { id: 'vms', label: '가상머신' },
@@ -48,33 +30,36 @@ function RutilManager() {
         { id: 'vnicProfiles', label: 'vNIC 프로파일' },
     ];
 
-    const pathData = ['Rutil Manager', sections.find(section => section.id === activeTab)?.label];
-    const renderSectionContent = () => {
-        switch (activeTab) {
-          case 'info':
-            return <Info />;
-          case 'dataCenters':
-            return <DataCenters />;
-          case 'clusters':
-            return <Clusters />;
-          case 'hosts':
-            return <Hosts />;
-        //   case 'vms':
-        //     return <Vms />;
-        //   case 'templates':
-        //     return <Templates />;
-        //   case 'storageDomains':
-        //     return <StorageDomains />;
-        //   case 'disks':
-        //     return <Disks />;
-        //   case 'networks':
-        //     return <Networks />;
-        //   case 'vnicProfiles':
-        //     return <VnicProfiles />;
-          default:
-            return <Info />;
+    // section이 변경될때 tab도 같이 변경
+    useEffect(() => {
+        if (!section) {
+          setActiveTab('info');
+        } else {
+          setActiveTab(section);
         }
-      };
+    }, [section]); 
+
+    const handleTabClick = (tab) => {
+        const path = tab === 'info' ? '/computing/rutil-manager' : `/computing/rutil-manager/${tab}`;
+        navigate(path);
+        setActiveTab(tab);
+    };
+
+    const pathData = ['Rutil Manager', sections.find(section => section.id === activeTab)?.label];
+
+    const sectionComponents = {
+        info: Info,
+        datacenters: DataCenters,
+        clusters: Clusters,
+        hosts: Hosts,
+        // vms: Vms,
+        // 추가적인 섹션들: vms, templates, 등등
+    };
+
+    const renderSectionContent = () => {
+        const SectionComponent = sectionComponents[activeTab] || Info;
+        return <SectionComponent />;
+    };
 
     return (
         <div id="section">

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/Cluster.css';
-import TableOuter from '../table/TableOuter';
-import TableInfo from '../table/TableInfo';
-import ClusterModal from '../Modal/ClusterModal';
-import DeleteModal from '../Modal/DeleteModal';
-import { useAllClusters } from '../../api/RQHook';
+// import '../css/cluster.css'
+import '../css/Computing.css';
+import TableOuter from '../../table/TableOuter';
+import TableInfo from '../../table/TableInfo';
+import ClusterModal from '../../Modal/ClusterModal';
+import DeleteModal from '../../Modal/DeleteModal';
+import { useAllClusters } from '../../../api/RQHook';
 
-
-const Cluster = () => {
+const Clusters = () => {
     const navigate = useNavigate();
   
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -90,5 +90,5 @@ const Cluster = () => {
   );
 };
 
-export default Cluster;
+export default Clusters;
 

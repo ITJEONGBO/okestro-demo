@@ -30,7 +30,7 @@ import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
 import AllCluster from './components/Computing/AllCluster';
 import DataCenters from './components/Computing/Rutil/DataCenters';
-import Clusters from './components/Computing/Clusters'
+import Clusters from './components/Computing/Rutil/Clusters'
 
 
 
@@ -105,27 +105,25 @@ const App = () => {
               <Route path="/computing/rutil-manager" element={<RutilManager />} />
               <Route path="/computing/rutil-manager/:section" element={<RutilManager />} />
 
-
-              {/* <Route path="/computing/datacenters" element={<Computing />} /> */}
-              {/* <Route path="/computing/datacenters" element={<DataCenters />} /> */}
+              <Route path="/computing/datacenters" element={<DataCenters />} />
               <Route path="/computing/datacenters/:id" element={<DataCenter />} />
               <Route path="/computing/datacenters/:id/:section" element={<DataCenter />} />
-              
-              
-              <Route path="/computing/vms" element={<AllVm />} />
-              <Route path="/computing/vms/:id" element={<VmDetail />} />
-              <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
+                            
+              <Route path="/computing/clusters" element={<AllCluster />} />
+              <Route path="/computing/clusters/:id" element={<ClusterName />} />
+              <Route path="/computing/clusters/:id/:section" element={<ClusterName />} />  
               
               <Route path="/computing/host" element={<Host />} />
               <Route path="/computing/hosts/:id" element={<HostDetail />}/>
               <Route path="/computing/hosts/:id/:section" element={<HostDetail />}/>
 
+              <Route path="/computing/vms" element={<AllVm />} />
+              <Route path="/computing/vms/:id" element={<VmDetail />} />
+              <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
+              
               <Route path="/computing/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
 
-              <Route path="/computing/clusters" element={<AllCluster />} />
-              <Route path="/computing/clusters/:id" element={<ClusterName />} />
-              <Route path="/computing/clusters/:id/:section" element={<ClusterName />} />  
 
               <Route path="/networks" element={<Network />} />
               <Route path="/networks/:id" element={<NetworkDetail />} /> 
@@ -146,7 +144,6 @@ const App = () => {
               <Route path="/error" element={<Error />} />
  
               {/*임시(삭제예정) */}
-              {/* <Route path="/computing/rutil-manager" element={<RutilManager />} /> */}
               <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
               <Route path="/example" element={<Example />} />
               <Route path="/storages/disks/domain" element={<StorageDomainDetail />} />

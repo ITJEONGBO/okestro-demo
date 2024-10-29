@@ -25,7 +25,7 @@ const Grid = ({ type, data = [] }) => {
         <div
           key={item.id}
           className="grid-item"
-          title={`Name: ${item.name}`}
+          title={`${item.name}`}
           style={{ backgroundColor: type === 'cpu' ? getBackgroundColor(item.cpuPercent) : getBackgroundColor(item.memoryPercent)}}
         >
           <div className="percent">{type==='cpu' ? item.cpuPercent: item.memoryPercent}%</div>

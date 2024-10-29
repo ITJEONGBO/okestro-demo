@@ -4,49 +4,60 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
   useAddDataCenter, 
-  useEditDataCenter
+  useEditDataCenter,
+  useDataCenter
 } from '../../api/RQHook'
 
 const DataCenterModal = ({ 
   isOpen,
   onRequestClose,
   editMode = false,  // 기본이 생성모드
-  data = {}          // 부모 컴포넌트에서 전달된 데이터
+  dcId
 }) => {
+  const {
+    data: datacenter,
+    status: datacenterStatus,
+    isRefetching: isDatacenterRefetching,
+    refetch: refetchDatacenter,
+    isError: isDatacenterError,
+    error: datacenterError,
+    isLoading: isDatacenterLoading
+  } = useDataCenter(dcId);
+
   console.log("DataCenterModal ")
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [description, setDescription] = useState('');
-  const [storageType, setStorageType] = useState(false);
+  const [storageType, setStorageType] = useState();
   const [version, setVersion] = useState('4.7');
-  const [quotaMode, setQuotaMode] = useState('DISABLED');
+  const [quotaMode, setQuotaMode] = useState();
 
   const { mutate: addDataCenter } = useAddDataCenter();
   const { mutate: editDataCenter } = useEditDataCenter();
 
   // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
-    if (editMode && data) {
-      setId(data.id);
-      setName(data.name);
-      setComment(data.comment);
-      setDescription(data.description);
-      setStorageType(data.storageType === true);  // true/false에 따른 저장 방식
-      setVersion(data.version);
-      setQuotaMode(data.quotaMode);
+    if (editMode) {
+      setId(datacenter.id);
+      setName(datacenter.name);
+      setComment(datacenter.comment);
+      setDescription(datacenter.description);
+      setStorageType(datacenter.storageType);
+      setVersion(datacenter.version);
+      setQuotaMode(datacenter.quotaMode);
     } else {
       resetForm();
     }
-  }, [editMode, data]);
+  }, [editMode]);
 
   const resetForm = () => {
     setName('');
     setComment('');
     setDescription('');
-    setStorageType(false);
+    setStorageType();
     setVersion('4.7');
-    setQuotaMode('DISABLED');
+    setQuotaMode();
   };
 
   const handleFormSubmit = () => {
@@ -141,8 +152,8 @@ const DataCenterModal = ({
             <label htmlFor="storageType">스토리지 타입</label>
             <select
               id="storageType"
-              value={storageType}
-              onChange={(e) => setStorageType(e.target.value === "true")} // onChange 핸들러 수정
+              value={storageType ? "true" : "false"}  // 불리언 값을 문자열로 변환하여 value와 일치하도록 설정
+              onChange={(e) => setStorageType(e.target.value === "true")} // 선택된 값에 따라 boolean으로 변환
             >
               <option value="false">공유됨</option>
               <option value="true">로컬</option>
@@ -159,11 +170,11 @@ const DataCenterModal = ({
             </select>
           </div>
           <div>
-            <label htmlFor="quota_mode">쿼터 모드</label>
+          <label htmlFor="quota_mode">쿼터 모드</label>
             <select
               id="quota_mode"
               value={quotaMode}
-              onChange={(e) => setQuotaMode(e.target.value)} // onChange 핸들러 추가
+              onChange={(e) => setQuotaMode(e.target.value)} // quotaMode는 그대로 문자열로 다루기
             >
               <option value="DISABLED">비활성화됨</option>
               <option value="AUDIT">감사</option>
