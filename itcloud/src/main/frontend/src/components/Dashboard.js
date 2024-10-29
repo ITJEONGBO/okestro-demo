@@ -12,13 +12,15 @@ import {
   useDashboardPerVmNetwork,
   useDashboardMetricVm,
   useDashboardVmCpu, 
-  useDashboardVmMemory
+  useDashboardVmMemory,
+  useDashboardMetricStorage
  } from '../api/RQHook';
 import RadialBarChart from './Chart/RadialBarChart';
 import BarChart from './Chart/BarChart';
 import SuperAreaChart from './Chart/SuperAreaChart';
 import HeatMapChart from './Chart/HeatMapChart';
 import { faCloud, faEarthAmericas, faLayerGroup, faListUl, faMicrochip, faUser } from '@fortawesome/free-solid-svg-icons';
+import Grid from './Chart/Grid';
 
 //region: RadialBarChart
 // 도넛
@@ -157,6 +159,17 @@ const Dashboard = () => {
     isLoading: isVmMetricoading,
   } = useDashboardMetricVm()
 
+  
+  const {
+    data: storageMetric,
+    status: storageMetricStatus,
+    isRefetching: isstorageMetricRefetching,
+    refetch: storageMetricRefetch, 
+    isError: isstorageMetricError, 
+    error: storageMetricError, 
+    isLoading: isstoragemMetricoading,
+  } = useDashboardMetricStorage()
+
 
   useEffect(() => {
     window.addEventListener('resize', adjustFontSize);
@@ -237,15 +250,18 @@ const Dashboard = () => {
         <div className="bar">
           <div>
             <span>CPU</span>
-            <div><HeatMapChart type={'cpu'} vmMetrics={vmMetric} /></div>
+            {/* <div><HeatMapChart type={'cpu'} vmMetrics={vmMetric} /></div> */}
+            <div><Grid type={'cpu'} data={vmMetric}/></div>
           </div>
           <div>
             <span>MEMORY</span>
-            <div><HeatMapChart vmMetrics={vmMetric} /></div>
+            {/* <div><HeatMapChart vmMetrics={vmMetric} /></div> */}
+            <div><Grid data={vmMetric}/></div>
           </div>
           <div>
             <span>StorageDomain</span>
-            <div><HeatMapChart vmMetrics={vmMetric} /></div>
+            {/* <div><HeatMapChart vmMetrics={vmMetric} /></div> */}
+            <div><Grid data={storageMetric}/></div>
           </div>
         </div>
       </div> {/* 대시보드 section끝 */}
