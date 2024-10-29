@@ -95,36 +95,38 @@ const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColum
                 }}
               >
                 {columns.map((column, colIndex) => (
-                  <td
-                    key={colIndex}
-                    data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`} // 각 셀에 고유한 tooltip id 설정
-                    data-tooltip-content={row[column.accessor]} // 툴팁에 표시할 전체 내용
-                    style={{
-                      maxWidth: '200px', // 최대 넓이 설정
-                      whiteSpace: 'nowrap', // 한 줄로 표시
-                      overflow: 'hidden', // 넘치는 텍스트 숨기기
-                      textOverflow: 'ellipsis', // 넘치는 텍스트는 ...으로 표시
-                      textAlign: typeof row[column.accessor] === 'object' ? 'center' : 'left', // 아이콘이면 center, 텍스트면 left
-                    }}
-                    onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])} // 마우스를 올렸을 때 툴팁 설정
-                    onClick={(e) => {
-                      if (clickableColumnIndex.includes(colIndex)) {
-                        e.stopPropagation();
-                        onRowClick(row, column); // 선택된 행과 해당 컬럼 정보를 전달
-                      }
-                    }}
-                  >
-                    {clickableColumnIndex.includes(colIndex) ? (
-                      <span style={{ color: 'blue', cursor: 'pointer' }}>
-                        {row[column.accessor]}
-                      </span>
-                    ) : (
-                      <span style={{ cursor: 'default' }}>
-                        {row[column.accessor]}
-                      </span>
-                    )}
-                  </td>
-                ))}
+                    <td
+                      key={colIndex}
+                      data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`} // 각 셀에 고유한 tooltip id 설정
+                      data-tooltip-content={row[column.accessor]} // 툴팁에 표시할 전체 내용
+                      style={{
+                        maxWidth: '200px', // 최대 넓이 설정
+                        whiteSpace: 'nowrap', // 한 줄로 표시
+                        overflow: 'hidden', // 넘치는 텍스트 숨기기
+                        textOverflow: 'ellipsis', // 넘치는 텍스트는 ...으로 표시
+                        textAlign: typeof row[column.accessor] === 'object' ? 'center' : 'left', // 아이콘이면 center, 텍스트면 left
+                      }}
+                      onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])} // 마우스를 올렸을 때 툴팁 설정
+                      onClick={(e) => {
+                        if (clickableColumnIndex.includes(colIndex)) {
+                          e.stopPropagation();
+                          onRowClick(row, column); // 선택된 행과 해당 컬럼 정보를 전달
+                        }
+                      }}
+                    >
+                      {clickableColumnIndex.includes(colIndex) ? (
+                        <span style={{ color: 'blue', cursor: 'pointer' }}>
+                          {row[column.accessor]}
+                        </span>
+                      ) : (
+                        <span style={{ cursor: 'default' }}>
+                          {row[column.accessor]}
+                        </span>
+                      )}
+                    </td>
+                  ))}
+
+
               </tr>
             ))}
           </tbody>

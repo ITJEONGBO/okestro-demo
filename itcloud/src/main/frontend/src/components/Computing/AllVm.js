@@ -47,12 +47,6 @@ const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // �
 const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
 const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 상태
 
- // ...버튼
- const [isPopupOpen, setIsPopupOpen] = useState(false);
- const togglePopup = () => {
-   setIsPopupOpen(!isPopupOpen);
- };
-
 
  
 
@@ -155,7 +149,7 @@ function toTableItemPredicateVMs(vm) {
         columns={TableColumnsInfo.VM_CHART} 
         data={vms}
         openPopup={openPopup} 
-        togglePopup={togglePopup}
+   
         onRowClick={(row, column, colIndex) => {
         if (colIndex === 1) {
           navigate(`/computing/vms/${row.id}`); 

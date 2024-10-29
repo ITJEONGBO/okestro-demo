@@ -12,8 +12,6 @@ const VmDu = ({
   columns,
   onRowClick,
   setActiveTab: parentSetActiveTab,
-  togglePopup,
-  isPopupOpen,
   showTemplateButton = true,
   data ,
 
@@ -57,12 +55,32 @@ const VmDu = ({
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
 
   // ...버튼
-  const [popupOpen, setPopupOpen] = useState(false);
-  const togglePopupMenu = () => {
-    setPopupOpen(!popupOpen);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
   };
+  const handlePopupBoxItemClick = (e) => e.stopPropagation();
+  // 팝업 외부 클릭 시 닫히도록 처리
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const popupBox = document.querySelector(".content_header_popup"); // 팝업 컨테이너 클래스
+      const popupBtn = document.querySelector(".content_header_popup_btn"); // 팝업 버튼 클래스
+      if (
+        popupBox &&
+        !popupBox.contains(event.target) &&
+        popupBtn &&
+        !popupBtn.contains(event.target)
+      ) {
+        setIsPopupOpen(false); // 팝업 외부 클릭 시 팝업 닫기
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside); // 이벤트 리스너 추가
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside); // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    };
+  }, []);
 
-
+  
   const [selectedModalTab, setSelectedModalTab] = useState('common');
   const handleTabModalClick = (tab) => {
     setSelectedModalTab(tab);
@@ -123,13 +141,11 @@ const VmDu = ({
           <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
           {isPopupOpen && (
             <div className="content_header_popup">
-              <div onClick={() => handleOpenPopup('bring')}>가져오기</div>
+              <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup('bring'); }}>가져오기</div>
               <div onClick={() => handleOpenPopup('vm_copy')}>가상 머신 복제</div>
               <div onClick={() => handleOpenPopup('delete')}>삭제</div>
-              <div>마이그레이션 취소</div>
-              <div>변환 취소</div>
-              <div>템플릿 생성</div>
-              <div>OVA로 내보내기</div>
+              <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup(); }}>템플릿 생성</div>
+              <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup(); }}>OVA로 내보내기</div>
             </div>
           )}
         </button>

@@ -1255,7 +1255,6 @@ input[disabled] {
     height: 26vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
-    border:1px solid gray;
 }
 /*호스트 장치(View CPU Pinning 팝업)*/
 .device_view_popup_outer{

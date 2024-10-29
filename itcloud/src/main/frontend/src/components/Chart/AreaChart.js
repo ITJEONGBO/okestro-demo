@@ -6,6 +6,8 @@ const AreaChart = ({ series, datetimes }) => {
   const [options, setOptions] = useState({
     chart: {
       type: 'area',
+
+      
       offsetX: 15,
     },
     colors: ['#1597E5', '#69DADB', 'rgb(231, 190, 231)'],

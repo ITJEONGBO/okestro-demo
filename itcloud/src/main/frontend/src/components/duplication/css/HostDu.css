@@ -35,3 +35,6 @@
 .maintenance_content>div{
     padding: 0.25rem 0;
 }
+.host_new_add .edit_first_content>div:first-child{
+    margin-bottom:0;
+}

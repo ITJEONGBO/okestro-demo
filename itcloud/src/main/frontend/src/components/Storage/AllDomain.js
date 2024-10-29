@@ -154,8 +154,28 @@ function toTableItemPredicateDomains(domaindata) {
   };
 }
 
-
-
+  // 팝업 외부 클릭 시 닫히도록 처리
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const popupBox = document.querySelector(".content_header_popup"); // 팝업 컨테이너 클래스
+      const popupBtn = document.querySelector(".content_header_popup_btn"); // 팝업 버튼 클래스
+      if (
+        popupBox &&
+        !popupBox.contains(event.target) &&
+        popupBtn &&
+        !popupBtn.contains(event.target)
+      ) {
+        setIsPopupOpen(false); // 팝업 외부 클릭 시 팝업 닫기
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside); // 이벤트 리스너 추가
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside); // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    };
+  }, []);
+  
+  //
   useEffect(() => {
     window.addEventListener('resize', adjustFontSize);
     adjustFontSize();
@@ -234,11 +254,11 @@ function toTableItemPredicateDomains(domaindata) {
                 <button className="content_header_popup_btn" onClick={togglePopup}>
                 <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
                 {isPopupOpen && (
-                  <div className="content_header_popup">
-                    <div onClick={() => openPopup()}>파괴</div>
-                    <div onClick={() => openPopup('')}>마스터 스토리지 도메인으로 선택</div>
-                  </div>
-                )}
+                    <div className="content_header_popup">
+                      <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(); }}>파괴</div>
+                      <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>마스터 스토리지 도메인으로 선택</div>
+                    </div>
+                  )}
                 </button>
               </div>
 

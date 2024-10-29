@@ -11,7 +11,9 @@ import {
     faEarthAmericas,
     faLayerGroup,
     faHdd,
-    faCloud
+    faCloud,
+    faCircle,
+    faSquare
 } from '@fortawesome/free-solid-svg-icons'
 
 const MainOuter = ({ children }) => {
@@ -384,8 +386,24 @@ const {
                                         navigate(`/computing/vmDowns/${vmDown.id}`);
                                     }}
                                 >
-                                    <FontAwesomeIcon icon={faMicrochip} fixedWidth />
-                                    <span>{vmDown.name} (다운)</span>
+                                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                                        {/* 첫 번째 아이콘 */}
+                                        <FontAwesomeIcon icon={faMicrochip} fixedWidth />
+                                        
+                                        {/* 두 번째 아이콘 - 겹쳐서 위치 조정 */}
+                                        <FontAwesomeIcon 
+                                            icon={faSquare} 
+                                            fixedWidth 
+                                            style={{ 
+                                            position: 'absolute', 
+                                            bottom: '4', // 원하는 위치로 조정
+                                            right: '0', // 원하는 위치로 조정
+                                            fontSize: '0.5em', // 크기 조정 가능
+                                            color: 'rgb(200 0 0)' // 색상 조정 가능
+                                            }} 
+                                        />
+                                        </div>
+                                    <span>{vmDown.name}</span>
                                 </div>
                             ))}
                           </div>

@@ -74,7 +74,8 @@ const closePopup = () => {
               <li onClick={() => openPopup('maintenance')}>유지보수</li>
               <li>활성</li>
               <li>기능을 새로 고침</li>
-              <li style={{borderTop:'1px solid #DDDDDD',borderBottom:'1px solid #DDDDDD'}}>인증서 등록</li>
+              <li style={{borderTop:'1px solid #DDDDDD'}}>다시 설치</li>
+              <li style={{borderBottom:'1px solid #DDDDDD'}}>인증서 등록</li>
               <li>재시작</li>
               <li>중지</li>
             </ul>

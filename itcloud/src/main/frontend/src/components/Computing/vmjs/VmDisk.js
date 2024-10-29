@@ -1,4 +1,4 @@
-import { faCaretUp, faChevronDown, faChevronLeft, faEllipsisV, faExclamationTriangle, faExternalLink, faGlassWhiskey, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCaretUp, faChevronCircleRight, faChevronDown, faChevronLeft, faEllipsisV, faExclamationTriangle, faExternalLink, faGlassWhiskey, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
@@ -25,9 +25,7 @@ const VmDisk = () => {
   };
   
     // 연결 팝업 열기/닫기 핸들러
-
     const closeJoinDiskModal = () => setIsJoinDiskModalOpen(false);
-   
     const [activePopup, setActivePopup] = useState(null);
     const openPopup = (popupType) => {
         setActivePopup(popupType);
@@ -35,14 +33,38 @@ const VmDisk = () => {
     const closePopup = () => {
         setActivePopup(null);
     };
-
     const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 유형 상태
-
   // 컨텐츠 유형 변경 핸들러
   const handleContentTypeChange = (event) => {
     setActiveContentType(event.target.value);
   };
-  const [activeJoinTab, setActiveJoinTab] = useState('image'); 
+
+  // ...버튼
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
+  // 팝업 외부 클릭 시 닫히도록 처리
+  const handlePopupBoxItemClick = (e) => e.stopPropagation();
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const popupBox = document.querySelector(".content_header_popup"); // 팝업 컨테이너 클래스
+      const popupBtn = document.querySelector(".content_header_popup_btn"); // 팝업 버튼 클래스
+      if (
+        popupBox &&
+        !popupBox.contains(event.target) &&
+        popupBtn &&
+        !popupBtn.contains(event.target)
+      ) {
+        setIsPopupOpen(false); // 팝업 외부 클릭 시 팝업 닫기
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside); // 이벤트 리스너 추가
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside); // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    };
+  }, []);
+
 
     // 테이블 컴포넌트
     const columns = [
@@ -116,45 +138,55 @@ const VmDisk = () => {
   ];
     return (
         <>
-                <div className="header_right_btns">
+                <div className="disk_type">
+
+                  <div>
+                    <div className='flex'>
+                      <span>디스크유형 : </span>
+                      <div className='flex'>
+                        <button className={activeDiskType === 'all' ? 'active' : ''} onClick={() => handleDiskTypeClick('all')}>모두</button>
+                        <button className={activeDiskType === 'image' ? 'active' : ''} onClick={() => handleDiskTypeClick('image')}>이미지</button>
+                        <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
+                      </div>
+                    </div>
+                    <div className="content_type">
+                      <label className='mr-1' htmlFor="contentType">컨텐츠 유형:</label>
+                      <select id="contentType" value={activeContentType} onChange={handleContentTypeChange}>
+                        <option value="all">모두</option>
+                        <option value="data">데이터</option>
+                        <option value="ovfStore">OVF 스토어</option>
+                        <option value="memoryDump">메모리 덤프</option>
+                        <option value="iso">ISO</option>
+                        <option value="hostedEngine">Hosted Engine</option>
+                        <option value="sanlock">Hosted Engine Sanlock</option>
+                        <option value="metadata">Hosted Engine Metadata</option>
+                        <option value="conf">Hosted Engine Conf.</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="header_right_btns">
                     <button id="disk_popup_new"  onClick={() => openPopup('newDisk')}>새로 만들기</button>
                     <button id="join_popup_btn" onClick={() => openPopup('disk_connection')}>연결</button>
                     <button onClick={() => openPopup('disk_edit')}>수정</button>
                     <button onClick={() => openPopup('delete')}>제거</button>
-                    {/* <button className="content_header_popup_btn">
-                        <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
-                        <div className="content_header_popup" style={{ display: 'none' }}>
-                            <div>활성</div>
-                            <div>비활성화</div>
-                            <div>이동</div>
-                            <div>LUN 새로고침</div>
-                        </div>
-                    </button> */}
-                </div>
-                <div className="disk_type">
-                  <div>
-                    <span>디스크유형 : </span>
-                    <div className='flex'>
-                      <button className={activeDiskType === 'all' ? 'active' : ''} onClick={() => handleDiskTypeClick('all')}>모두</button>
-                      <button className={activeDiskType === 'image' ? 'active' : ''} onClick={() => handleDiskTypeClick('image')}>이미지</button>
-                      <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
-                    </div>
-                  </div>
-                  <div className="content_type">
-                    <label className='mr-1' htmlFor="contentType">컨텐츠 유형:</label>
-                    <select id="contentType" value={activeContentType} onChange={handleContentTypeChange}>
-                      <option value="all">모두</option>
-                      <option value="data">데이터</option>
-                      <option value="ovfStore">OVF 스토어</option>
-                      <option value="memoryDump">메모리 덤프</option>
-                      <option value="iso">ISO</option>
-                      <option value="hostedEngine">Hosted Engine</option>
-                      <option value="sanlock">Hosted Engine Sanlock</option>
-                      <option value="metadata">Hosted Engine Metadata</option>
-                      <option value="conf">Hosted Engine Conf.</option>
-                    </select>
+                    <button className="content_header_popup_btn" onClick={togglePopup}>
+                      <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
+                      {isPopupOpen && (
+                          <div className="content_header_popup">
+                            <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(); }}>활성</div>
+                            <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>비활성화</div>
+                            <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>이동</div>
+                            <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>LUN 새로고침</div>
+                          </div>
+                        )}
+                    </button>
                   </div>
                 </div>
+
+
+
+       
 
                 {activeDiskType === 'all' && (
                   <TableOuter 
@@ -272,10 +304,7 @@ const VmDisk = () => {
                       <input type="checkbox" id="read_only" />
                       <label htmlFor="read_only">읽기전용</label>
                     </div>
-                    <div>
-                      <input type="checkbox" id="snapshot_activation" />
-                      <label htmlFor="snapshot_activation">취소 활성화</label>
-                    </div>
+                  
                     <div>
                       <input type="checkbox" id="incremental_backup" defaultChecked />
                       <label htmlFor="incremental_backup">중복 백업 사용</label>
@@ -381,7 +410,53 @@ const VmDisk = () => {
           </div>
             {/* 이미지 테이블 */}
             {activeTab === 'img' && (
-              <TableOuter columns={imageDiskColumns} data={imageDiskData} />
+              <div className="section_table_outer">
+                <table >
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>별칭</th>
+                      <th>설명</th>
+                      <th>ID</th>
+                      <th>가상 크기</th>
+                      <th>실제 크기</th>
+                      <th>스토리지 도메인</th>
+                      <th>인터페이스</th>
+                      <th>R/O</th>
+                      <th>icon</th>
+                      <th>icon</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <input type='checkbox'/>
+                      </td>
+                      <td>#</td>
+                      <td>#</td>
+                      <td>#</td>
+                      <td>#</td>
+                      <td>#</td>
+                      <td>#</td>
+                      <td>
+                        <select>
+                          <option>NFS (499 GiB)</option>
+                          <option>Option 2</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input type='checkbox'/>
+                      </td>
+                      <td>
+                        <FontAwesomeIcon icon={faChevronCircleRight} fixedWidth />
+                      </td>
+                      <td>
+                        <FontAwesomeIcon icon={faChevronCircleRight} fixedWidth />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             )}
 
             {/* LUN 테이블 */}
@@ -471,18 +546,32 @@ const VmDisk = () => {
                   </div>
                   <div className="disk_new_img_right">
                     <div>
+                      <input type="checkbox" id="disk_activation" defaultChecked />
+                      <label htmlFor="disk_activation">디스크 활성화</label>
+                    </div>
+                    <div>
                       <input type="checkbox" id="reset_after_deletion" />
                       <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
                     </div>
                     <div>
-                      <input type="checkbox" className="shareable" />
+                      <input type="checkbox" id="bootable" disabled/>
+                      <label htmlFor="bootable">부팅 가능</label>
+                    </div>
+                    <div>
+                      <input type="checkbox" id="shareable" />
                       <label htmlFor="shareable">공유 가능</label>
                     </div>
+                    <div>
+                      <input type="checkbox" id="read_only" />
+                      <label htmlFor="read_only">읽기전용</label>
+                    </div>
+                    
                     <div>
                       <input type="checkbox" id="incremental_backup" defaultChecked />
                       <label htmlFor="incremental_backup">중복 백업 사용</label>
                     </div>
-                  </div>
+
+                    </div>
                 </div>
               )}
               {/*직접LUN*/}

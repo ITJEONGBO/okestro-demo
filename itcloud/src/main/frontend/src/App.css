@@ -711,6 +711,7 @@ input[type="text"]:focus {
 .disk_type{
     display:flex;
     font-size: 0.35rem;
+    justify-content: space-between;
 }
 .disk_type>div{
     display: flex;
@@ -721,7 +722,9 @@ input[type="text"]:focus {
     display:block;
     margin-right:0.2rem;
 }
-
+.disk_type .header_right_btns{
+    margin-bottom:0;
+}
 .content_type>div{
     padding: 0.1rem;
     cursor:pointer;

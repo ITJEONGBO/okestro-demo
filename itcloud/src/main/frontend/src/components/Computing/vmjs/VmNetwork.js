@@ -1,6 +1,6 @@
 import React, { useState, useEffect ,useParams} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faArrowCircleUp, faChevronRight, faPlug, faTimes } from  '@fortawesome/free-solid-svg-icons'
+import {faArrowCircleUp, faChevronRight, faGlassWhiskey, faPlug, faTimes } from  '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-modal';
 
 
@@ -128,12 +128,12 @@ const VmNetwork = () => {
                             <div className="radio_outer">
                                 <div>
                                     <input type="radio" name="status" id="status_up" checked/>
-                                    <img src=".//img/스크린샷 2024-05-24 150455.png" alt="status_up"/>
+                                    <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>
                                     <label htmlFor="status_up">Up</label>
                                 </div>
                                 <div>
                                     <input type="radio" name="status" id="status_down"/>
-                                    <img src=".//img/Down.png" alt="status_down"/>
+                                    <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>
                                     <label htmlFor="status_down">Down</label>
                                 </div>
                             </div>
@@ -145,12 +145,12 @@ const VmNetwork = () => {
                             <div className="radio_outer">
                                 <div>
                                     <input type="radio" name="connection_status" id="connected" checked/>
-                                    <img src=".//img/연결됨.png" alt="connected"/>
+                                    <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>
                                     <label htmlFor="connected">연결됨</label>
                                 </div>
                                 <div>
                                     <input type="radio" name="connection_status" id="disconnected"/>
-                                    <img src=".//img/분리.png" alt="disconnected"/>
+                                    <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>
                                     <label htmlFor="disconnected">분리</label>
                                 </div>
                             </div>

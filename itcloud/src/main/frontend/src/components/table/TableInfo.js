@@ -532,7 +532,7 @@ const TableInfo = {
   ],
 
   EVENTS: [
-    { header: '알림', accessor: 'point', clickable: false },
+    { header: '알림', accessor: 'severity', clickable: false },
     { header: '시간', accessor: 'time', clickable: false },
     { header: '메세지', accessor: 'description', clickable: false },
     { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },

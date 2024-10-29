@@ -73,13 +73,7 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
   }, [])
   */
   const sectionHeaderButtons = [
-    { id: 'storage_disk_new_btn', label: '새로 만들기', onClick: () => openPopup('newDisk') },
-    { id: 'disk_edit_btn', label: '수정', onClick: () => openPopup('disk_edit') },
-    { id: 'storage_delete_btn', label: '제거', onClick: () => openPopup('delete') },
-    { id: 'move_btn', label: '이동', onClick: () => openPopup('move') },
-    { id: 'copy_btn', label: '복사', onClick: () => openPopup('copy') },
-    { id: 'storage_disk_upload', label: '업로드', onClick: () => openPopup('uploadDisk') },
-    { id: 'disabled_download_btn', label: '다운로드', disabled: true },
+
   ];
   
   const pathData = ['스토리지','디스크'];
@@ -121,7 +115,7 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
         titleIcon={faDatabase}
         title="스토리지"
         subtitle=""
-        buttons={sectionHeaderButtons} 
+        buttons={[]} 
         popupItems={[]} 
         togglePopup={() => {}}
       />
@@ -129,27 +123,40 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
        <Path pathElements={pathData} />
        <>
                 <div className="disk_type">
+
                   <div>
-                    <span>디스크유형 : </span>
                     <div className='flex'>
-                      <button className={activeDiskType === 'all' ? 'active' : ''} onClick={() => handleDiskTypeClick('all')}>모두</button>
-                      <button className={activeDiskType === 'image' ? 'active' : ''} onClick={() => handleDiskTypeClick('image')}>이미지</button>
-                      <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
+                      <span>디스크유형 : </span>
+                      <div className='flex'>
+                        <button className={activeDiskType === 'all' ? 'active' : ''} onClick={() => handleDiskTypeClick('all')}>모두</button>
+                        <button className={activeDiskType === 'image' ? 'active' : ''} onClick={() => handleDiskTypeClick('image')}>이미지</button>
+                        <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
+                      </div>
+                    </div>
+                    <div className="content_type">
+                      <label className='mr-1' htmlFor="contentType">컨텐츠 유형:</label>
+                      <select id="contentType" value={activeContentType} onChange={handleContentTypeChange}>
+                        <option value="all">모두</option>
+                        <option value="data">데이터</option>
+                        <option value="ovfStore">OVF 스토어</option>
+                        <option value="memoryDump">메모리 덤프</option>
+                        <option value="iso">ISO</option>
+                        <option value="hostedEngine">Hosted Engine</option>
+                        <option value="sanlock">Hosted Engine Sanlock</option>
+                        <option value="metadata">Hosted Engine Metadata</option>
+                        <option value="conf">Hosted Engine Conf.</option>
+                      </select>
                     </div>
                   </div>
-                  <div className="content_type">
-                    <label className='mr-1' htmlFor="contentType">컨텐츠 유형:</label>
-                    <select id="contentType" value={activeContentType} onChange={handleContentTypeChange}>
-                      <option value="all">모두</option>
-                      <option value="data">데이터</option>
-                      <option value="ovfStore">OVF 스토어</option>
-                      <option value="memoryDump">메모리 덤프</option>
-                      <option value="iso">ISO</option>
-                      <option value="hostedEngine">Hosted Engine</option>
-                      <option value="sanlock">Hosted Engine Sanlock</option>
-                      <option value="metadata">Hosted Engine Metadata</option>
-                      <option value="conf">Hosted Engine Conf.</option>
-                    </select>
+
+                  <div className="header_right_btns">
+                    <button onClick={() => openPopup('newDisk')}>새로 만들기</button>
+                    <button onClick={() => openPopup('disk_edit')}>수정</button>
+                    <button onClick={() => openPopup('delete')}>제거</button>
+                    <button onClick={() => openPopup('move')}>이동</button>
+                    <button onClick={() => openPopup('copy')}>복사</button>
+                    <button onClick={() => openPopup('uploadDisk')}>업로드</button>
+                    <button disabled>다운로드</button>
                   </div>
                 </div>
 

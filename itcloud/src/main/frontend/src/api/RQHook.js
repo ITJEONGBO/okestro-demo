@@ -425,7 +425,7 @@ export const useLogicalFromCluster = (clusterId, mapPredicate) => useQuery({
   queryKey: ['logicalFromCluster', clusterId], 
   queryFn: async () => {
     console.log(`useLogicalFromCluster ... ${clusterId}`);
-    const res = await ApiManager.findLogicalFromCluster(clusterId); 
+    const res = await ApiManager.findNetworksFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
@@ -444,10 +444,14 @@ export const useHostFromCluster = (clusterId, mapPredicate) => useQuery({
   queryKey: ['hostsFromCluster', clusterId], 
   queryFn: async () => {
     console.log(`useHostFromCluster ... ${clusterId}`);
-    const res = await ApiManager.findHostFromCluster(clusterId); 
+    const res = await ApiManager.findHostsFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!clusterId, 
+  staleTime: 0,
+  cacheTime: 0,
 })
+
 /**
  * @name useVMFromCluster
  * @description 클러스터 내 가상머신 목록조회 useQuery훅
@@ -463,7 +467,7 @@ export const useVMFromCluster = (clusterId, mapPredicate) => useQuery({
   queryKey: ['vmsFromCluster', clusterId], 
   queryFn: async () => {
     console.log(`useVMFromCluster ... ${clusterId}`);
-    const res = await ApiManager.findVMFromCluster(clusterId); 
+    const res = await ApiManager.findVMsFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
@@ -501,9 +505,12 @@ export const useEventFromCluster = (clusterId, mapPredicate) => useQuery({
   queryKey: ['eventsFromCluster', clusterId], 
   queryFn: async () => {
     console.log(`useEventFromCluster ... ${clusterId}`);
-    const res = await ApiManager.findEventFromCluster(clusterId); 
+    const res = await ApiManager.findEventsFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!clusterId, 
+  staleTime: 0,
+  cacheTime: 0,
 })
 
 /**
