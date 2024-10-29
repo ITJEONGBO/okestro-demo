@@ -32,7 +32,6 @@ const TableInfo = {
     { header: '호스트 수', accessor: 'hostCnt', clickable: false },
     { header: '가상 머신 수', accessor: 'vmCnt', clickable: false },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '호환 버전', accessor: 'version', clickable: false },
   ],
   // 호스트 HOSTS
   // 가상머신 VMS

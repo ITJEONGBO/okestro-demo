@@ -175,9 +175,6 @@ fun List<Cluster>.toClustersMenu(conn: Connection): List<ClusterVo> =
 
 
 fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
-	val dataCenter: DataCenter? =
-		conn.findDataCenter(this@toClusterInfo.dataCenter().id()).getOrNull()
-
 	return ClusterVo.builder {
 		id { this@toClusterInfo.id() }
 		name { this@toClusterInfo.name() }
@@ -194,7 +191,7 @@ fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
 		migrationPolicy { this@toClusterInfo.migration().autoConverge() }
 		bandwidth { this@toClusterInfo.migration().bandwidth().assignmentMethod() }
 		version { this@toClusterInfo.version().major().toString() + "." + this@toClusterInfo.version().minor() }
-		datacenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+		datacenterVo { if(this@toClusterInfo.dataCenterPresent()) conn.findDataCenter(this@toClusterInfo.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() else null }
 		vmSize { this@toClusterInfo.findVmCntFromCluster(conn) }
 	}
 }

@@ -10,29 +10,16 @@ import { useAllClusters } from '../../../api/RQHook';
 
 const Clusters = () => {
     const navigate = useNavigate();
-  
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const [modals, setModals] = useState({ create: false, edit: false, delete: false });
     const [selectedCluster, setSelectedCluster] = useState(null);
 
-    const openCreateModal = () => {
-        setSelectedCluster(null); // No data for create mode
-        setIsCreateModalOpen(true);
+    const toggleModal = (type, isOpen) => {
+      setModals((prev) => ({ ...prev, [type]: isOpen }));
     };
-    const closeCreateModal = () => setIsCreateModalOpen(false);
 
-    const openEditModal = (cluster) => {
-        setSelectedCluster(cluster); // Set data for edit mode
-        setIsEditModalOpen(true);
-    };
-    const closeEditModal = () => setIsEditModalOpen(false);
-
-    const openDeleteModal = () => setIsDeleteModalOpen(true);
-    const closeDeleteModal = () => setIsDeleteModalOpen(false);
-
-    const handleNameClick = (name) => {
-        navigate(`/computing/clusters/${name}`);
+    const handleNameClick = (id) => {
+        navigate(`/computing/clusters/${id}`);
     };
 
   const { 
@@ -51,41 +38,33 @@ const Clusters = () => {
     }
   });
 
-//   const handleRowClick = (row, column) => {
-//     if (column.accessor === 'name') { // 이름 컬럼일 때만 네비게이션
-//         navigate(
-//           `/computing/clusters/${row.id}`,
-//           { state: { name: row.name } }
-//         );
-//       }
-//     };
-
   return (
     <>
-    <div className="header_right_btns">
-        <button onClick= {openCreateModal}>새로 만들기</button>
-        <button onClick= {() =>openEditModal(selectedCluster)}>편집</button>
-        <button onClick= {openDeleteModal}>제거</button>
-    </div>
+      <div className="header_right_btns">
+        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
+        <button onClick={() => selectedCluster?.id && toggleModal('edit', true)}>편집</button>
+        <button onClick={() => selectedCluster?.id && toggleModal('delete', true)}>제거</button>
+      </div>
+      <span>id = {selectedCluster?.id || ''}</span>
 
-    <TableOuter 
-        columns={TableInfo.CLUSTERS} 
-        data={clusters} 
-        shouldHighlight1stCol={true}
-        onRowClick={(row) => setSelectedCluster(row)}
-    />
-    <ClusterModal 
-        isOpen={isCreateModalOpen || isEditModalOpen}
-        onRequestClose={isCreateModalOpen ? closeCreateModal : closeEditModal}
-        editMode={isEditModalOpen}
-        data={selectedCluster}
-    />
-    <DeleteModal
-        isOpen={isDeleteModalOpen}
-        onRequestClose={closeDeleteModal}
+      <TableOuter 
+          columns={TableInfo.CLUSTERS} 
+          data={clusters} 
+          shouldHighlight1stCol={true}
+          onRowClick={setSelectedCluster}
+      />
+      <ClusterModal 
+          isOpen={modals.create || modals.edit}
+          onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+          editMode={modals.edit}
+          cId={selectedCluster?.id || null}
+      />
+      <DeleteModal
+        isOpen={modals.delete}
+        onRequestClose={() => toggleModal('delete', false)}
         contentLabel={'클러스터'}
-        data={selectedCluster}  // 삭제할 데이터 전달
-    />
+        data={selectedCluster}
+      />
     </>
   );
 };

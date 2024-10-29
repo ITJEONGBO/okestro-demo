@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import './css/MCluster.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import {
   useAddCluster, 
   useEditCluster, 
+  useCluster,
   useAllDataCenters, 
   useNetworksFromDataCenter
 } from '../../api/RQHook'
@@ -13,23 +15,19 @@ const ClusterModal = ({
   isOpen, 
   onRequestClose, 
   editMode = false, 
-  data = {} 
+  cId
 }) => {
-  console.log("ClusterModal ")
-  const [id, setId] = useState('');
-  const [datacenterVoId, setDatacenterVoId] = useState('');  
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [comment, setComment] = useState('');
-  const [networkVoId, setNetworkVoId] = useState('');  
-  const [cpuArc, setCpuArc] = useState('');
-  const [cpuType, setCpuType] = useState('');
-  const [biosType, setBiosType] = useState('');
-  const [errorHandling, setErrorHandling] = useState('');
+  // 클러스터
+  const {
+    data: cluster,
+    status: clusterStatus,
+    isRefetching: isClusterRefetching,
+    refetch: refetchCluster,
+    isError: isClusterError,
+    error: clusterError,
+    isLoading: isClusterrLoading
+  } = useCluster(cId);
   
-  const { mutate: addCluster } = useAddCluster();
-  const { mutate: editCluster } = useEditCluster();
-
   // 데이터센터
   const {
     data: datacenters,
@@ -54,42 +52,55 @@ const ClusterModal = ({
     isError: isNetworksError,
     error: networksError,
     isLoading: isNetworksLoading
-  } = useNetworksFromDataCenter(datacenterVoId, (e) => {
+  } = useNetworksFromDataCenter(cluster?.datacenterVo?.id, (e) => {
     return {
         ...e,
     }
-});
+  });
 
+  console.log("ClusterModal ")
+  const [id, setId] = useState('');
+  const [datacenterVoId, setDatacenterVoId] = useState('');  
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [comment, setComment] = useState('');
+  const [networkVoId, setNetworkVoId] = useState('');  
+  const [cpuArc, setCpuArc] = useState('');
+  const [cpuType, setCpuType] = useState('');
+  const [biosType, setBiosType] = useState('');
+  const [errorHandling, setErrorHandling] = useState('');
+  
+  const { mutate: addCluster } = useAddCluster();
+  const { mutate: editCluster } = useEditCluster();
 
   // 편집 모드일 때 기존 데이터를 불러와서 입력 필드에 채움
   useEffect(() => {
-    if (editMode && data) {
-      setId(data.id);
-      setDatacenterVoId(data.datacenterVo?.id);
-      setName(data.name);
-      setDescription(data.description);
-      setComment(data.comment);
-      setNetworkVoId(data.networkVo?.id);
-      setCpuArc(data.cpuArc);
-      setCpuType(data.cpuType);
-      setBiosType(data.biosType);
-      setErrorHandling(data.errorHandling);
+    if (editMode) {
+      setId(cluster.id);
+      setDatacenterVoId(cluster.datacenterVo?.id);
+      setName(cluster.name);
+      setDescription(cluster.description);
+      setComment(cluster.comment);
+      setNetworkVoId(cluster.networkVo?.id);
+      setCpuArc(cluster.cpuArc);
+      setCpuType(cluster.cpuType);
+      setBiosType(cluster.biosType);
+      setErrorHandling(cluster.errorHandling);
     } else{
       resetForm();
     }
-  }, [editMode, data]);
+  }, [editMode]);
   
-
   const resetForm = () => {
     setDatacenterVoId('')
     setName('');
     setDescription('');
     setComment('');
     setNetworkVoId('');
-    setCpuArc('undefined');
-    setCpuType('default');
-    setBiosType('cluster_default');
-    setErrorHandling('migrate');
+    setCpuArc('');
+    setCpuType('');
+    setBiosType('');
+    setErrorHandling('');
   };
 
   useEffect(() => {
@@ -120,13 +131,10 @@ const ClusterModal = ({
       },
       cpuArc,
       cpuType,
-      // cpu: {
-      //   architecture: cpuArc,
-      //   type: cpuType,
-      // },
       biosType,
       errorHandling
     };
+    
     console.log("Form Data: ", dataToSubmit);
 
     if (editMode) {
@@ -173,18 +181,17 @@ const ClusterModal = ({
           </button>
         </div>
 
-        <div className="network_new_nav">
+        <div className="cluster_new_content">
           <div>
             <input type="hidden" id="id" value={id} onChange={() => {}} /> {/* id는 읽기 전용이므로 onChange를 추가하지 않음 */}
           </div>
 
-          <div className="datacenter_new_content">
-          <label htmlFor="data_center">데이터 센터</label>
+          <div>
+            <label htmlFor="data_center">데이터 센터</label>
             <select
               id="data_center"
               value={datacenterVoId}
               onChange={(e) => setDatacenterVoId(e.target.value)}
-              disabled={isDatacentersLoading}
             >
               <option value="">선택</option>
               {datacenters &&
@@ -196,7 +203,8 @@ const ClusterModal = ({
             </select>
             <span>{datacenterVoId}</span>
           </div>
-          {/* 선 */}
+          <hr/>
+
           <div>
             <label htmlFor="name">이름</label>
               <input
@@ -206,7 +214,7 @@ const ClusterModal = ({
                 onChange={(e) => setName(e.target.value)}
               />
           </div>
-             
+
           <div>
             <label htmlFor="description">설명</label>
             <input
@@ -247,7 +255,7 @@ const ClusterModal = ({
           </div>
 
           <div>
-          <label htmlFor="cpuArc">CPU 아키텍처</label>
+            <label htmlFor="cpuArc">CPU 아키텍처</label>
             <select
               id="cpuArc"
               value={cpuArc}
@@ -274,7 +282,7 @@ const ClusterModal = ({
           </div>
           
           <div>
-          <label htmlFor="biosType">칩셋/펌웨어 유형</label>
+            <label htmlFor="biosType">칩셋/펌웨어 유형</label>
             <select
               id="biosType"
               value={biosType}
