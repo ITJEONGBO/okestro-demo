@@ -12,10 +12,9 @@ import Hosts from './Hosts';
 import Info from './Rutil/Info';
 
 function RutilManager() {
-    const { id, section } = useParams();
+    const {section } = useParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('info')
-    const [selectedTab, setSelectedTab] = useState('info');
 
     useEffect(() => {
         if (!section) {
@@ -25,16 +24,15 @@ function RutilManager() {
         }
       }, [section]); 
 
-    const handleTabClick = (tab) => {
-        if (tab == 'info') {
+      const handleTabClick = (tab) => {
+        if (tab === 'info') {
             navigate(`/computing/rutil-manager`);
-        }else{
+        } else {
             navigate(`/computing/rutil-manager/${tab}`);
-        }        
+        }
         setActiveTab(tab);
-        setSelectedTab(tab);
     };
-    
+
 
     // Header와 Sidebar에 쓰일 섹션과 버튼 정보
     const sections = [

@@ -103,8 +103,8 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/computing/rutil-manager" element={<RutilManager />} />
-              <Route path="/computing/rutil-manager/dataCenters" element={<DataCenters />} />
-              <Route path="/computing/rutil-manager/clusters" element={<Clusters />} />
+              <Route path="/computing/rutil-manager/:section" element={<RutilManager />} />
+
 
               {/* <Route path="/computing/datacenters" element={<Computing />} /> */}
               {/* <Route path="/computing/datacenters" element={<DataCenters />} /> */}
