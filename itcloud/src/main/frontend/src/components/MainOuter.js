@@ -47,7 +47,7 @@ const MainOuter = ({ children }) => {
   const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
   const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
   const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
-  const [isSecondVisible, setIsSecondVisible] = useState(false);
+
   const [isThirdVisible, setIsThirdVisible] = useState(false);
   const [isFourthVisible, setIsFourthVisible] = useState(false);
   const [isLastVisible, setIsLastVisible] = useState(false);
@@ -87,7 +87,17 @@ const MainOuter = ({ children }) => {
       };
       
    
-      
+      const handleToggleSecondVisible = (e) => {
+        e.stopPropagation();
+        setIsSecondVisible(!isSecondVisible);
+      };
+    
+      const handleRutilManagerClick = () => {
+        if (selectedDiv !== 'rutil-manager') {
+          setSelectedDiv('rutil-manager');
+          navigate('/computing/rutil-manager');
+        }
+      };
       useEffect(() => {
         const path = location.pathname;
         const pathParts = path.split('/'); // 경로를 "/"로 나누기
@@ -167,11 +177,64 @@ const {
  }, [navStorageDomainsRefetch]);
  
   
-
-
-
+// 새로고침해도 섹션유지-----------------------------
+const [isSecondVisible, setIsSecondVisible] = useState(
+    JSON.parse(localStorage.getItem('isSecondVisible')) || false
+  );
+  const [openDataCenters, setOpenDataCenters] = useState(() => 
+    JSON.parse(localStorage.getItem('openDataCenters')) || {}
+  );
+  const [openClusters, setOpenClusters] = useState(() => 
+    JSON.parse(localStorage.getItem('openClusters')) || {}
+  );
+  const [openHosts, setOpenHosts] = useState(() => 
+    JSON.parse(localStorage.getItem('openHosts')) || {}
+  );
   
+  // 상태가 변경될 때마다 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('isSecondVisible', JSON.stringify(isSecondVisible));
+  }, [isSecondVisible]);
   
+  useEffect(() => {
+    localStorage.setItem('openDataCenters', JSON.stringify(openDataCenters));
+  }, [openDataCenters]);
+  
+  useEffect(() => {
+    localStorage.setItem('openClusters', JSON.stringify(openClusters));
+  }, [openClusters]);
+  
+  useEffect(() => {
+    localStorage.setItem('openHosts', JSON.stringify(openHosts));
+  }, [openHosts]);
+
+// 열림/닫힘 상태 변경 함수
+const toggleDataCenter = (dataCenterId) => {
+    setOpenDataCenters(prevState => ({
+      ...prevState,
+      [dataCenterId]: !prevState[dataCenterId]
+    }));
+  };
+  
+  const toggleCluster = (clusterId) => {
+    setOpenClusters(prevState => ({
+      ...prevState,
+      [clusterId]: !prevState[clusterId]
+    }));
+  };
+  
+  const toggleHost = (hostId) => {
+    setOpenHosts(prevState => ({
+      ...prevState,
+      [hostId]: !prevState[hostId]
+    }));
+  };
+
+
+
+
+//-----------------------------
+
 
   useEffect(() => {
     window.addEventListener('resize', adjustFontSize);
@@ -222,39 +285,33 @@ const {
   const renderAsidePopup = (selected) => {
     return (
       <>
-        {/*가상머신 섹션*/} 
-        {selected === 'computing' && (
+{/*가상머신 섹션*/} 
+{selected === 'computing' && (
   <div id="virtual_machine_chart">
       {/* 첫 번째 레벨 (Rutil Manager) */}
       <div
-    className="aside_popup_content"
-    id="aside_popup_first"
-    style={{ backgroundColor: getBackgroundColor('rutil-manager') }}
-    onClick={() => {
-        if (selectedDiv !== 'rutil-manager') {
-            setSelectedDiv('rutil-manager');
-            navigate('/computing/rutil-manager');
-            setIsSecondVisible(false); // 모든 하위 섹션 접기
-            setIsSecondVisibleStorage(false);
-            setIsLastVisibleStorage(false);
-        }
-    }}
->
-    <FontAwesomeIcon
-        style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-        icon={isSecondVisible ? faChevronDown : faChevronRight}
-        onClick={(e) => {
-            e.stopPropagation();
-            setIsSecondVisible(!isSecondVisible);
-            setIsSecondVisibleStorage(false);
-            setIsLastVisibleStorage(false);
+        className="aside_popup_content"
+        id="aside_popup_first"
+        style={{ backgroundColor: getBackgroundColor('rutil-manager') }}
+        onClick={() => {
+            if (selectedDiv !== 'rutil-manager') {
+                setSelectedDiv('rutil-manager');
+                navigate('/computing/rutil-manager');
+            }
         }}
-        fixedWidth
-    />
-    <FontAwesomeIcon icon={faBuilding} fixedWidth />
-    <span>Rutil manager</span>
-</div>
-
+      >
+        <FontAwesomeIcon
+          style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+          icon={isSecondVisible ? faChevronDown : faChevronRight}
+          onClick={(e) => {
+              e.stopPropagation();
+              setIsSecondVisible(!isSecondVisible); // Only toggles on icon click
+          }}
+          fixedWidth
+        />
+        <FontAwesomeIcon icon={faBuilding} fixedWidth />
+        <span>Rutil manager</span>
+      </div>
 
       {/* 두 번째 레벨 (Data Center) */}
       {isSecondVisible && navClusters && navClusters.map((dataCenter) => {
@@ -279,7 +336,7 @@ const {
                               icon={isDataCenterOpen ? faChevronDown : faChevronRight}
                               onClick={(e) => {
                                   e.stopPropagation();
-                                  toggleDataCenter(dataCenter.id); // Data Center 열림/닫힘 토글
+                                  toggleDataCenter(dataCenter.id); // Only toggles on icon click
                               }}
                               fixedWidth
                           />
@@ -311,7 +368,7 @@ const {
                                           icon={isClusterOpen ? faChevronDown : faChevronRight}
                                           onClick={(e) => {
                                               e.stopPropagation();
-                                              toggleCluster(cluster.id); // Cluster 열림/닫힘 토글
+                                              toggleCluster(cluster.id); // Only toggles on icon click
                                           }}
                                           fixedWidth
                                       />
@@ -319,8 +376,7 @@ const {
                                   <FontAwesomeIcon icon={faEarthAmericas} fixedWidth />
                                   <span>{cluster.name}</span>
                               </div>
-          
-                            
+
                               {/* 네 번째 레벨 (Hosts) */}
                               {isClusterOpen && Array.isArray(cluster.hosts) && cluster.hosts.map((host) => {
                                   const isHostOpen = openHosts[host.id] || false;
@@ -338,17 +394,17 @@ const {
                                                   navigate(`/computing/hosts/${host.id}`);
                                               }}
                                           >
-                                             {hasVMs && (
-                                                <FontAwesomeIcon
-                                                    style={{ fontSize: '0.3rem', marginRight: '0.04rem'}}
-                                                    icon={isHostOpen ? faChevronDown : faChevronRight}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        toggleHost(host.id); // Host 열림/닫힘 토글
-                                                    }}
-                                                    fixedWidth
-                                                />
-                                            )}
+                                              {hasVMs && (
+                                                  <FontAwesomeIcon
+                                                      style={{ fontSize: '0.3rem', marginRight: '0.04rem'}}
+                                                      icon={isHostOpen ? faChevronDown : faChevronRight}
+                                                      onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          toggleHost(host.id); // Only toggles on icon click
+                                                      }}
+                                                      fixedWidth
+                                                  />
+                                              )}
                                               <FontAwesomeIcon icon={faUser} fixedWidth />
                                               <span>{host.name}</span>
                                           </div>
@@ -375,39 +431,36 @@ const {
                                   );
                               })}
                               
-                            {/* vmDowns 정보 추가 */}
-                            {isClusterOpen && Array.isArray(cluster.vmDowns) && cluster.vmDowns.map((vmDown) => (
-                                <div
-                                    key={vmDown.id}
-                                    className="aside_popup_fourth_content " // vmDown을 위한 추가 스타일
-                                    style={{
-                                        paddingLeft: '1.2rem'
-                                    }}
-                                    onClick={() => {
-                                        setSelectedDiv(vmDown.id);
-                                        navigate(`/computing/vmDowns/${vmDown.id}`);
-                                    }}
-                                >
-                                    <div style={{ position: 'relative', display: 'inline-block' }}>
-                                        {/* 첫 번째 아이콘 */}
-                                        <FontAwesomeIcon icon={faMicrochip} fixedWidth />
-                                        
-                                        {/* 두 번째 아이콘 - 겹쳐서 위치 조정 */}
-                                        <FontAwesomeIcon 
-                                            icon={faSquare} 
-                                            fixedWidth 
-                                            style={{ 
-                                            position: 'absolute', 
-                                            bottom: '4', // 원하는 위치로 조정
-                                            right: '0', // 원하는 위치로 조정
-                                            fontSize: '0.5em', // 크기 조정 가능
-                                            color: 'rgb(200 0 0)' // 색상 조정 가능
-                                            }} 
-                                        />
-                                        </div>
-                                    <span>{vmDown.name}</span>
-                                </div>
-                            ))}
+                              {/* vmDowns 정보 추가 */}
+                              {isClusterOpen && Array.isArray(cluster.vmDowns) && cluster.vmDowns.map((vmDown) => (
+                                  <div
+                                      key={vmDown.id}
+                                      className="aside_popup_fourth_content" 
+                                      style={{
+                                          paddingLeft: '1.2rem'
+                                      }}
+                                      onClick={() => {
+                                          setSelectedDiv(vmDown.id);
+                                          navigate(`/computing/vmDowns/${vmDown.id}`);
+                                      }}
+                                  >
+                                      <div style={{ position: 'relative', display: 'inline-block' }}>
+                                          <FontAwesomeIcon icon={faMicrochip} fixedWidth />
+                                          <FontAwesomeIcon 
+                                              icon={faSquare} 
+                                              fixedWidth 
+                                              style={{ 
+                                              position: 'absolute', 
+                                              bottom: '4', 
+                                              right: '0', 
+                                              fontSize: '0.5em', 
+                                              color: 'rgb(200 0 0)' 
+                                              }} 
+                                          />
+                                      </div>
+                                      <span>{vmDown.name}</span>
+                                  </div>
+                              ))}
                           </div>
                       );
                   })}
@@ -415,211 +468,189 @@ const {
           );
       })}
   </div>
-        )}
-        {/* 네트워크 섹션 */}
-        {selected === 'network' && (
-          <div id="network_chart">
-              {/* 첫 번째 레벨 (Rutil Manager) */}
-              <div
-                  className="aside_popup_content"
-                  id="aside_popup_first"
-                  style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
-                  onClick={() => {
-                      setSelectedDiv('rutil-manager');
-                      navigate('/computing/rutil-manager');
-                  }}
-              >
-                  <FontAwesomeIcon
-                      style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-                      icon={openDataCenters.network ? faChevronDown : faChevronRight}
-                      onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenDataCenters((prev) => ({ ...prev, network: !prev.network })); // 2단계 열림/닫힘 토글
+)}
+
+{/* 네트워크 섹션 */}
+{selected === 'network' && (
+  <div id="network_chart">
+      {/* 첫 번째 레벨 (Rutil Manager) */}
+      <div
+          className="aside_popup_content"
+          id="aside_popup_first"
+          style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
+          onClick={() => {
+              setSelectedDiv('rutil-manager');
+              navigate('/computing/rutil-manager');
+          }}
+      >
+          <FontAwesomeIcon
+              style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+              icon={openDataCenters.network ? faChevronDown : faChevronRight}
+              onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenDataCenters((prev) => ({ ...prev, network: !prev.network })); // Toggle only on icon click
+              }}
+              fixedWidth
+          />
+          <FontAwesomeIcon icon={faBuilding} fixedWidth />
+          <span>Rutil manager</span>
+      </div>
+
+      {/* 두 번째 레벨 (Data Center) */}
+      {openDataCenters.network && navNetworks && navNetworks.map((dataCenter) => {
+          const hasNetworks = Array.isArray(dataCenter.networks) && dataCenter.networks.length > 0;
+          return (
+              <div key={dataCenter.id}>
+                  <div
+                      className="aside_popup_second_content"
+                      style={{ 
+                          backgroundColor: getBackgroundColor(dataCenter.id),
+                          paddingLeft: hasNetworks ? '0.4rem' : '0.8rem'
                       }}
-                      fixedWidth
-                  />
-                  <FontAwesomeIcon icon={faBuilding} fixedWidth />
-                  <span>Rutil manager</span>
+                      onClick={() => {
+                          setSelectedDiv(dataCenter.id);
+                          navigate(`/computing/datacenters/${dataCenter.id}`);
+                      }}
+                  >
+                      {hasNetworks && (
+                          <FontAwesomeIcon
+                              style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+                              icon={openDataCenters[dataCenter.id] ? faChevronDown : faChevronRight}
+                              onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleDataCenter(dataCenter.id);
+                              }}
+                              fixedWidth
+                          />
+                      )}
+                      <FontAwesomeIcon icon={faLayerGroup} fixedWidth />
+                      <span>{dataCenter.name}</span>
+                  </div>
+
+                  {/* 세 번째 레벨 (Networks) */}
+                  {openDataCenters[dataCenter.id] && hasNetworks && dataCenter.networks.map((network) => (
+                      <div
+                          key={network.id}
+                          className="aside_popup_third_content"
+                          style={{ 
+                              backgroundColor: getBackgroundColor(network.id),
+                              paddingLeft: '1rem' 
+                          }}
+                          onClick={() => {
+                              setSelectedDiv(network.id);
+                              navigate(`/networks/${network.id}`);
+                          }}
+                      >
+                          <FontAwesomeIcon icon={faFileEdit} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth />
+                          <span>{network.name}</span>
+                      </div>
+                  ))}
               </div>
-  
-              {/* 두 번째 레벨 (Data Center) */}
-              {openDataCenters.network && navNetworks && navNetworks.map((dataCenter) => {
-                  const hasNetworks = Array.isArray(dataCenter.networks) && dataCenter.networks.length > 0; // 네트워크 여부
-                  return (
-                      <div key={dataCenter.id}>
-                          <div
-                              className="aside_popup_second_content"
-                              style={{ 
-                                  backgroundColor: getBackgroundColor(dataCenter.id),
-                                  paddingLeft: hasNetworks ? '0.4rem' : '0.8rem'
+          );
+      })}
+  </div>
+)}
+
+{/* 스토리지 섹션 */} 
+{selected === 'storage' && (
+  <div id="storage_chart">
+      {/* 첫 번째 레벨 (Rutil Manager) */}
+      <div
+          className="aside_popup_content"
+          id="aside_popup_first"
+          style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
+          onClick={() => {
+              if (selectedDiv !== 'rutil-manager') {
+                  setSelectedDiv('rutil-manager');
+                  navigate('/computing/rutil-manager');
+              }
+          }}
+      >
+          <FontAwesomeIcon
+              style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+              icon={isSecondVisible ? faChevronDown : faChevronRight}
+              onClick={(e) => {
+                  e.stopPropagation();
+                  setIsSecondVisible(!isSecondVisible); // Toggle only on icon click
+              }}
+              fixedWidth
+          />
+          <FontAwesomeIcon icon={faBuilding} fixedWidth />
+          <span>Rutil manager</span>
+      </div>
+
+      {/* 두 번째 레벨 (Data Center) */}
+      {isSecondVisible && navStorageDomains && navStorageDomains.map((dataCenter) => {
+          const isDataCenterOpen = openDataCenters[dataCenter.id] || false;
+          const hasDomains = Array.isArray(dataCenter.storageDomains) && dataCenter.storageDomains.length > 0;
+          return (
+              <div key={dataCenter.id}>
+                  <div
+                      className="aside_popup_second_content"
+                      style={{
+                          backgroundColor: getBackgroundColor(dataCenter.id),
+                          paddingLeft: hasDomains ? '0.4rem' : '0.8rem'
+                      }}
+                      onClick={() => {
+                          setSelectedDiv(dataCenter.id);
+                          navigate(`/computing/datacenters/${dataCenter.id}`);
+                      }}
+                  >
+                      {hasDomains && (
+                          <FontAwesomeIcon
+                              style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+                              icon={isDataCenterOpen ? faChevronDown : faChevronRight}
+                              onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleDataCenter(dataCenter.id);
                               }}
-                              onClick={() => {
-                                  setSelectedDiv(dataCenter.id);
-                                  navigate(`/computing/datacenters/${dataCenter.id}`);
-                              }}
-                          >
-                              {hasNetworks && (
-                                  <FontAwesomeIcon
-                                      style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-                                      icon={openDataCenters[dataCenter.id] ? faChevronDown : faChevronRight}
-                                      onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleDataCenter(dataCenter.id);
-                                      }}
-                                      fixedWidth
-                                  />
-                              )}
-                              <FontAwesomeIcon icon={faLayerGroup} fixedWidth />
-                              <span>{dataCenter.name}</span>
-                          </div>
-  
-                          {/* 세 번째 레벨 (Networks) */}
-                          {openDataCenters[dataCenter.id] && hasNetworks && dataCenter.networks.map((network) => (
+                              fixedWidth
+                          />
+                      )}
+                      <FontAwesomeIcon icon={faLayerGroup} fixedWidth />
+                      <span>{dataCenter.name}</span>
+                  </div>
+
+                  {/* 세 번째 레벨 (Storage Domains) */}
+                  {isDataCenterOpen && Array.isArray(dataCenter.storageDomains) && dataCenter.storageDomains.map((domain) => {
+                      const isDomainOpen = openDomains[domain.id] || false;
+                      const hasDisks = Array.isArray(domain.disks) && domain.disks.length > 0;
+                      return (
+                          <div key={domain.id}>
                               <div
-                                  key={network.id}
                                   className="aside_popup_third_content"
-                                  style={{ 
-                                      backgroundColor: getBackgroundColor(network.id),
-                                      paddingLeft: '1rem' 
+                                  style={{
+                                      backgroundColor: getBackgroundColor(domain.id),
+                                      paddingLeft: hasDisks ? '0.6rem' : '1rem'
                                   }}
                                   onClick={() => {
-                                      setSelectedDiv(network.id);
-                                      navigate(`/networks/${network.id}`);
+                                      setSelectedDiv(domain.id);
+                                      navigate(`/storages/domains/${domain.id}`);
                                   }}
                               >
-                                  <FontAwesomeIcon icon={faFileEdit} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth />
-                                  <span>{network.name}</span>
+                                  {hasDisks && (
+                                      <FontAwesomeIcon
+                                          style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+                                          icon={isDomainOpen ? faChevronDown : faChevronRight}
+                                          onClick={(e) => {
+                                              e.stopPropagation();
+                                              toggleDomain(domain.id);
+                                          }}
+                                          fixedWidth
+                                      />
+                                  )}
+                                  <FontAwesomeIcon icon={faCloud} fixedWidth />
+                                  <span>{domain.name}</span>
                               </div>
-                          ))}
-                      </div>
-                  );
-              })}
-          </div>
-        )}
-  
-        {/* 스토리지 섹션 */} 
-        {selected === 'storage' && (
-          <div id="storage_chart">
-              {/* 첫 번째 레벨 (Rutil Manager) */}
-              <div
-                  className="aside_popup_content"
-                  id="aside_popup_first"
-                  style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
-                  onClick={() => {
-                      if (selectedDiv !== 'rutil-manager') {
-                          setSelectedDiv('rutil-manager');
-                          navigate('/computing/rutil-manager');
-                          setIsSecondVisible(false); // 모든 하위 섹션 접기
-                          setIsSecondVisibleStorage(false);
-                          setIsLastVisibleStorage(false);
-                      }
-                  }}
-              >
-                  <FontAwesomeIcon
-                      style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-                      icon={isSecondVisible ? faChevronDown : faChevronRight}
-                      onClick={(e) => {
-                          e.stopPropagation();
-                          setIsSecondVisible(!isSecondVisible); // 2단계 열림/닫힘 토글
-                          setIsSecondVisibleStorage(false);
-                          setIsLastVisibleStorage(false);
-                      }}
-                      fixedWidth
-                  />
-                  <FontAwesomeIcon icon={faBuilding} fixedWidth />
-                  <span>Rutil manager</span>
-              </div>
-  
-              {/* 두 번째 레벨 (Data Center) */}
-              {isSecondVisible && navStorageDomains && navStorageDomains.map((dataCenter) => {
-                  const isDataCenterOpen = openDataCenters[dataCenter.id] || false;
-                  const hasDomains = Array.isArray(dataCenter.storageDomains) && dataCenter.storageDomains.length > 0;
-                  return (
-                      <div key={dataCenter.id}>
-                          <div
-                              className="aside_popup_second_content"
-                              style={{
-                                  backgroundColor: getBackgroundColor(dataCenter.id),
-                                  paddingLeft: hasDomains ? '0.4rem' : '0.8rem'
-                              }}
-                              onClick={() => {
-                                  setSelectedDiv(dataCenter.id);
-                                  navigate(`/computing/datacenters/${dataCenter.id}`);
-                              }}
-                          >
-                              {hasDomains && (
-                                  <FontAwesomeIcon
-                                      style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-                                      icon={isDataCenterOpen ? faChevronDown : faChevronRight}
-                                      onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleDataCenter(dataCenter.id); 
-                                      }}
-                                      fixedWidth
-                                  />
-                              )}
-                              <FontAwesomeIcon icon={faLayerGroup} fixedWidth />
-                              <span>{dataCenter.name}</span>
                           </div>
-  
-                          {/* 세 번째 레벨 (Storage Domains) */}
-                          {isDataCenterOpen && Array.isArray(dataCenter.storageDomains) && dataCenter.storageDomains.map((domain) => {
-                              const isDomainOpen = openDomains[domain.id] || false;
-                              const hasDisks = Array.isArray(domain.disks) && domain.disks.length > 0; 
-                              return (
-                                  <div key={domain.id}>
-                                      <div
-                                          className="aside_popup_third_content"
-                                          style={{
-                                            backgroundColor: getBackgroundColor(domain.id),
-                                              paddingLeft: hasDisks ? '0.6rem' : '1rem'
-                                          }}
-                                          onClick={() => {
-                                              setSelectedDiv(domain.id);
-                                              navigate(`/storages/domains/${domain.id}`);
-                                          }}
-                                      >
-                                          {hasDisks && ( 
-                                              <FontAwesomeIcon
-                                                  style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-                                                  icon={isDomainOpen ? faChevronDown : faChevronRight}
-                                                  onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      toggleDomain(domain.id); 
-                                                  }}
-                                                  fixedWidth
-                                              />
-                                          )}
-                                          <FontAwesomeIcon icon={faCloud} fixedWidth/>
-                                          <span>{domain.name}</span>
-                                      </div>
-  
-                                      {/* 네 번째 레벨 삭제예정 (Disks) */}
-                                      {/* {isDomainOpen && Array.isArray(domain.disks) && domain.disks.map((disk) => (
-                                          <div
-                                              key={disk.id}
-                                              className="aside_popup_fourth_content"
-                                              style={{
-                                                  backgroundColor: selectedDiv === disk.id ? 'rgb(218, 236, 245)' : '',
-                                                  paddingLeft: '1.5rem'
-                                              }}
-                                              onClick={() => {
-                                                  setSelectedDiv(disk.id);
-                                                  navigate(`/storages/disks/${disk.id}`);
-                                              }}
-                                          >
-                                              <FontAwesomeIcon icon={faHdd} fixedWidth/>
-                                              <span>{disk.name}</span>
-                                          </div>
-                                      ))} */}
-                                  </div>
-                              );
-                          })}
-                      </div>
-                  );
-              })}
-          </div>
-        )}
+                      );
+                  })}
+              </div>
+          );
+      })}
+  </div>
+)}
+
       </>
     );
   };
@@ -653,23 +684,7 @@ const {
   };
 
     // 데이터 센터 열림/닫힘 토글 함수
-  const [openDataCenters, setOpenDataCenters] =  useState(() => JSON.parse(localStorage.getItem('openDataCenters')) || {});
-  const toggleDataCenter = (dataCenterId) => {
-    setOpenDataCenters((prevState) => ({
-      ...prevState,
-      [dataCenterId]: !prevState[dataCenterId], // 해당 데이터 센터만 열림/닫힘 토글
-    }));
-  };
 
-  // 클러스터 
-  const [openClusters, setOpenClusters] = useState({})
-  const [openHosts, setOpenHosts] = useState({});
-  const toggleCluster = (id) => {
-      setOpenClusters((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-  const toggleHost = (id) => {
-      setOpenHosts((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
 
     const [openDomains, setOpenDomains] = useState({});
@@ -728,9 +743,6 @@ const getBackgroundColor = (id) => {
         setContextMenuVisible(false);
         setContextMenuTarget(null);
     };
-
-    
-
 
     const handleSettingIconClick = () => {
         navigate('/settings');

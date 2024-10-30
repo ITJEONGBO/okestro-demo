@@ -104,13 +104,20 @@
     width: 100%;
 }
 .bar>div{
-    width: 33%;
+    width: 33.3%;
 }
 .bar span{
     font-size: 0.36rem;
     text-align: center;
     font-weight: 600;
     display: block;
+    margin-bottom:0.2rem;
     width: 100%;
     padding: 0.1rem 0;
+}
+.grid_outer{
+    width: 100%;
+    height: 14.5vh;
+    justify-content: center;
+    display: flex;
 }

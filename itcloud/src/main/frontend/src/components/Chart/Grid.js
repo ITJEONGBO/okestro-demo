@@ -1,38 +1,58 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Grid.css';
 
 const Grid = ({ type, data = [] }) => {
   const [gridData, setGridData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setGridData(data);
+    // 데이터를 15개로 채움
+    const filledData = [...data];
+    while (filledData.length < 15) {
+      filledData.push({ id: `placeholder-${filledData.length}`, cpuPercent: null, memoryPercent: null, name: '' });
+    }
+    setGridData(filledData);
   }, [data]);
 
   const getBackgroundColor = (value) => {
-    if (value >= 0 && value <= 10) {
-      return '#f0f0f0';
-    } else if (value > 10 && value <= 30) {
-      return '#69DADB';
-    } else if (value > 30 && value <= 60) {
-      return '#1597E5';
-    } else if (value > 60 && value <= 75) {
-      return '#7C7DEA';
-    } else if (value > 75 && value <= 100) {
-      return '#FF4560';
-    }
+    if (value === null || value === 0) return 'rgb(219 242 255)';
+    if (value >= 0 && value <= 10) return 'rgb(255 231 163)';
+    if (value > 10 && value <= 30) return 'rgb(255 185 98)';
+    if (value > 30 && value <= 60) return '#fb9f2c';
+    if (value > 60 && value <= 75) return 'rgb(255 106 0)';
+    if (value > 75 && value <= 100) return 'rgb(255 97 120)';
     return 'white';
+  };
+
+  const handleClick = (id) => {
+    if (id && id.startsWith('placeholder')) return; // placeholder 클릭 방지
+    if (type === 'cpu') {
+      navigate(`/computing/vms/${id}`);
+    } else if (type === 'memory') {
+      navigate(`/computing/vms/${id}`);
+    } else {
+      navigate(`/storages/domains/${id}`);
+    }
   };
 
   return (
     <div className="grid-container">
-      {gridData.map((item) => (
+      {gridData.map((item, index) => (
         <div
-          key={item.id}
+          key={item.id || index}
           className="grid-item"
-          title={`${item.name}`}
-          style={{ backgroundColor: type === 'cpu' ? getBackgroundColor(item.cpuPercent) : getBackgroundColor(item.memoryPercent)}}
+          onClick={() => handleClick(item.id)}
+          title={item.name}
+          style={{
+            backgroundColor: type === 'cpu' ? getBackgroundColor(item.cpuPercent) : getBackgroundColor(item.memoryPercent),
+          }}
         >
-          <div className="percent">{type==='cpu' ? item.cpuPercent: item.memoryPercent}%</div>
+          {item.cpuPercent !== null && item.memoryPercent !== null ? (
+            <div className="percent">{type === 'cpu' ? item.cpuPercent : item.memoryPercent}%</div>
+          ) : (
+            <div className="percent placeholder" style={{ color: 'rgb(219 242 255)' }}>.</div>
+          )}
         </div>
       ))}
     </div>
@@ -40,34 +60,3 @@ const Grid = ({ type, data = [] }) => {
 };
 
 export default Grid;
-
-
-// const Grid = ({ type, data = [] }) => {
-//   const [gridData, setGridData] = useState([]);
-
-//   useEffect(() => {
-//     setGridData(data);
-//   }, [data]);
-
-//   return (
-//     <div className="grid-container">
-//       {gridData.map((item) => (
-//         <div
-//           key={item.id}
-//           className="grid-item"
-//           title={`Name: ${item.name}`}
-//           // title={`Name: ${item.name}, CPU Percent: ${item.cpuPercent}%, Memory Percent: ${item.memoryPercent}%, Network Percent: ${item.networkPercent}%`}
-//         >
-//           {/* <div className="item-name">{item.name}</div> */}
-          
-//           <div className="cpu-percent">{item.cpuPercent}%</div>
-//           {/* <div className="cpu-percent">CPU: {item.cpuPercent}%</div> */}
-//           {/* <div className="memory-percent">Memory: {item.memoryPercent}%</div>
-//           <div className="network-percent">Network: {item.networkPercent}%</div> */}
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default Grid;

@@ -39,7 +39,7 @@ const RadialBarChart =({ percentage }) => {
         track: {
           background: '#f0f0f0',
           strokeWidth: '100%', // 선 두께 설정
-          margin: 2, // 차트 간격 설정
+          margin: -3, // 차트 간격 설정
         },
         stroke: {
           lineCap: 'round', // 선의 끝 모양 설정

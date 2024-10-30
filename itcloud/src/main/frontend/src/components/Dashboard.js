@@ -243,17 +243,17 @@ const Dashboard = () => {
           <div>
             <span>CPU</span>
             {/* <div><HeatMapChart type={'cpu'} vmMetrics={vmMetric} /></div> */}
-            <div><Grid type={'cpu'} data={vmMetric}/></div>
+            <div className='grid_outer'><Grid type={'cpu'} data={vmMetric}/></div>
           </div>
           <div>
             <span>MEMORY</span>
             {/* <div><HeatMapChart vmMetrics={vmMetric} /></div> */}
-            <div><Grid data={vmMetric}/></div>
+            <div className='grid_outer'><Grid type={'memory'} data={vmMetric}/></div>
           </div>
           <div>
             <span>StorageDomain</span>
             {/* <div><HeatMapChart vmMetrics={vmMetric} /></div> */}
-            <div><Grid data={storageMetric}/></div>
+            <div className='grid_outer'><Grid data={storageMetric}/></div>
           </div>
         </div>
       </div> {/* 대시보드 section끝 */}
