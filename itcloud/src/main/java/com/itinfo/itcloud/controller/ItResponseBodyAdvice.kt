@@ -49,7 +49,7 @@ class ItResponseBodyAdvice: ResponseBodyAdvice<Any> {
 //		log.debug("{}", body)
 		return when(servletResponse.status) {
 			in 200 .. 299 -> {
-				log.info("... 성공")
+//				log.info("... 성공")
 				Res.safely<Any?> { body }
 			}
 			else -> {

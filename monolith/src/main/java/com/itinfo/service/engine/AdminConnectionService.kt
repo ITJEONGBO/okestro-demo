@@ -15,7 +15,7 @@ class AdminConnectionService {
 	@Autowired private lateinit var systemPropertiesService: SystemPropertiesService
 	fun getConnection(): Connection {
 		// TODO null 체크 할 수 있는 예외처리 필요
-		log.debug("getConnection ... ")
+//		log.debug("getConnection ... ")
 		val systemProperties = systemPropertiesService.retrieveSystemProperties()
 		var connection: Connection? = null
 		try {

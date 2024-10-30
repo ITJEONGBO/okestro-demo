@@ -25,6 +25,7 @@ const ClusterModal = ({
   const [networkVoId, setNetworkVoId] = useState('');  
   const [cpuArc, setCpuArc] = useState('');
   const [cpuType, setCpuType] = useState('');
+  const [cpuOptions, setCpuOptions] = useState([]);
   const [biosType, setBiosType] = useState('');
   const [errorHandling, setErrorHandling] = useState('');
   
@@ -64,11 +65,6 @@ const ClusterModal = ({
     ...e,
   }));
 
-  useEffect(() => {
-    console.log('클러스터 datacenterVoId:', datacenterVoId);
-    console.log('클러스터 networks:', networks);
-  }, [networks]);
-
   // 모달이 열릴 때 데이터 초기화
   useEffect(() => {
     if (editMode) {
@@ -87,17 +83,13 @@ const ClusterModal = ({
       if (datacenters && datacenters.length > 0) {
         setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본 선택
       }
-      // if (networks && networks.length > 0) {
-      //   setNetworkVoId(networks[0].id); // 첫 번째 네트워크를 기본 선택
-      // }
     }
   }, [editMode, cluster, datacenters]);
 
   // 데이터센터 선택 시 네트워크 업데이트
   useEffect(() => {
     if (datacenterVoId) {
-      // 네트워크 값을 먼저 초기화
-      setNetworkVoId('');
+      setNetworkVoId(''); // 네트워크 값을 먼저 초기화
   
       // 데이터센터가 선택되었을 때 네트워크를 다시 가져옴
       refetchNetworks({ datacenterId: datacenterVoId }).then((res) => {
@@ -119,6 +111,27 @@ const ClusterModal = ({
       }
     }
   }, [datacenters, editMode]);
+
+  useEffect(() => {
+    if (cpuArc === 'x86_64') {
+      setCpuOptions([
+        'Intel Nehalem Family', 
+        'b', 
+        'c'
+      ]);
+      setCpuType(''); // CPU 유형 초기화
+    } else if (cpuArc === 'ppc64') {
+      setCpuOptions([
+        'd', 
+        'g', 
+        'h'
+      ]);
+      setCpuType(''); // CPU 유형 초기화
+    } else if(cpuArc === 's390x') {
+      setCpuOptions([]);
+      setCpuType(''); // CPU 유형 초기화
+    }
+  }, [cpuArc]);
 
   const resetForm = () => {
     setDatacenterVoId('');
@@ -295,10 +308,14 @@ const ClusterModal = ({
               id="cpuType"
               value={cpuType}
               onChange={(e) => setCpuType(e.target.value)}
+              disabled={cpuOptions.length === 0}
             >
-              <option value="default">Default</option>
-              <option value="Intel Nehalem Family">Intel Nehalem Family</option>
-              {/* TODO CPU 유형 목록이 들어가야함 */}
+              {/* <option value="">선택</option> */}
+              {cpuOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
             </select>
           </div>
           

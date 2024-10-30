@@ -29,7 +29,7 @@ class SystemPropertyServiceImpl: ItSystemPropertiesService {
 		get() = BasicConfiguration.getInstance()
 
 	override fun findOne(): SystemPropertiesVo {
-		log.info("searchSystemProperties ... ")
+//		log.info("searchSystemProperties ... ")
 		return basicConf.systemProperties
 	}
 

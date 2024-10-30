@@ -541,7 +541,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_CLUSTER(clusterId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.DELETE_CLUSTER
+      data: clusterId
     });
   },
   //endregion: Cluster
