@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
 import TableInfo from '../../table/TableInfo';
-import TablesOuter from '../../table/TablesOuter';
 import HostModal from '../../Modal/HostModal'
 import DeleteModal from '../../Modal/DeleteModal';
 import { useAllHosts } from '../../../api/RQHook';
+import TableOuter from '../../table/TableOuter';
 
 const Hosts = () => {
     const navigate = useNavigate();
@@ -66,7 +66,7 @@ const Hosts = () => {
             <button onClick= {openDeleteModal}>제거</button>
         </div>
 
-        <TablesOuter
+        <TableOuter
             columns={TableInfo.HOSTS}
             data={hosts}
             shouldHighlight1stCol={true}

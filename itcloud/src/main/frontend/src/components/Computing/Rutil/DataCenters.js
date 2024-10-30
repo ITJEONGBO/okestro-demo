@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
 import TableInfo from '../../table/TableInfo';
-import TablesOuter from '../../table/TablesOuter';
 import DataCenterModal from '../../Modal/DataCenterModal';
 import DeleteModal from '../../Modal/DeleteModal';
 import { useAllDataCenters } from '../../../api/RQHook';
+import TableOuter from '../../table/TableOuter';
 
 const DataCenters = () => {
   const navigate = useNavigate();
@@ -38,12 +38,12 @@ const DataCenters = () => {
     <>
       <div className="header_right_btns">
         <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedDataCenter?.id && toggleModal('edit', true)}>편집</button>
-        <button onClick={() => selectedDataCenter?.id && toggleModal('delete', true)}>제거</button>
+        <button onClick={() => selectedDataCenter?.id && toggleModal('edit', true)} disabled={!selectedDataCenter?.id}>편집</button>
+        <button onClick={() => selectedDataCenter?.id && toggleModal('delete', true)} disabled={!selectedDataCenter?.id}>제거</button>
       </div>
       <span>id = {selectedDataCenter?.id || ''}</span>
 
-      <TablesOuter
+      <TableOuter
         columns={TableInfo.DATACENTERS}
         data={datacenters}
         shouldHighlight1stCol={true}

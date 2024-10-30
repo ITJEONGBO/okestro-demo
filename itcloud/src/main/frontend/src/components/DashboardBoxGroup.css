@@ -25,10 +25,7 @@
   padding: 0 10px;
   border-right: 1px solid #5e95a745;
 }
-.box:hover { 
-  background-color: #e9fbfc;
-  border-radius: 3px; 
-}
+
 .box > span {
   width:100%;
   font-size:0.4rem;

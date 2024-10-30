@@ -227,32 +227,34 @@ const {
   <div id="virtual_machine_chart">
       {/* 첫 번째 레벨 (Rutil Manager) */}
       <div
-          className="aside_popup_content"
-          id="aside_popup_first"
-          style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
-          onClick={() => {
-              if (selectedDiv !== 'rutil-manager') {
-                  setSelectedDiv('rutil-manager');
-                  navigate('/computing/rutil-manager');
-        
-              }
-          }}
-      >
-          <FontAwesomeIcon
-              style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-              icon={isSecondVisible ? faChevronDown : faChevronRight}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsSecondVisible(!isSecondVisible);
-                setIsThirdVisible(false); // 하위 항목들 모두 접기
-                setIsFourthVisible(false); // 하위 항목들 모두 접기
-                setIsLastVisible(false);   // 하위 항목들 모두 접기
-              }}
-              fixedWidth
-          />
-          <FontAwesomeIcon icon={faBuilding} fixedWidth />
-          <span>Rutil manager</span>
-      </div>
+    className="aside_popup_content"
+    id="aside_popup_first"
+    style={{ backgroundColor: getBackgroundColor('rutil-manager') }}
+    onClick={() => {
+        if (selectedDiv !== 'rutil-manager') {
+            setSelectedDiv('rutil-manager');
+            navigate('/computing/rutil-manager');
+            setIsSecondVisible(false); // 모든 하위 섹션 접기
+            setIsSecondVisibleStorage(false);
+            setIsLastVisibleStorage(false);
+        }
+    }}
+>
+    <FontAwesomeIcon
+        style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+        icon={isSecondVisible ? faChevronDown : faChevronRight}
+        onClick={(e) => {
+            e.stopPropagation();
+            setIsSecondVisible(!isSecondVisible);
+            setIsSecondVisibleStorage(false);
+            setIsLastVisibleStorage(false);
+        }}
+        fixedWidth
+    />
+    <FontAwesomeIcon icon={faBuilding} fixedWidth />
+    <span>Rutil manager</span>
+</div>
+
 
       {/* 두 번째 레벨 (Data Center) */}
       {isSecondVisible && navClusters && navClusters.map((dataCenter) => {
@@ -716,9 +718,10 @@ useEffect(() => {
 }, []);
 // id포함유무에 따라 배경색결정
 const getBackgroundColor = (id) => {
-    const path = location.pathname; 
+    const path = location.pathname;
     return path.includes(id) ? 'rgb(218, 236, 245)' : '';
 };
+
 
 
     const handleMainClick = () => {
