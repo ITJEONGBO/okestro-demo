@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
+import TableOuter from '../../table/TableOuter';
 import TableInfo from '../../table/TableInfo';
 import DataCenterModal from '../../Modal/DataCenterModal';
 import DeleteModal from '../../Modal/DeleteModal';
 import { useAllDataCenters } from '../../../api/RQHook';
-import TableOuter from '../../table/TableOuter';
 
 const DataCenters = () => {
   const navigate = useNavigate();
@@ -21,6 +21,19 @@ const DataCenters = () => {
     navigate(`/computing/datacenters/${id}`);
   };
 
+  // const {
+  //   data: datacenters,
+  //   status: datacentersStatus,
+  //   isRefetching: isDatacentersRefetching,
+  //   refetch: refetchDatacenters,
+  //   isError: isDatacentersError,
+  //   error: datacentersError,
+  //   isLoading: isDatacentersLoading
+  // } = useAllDataCenters = ((e) => ({
+  //   ...e,
+  //   storageType: e?.storageType ? '로컬' : '공유됨',
+  // }));
+
   const {
     data: datacenters,
     status: datacentersStatus,
@@ -29,10 +42,15 @@ const DataCenters = () => {
     isError: isDatacentersError,
     error: datacentersError,
     isLoading: isDatacentersLoading
-  } = useAllDataCenters((e) => ({
-    ...e,
-    storageType: e?.storageType ? '로컬' : '공유됨',
-  }));
+  } = useAllDataCenters();
+
+  const transformedDataCenters = useMemo(() => {
+    if (!datacenters) return [];
+    return datacenters.map((e) => ({
+      ...e,
+      storageType: e?.storageType ? '로컬' : '공유됨',
+    }));
+  }, [datacenters]);
 
   return (
     <>
@@ -45,9 +63,12 @@ const DataCenters = () => {
 
       <TableOuter
         columns={TableInfo.DATACENTERS}
-        data={datacenters}
+        data={transformedDataCenters}
+        // data={datacenters}
         shouldHighlight1stCol={true}
-        onRowClick={setSelectedDataCenter}
+        onRowClick={(row) => setSelectedDataCenter(row)}
+        clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정
+        onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
       <DataCenterModal
         isOpen={modals.create || modals.edit}

@@ -3,7 +3,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
 import './Table.css';
 
-const TableOuter = ({ columns = [], data = [], onRowClick, shouldHighlight1stCol = false, clickableColumnIndex, showSearchBox = false, onContextMenuItems }) => {
+const TableOuter = ({ 
+  columns = [], 
+  data = [], 
+  shouldHighlight1stCol = false,
+  onRowClick,  
+  clickableColumnIndex, 
+  showSearchBox = false, 
+  onContextMenuItems,
+  onClickableColumnClick
+}) => {
   
   return (
     <div className="section_table_outer">
@@ -22,6 +31,7 @@ const TableOuter = ({ columns = [], data = [], onRowClick, shouldHighlight1stCol
         clickableColumnIndex={clickableColumnIndex} 
         shouldHighlight1stCol={shouldHighlight1stCol} 
         onContextMenuItems={onContextMenuItems}
+        onClickableColumnClick={onClickableColumnClick}
       />
     </div>
   );

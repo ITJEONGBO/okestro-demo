@@ -2,7 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip'; // react-tooltip의 Tooltip 컴포넌트 사용
 import './Table.css';
 
-const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumnIndex = [], onContextMenuItems = false }) => {
+const Table = ({ 
+  columns = [], 
+  data = [], 
+  onRowClick = () => {}, 
+  clickableColumnIndex = [], 
+  onContextMenuItems = false, 
+  onClickableColumnClick = () => {}
+}) => {
   const [selectedRowIndex, setSelectedRowIndex] = useState(null); // 선택된 행의 인덱스를 관리
   const [tooltips, setTooltips] = useState({}); // 툴팁 상태 관리
   const tableRef = useRef(null); 
@@ -114,50 +121,51 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
                   }}
                 >
                   {columns.map((column, colIndex) => (
-                    <td
-                      key={colIndex}
-                      data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
-                      data-tooltip-content={row[column.accessor]}
-                      style={{
-                        maxWidth: '200px',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        textAlign: (typeof row[column.accessor] === 'string' || typeof row[column.accessor] === 'number')
-                          ? 'left'
-                          : 'center', // 체크박스 및 이모티콘 같은 요소는 가운데 정렬
-                        verticalAlign: 'middle', // 수직 가운데 정렬
-                        cursor: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
-                        color: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit',
-                        fontWeight: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
-                      }}
-                      onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])}
-                      onClick={(e) => {
-                        if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-                          e.stopPropagation();
-                          onRowClick(row, column, colIndex); // clickableColumnIndex에 해당하는 열 클릭 시 이동 처리
-                        }
-                      }}
-                      onMouseOver={(e) => {
-                        if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-                          e.target.style.textDecoration = 'underline';
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-                          e.target.style.textDecoration = 'none';
-                        }
-                      }}
-                    >
-                      {typeof row[column.accessor] === 'object' ? (
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                          {row[column.accessor]} {/* 체크박스와 같은 요소는 flex로 가운데 정렬 */}
-                        </div>
-                      ) : (
-                        row[column.accessor] // 텍스트나 숫자는 그대로 출력
-                      )}
-                    </td>
-                  ))}
+  <td
+    key={colIndex}
+    data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
+    data-tooltip-content={row[column.accessor]}
+    style={{
+      maxWidth: '200px',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      textAlign: (typeof row[column.accessor] === 'string' || typeof row[column.accessor] === 'number')
+        ? 'left'
+        : 'center',
+      verticalAlign: 'middle',
+      cursor: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
+      color: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit',
+      fontWeight: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
+    }}
+    onClick={(e) => {
+      if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+        e.stopPropagation();
+        if (onClickableColumnClick) {
+          onClickableColumnClick(row);
+        }
+      }
+    }}
+    onMouseOver={(e) => {
+      if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+        e.target.style.textDecoration = 'underline';
+      }
+    }}
+    onMouseOut={(e) => {
+      if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+        e.target.style.textDecoration = 'none';
+      }
+    }}
+  >
+    {typeof row[column.accessor] === 'object' ? (
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        {row[column.accessor]}
+      </div>
+    ) : (
+      row[column.accessor]
+    )}
+  </td>
+))}
                 </tr>
               ))
             )}
