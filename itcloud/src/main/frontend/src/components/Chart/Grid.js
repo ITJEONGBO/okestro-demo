@@ -9,12 +9,16 @@ const Grid = ({ type, data = [] }) => {
   }, [data]);
 
   const getBackgroundColor = (value) => {
-    if (value >= 0 && value <= 60) {
-      return '#00BFFF';
+    if (value >= 0 && value <= 10) {
+      return '#f0f0f0';
+    } else if (value > 10 && value <= 30) {
+      return '#69DADB';
+    } else if (value > 30 && value <= 60) {
+      return '#1597E5';
     } else if (value > 60 && value <= 75) {
-      return '#1ec033';
+      return '#7C7DEA';
     } else if (value > 75 && value <= 100) {
-      return '#ff0000';
+      return '#FF4560';
     }
     return 'white';
   };

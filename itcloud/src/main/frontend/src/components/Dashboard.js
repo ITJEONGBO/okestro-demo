@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { adjustFontSize } from '../UIEvent';
-import DashboardBoxGroup from './DashboardBoxGroup';
+import { debounce } from 'lodash'; // 리스너의 호출 빈도를 줄이기 위해 디바운싱을 사용
 import './Dashboard.css'
+import { faCloud, faEarthAmericas, faLayerGroup, faListUl, faMicrochip, faUser } from '@fortawesome/free-solid-svg-icons';
 import {
   useDashboard,
   useDashboardCpuMemory,
@@ -15,47 +16,37 @@ import {
   useDashboardVmMemory,
   useDashboardMetricStorage
  } from '../api/RQHook';
+import DashboardBoxGroup from './DashboardBoxGroup';
 import RadialBarChart from './Chart/RadialBarChart';
 import BarChart from './Chart/BarChart';
 import SuperAreaChart from './Chart/SuperAreaChart';
-import HeatMapChart from './Chart/HeatMapChart';
-import { faCloud, faEarthAmericas, faLayerGroup, faListUl, faMicrochip, faUser } from '@fortawesome/free-solid-svg-icons';
 import Grid from './Chart/Grid';
 
+
 //region: RadialBarChart
-// 도넛
-const CpuApexChart = ({ cpu }) => { return (<RadialBarChart percentage={cpu} />); }
-const MemoryApexChart = ({ memory }) => { return (<RadialBarChart percentage={memory} />); }
-const StorageApexChart = ({ storage }) => { return (<RadialBarChart percentage={storage} />); }
+const CpuApexChart = memo(({ cpu }) => { return (<RadialBarChart percentage={cpu} />) });
+const MemoryApexChart = memo(({ memory }) => { return (<RadialBarChart percentage={memory} />) });
+const StorageApexChart = memo(({ storage }) => { return (<RadialBarChart percentage={storage} />) });
 //endregion: RadialBarChart
 
 //region: BarChart
-const CpuBarChart = ({vmCpu}) => {
-  return (
-    <BarChart 
-      names={vmCpu?.map((e) => e.name) ?? []}
-      percentages={vmCpu?.map((e) => e.cpuPercent) ?? []} 
-    />
-  );
-}
-const MemoryBarChart = ({vmMemory}) => {
-  return (
-    <BarChart 
-      names={vmMemory?.map((e) => e.name) ?? []}
-      percentages={vmMemory?.map((e) => e.memoryPercent) ?? []} 
-    />
-  );
-}
-const StorageMemoryBarChart = ({storageMemory}) => {
-  return (
-    <BarChart 
-      names={storageMemory?.map((e) => e.name) ?? []}
-      percentages={storageMemory?.map((e) => e.memoryPercent) ?? []} 
-    />
-  );
-}
-//endregion: BarChart
+const BarChartWrapper = ({ data, keyName, keyPercent }) => {
+  const names = React.useMemo(() => data?.map((e) => e[keyName]) ?? [], [data, keyName]);
+  const percentages = React.useMemo(() => data?.map((e) => e[keyPercent]) ?? [], [data, keyPercent]);
 
+  return ( <BarChart names={names} percentages={percentages} /> );
+};
+
+const CpuBarChart = ({ vmCpu }) => (
+  <BarChartWrapper data={vmCpu} keyName="name" keyPercent="cpuPercent" />
+);
+const MemoryBarChart = ({ vmMemory }) => (
+  <BarChartWrapper data={vmMemory} keyName="name" keyPercent="memoryPercent" />
+);
+const StorageMemoryBarChart = ({ storageMemory }) => (
+  <BarChartWrapper data={storageMemory} keyName="name" keyPercent="memoryPercent" />
+);
+//endregion: BarChart
 
 //region: Dashboard
 const Dashboard = () => {
@@ -159,7 +150,6 @@ const Dashboard = () => {
     isLoading: isVmMetricoading,
   } = useDashboardMetricVm()
 
-  
   const {
     data: storageMetric,
     status: storageMetricStatus,
@@ -172,9 +162,11 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    window.addEventListener('resize', adjustFontSize);
+    const handleResize = debounce(adjustFontSize, 300);
+    window.addEventListener('resize', handleResize);
     adjustFontSize();
-    return () => { window.removeEventListener('resize', adjustFontSize); };
+    
+    return () => { window.removeEventListener('resize', handleResize); };
   }, []);
 
   return (
@@ -184,11 +176,11 @@ const Dashboard = () => {
 
         <DashboardBoxGroup 
           boxItems={[
-            { icon: faLayerGroup, title: "데이터센터", cntTotal: dashboard?.datacenters ?? 0, cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/datacenters' },
-            { icon: faEarthAmericas, title: "클러스터", cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/clusters' },
-            { icon: faUser, title: "호스트", cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/hosts' },
-            { icon: faCloud, title: "스토리지 도메인", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storages/domains' },
-            { icon: faMicrochip, title: "가상머신", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vms' },
+            { icon: faLayerGroup, title: "데이터센터", cntTotal: dashboard?.datacenters ?? 0, cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/rutil-manager/datacenters' },
+            { icon: faEarthAmericas, title: "클러스터", cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/rutil-manager/clusters' },
+            { icon: faUser, title: "호스트", cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/rutil-manager/hosts'},
+            { icon: faCloud, title: "스토리지 도메인", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/computing/rutil-manager/storagesdomains' },
+            { icon: faMicrochip, title: "가상머신", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/rutil-manager/vms' },
             { icon: faListUl, title: "이벤트", cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
           ]}
         />

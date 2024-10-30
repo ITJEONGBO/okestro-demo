@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faArrowUp,
@@ -11,14 +9,12 @@ import {
   faPencil,
   faRefresh,
   faSearch,
-
 } from '@fortawesome/free-solid-svg-icons'
-
 import TableOuter from './table/TableOuter';
 import HeaderButton from './button/HeaderButton';
 import TableColumnsInfo from './table/TableColumnsInfo';
 import Footer from './footer/Footer';
-import { useAllClusters, useAllEvents } from '../api/RQHook';
+import { useAllEvents } from '../api/RQHook';
 import PagingTable from './table/PagingTable';
 import PagingTableOuter from './table/PagingTableOuter';
 
@@ -32,17 +28,6 @@ const Event = () => {
     { id: 'edit_btn', label: '편집', icon: faPencil, onClick:() => {}  },
     { id: 'delete_btn', label: '삭제', icon: faArrowUp, onClick: () => {} }
   ];
-  /* 
-  const [data, setData] = useState(DEFAULT_VALUES.FIND_ALL_CLUSTERS);
-  useEffect(() => {
-    const fetchData = async () => {
-        const res = await ApiManager.findAllClusters()
-        const items = res.map((e) => toTableItemPredicate(e))
-        setData(items)
-    }
-    fetchData()
-  }, [])
-  */
 
   const { 
     data: events, 
@@ -52,19 +37,24 @@ const Event = () => {
     isError: isEventsError, 
     error: eventsError, 
     isLoading: isEventsLoading,
-  } = useAllEvents(toTableItemPredicateEvents);
-  
-  function toTableItemPredicateEvents(event) {
-    return {
-      id: event?.id ?? '',
-      icon: '', 
-      time: event?.time ?? 'Unknown',
-      description: event?.description ?? 'No description',
-      correlationId: event?.correlationId ?? 'N/A',
-      source: event?.source ?? 'Unknown', 
-      customEventId: event?.customEventId ?? 'N/A', 
-    };
-  }
+  } = useAllEvents((e) => ({
+    ...e,
+    severity: (() => {
+      switch (e?.severity) {
+        case 'ALERT':
+          return '알림';
+        case 'ERROR':
+          return '에러';
+        case 'NORMAL':
+          return '일반';
+        case 'WARNING':
+          return '위험';
+        default:
+          return e?.severity;
+          // 이모티콕 수정 필요
+      }
+    })(),
+  }));
   
 
   const handleRowClick = (row, column) => {
