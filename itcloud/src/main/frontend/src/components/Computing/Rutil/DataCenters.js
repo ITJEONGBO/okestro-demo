@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo  } from 'react';
+import { useEffect, useState  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
 import TableOuter from '../../table/TableOuter';
@@ -21,19 +21,6 @@ const DataCenters = () => {
     navigate(`/computing/datacenters/${id}`);
   };
 
-  // const {
-  //   data: datacenters,
-  //   status: datacentersStatus,
-  //   isRefetching: isDatacentersRefetching,
-  //   refetch: refetchDatacenters,
-  //   isError: isDatacentersError,
-  //   error: datacentersError,
-  //   isLoading: isDatacentersLoading
-  // } = useAllDataCenters = ((e) => ({
-  //   ...e,
-  //   storageType: e?.storageType ? '로컬' : '공유됨',
-  // }));
-
   const {
     data: datacenters,
     status: datacentersStatus,
@@ -42,15 +29,10 @@ const DataCenters = () => {
     isError: isDatacentersError,
     error: datacentersError,
     isLoading: isDatacentersLoading
-  } = useAllDataCenters();
-
-  const transformedDataCenters = useMemo(() => {
-    if (!datacenters) return [];
-    return datacenters.map((e) => ({
-      ...e,
-      storageType: e?.storageType ? '로컬' : '공유됨',
-    }));
-  }, [datacenters]);
+  } = useAllDataCenters((e) => ({
+    ...e,
+    storageType: e?.storageType ? '로컬' : '공유됨',
+  }));
 
   return (
     <>
@@ -63,8 +45,7 @@ const DataCenters = () => {
 
       <TableOuter
         columns={TableInfo.DATACENTERS}
-        data={transformedDataCenters}
-        // data={datacenters}
+        data={datacenters}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedDataCenter(row)}
         clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정

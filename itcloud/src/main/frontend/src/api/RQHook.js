@@ -386,7 +386,6 @@ export const useAllClusters = (mapPredicate) => useQuery({
   queryFn: async () => {
     console.log(`useAllClusters ...`);
     const res = await ApiManager.findAllClusters()
-    // const res = await ApiManager.findAllClustersFromDataCenter()
     // setShouldRefresh(prevValue => false)
     return res?.map((e) => mapPredicate(e)) ?? []
   }

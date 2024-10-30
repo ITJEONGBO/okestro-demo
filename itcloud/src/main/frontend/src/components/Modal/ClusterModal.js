@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import './css/MCluster.css'
+import './css/MCluster.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
   useAddCluster, 
   useEditCluster, 
   useCluster,
   useAllDataCenters, 
   useNetworksFromDataCenter
-} from '../../api/RQHook'
+} from '../../api/RQHook';
 
 const ClusterModal = ({ 
   isOpen, 
@@ -17,48 +17,6 @@ const ClusterModal = ({
   editMode = false, 
   cId
 }) => {
-  // 클러스터
-  const {
-    data: cluster,
-    status: clusterStatus,
-    isRefetching: isClusterRefetching,
-    refetch: refetchCluster,
-    isError: isClusterError,
-    error: clusterError,
-    isLoading: isClusterrLoading
-  } = useCluster(cId);
-  
-  // 데이터센터
-  const {
-    data: datacenters,
-    status: datacentersStatus,
-    isRefetching: isDatacentersRefetching,
-    refetch: refetchDatacenters,
-    isError: isDatacentersError,
-    error: datacentersError,
-    isLoading: isDatacentersLoading
-  } = useAllDataCenters((e) => {
-      return {
-          ...e,
-      }
-  });
-
-  // 네트워크
-  const {
-    data: networks,
-    status: networksStatus,
-    isRefetching: isNetworksRefetching,
-    refetch: refetchNetworks,
-    isError: isNetworksError,
-    error: networksError,
-    isLoading: isNetworksLoading
-  } = useNetworksFromDataCenter(cluster?.datacenterVo?.id, (e) => {
-    return {
-        ...e,
-    }
-  });
-
-  console.log("ClusterModal ")
   const [id, setId] = useState('');
   const [datacenterVoId, setDatacenterVoId] = useState('');  
   const [name, setName] = useState('');
@@ -73,26 +31,97 @@ const ClusterModal = ({
   const { mutate: addCluster } = useAddCluster();
   const { mutate: editCluster } = useEditCluster();
 
-  // 편집 모드일 때 기존 데이터를 불러와서 입력 필드에 채움
+   // 클러스터 데이터 가져오기
+   const {
+    data: cluster,
+    status: clusterStatus,
+    isRefetching: isClusterRefetching,
+    refetch: refetchCluster,
+    isError: isClusterError,
+    error: clusterError,
+    isLoading: isClusterrLoading
+  } = useCluster(cId);
+  
+  // 데이터센터 가져오기
+  const {
+    data: datacenters,
+    status: datacentersStatus,
+    isRefetching: isDatacentersRefetching,
+    refetch: refetchDatacenters,
+    isError: isDatacentersError,
+    error: datacentersError,
+    isLoading: isDatacentersLoading
+  } = useAllDataCenters((e) => ({
+    ...e,
+  }));
+
+  // 네트워크 가져오기
+  const {
+    data: networks,
+    refetch: refetchNetworks,
+    isLoading: isNetworksLoading
+  } = useNetworksFromDataCenter(datacenterVoId, (e) => ({
+    ...e,
+  }));
+
+  useEffect(() => {
+    console.log('클러스터 datacenterVoId:', datacenterVoId);
+    console.log('클러스터 networks:', networks);
+  }, [networks]);
+
+  // 모달이 열릴 때 데이터 초기화
   useEffect(() => {
     if (editMode) {
-      setId(cluster.id);
-      setDatacenterVoId(cluster.datacenterVo?.id);
-      setName(cluster.name);
-      setDescription(cluster.description);
-      setComment(cluster.comment);
-      setNetworkVoId(cluster.networkVo?.id);
-      setCpuArc(cluster.cpuArc);
-      setCpuType(cluster.cpuType);
-      setBiosType(cluster.biosType);
-      setErrorHandling(cluster.errorHandling);
-    } else{
+      setId(cluster?.id);
+      setDatacenterVoId(cluster?.datacenterVo?.id || '');
+      setName(cluster?.name);
+      setDescription(cluster?.description);
+      setComment(cluster?.comment);
+      setNetworkVoId(cluster?.networkVo?.id || '');
+      setCpuArc(cluster?.cpuArc);
+      setCpuType(cluster?.cpuType);
+      setBiosType(cluster?.biosType);
+      setErrorHandling(cluster?.errorHandling);
+    } else {
       resetForm();
+      if (datacenters && datacenters.length > 0) {
+        setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본 선택
+      }
+      // if (networks && networks.length > 0) {
+      //   setNetworkVoId(networks[0].id); // 첫 번째 네트워크를 기본 선택
+      // }
     }
-  }, [editMode]);
+  }, [editMode, cluster, datacenters]);
+
+  // 데이터센터 선택 시 네트워크 업데이트
+  useEffect(() => {
+    if (datacenterVoId) {
+      // 네트워크 값을 먼저 초기화
+      setNetworkVoId('');
   
+      // 데이터센터가 선택되었을 때 네트워크를 다시 가져옴
+      refetchNetworks({ datacenterId: datacenterVoId }).then((res) => {
+        if (res?.data && res.data.length > 0) {
+          setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
+        }
+      });
+    } else {
+      setNetworkVoId(''); // 데이터센터 선택이 취소되었을 경우 네트워크 값 초기화
+    }
+  }, [datacenterVoId]);
+  
+  // 데이터센터 리스트가 업데이트될 때 초기값 설정
+  useEffect(() => {
+    if (datacenters && datacenters.length > 0) {
+      if (!editMode) {
+        // 데이터센터 리스트의 첫 번째 값으로 초기화
+        setDatacenterVoId(datacenters[0].id);
+      }
+    }
+  }, [datacenters, editMode]);
+
   const resetForm = () => {
-    setDatacenterVoId('')
+    setDatacenterVoId('');
     setName('');
     setDescription('');
     setComment('');
@@ -103,22 +132,20 @@ const ClusterModal = ({
     setErrorHandling('');
   };
 
-  useEffect(() => {
-    if (datacenterVoId) {
-      refetchNetworks();
-    }
-  }, [datacenterVoId, refetchNetworks]);
-
   // 폼 제출 핸들러
   const handleFormSubmit = () => {
     const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
     if (!selectedDataCenter) {
-      alert("데이터 센터를 선택해주세요."); // Prompt user to select a data center
+      alert("데이터 센터를 선택해주세요.");
+      return;
+    }
+    const selectedNetwork = networks.find((n) => n.id === networkVoId);
+    if (!selectedNetwork) {
+      alert("네트워크를 선택해주세요.");
       return;
     }
 
     const dataToSubmit = {
-      // datacenterVoId,
       datacenterVo: {
         id: selectedDataCenter.id,
         name: selectedDataCenter.name,
@@ -127,7 +154,8 @@ const ClusterModal = ({
       description,
       comment,
       networkVo: {
-        id: networkVoId,
+        id: selectedNetwork.id,
+        name: selectedNetwork.name
       },
       cpuArc,
       cpuType,
@@ -135,17 +163,15 @@ const ClusterModal = ({
       errorHandling
     };
     
-    console.log("Form Data: ", dataToSubmit);
-
     if (editMode) {
-      dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
+      dataToSubmit.id = id;
       editCluster({
-        clusterId: id,              // 전달된 id
-        clusterData: dataToSubmit   // 수정할 데이터
+        clusterId: id,
+        clusterData: dataToSubmit
       }, {
         onSuccess: () => {
-          alert("클러스터 편집 완료(alert기능구현)")
-          onRequestClose();  // 성공 시 모달 닫기
+          alert("클러스터 편집 완료");
+          onRequestClose();
         },
         onError: (error) => {
           console.error('Error editing cluster:', error);
@@ -154,7 +180,7 @@ const ClusterModal = ({
     } else {
       addCluster(dataToSubmit, {
         onSuccess: () => {
-          alert("클러스터 생성 완료(alert기능구현)")
+          alert("클러스터 생성 완료");
           onRequestClose();
         },
         onError: (error) => {
@@ -182,10 +208,6 @@ const ClusterModal = ({
         </div>
 
         <div className="cluster_new_content">
-          <div>
-            <input type="hidden" id="id" value={id} onChange={() => {}} /> {/* id는 읽기 전용이므로 onChange를 추가하지 않음 */}
-          </div>
-
           <div>
             <label htmlFor="data_center">데이터 센터</label>
             <select
@@ -243,7 +265,7 @@ const ClusterModal = ({
               onChange={(e) => setNetworkVoId(e.target.value)}
               disabled={isNetworksLoading || !datacenterVoId}
             >
-              <option value="">선택</option>
+              {/* <option value="">선택</option> */}
               {networks &&
                 networks.map((n) => (
                   <option key={n.id} value={n.id}>
@@ -253,7 +275,6 @@ const ClusterModal = ({
             </select>
             <span>{networkVoId}</span>
           </div>
-
           <div>
             <label htmlFor="cpuArc">CPU 아키텍처</label>
             <select
@@ -308,7 +329,6 @@ const ClusterModal = ({
         </div>
 
         <div className="edit_footer">
-          <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

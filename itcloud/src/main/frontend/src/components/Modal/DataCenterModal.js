@@ -15,17 +15,6 @@ const DataCenterModal = ({
   editMode = false,  // 기본이 생성모드
   dcId
 }) => {
-  const {
-    data: datacenter,
-    status: datacenterStatus,
-    isRefetching: isDatacenterRefetching,
-    refetch: refetchDatacenter,
-    isError: isDatacenterError,
-    error: datacenterError,
-    isLoading: isDatacenterLoading
-  } = useDataCenter(dcId);
-
-  console.log("DataCenterModal ")
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
@@ -36,6 +25,17 @@ const DataCenterModal = ({
 
   const { mutate: addDataCenter } = useAddDataCenter();
   const { mutate: editDataCenter } = useEditDataCenter();
+
+  const {
+    data: datacenter,
+    status: datacenterStatus,
+    isRefetching: isDatacenterRefetching,
+    refetch: refetchDatacenter,
+    isError: isDatacenterError,
+    error: datacenterError,
+    isLoading: isDatacenterLoading
+  } = useDataCenter(dcId);
+
 
   // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
