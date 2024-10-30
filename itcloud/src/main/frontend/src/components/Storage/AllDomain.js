@@ -49,9 +49,7 @@ const Storage = () => {
       if (colIndex === 1) {
         navigate(`/storages/domains/${row.id}`, { state: { name: row.name } });
       }
-    } else {
-      console.log('Selected Row ID:', row.id);
-    }
+    } 
   };
 
   // 팝업 테이블 컴포넌트

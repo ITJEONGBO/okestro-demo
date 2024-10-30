@@ -32,12 +32,12 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
         tableRef.current && 
         !tableRef.current.contains(event.target) && 
         (!menuRef.current || !menuRef.current.contains(event.target)) &&
-        !event.target.closest('.header_right_btns') &&
+        !event.target.closest('.header_right_btns button') &&
         !event.target.closest('.Overlay') 
       ) {
         setSelectedRowIndex(null);
         setContextRowIndex(null);
-        onRowClick(null); // 열 선택 해제 시 onRowClick에 null 전달
+        if (typeof onRowClick === 'function') onRowClick(null); // 열 선택 해제 시 onRowClick에 null 전달
       }
     };
   
