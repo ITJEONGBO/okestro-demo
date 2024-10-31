@@ -727,11 +727,15 @@ const toggleDataCenter = (dataCenterId) => {
 };
 // 저장된 항목에 맞춰 배경색 초기화
 useEffect(() => {
-  const savedSelected = localStorage.getItem('selected');
-  if (savedSelected) {
-    toggleAsidePopup(savedSelected); 
-  }
-}, []);
+    const savedSelected = localStorage.getItem('selected');
+    if (savedSelected) {
+      setSelected(savedSelected);
+      toggleAsidePopup(savedSelected); // 선택된 섹션에 맞춰 aside popup 색상 변경
+    } else {
+      setSelected('dashboard'); // 기본값으로 'dashboard' 설정
+      toggleAsidePopup('dashboard');
+    }
+  }, []);
 // id포함유무에 따라 배경색결정
 const getBackgroundColor = (id) => {
     const path = location.pathname;
