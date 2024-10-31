@@ -24,7 +24,7 @@
   opacity: 0.7;
 }
 
-// 툴팁
+
 /* .grid-item:hover::after {
   content: attr(title);
   position: absolute;
