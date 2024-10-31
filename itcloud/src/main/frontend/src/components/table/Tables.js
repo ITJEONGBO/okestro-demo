@@ -121,51 +121,51 @@ const Tables = ({
                   }}
                 >
                   {columns.map((column, colIndex) => (
-  <td
-    key={colIndex}
-    data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
-    data-tooltip-content={row[column.accessor]}
-    style={{
-      maxWidth: '200px',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      textAlign: (typeof row[column.accessor] === 'string' || typeof row[column.accessor] === 'number')
-        ? 'left'
-        : 'center',
-      verticalAlign: 'middle',
-      cursor: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
-      color: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit',
-      fontWeight: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
-    }}
-    onClick={(e) => {
-      if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-        e.stopPropagation();
-        if (onClickableColumnClick) {
-          onClickableColumnClick(row);
-        }
-      }
-    }}
-    onMouseOver={(e) => {
-      if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-        e.target.style.textDecoration = 'underline';
-      }
-    }}
-    onMouseOut={(e) => {
-      if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-        e.target.style.textDecoration = 'none';
-      }
-    }}
-  >
-    {typeof row[column.accessor] === 'object' ? (
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        {row[column.accessor]}
-      </div>
-    ) : (
-      row[column.accessor]
-    )}
-  </td>
-))}
+                <td
+                  key={colIndex}
+                  data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
+                  data-tooltip-content={row[column.accessor]}
+                  style={{
+                    maxWidth: '200px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    textAlign: (typeof row[column.accessor] === 'string' || typeof row[column.accessor] === 'number')
+                      ? 'left'
+                      : 'center',
+                    verticalAlign: 'middle',
+                    cursor: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
+                    color: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit',
+                    fontWeight: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
+                  }}
+                  onClick={(e) => {
+                    if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+                      e.stopPropagation();
+                      if (onClickableColumnClick) {
+                        onClickableColumnClick(row);
+                      }
+                    }
+                  }}
+                  onMouseOver={(e) => {
+                    if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+                      e.target.style.textDecoration = 'underline';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+                      e.target.style.textDecoration = 'none';
+                    }
+                  }}
+                >
+                  {typeof row[column.accessor] === 'object' ? (
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      {row[column.accessor]}
+                    </div>
+                  ) : (
+                    row[column.accessor]
+                  )}
+                </td>
+              ))}
                 </tr>
               ))
             )}

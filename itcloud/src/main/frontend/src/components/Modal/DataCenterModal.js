@@ -39,7 +39,7 @@ const DataCenterModal = ({
 
   // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
-    if (editMode) {
+    if (editMode && datacenter) {
       setId(datacenter.id);
       setName(datacenter.name);
       setComment(datacenter.comment);
@@ -50,7 +50,7 @@ const DataCenterModal = ({
     } else {
       resetForm();
     }
-  }, [editMode]);
+  }, [editMode, datacenter]);
 
   const resetForm = () => {
     setName('');

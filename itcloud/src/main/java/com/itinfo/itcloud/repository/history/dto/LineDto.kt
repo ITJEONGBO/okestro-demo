@@ -76,12 +76,12 @@ fun List<VmSamplesHistoryEntity>.toVmMemoryLineDtos(conn: Connection): List<Line
     }
 }
 
-fun List<Vm>.toVmNetworkLineDtos(conn: Connection): List<LineDto> {
-    return this@toVmNetworkLineDtos.map { vm ->
-        val statistics = conn.findAllStatisticsFromVm(vm.id())
-        LineDto.builder {
-            name { vm.name() }
-            dataList { statistics.findNetworkListPercent() }
-        }
+fun Vm.toVmNetworkLineDto(conn: Connection): LineDto {
+    val statistics = conn.findAllStatisticsFromVm(this.id())
+    return LineDto.builder {
+        name { this@toVmNetworkLineDto.name() }
+        dataList { statistics.findNetworkListPercent() }
     }
 }
+fun List<Vm>.toVmNetworkLineDtos(conn: Connection): List<LineDto> =
+    this@toVmNetworkLineDtos.map { it.toVmNetworkLineDto(conn) }
