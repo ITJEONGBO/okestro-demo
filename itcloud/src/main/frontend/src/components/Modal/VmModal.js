@@ -3,7 +3,12 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-const VmModal = ({ isOpen, onRequestClose, onSubmit }) => {
+const VmModal = ({ 
+    isOpen, 
+    onRequestClose, 
+    onSubmit, 
+    vmId 
+}) => {
   const [activeSection, setActiveSection] = useState('common_outer');
 
   const handleSectionChange = (section) => setActiveSection(section);

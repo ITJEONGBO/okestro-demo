@@ -1,84 +1,83 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../css/Computing.css';
+import '../css/Computing.css'
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
-import { useAllHosts } from '../../../api/RQHook';
-import { faArrowUp, faArrowDown, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useAllVMs } from '../../../api/RQHook';
 
-const HostModal = React.lazy(() => import('../../Modal/HostModal'))
+const VmModal = React.lazy(() => import('../../Modal/VmModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
-const Hosts = () => {
+const Vms = () => {
   const navigate = useNavigate();
   
-  const {
-      data: hosts,
-      status: hostsStatus,
-      isRefetching: isHostsRefetching,
-      refetch: refetchHosts,
-      isError: isHostsError,
-      error: hostsError,
-      isLoading: isHostsLoading
-  } = useAllHosts((e) => {
+  const { 
+    data: vms, 
+    status: vmsStatus,
+    isRefetching: isVmsRefetching,
+    refetch: refetchVms, 
+    isError: isVmsError, 
+    error: vmsError, 
+    isLoading: isVmsLoading,
+  } = useAllVMs((e) => {
     return {
-      ...e,
-      status: e?.status,
-      cluster: e?.clusterVo.name,
-      dataCenter: e?.dataCenterVo.name,
-      vmCnt: e?.vmSizeVo.allCnt,
-      memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
+        ...e,
+        host: e?.hostVo?.name, 
+        cluster: e?.clusterVo?.name,        
+        dataCenter: e?.dataCenterVo?.name,
+        memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
       cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
       networkUsage: e?.usageDto.networkPercent === null ? '' : e?.usageDto.networkPercent + '%',
     }
   });
 
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
-  const [selectedHost, setSelectedHost] = useState(null);
+  const [selectedVm, setSelectedVm] = useState(null);
 
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
   };
 
   const handleNameClick = (id) => {
-    navigate(`/computing/hosts/${id}`);
+      navigate(`/computing/vms/${id}`);
   };
+
 
   return (
     <>
       <div className="header_right_btns">
         <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedHost?.id && toggleModal('edit', true)} disabled={!selectedHost?.id}>편집</button>
-        <button onClick={() => selectedHost?.id && toggleModal('delete', true)} disabled={!selectedHost?.id}>제거</button>
+        <button onClick={() => selectedVm?.id && toggleModal('edit', true)} disabled={!selectedVm?.id}>편집</button>
+        <button onClick={() => selectedVm?.id && toggleModal('delete', true)} disabled={!selectedVm?.id}>제거</button>
       </div>
-      <span>id = {selectedHost?.id || ''}</span>
+      <span>id = {selectedVm?.id || ''}</span>
 
       <TablesOuter
-        columns={TableInfo.HOSTS}
-        data={hosts}
+        columns={TableInfo.VMS} 
+        data={vms} 
         shouldHighlight1stCol={true}
-        onRowClick={(row) => setSelectedHost(row)}
+        onRowClick={(row) => setSelectedVm(row)}
         clickableColumnIndex={[1]} // "이름" 열의 인덱스 설정
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
 
       {/* 모달 컴포넌트를 사용할 때만 로딩 */}
       <Suspense>
-        {(modals.create || (modals.edit && selectedHost)) && (
-          <HostModal 
+        {(modals.create || (modals.edit && selectedVm)) && (
+          <VmModal 
             isOpen={modals.create || modals.edit}
             onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
             editMode={modals.edit}
-            hId={selectedHost?.id || null}
+            vmId={selectedVm?.id || null}
           />
         )}
-        {modals.delete && selectedHost && (
+        {modals.delete && selectedVm && (
           <DeleteModal
             isOpen={modals.delete}
-            type={'Host'}
+            type={'Vm'}
             onRequestClose={() => toggleModal('delete', false)}
-            contentLabel={'호스트'}
-            data={selectedHost}
+            contentLabel={'클러스터'}
+            data={selectedVm}
           />
         )}
       </Suspense>
@@ -86,4 +85,4 @@ const Hosts = () => {
   );
 };
 
-export default Hosts;
+export default Vms;

@@ -6,7 +6,6 @@ import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.computing.findCpuPercent
 import com.itinfo.itcloud.model.computing.findMemoryPercent
 import com.itinfo.itcloud.model.computing.findNetworkPercent
-import com.itinfo.itcloud.ovirtDf
 import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
 import com.itinfo.itcloud.repository.history.entity.StorageDomainSamplesHistoryEntity
 import com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity
@@ -20,9 +19,7 @@ import org.ovirt.engine.sdk4.types.Statistic
 import org.ovirt.engine.sdk4.types.StorageDomain
 import org.ovirt.engine.sdk4.types.Vm
 import java.io.Serializable
-import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.Date
 
 /**
  * [UsageDto]
@@ -34,23 +31,22 @@ import java.util.Date
  * @property networkPercent [Int]
  * @property time [String]
  */
-class UsageDto (
+class UsageDto(
     val id: String = "",
     val name: String = "",
-    val cpuPercent: Int = 0,
-    val memoryPercent: Int = 0,
-    var networkPercent: Int = 0,
+    val cpuPercent: Int? = null,
+    val memoryPercent: Int? = null,
+    var networkPercent: Int? = null,
     var time: LocalDateTime? = null,
-//    var time: String = ""
 ): Serializable {
     override fun toString(): String = gson.toJson(this)
 
     class Builder {
         private var bId: String = ""; fun id(block: () -> String?) {bId = block() ?: ""}
         private var bName: String = ""; fun name(block: () -> String?) {bName = block() ?: ""}
-        private var bCpuPercent: Int = 0; fun cpuPercent(block: () -> Int?) {bCpuPercent = block() ?: 0}
-        private var bMemoryPercent: Int = 0; fun memoryPercent(block: () -> Int?) {bMemoryPercent = block() ?: 0}
-        private var bNetworkPercent: Int = 0; fun networkPercent(block: () -> Int?) {bNetworkPercent = block() ?: 0}
+        private var bCpuPercent: Int? = null; fun cpuPercent(block: () -> Int?) {bCpuPercent = block()}
+        private var bMemoryPercent: Int? = null; fun memoryPercent(block: () -> Int?) {bMemoryPercent = block()}
+        private var bNetworkPercent: Int? = null; fun networkPercent(block: () -> Int?) {bNetworkPercent = block()}
         private var bTime: LocalDateTime? = null;fun time(block: () -> LocalDateTime?) { bTime = block() }
 //        private var bTime: String = ""; fun time(block: () -> String?) {bTime = block() ?: ""}
 

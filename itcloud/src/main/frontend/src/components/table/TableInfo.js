@@ -91,9 +91,9 @@ const TableInfo = {
     { header: '호스트', accessor: 'host', clickable: true },
     { header: '클러스터', accessor: 'cluster', clickable: true },
     { header: '데이터센터', accessor: 'dataCenter', clickable: true },
-    { header: 'Memory', accessor: 'memory', clickable: false },
-    { header: 'CPU', accessor: 'cpu', clickable: false },
-    { header: 'Network', accessor: 'networkPer', clickable: false },
+    { header: 'Memory', accessor: 'memoryUsage', clickable: false },
+    { header: 'CPU', accessor: 'cpuUsage', clickable: false },
+    { header: 'Network', accessor: 'networkUsage', clickable: false },
     { header: '업타임', accessor: 'upTime', clickable: false },
     { header: '설명', accessor: 'description', clickable: false }
   ],
@@ -441,22 +441,7 @@ const TableInfo = {
   ],
   
 
-  VMS: [
-    { header: '상태', accessor: 'status', clickable: false },
-    // { header: '엔진', accessor: 'engine', clickable: false },
-    { header: '이름', accessor: 'name', clickable: true },
-    { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: 'IP주소', accessor: 'ipv4', clickable: false },
-    { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: '호스트', accessor: 'host', clickable: true },
-    { header: '클러스터', accessor: 'cluster', clickable: true },
-    { header: '데이터센터', accessor: 'dataCenter', clickable: true },
-    { header: 'Memory', accessor: 'memory', clickable: false },
-    { header: 'CPU', accessor: 'cpu', clickable: false },
-    { header: 'Network', accessor: 'networkPer', clickable: false },
-    { header: '업타임', accessor: 'upTime', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false }
-  ],
+  
   VMS_NIC: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
