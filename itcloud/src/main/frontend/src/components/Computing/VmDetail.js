@@ -122,7 +122,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
   
   // headerbutton 컴포넌트
 const buttons = [
-    { id: 'new_btn', label: '새로 만들기',onClick:() => openPopup('new')},
+    // { id: 'new_btn', label: '새로 만들기',onClick:() => openPopup('new')},
     { id: 'edit_btn', label: '편집', onClick:() => openPopup('edit')},
     { id: 'delete_btn', label: '삭제',onClick:() => openPopup('delete')},
     { id: 'run_btn', className:'disabled',label: <><i className="fa fa-play"></i>실행</>, onClick: () => console.log() },

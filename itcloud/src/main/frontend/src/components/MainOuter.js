@@ -437,11 +437,12 @@ const toggleDataCenter = (dataCenterId) => {
                                       key={vmDown.id}
                                       className="aside_popup_fourth_content" 
                                       style={{
+                                            backgroundColor: getBackgroundColor(vmDown.id),
                                           paddingLeft: '1.2rem'
                                       }}
                                       onClick={() => {
                                           setSelectedDiv(vmDown.id);
-                                          navigate(`/computing/vmDowns/${vmDown.id}`);
+                                          navigate(`/computing/vms/${vmDown.id}`);
                                       }}
                                   >
                                       <div style={{ position: 'relative', display: 'inline-block' }}>
