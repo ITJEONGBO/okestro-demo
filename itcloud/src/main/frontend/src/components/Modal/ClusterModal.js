@@ -358,7 +358,7 @@ const ClusterModal = ({
               onChange={(e) => setNetworkVoId(e.target.value)}
               disabled={editMode || isNetworksLoading || !datacenterVoId}
             >
-              {/* <option value="">선택</option> */}
+              
               {networks &&
                 networks.map((n) => (
                   <option key={n.id} value={n.id}>
@@ -390,6 +390,7 @@ const ClusterModal = ({
               onChange={(e) => setCpuType(e.target.value)}
               disabled={cpuOptions.length === 0}
             >
+            <option value="">선택</option>
               {cpuOptions.map((option) => (
                 <option key={option} value={option}>
                   {option}
