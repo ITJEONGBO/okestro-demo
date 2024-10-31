@@ -10,6 +10,7 @@ import DataCenters from './Rutil/DataCenters';
 import Clusters from './Rutil/Clusters';
 import Hosts from './Rutil/Hosts';
 import Vms from './Rutil/Vms';
+import Templates from './Rutil/Templates';
 import Info from './Rutil/Info';
 
 function RutilManager() {
@@ -54,6 +55,7 @@ function RutilManager() {
     clusters: Clusters,
     hosts: Hosts,
     vms: Vms,
+    templates: Templates,
     // 추가적인 섹션들: vms, templates, 등등
   };
 
