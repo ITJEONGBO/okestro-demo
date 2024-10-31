@@ -5,6 +5,7 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import {
   useDeleteDataCenter,
   useDeleteCluster,
+  useDeleteHost,
   useDeleteNetwork, // 네트워크 삭제 추가
 } from '../../api/RQHook';
 
@@ -20,6 +21,7 @@ const DeleteModal = ({
 
   const { mutate: deleteDataCenter } = useDeleteDataCenter();
   const { mutate: deleteCluster } = useDeleteCluster();
+  const { mutate: deleteHost } = useDeleteHost();
   const { mutate: deleteNetwork } = useDeleteNetwork(); // 네트워크 삭제 추가
 
   useEffect(() => {
@@ -42,6 +44,9 @@ const DeleteModal = ({
     } else if (type === 'Cluster') {
       console.log('Deleting Cluster');
       handleDelete(deleteCluster);
+    } else if (type === 'Host') {
+      console.log('Deleting Host');
+      handleDelete(deleteHost);
     } else if (type === 'Network') { // Network 삭제 처리 추가
       console.log('Deleting Network');
       handleDelete(deleteNetwork);

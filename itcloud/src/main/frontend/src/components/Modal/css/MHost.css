@@ -1,0 +1,38 @@
+.host_new_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 81%;
+    width: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+
+.host_new_content{
+    font-size: 0.32rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 75%;
+    padding: 0.2rem 0 ;
+}
+
+.host_new_content>div{
+    display: flex;
+    justify-content: space-between;
+    padding: 2% 2%;
+}
+
+.host_new_content select,
+.host_new_content input{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    border: 1px solid rgb(206, 206, 206);
+}

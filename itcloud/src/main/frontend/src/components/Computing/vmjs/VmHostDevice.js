@@ -5,7 +5,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
-import { useHostById, useHostdeviceFromHost } from '../../../api/RQHook';
+import { useHost, useHostdeviceFromHost } from '../../../api/RQHook';
 
 // 이벤트 섹션
 const VmHostDevice = () => {
@@ -22,7 +22,7 @@ const VmHostDevice = () => {
     isError: isNetworkError,
     error: networkError, 
     isLoading: isNetworkLoading,
-  } = useHostById(id);
+  } = useHost(id);
   const { 
     data: hostDevices,     
     status: hostDevicesStatus,  

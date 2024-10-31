@@ -31,7 +31,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './css/HostDetail.css';
 import TableOuter from '../table/TableOuter';
-import { useEventFromHost, useHostById, useHostdeviceFromHost, usePermissionFromHost, useVmFromHost } from '../../api/RQHook';
+import { useEventFromHost, useHost, useHostdeviceFromHost, usePermissionFromHost, useVmFromHost } from '../../api/RQHook';
 import PagingTableOuter from '../table/PagingTableOuter';
 import Path from '../Header/Path';
 import VmDu from '../duplication/VmDu';
@@ -132,7 +132,7 @@ function HostDetail() {
     isError: isNetworkError,
     error: networkError, 
     isLoading: isNetworkLoading,
-  } = useHostById(id);
+  } = useHost(id);
 
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
     //테이블컴포넌트

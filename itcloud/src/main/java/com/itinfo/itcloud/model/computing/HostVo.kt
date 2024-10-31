@@ -48,6 +48,7 @@ private val log = LoggerFactory.getLogger(HostVo::class.java)
  * @property vmActiveCnt [Int] summary
  * @property vmSizeVo [SizeVo]
  * @property vmMigratingCnt [Int] summary
+ * @property vgpu []
  * 전원관리는 항상 비활성상태
  * <statistics>
  * @property memoryTotal [BigInteger]
@@ -95,6 +96,7 @@ class HostVo (
     val transparentPage: Boolean = false,
     val vmSizeVo: SizeVo = SizeVo(),
     val vmMigratingCnt: Int = 0,
+    val vgpu: String = "", /*VgpuPlacement*/
     val memoryTotal: BigInteger = BigInteger.ZERO,
     val memoryUsed: BigInteger = BigInteger.ZERO,
     val memoryFree: BigInteger = BigInteger.ZERO,
@@ -145,6 +147,7 @@ class HostVo (
 //        private var bVmActiveCnt: Int = 0; fun vmActiveCnt(block: () -> Int?) { bVmActiveCnt = block() ?: 0 }
         private var bVmSizeVo: SizeVo = SizeVo(); fun vmSizeVo(block: () -> SizeVo?) { bVmSizeVo = block() ?: SizeVo() }
         private var bVmMigratingCnt: Int = 0; fun vmMigratingCnt(block: () -> Int?) { bVmMigratingCnt = block() ?: 0 }
+        private var bVgpu: String = ""; fun vgpu(block: () -> String?) { bVgpu = block() ?: "" }
         private var bMemoryTotal: BigInteger = BigInteger.ZERO; fun memoryTotal (block: () -> BigInteger?) { bMemoryTotal = block() ?: BigInteger.ZERO}
         private var bMemoryUsed: BigInteger = BigInteger.ZERO; fun memoryUsed (block: () -> BigInteger?) { bMemoryUsed = block() ?: BigInteger.ZERO}
         private var bMemoryFree: BigInteger = BigInteger.ZERO; fun memoryFree (block: () -> BigInteger?) { bMemoryFree = block() ?: BigInteger.ZERO}
@@ -166,7 +169,7 @@ class HostVo (
         private var bVmVos: List<IdentifiedVo> = listOf(); fun vmVos(block: () -> List<IdentifiedVo>?) { bVmVos = block() ?: listOf() }
         private var bUsageDto: UsageDto = UsageDto(); fun usageDto(block: () -> UsageDto?) { bUsageDto = block() ?: UsageDto() }
 
-        fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, /*bVmTotalCnt, bVmActiveCnt,*/ bVmSizeVo, bVmMigratingCnt, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos, bUsageDto)
+        fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, /*bVmTotalCnt, bVmActiveCnt,*/ bVmSizeVo, bVmMigratingCnt, bVgpu, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos, bUsageDto)
     }
     companion object {
         inline fun builder(block: HostVo.Builder.() -> Unit): HostVo = HostVo.Builder().apply(block).build()
@@ -232,7 +235,9 @@ fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfiguration
         ksm { this@toHostInfo.ksm().enabled() }
         seLinux { this@toHostInfo.seLinux().mode() }
 //        hostedEngine { this@toHostVo.spm().status().equals(SpmStatus.SPM) } //다시 알아보기 (우선순위 숫자에 따라 다른건지?)
+        sshPort { this@toHostInfo.ssh().portAsInteger() }
         spmPriority { this@toHostInfo.spm().priorityAsInteger() }
+        vgpu { this@toHostInfo.vgpuPlacement().value() }
         transparentPage { this@toHostInfo.transparentHugePages().enabled() }
         memoryTotal { statistics.findMemory("memory.total") }
         memoryUsed { statistics.findMemory("memory.used") }

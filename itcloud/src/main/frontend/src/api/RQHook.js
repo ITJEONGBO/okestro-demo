@@ -585,18 +585,18 @@ export const useAllHosts = (mapPredicate) => useQuery({
   }
 })
 /**
- * @name useHostById
+ * @name useHost
  * @description 호스트 상세조회 useQuery훅
  * 
  * @param {string} hostId 호스트ID
  * @returns useQuery훅
  */
-export const useHostById = (hostId) => useQuery({
+export const useHost = (hostId) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['HostById',hostId],
   queryFn: async () => {
     if (!hostId) return {};
-    console.log(`useHostById ... ${hostId}`)
+    console.log(`useHost ... ${hostId}`)
     const res = await ApiManager.findHost(hostId)
     return res ?? {}
   },
@@ -606,14 +606,14 @@ export const useHostById = (hostId) => useQuery({
 
 
 /**
- * @name useHostFromCluster
+ * @name useVmFromHost
  * @description 호스트 내 가상머신 목록조회 useQuery훅
  * 
  * @param {string} clusterId 클러스터ID
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useHostFromCluster
+ * @see ApiManager.findVmsFromHost
  */
 export const useVmFromHost = (hostId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -625,14 +625,14 @@ export const useVmFromHost = (hostId, mapPredicate) => useQuery({
   }
 })
 /**
- * @name useHostFromCluster
+ * @name useHostdeviceFromHost
  * @description 호스트 내 호스트장치 목록조회 useQuery훅
  * 
  * @param {string} clusterId 클러스터ID
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useHostFromCluster
+ * @see ApiManager.findHostNicsFromHost
  */
 export const useHostdeviceFromHost = (hostId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -682,6 +682,61 @@ export const usePermissionFromHost = (hostId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
+
+/**
+ * @name useAddHost
+ * @description 호스트 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddHost = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (hostData) => await ApiManager.addHost(hostData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allHosts'); // 호스트 추가 성공 시 'allDHosts' 쿼리를 리패칭하여 목록을 최신화
+    },
+    onError: (error) => {
+      console.error('Error adding host:', error);
+    },  
+  });
+};
+/**
+ * @name useEditHost
+ * @description Host 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditHost = () => {
+  const queryClient = useQueryClient();  
+  return useMutation({
+    mutationFn: async ({ hostId, hostData }) => await ApiManager.editHost(hostId, hostData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allHosts');
+    },
+    onError: (error) => {
+      console.error('Error editing host:', error);
+    },
+  });
+};
+/**
+ * @name useDeleteHost
+ * @description Host 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteHost = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({ 
+    mutationFn: async (hostId) => await ApiManager.deleteHost(hostId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allHosts');
+    },
+    onError: (error) => {
+      console.error('Error deleting host:', error);
+    },
+  });
+};
 //endregion: Host
 
 //region: VM ----------------가상머신---------------------
