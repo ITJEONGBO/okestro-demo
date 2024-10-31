@@ -128,7 +128,7 @@ class ClusterController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun remove(
-		@RequestBody clusterId: String? = null,
+		@PathVariable clusterId: String? = null,
 	): ResponseEntity<Boolean> {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()

@@ -53,7 +53,7 @@ const DataCenters = () => {
         clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
-      
+
       {/* 모달 컴포넌트를 사용할 때만 로딩 */}
       <Suspense>
         {(modals.create || (modals.edit && selectedDataCenter)) && (
@@ -67,7 +67,7 @@ const DataCenters = () => {
         {modals.delete && selectedDataCenter && (
           <DeleteModal
             isOpen={modals.delete}
-            type={'Datacenter'}
+            type='Datacenter'
             onRequestClose={() => toggleModal('delete', false)}
             contentLabel={'데이터센터'}
             data={selectedDataCenter}

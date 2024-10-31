@@ -129,11 +129,10 @@ fun Connection.updateCluster(cluster: Cluster): Result<Cluster?> = runCatching {
 }
 
 fun Connection.removeCluster(clusterId: String): Result<Boolean> = runCatching {
-	if(this.findCluster(clusterId).isFailure) {
-		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
-	}
+	val cluster: Cluster =
+		this.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 
-	this.srvCluster(clusterId).remove().send()
+	this.srvCluster(cluster.id()).remove().send()
 	this.expectClusterDeleted(clusterId)
 }.onSuccess {
 	Term.CLUSTER.logSuccess("삭제")

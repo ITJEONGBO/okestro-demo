@@ -55,7 +55,7 @@ class WebMvcConfig : WebMvcConfigurer {
 		val config = CorsConfiguration().apply {
 			allowCredentials = true
 			addAllowedOrigin(URL_REACT_DEV) // 리엑트 돌릴 때
-			allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+			allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
 			allowedHeaders = listOf("*")
 			exposedHeaders = listOf("*")
 		}
@@ -66,7 +66,7 @@ class WebMvcConfig : WebMvcConfigurer {
 
 	override fun addCorsMappings(registry: CorsRegistry) {
 		registry.addMapping("/**")
-			.allowedMethods("GET", "POST", "PUT", "DELETE")
+			.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 			.allowedOrigins(URL_REACT_DEV)
 		super.addCorsMappings(registry)
 	}

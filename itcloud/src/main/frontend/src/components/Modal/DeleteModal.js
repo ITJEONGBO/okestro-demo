@@ -28,20 +28,7 @@ const DeleteModal = ({
     }
   }, [data]);
 
-  const handleDelete = (deleteFn) => {
-    deleteFn(id, {
-      onSuccess: () => {
-        onRequestClose(); // 삭제 완료 후 모달 닫기
-      },
-      onError: (error) => {
-        console.error(`${contentLabel} ${name} Error deleting`, error);
-      },
-    });
-  };
-
   const handleFormSubmit = () => {
-    console.log('Form Submit Triggered'); // 로그 추가
-
     if (!id) {
       console.error('ID가 없습니다. 삭제 요청을 취소합니다.');
       return;
@@ -55,6 +42,18 @@ const DeleteModal = ({
       handleDelete(deleteCluster);
     }
   };
+
+  const handleDelete = (deleteFn) => {
+    deleteFn(id, {
+      onSuccess: () => {
+        onRequestClose(); // 삭제 완료 후 모달 닫기
+      },
+      onError: (error) => {
+        console.error(`${contentLabel} ${name} Error deleting`, error);
+      },
+    });
+  };
+
 
   return (
     <Modal

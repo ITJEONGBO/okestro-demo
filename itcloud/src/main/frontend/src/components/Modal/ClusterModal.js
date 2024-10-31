@@ -40,7 +40,7 @@ const ClusterModal = ({
     refetch: refetchCluster,
     isError: isClusterError,
     error: clusterError,
-    isLoading: isClusterrLoading
+    isLoading: isClusterLoading
   } = useCluster(cId);
   
   // 데이터센터 가져오기
@@ -85,6 +85,18 @@ const ClusterModal = ({
       }
     }
   }, [editMode, cluster, datacenters]);
+  
+  const resetForm = () => {
+    setDatacenterVoId();
+    setName('');
+    setDescription('');
+    setComment('');
+    setNetworkVoId();
+    setCpuArc('');
+    setCpuType('');
+    setBiosType('');
+    setErrorHandling('');
+  };
 
   // 데이터센터 선택 시 네트워크 업데이트
   useEffect(() => {
@@ -97,9 +109,7 @@ const ClusterModal = ({
           setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
         }
       });
-    } else {
-      setNetworkVoId(''); // 데이터센터 선택이 취소되었을 경우 네트워크 값 초기화
-    }
+    } 
   }, [datacenterVoId]);
   
   // 데이터센터 리스트가 업데이트될 때 초기값 설정
@@ -133,18 +143,6 @@ const ClusterModal = ({
     }
   }, [cpuArc]);
 
-  const resetForm = () => {
-    setDatacenterVoId('');
-    setName('');
-    setDescription('');
-    setComment('');
-    setNetworkVoId('');
-    setCpuArc('');
-    setCpuType('');
-    setBiosType('');
-    setErrorHandling('');
-  };
-
   // 폼 제출 핸들러
   const handleFormSubmit = () => {
     const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
@@ -152,6 +150,8 @@ const ClusterModal = ({
       alert("데이터 센터를 선택해주세요.");
       return;
     }
+
+    // 선택된 네트워크 찾기
     const selectedNetwork = networks.find((n) => n.id === networkVoId);
     if (!selectedNetwork) {
       alert("네트워크를 선택해주세요.");
@@ -203,6 +203,7 @@ const ClusterModal = ({
     }
   };
 
+
   return (
     <Modal
       isOpen={isOpen}
@@ -228,7 +229,6 @@ const ClusterModal = ({
               value={datacenterVoId}
               onChange={(e) => setDatacenterVoId(e.target.value)}
             >
-              <option value="">선택</option>
               {datacenters &&
                 datacenters.map((dc) => (
                   <option key={dc.id} value={dc.id}>

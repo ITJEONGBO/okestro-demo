@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
-import TableOuter from '../../table/TableOuter';
+import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllClusters } from '../../../api/RQHook';
 
@@ -48,7 +48,7 @@ const Clusters = () => {
       </div>
       <span>id = {selectedCluster?.id || ''}</span>
 
-      <TableOuter
+      <TablesOuter
         columns={TableInfo.CLUSTERS} 
         data={clusters} 
         shouldHighlight1stCol={true}
@@ -59,7 +59,7 @@ const Clusters = () => {
 
       {/* 모달 컴포넌트를 사용할 때만 로딩 */}
       <Suspense>
-        {(modals.create || modals.edit) && (
+        {(modals.create || (modals.edit && selectedCluster)) && (
           <ClusterModal 
             isOpen={modals.create || modals.edit}
             onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
@@ -67,7 +67,7 @@ const Clusters = () => {
             cId={selectedCluster?.id || null}
           />
         )}
-        {modals.delete && (
+        {modals.delete && selectedCluster && (
           <DeleteModal
             isOpen={modals.delete}
             type={'Cluster'}
