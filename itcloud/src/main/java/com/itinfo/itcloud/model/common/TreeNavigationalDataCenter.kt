@@ -35,9 +35,7 @@ class TreeNavigationalDataCenter (
 }
 
 fun DataCenter.toNavigationalWithClusters(conn: Connection): TreeNavigationalDataCenter {
-    val clusters: List<Cluster> =
-        conn.findAllClustersFromDataCenter(this@toNavigationalWithClusters.id())
-            .getOrDefault(listOf())
+    val clusters: List<Cluster> = conn.findAllClustersFromDataCenter(this.id()).getOrDefault(listOf())
 
     return TreeNavigationalDataCenter.builder {
         id { this@toNavigationalWithClusters.id() }
@@ -45,14 +43,12 @@ fun DataCenter.toNavigationalWithClusters(conn: Connection): TreeNavigationalDat
         clusters { clusters.toNavigationals(conn) }
     }
 }
-
 fun List<DataCenter>.toNavigationalsWithClusters(conn: Connection): List<TreeNavigationalDataCenter> =
     this@toNavigationalsWithClusters.map { it.toNavigationalWithClusters(conn) }
 
 fun DataCenter.toNavigationalWithNetworks(conn: Connection): TreeNavigationalDataCenter {
     val networks: List<Network> =
-        conn.findAllNetworksFromDataCenter(this@toNavigationalWithNetworks.id())
-            .getOrDefault(listOf())
+        conn.findAllNetworksFromDataCenter(this.id()).getOrDefault(listOf())
 
     return TreeNavigationalDataCenter.builder {
         id { this@toNavigationalWithNetworks.id() }

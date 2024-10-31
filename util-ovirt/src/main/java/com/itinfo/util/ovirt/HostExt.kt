@@ -48,16 +48,14 @@ fun List<Host>.nameDuplicateHost(hostName: String, hostId: String? = null): Bool
 	this.filter { it.id() != hostId }.any { it.name() == hostName }
 
 
-fun Connection.findAllVmsFromHost(hostId: String): Result<List<Vm>> = runCatching {
+fun Connection.findAllVmsFromHost(hostId: String, searchQuery: String = ""): Result<List<Vm>> = runCatching {
 	if(this.findHost(hostId).isFailure){
 		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 	}
-	this.findAllVms()
-		.getOrDefault(listOf())
-		.filter {
-			(it.hostPresent() && it.host().id() == hostId)
-			|| (it.placementPolicy().hostsPresent() && it.placementPolicy().hosts().any { h -> h?.id() == hostId })
-		}
+	if (searchQuery.isNotEmpty())
+		this.srvVms().list().search(searchQuery).send().vms().filter { it.host().id() == hostId }
+	else
+		this.srvVms().list().send().vms().filter { it.host().id() == hostId }
 }.onSuccess {
 	Term.HOST.logSuccess("vms 조회", hostId)
 }.onFailure {
@@ -106,7 +104,7 @@ fun Connection.removeHost(hostId: String): Result<Boolean> = runCatching {
 		this.findHost(hostId)
 			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 
-	if(this.findAllVmsFromHost(hostId)
+	if(this.findAllVmsFromHost("", hostId)
 			.getOrDefault(listOf())
 			.any { it.status() == VmStatus.UP }){
 		throw ErrorPattern.HOST_HAS_RUNNING_VMS.toError()

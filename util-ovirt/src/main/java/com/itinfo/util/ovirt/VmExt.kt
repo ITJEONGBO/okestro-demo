@@ -8,7 +8,7 @@ import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
 
-private fun Connection.srvVms(): VmsService =
+fun Connection.srvVms(): VmsService =
 	this.systemService.vmsService()
 
 fun Connection.findAllVms(searchQuery: String = "", follow: String = ""): Result<List<Vm>> = runCatching {

@@ -57,7 +57,6 @@ fun Vm.toNavigationalWithStorageDomains(): TreeNavigational = TreeNavigational.b
 	id { this@toNavigationalWithStorageDomains.id() }
 	name { this@toNavigationalWithStorageDomains.name() }
 }
-
 fun List<Vm>.fromVmsToTreeNavigationals(): List<TreeNavigational> =
 	this@fromVmsToTreeNavigationals.map { it.toNavigationalWithStorageDomains() }
 //endregion

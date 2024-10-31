@@ -77,13 +77,14 @@ fun Connection.findAllHostsFromCluster(clusterId: String): Result<List<Host>> = 
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findAllVmsFromCluster(clusterId: String): Result<List<Vm>> = runCatching {
+fun Connection.findAllVmsFromCluster(clusterId: String, searchQuery: String = ""): Result<List<Vm>> = runCatching {
 	if(this.findCluster(clusterId).isFailure){
 		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 	}
-	this.findAllVms()
-		.getOrDefault(listOf())
-		.filter { it.cluster().id() == clusterId }
+	if (searchQuery.isNotEmpty())
+		this.srvVms().list().search(searchQuery).send().vms().filter { it.cluster().id() == clusterId }
+	else
+		srvVms().list().send().vms().filter { it.cluster().id() == clusterId }
 }.onSuccess {
 	Term.CLUSTER.logSuccessWithin(Term.VM, "목록조회")
 }.onFailure {

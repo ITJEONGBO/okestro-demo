@@ -46,24 +46,21 @@ class TreeNavigationServiceImpl (
     override fun findAllNavigationalsWithClusters(): List<TreeNavigationalDataCenter> {
         log.info("toComputing ... ")
         val dataCenters: List<DataCenter> =
-            conn.findAllDataCenters()
-                .getOrDefault(listOf())
+            conn.findAllDataCenters().getOrDefault(listOf())
         return dataCenters.toNavigationalsWithClusters(conn)
     }
 
     override fun findAllNavigationalsWithNetworks(): List<TreeNavigationalDataCenter> {
         log.info("toNetwork ... ")
         val dataCenters: List<DataCenter> =
-            conn.findAllDataCenters()
-                .getOrDefault(listOf())
+            conn.findAllDataCenters().getOrDefault(listOf())
         return dataCenters.totoNavigationalsWithNetworks(conn)
     }
 
     override fun findAllNavigationalsWithStorageDomains(): List<TreeNavigationalDataCenter> {
         log.info("toStorageDomain ... ")
         val dataCenters: List<DataCenter> =
-            conn.findAllDataCenters()
-                .getOrDefault(listOf())
+            conn.findAllDataCenters().getOrDefault(listOf())
         return dataCenters.toNavigationalsWithStorageDomains(conn)
     }
 

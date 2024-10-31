@@ -2,6 +2,7 @@ package com.itinfo.itcloud.model.common
 
 import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findAllVms
+import com.itinfo.util.ovirt.findAllVmsFromHost
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.Vm
@@ -30,8 +31,7 @@ class TreeNavigationalHost (
 
 fun Host.toNavigationalWithStorageDomains(conn: Connection): TreeNavigationalHost {
     val vms: List<Vm> =
-        conn.findAllVms(searchQuery = "status=up").getOrDefault(listOf())
-            .filter { it.hostPresent() && it.host().id() == this@toNavigationalWithStorageDomains.id() }
+        conn.findAllVmsFromHost(this@toNavigationalWithStorageDomains.id(), "status=up").getOrDefault(listOf())
 
     return TreeNavigationalHost.builder {
         id { this@toNavigationalWithStorageDomains.id() }
@@ -39,6 +39,5 @@ fun Host.toNavigationalWithStorageDomains(conn: Connection): TreeNavigationalHos
         vms { vms.fromVmsToTreeNavigationals() }
     }
 }
-
 fun List<Host>.fromDisksToTreeNavigationals(conn: Connection): List<TreeNavigationalHost> =
     this@fromDisksToTreeNavigationals.map { it.toNavigationalWithStorageDomains(conn) }

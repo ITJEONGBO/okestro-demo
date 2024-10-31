@@ -2,7 +2,9 @@ package com.itinfo.itcloud.model.common
 
 import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findAllHosts
+import com.itinfo.util.ovirt.findAllHostsFromCluster
 import com.itinfo.util.ovirt.findAllVms
+import com.itinfo.util.ovirt.findAllVmsFromCluster
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Cluster
 import org.ovirt.engine.sdk4.types.Host
@@ -31,13 +33,8 @@ class TreeNavigationalCluster (
 }
 
 fun Cluster.toNavigational(conn: Connection): TreeNavigationalCluster {
-    val hosts: List<Host> =
-        conn.findAllHosts().getOrDefault(listOf())
-            .filter { it.cluster().id() == this@toNavigational.id() }
-
-    val vmDowns: List<Vm> =
-        conn.findAllVms(searchQuery = "status=down").getOrDefault(listOf())
-            .filter { it.cluster().id() == this@toNavigational.id() }
+    val hosts: List<Host> = conn.findAllHostsFromCluster(this@toNavigational.id()).getOrDefault(listOf())
+    val vmDowns: List<Vm> = conn.findAllVmsFromCluster(this@toNavigational.id(), "status=down").getOrDefault(listOf())
 
     return TreeNavigationalCluster.builder {
         id { this@toNavigational.id() }
@@ -46,6 +43,5 @@ fun Cluster.toNavigational(conn: Connection): TreeNavigationalCluster {
         vmDowns { vmDowns.fromVmsToTreeNavigationals() }
     }
 }
-
 fun List<Cluster>.toNavigationals(conn: Connection): List<TreeNavigationalCluster> =
     this@toNavigationals.map { it.toNavigational(conn) }
