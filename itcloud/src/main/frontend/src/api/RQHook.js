@@ -959,6 +959,26 @@ export const useAllVnicProfiles = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+/**
+ * @name useDeleteNetwork
+ * @description 네트워크 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteNetwork = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({ 
+    mutationFn: async (networkId) => await ApiManager.deleteNetwork(networkId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allNetworks');
+    },
+    onError: (error) => {
+      console.error('Error deleting cluster:', error);
+    },
+  });
+};
+
+
 
 //region: storage -----------------스토리지---------------------
 

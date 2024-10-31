@@ -5,7 +5,8 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import {
   useDeleteDataCenter,
   useDeleteCluster,
-} from '../../api/RQHook'
+  useDeleteNetwork, // 네트워크 삭제 추가
+} from '../../api/RQHook';
 
 const DeleteModal = ({ 
     isOpen, 
@@ -19,12 +20,13 @@ const DeleteModal = ({
 
   const { mutate: deleteDataCenter } = useDeleteDataCenter();
   const { mutate: deleteCluster } = useDeleteCluster();
+  const { mutate: deleteNetwork } = useDeleteNetwork(); // 네트워크 삭제 추가
 
   useEffect(() => {
     if (data) {
       setId(data.id || '');
       setName(data.name || '');
-      console.log('**'+data.id)
+      console.log('**'+data.id);
     }
   }, [data]);
 
@@ -40,6 +42,9 @@ const DeleteModal = ({
     } else if (type === 'Cluster') {
       console.log('Deleting Cluster');
       handleDelete(deleteCluster);
+    } else if (type === 'Network') { // Network 삭제 처리 추가
+      console.log('Deleting Network');
+      handleDelete(deleteNetwork);
     }
   };
 
@@ -49,11 +54,10 @@ const DeleteModal = ({
         onRequestClose(); // 삭제 완료 후 모달 닫기
       },
       onError: (error) => {
-        console.error(`${contentLabel} ${name} Error deleting`, error);
+        console.error(`${contentLabel} ${name} 삭제 오류:`, error);
       },
     });
   };
-
 
   return (
     <Modal

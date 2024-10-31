@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,6 +15,8 @@ import { adjustFontSize } from '../../UIEvent';
 import { useAllNetworks } from '../../api/RQHook';
 import './css/Network.css';
 import TableInfo from '../table/TableInfo';
+import DeleteModal from '../Modal/DeleteModal';
+import NetworkNewModal from '../Modal/NetworkNewModal';
 
 Modal.setAppElement('#root');
 const Network = () => {
@@ -81,7 +83,15 @@ const Network = () => {
     const closePopup = () => setActivePopup(null);
     const handleTabClick = (tab) => setSelectedTab(tab);
 
-
+    const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+    const [selectedNetwork, setSelectedNetwork] = useState(null);
+    const toggleModal = (type, isOpen) => {
+        setModals((prev) => ({ ...prev, [type]: isOpen }));
+    };
+    const handleNetworkSave = (data) => {
+        console.log("Saving Network Data: ", data);
+        // API call or state update logic goes here
+    };
     
     return (
         <div id="network_section">
@@ -94,14 +104,18 @@ const Network = () => {
 
             <div className="host_btn_outer">
                 <div className="header_right_btns">
-                    <button onClick={() => openPopup('newNetwork')}>새로 만들기</button>
-                    <button onClick={() => openPopup('editNetwork')}>편집</button>
-                    <button onClick={() => openPopup('delete')}> 삭제</button>
+                    {/* <button onClick={() => openPopup('newNetwork')}>새로 만들기</button> */}
+                    <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
+                    {/* <button onClick={() => openPopup('editNetwork')}>편집</button> */}
+                    <button onClick={() => selectedNetwork?.id && toggleModal('edit', true)} disabled={!selectedNetwork?.id}>편집</button>
+                    <button onClick={() => selectedNetwork?.id && toggleModal('delete', true)} disabled={!selectedNetwork?.id}>제거</button>
                 </div>
+                <span>id = {selectedNetwork?.id || ''}</span>
                 <TableOuter
                     columns={TableInfo.NETWORKS}
                     data={networkdata}
                     onRowClick={(row, column, colIndex) => {
+                         setSelectedNetwork(row);
                         if (colIndex === 0) {
                           navigate(`/networks/${row.id}`);  // 1번 컬럼 클릭 시 이동할 경로
                         } else if (colIndex === 2) {
@@ -123,6 +137,31 @@ const Network = () => {
 
             <Footer/>
 
+            <Suspense>
+                {(modals.create || (modals.edit && selectedNetwork)) && (
+                    <NetworkNewModal
+                        isOpen={modals.create || modals.edit}
+                        onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+                        editMode={modals.edit}
+                        networkId={selectedNetwork?.id || null}
+                    />
+                )}
+                {modals.delete && selectedNetwork && (
+                <DeleteModal
+                    isOpen={modals.delete}
+                    type='Network'
+                    onRequestClose={() => toggleModal('delete', false)}
+                    contentLabel={'네트워크'}
+                    data={selectedNetwork}
+                />
+                )}
+            </Suspense>
+            
+             {/* <NetworkNewModal
+                isOpen={activePopup === 'newNetwork'}
+                onRequestClose={closePopup}
+                onSave={handleNetworkSave}
+            /> */}
             {/* 새로 만들기 팝업(After) */}
             <Modal
 

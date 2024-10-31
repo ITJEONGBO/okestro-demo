@@ -1719,9 +1719,10 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_NETWORK(networkId), 
-      defaultValues: DEFAULT_VALUES.DELETE_NETWORK
+      data: networkId
     });
   },
+
 
   /**
    * @name ApiManager.findAllNetworkProviders

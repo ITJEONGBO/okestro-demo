@@ -364,8 +364,8 @@ button:disabled {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 82.4%;
-    width: 44%;
+    height: 78.4%;
+    width: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
@@ -450,13 +450,14 @@ button:disabled {
 }
 
 .network_new_popup form{
-    height: 69.3vh;
+    height: 66vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 #network_new_cluster_form{
     padding: 0.2rem 0.4rem;
     margin-bottom: 0.3rem;
+
 }
 #network_new_cluster_form>span,#network_new_vnic_form>span{
     font-size: 0.35rem;
@@ -464,7 +465,7 @@ button:disabled {
 }
 #network_new_cluster_form>div{
     border: 1px solid rgb(209, 209, 209);
-    height: 47vh;
+    height: 37vh;
 }
 .network_new_cluster_table{ 
     border-collapse: collapse;
