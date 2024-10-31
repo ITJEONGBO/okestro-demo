@@ -1,28 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback  } from 'react';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 
-const NavButton = ({ sections, handleSectionClick }) => {
+const NavButton = React.memo(({ sections, handleSectionClick }) => {
   const { pathname } = useLocation(); // 현재 URL 경로 가져오기
   const [activeSection, setActiveSection] = useState(sections[0]?.id || ''); // 기본값을 첫 번째 섹션으로 설정
 
   useEffect(() => {
-    // URL이 변경되면 해당 URL의 끝부분을 activeSection으로 설정
     const pathParts = pathname.split('/');
     const lastPart = pathParts[pathParts.length - 1];
-    
-    // 마지막 부분이 section에 해당하는지 확인
-    if (sections.some(section => section.id === lastPart)) {
+  
+    if (lastPart !== activeSection && sections.some(section => section.id === lastPart)) {
       setActiveSection(lastPart);
-    } else {
-      setActiveSection(sections[0]?.id || ''); // 기본값을 첫 번째 섹션으로 설정
+    } else if (!sections.some(section => section.id === activeSection)) {
+      setActiveSection(sections[0]?.id || '');
     }
-  }, [pathname, sections]);
+  }, [pathname]);
 
-  const handleClick = (sectionId) => {
-    setActiveSection(sectionId); // 선택된 섹션을 업데이트
-    handleSectionClick(sectionId); // 선택한 섹션을 부모 컴포넌트에 알림
-  };
+  const handleClick = useCallback((sectionId) => {
+    setActiveSection(sectionId);
+    handleSectionClick(sectionId);
+  }, [handleSectionClick]);
 
   return (
     <div className="content_header">
@@ -39,7 +37,7 @@ const NavButton = ({ sections, handleSectionClick }) => {
       </div>
     </div>
   );
-};
+});
 
 NavButton.propTypes = {
   sections: PropTypes.arrayOf(

@@ -3,6 +3,10 @@
     width: 12%;
 }
 
+.active {
+    transition: all 0.3s ease;
+  }
+
 .content_header_left {
     font-size: 0.65rem;
     border-radius: 3px;

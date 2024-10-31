@@ -47,10 +47,10 @@ const DeleteModal = ({
       return;
     }
 
-    if (type === 'datacenter') {
+    if (type === 'Datacenter') {
       console.log('Deleting Data Center');
       handleDelete(deleteDataCenter);
-    } else if (type === 'cluster') {
+    } else if (type === 'Cluster') {
       console.log('Deleting Cluster');
       handleDelete(deleteCluster);
     }

@@ -62,7 +62,7 @@ const Clusters = () => {
       />
       <DeleteModal
         isOpen={modals.delete}
-        type={'cluster'}
+        type={'Cluster'}
         onRequestClose={() => toggleModal('delete', false)}
         contentLabel={'클러스터'}
         data={selectedCluster}

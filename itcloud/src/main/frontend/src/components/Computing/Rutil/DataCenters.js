@@ -1,7 +1,7 @@
 import { useEffect, useState  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
-import TableOuter from '../../table/TableOuter';
+import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import DataCenterModal from '../../Modal/DataCenterModal';
 import DeleteModal from '../../Modal/DeleteModal';
@@ -43,7 +43,7 @@ const DataCenters = () => {
       </div>
       <span>id = {selectedDataCenter?.id || ''}</span>
 
-      <TableOuter
+      <TablesOuter
         columns={TableInfo.DATACENTERS}
         data={datacenters}
         shouldHighlight1stCol={true}
@@ -59,7 +59,7 @@ const DataCenters = () => {
       />
       <DeleteModal
         isOpen={modals.delete}
-        type={'datacenter'}
+        type={'Datacenter'}
         onRequestClose={() => toggleModal('delete', false)}
         contentLabel={'데이터센터'}
         data={selectedDataCenter}
