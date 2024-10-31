@@ -265,23 +265,26 @@ const toggleDataCenter = (dataCenterId) => {
     };
 
     const handleClick = (id) => {
-        setSelected(id);  // selected 값을 변경
-        toggleAsidePopup(id);  // 색상을 변경하는 로직 호출
-        setAsidePopupVisible(true);  // aside_popup을 열리게 함
-        localStorage.setItem('selected', id);  // 로컬 스토리지에 저장
-      
+        setSelected(id);  // 선택한 섹션으로 업데이트
+        toggleAsidePopup(id);  // 선택한 섹션의 배경색 설정
+        setAsidePopupVisible(true);  // 팝업을 표시
+        localStorage.setItem('selected', id);  // 선택한 섹션을 로컬 스토리지에 저장
+        
+        // 이벤트와 설정을 제외한 경우에만 마지막 선택 항목을 저장
         if (id !== 'event' && id !== 'setting' && id !== 'dashboard') {
-          setLastSelected(id);  // 마지막 선택 항목 업데이트
-          localStorage.setItem('lastSelected', id);  // 로컬 스토리지에 저장
+            setLastSelected(id);
+            localStorage.setItem('lastSelected', id);  // 로컬 스토리지에 저장
         }
-      };
+    };
       
-  const renderAsidePopupContent = () => {
-    if (selected === 'event' || selected === 'setting'|| selected === 'dashboard') {
-      return lastSelected ? renderAsidePopup(lastSelected) : <div>선택된 내용이 없습니다.</div>;
-    }
-    return renderAsidePopup(selected);  // 현재 선택된 항목의 내용을 보여줌
-  };
+      const renderAsidePopupContent = () => {
+        if (selected === 'event' || selected === 'setting') {
+            // 이벤트와 설정에서는 이전에 선택한 섹션의 콘텐츠를 표시
+            return lastSelected ? renderAsidePopup(lastSelected) : <div>선택된 내용이 없습니다.</div>;
+        }
+        return renderAsidePopup(selected); // 현재 선택된 항목의 콘텐츠를 표시
+    };
+
   const renderAsidePopup = (selected) => {
     return (
       <>
@@ -728,14 +731,20 @@ const toggleDataCenter = (dataCenterId) => {
 // 저장된 항목에 맞춰 배경색 초기화
 useEffect(() => {
     const savedSelected = localStorage.getItem('selected');
+    const savedLastSelected = localStorage.getItem('lastSelected');
+
     if (savedSelected) {
-      setSelected(savedSelected);
-      toggleAsidePopup(savedSelected); // 선택된 섹션에 맞춰 aside popup 색상 변경
+        setSelected(savedSelected);
+        toggleAsidePopup(savedSelected);
     } else {
-      setSelected('dashboard'); // 기본값으로 'dashboard' 설정
-      toggleAsidePopup('dashboard');
+        setSelected('dashboard');
+        toggleAsidePopup('dashboard');
     }
-  }, []);
+
+    if (savedLastSelected) {
+        setLastSelected(savedLastSelected);
+    }
+}, []);
 // id포함유무에 따라 배경색결정
 const getBackgroundColor = (id) => {
     const path = location.pathname;
