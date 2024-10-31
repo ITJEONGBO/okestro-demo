@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import './css/MCluster.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import {
   useAddCluster, 
   useEditCluster, 
@@ -67,7 +67,10 @@ const ClusterModal = ({
 
   // 모달이 열릴 때 데이터 초기화
   useEffect(() => {
-    if (editMode) {
+    if (editMode && cluster) {
+      console.log('---'+cluster.cpuType)
+      console.log('---'+cluster.biosType)
+      // 데이터가 모두 로드된 경우에만 설정
       setId(cluster?.id);
       setDatacenterVoId(cluster?.datacenterVo?.id || '');
       setName(cluster?.name);
@@ -87,11 +90,11 @@ const ClusterModal = ({
   }, [editMode, cluster, datacenters]);
   
   const resetForm = () => {
-    setDatacenterVoId();
+    setDatacenterVoId('');
     setName('');
     setDescription('');
     setComment('');
-    setNetworkVoId();
+    setNetworkVoId('');
     setCpuArc('');
     setCpuType('');
     setBiosType('');
@@ -122,26 +125,97 @@ const ClusterModal = ({
     }
   }, [datacenters, editMode]);
 
+
   useEffect(() => {
-    if (cpuArc === 'x86_64') {
-      setCpuOptions([
-        'Intel Nehalem Family', 
-        'b', 
-        'c'
-      ]);
-      setCpuType(''); // CPU 유형 초기화
-    } else if (cpuArc === 'ppc64') {
-      setCpuOptions([
-        'd', 
-        'g', 
-        'h'
-      ]);
-      setCpuType(''); // CPU 유형 초기화
-    } else if(cpuArc === 's390x') {
-      setCpuOptions([]);
-      setCpuType(''); // CPU 유형 초기화
+    let options = [];
+    switch (cpuArc) {
+      case 'X86_64':
+        options = [
+          'Intel Nehalem Family', 
+          'Secure Intel Nehalem Family', 
+          'Intel Westmere Family', 
+          'Secure Intel Westmere Family',
+          'Intel SandyBridge Family',
+          'Secure Intel SandyBridge Family',
+          'Intel IvyBridge Family',
+          'Secure Intel IvyBridge Family',
+          'Intel Haswell Family',
+          'Secure Intel Haswell Family',
+          'Intel Broadwell Family',
+          'Secure Intel Broadwell Family',
+          'Intel Skylake Client Family',
+          'Secure Intel Skylake Client Family',
+          'Intel Skylake Server Family',
+          'Secure Intel Skylake Server Family',
+          'Intel Cascadelake Server Family',
+          'Secure Intel Cascadelake Server Family',
+          'Intel Icelake Server Family',
+          'Secure Intel Icelake Server Family',
+          'AMD Opteron G4',
+          'AMD Opteron G5',
+          'AMD EPYC',
+          'Secure AMD EPYC'
+        ];
+        break;
+      case 'PPC64':
+        options = [
+          'IBM POWER8',
+          'IBM POWER9'
+        ];
+        break;
+      case 'S390X':
+        options = [
+          'IBM z114, z196',
+          'IBM zBC12, zEC12',
+          'IBM z13s, z13',
+          'IBM z14'
+        ];
+        break;
+      default:
+        options = [
+          '자동 감지',
+          'Intel Nehalem Family', 
+          'Secure Intel Nehalem Family', 
+          'Intel Westmere Family', 
+          'Secure Intel Westmere Family',
+          'Intel SandyBridge Family',
+          'Secure Intel SandyBridge Family',
+          'Intel IvyBridge Family',
+          'Secure Intel IvyBridge Family',
+          'Intel Haswell Family',
+          'Secure Intel Haswell Family',
+          'Intel Broadwell Family',
+          'Secure Intel Broadwell Family',
+          'Intel Skylake Client Family',
+          'Secure Intel Skylake Client Family',
+          'Intel Skylake Server Family',
+          'Secure Intel Skylake Server Family',
+          'Intel Cascadelake Server Family',
+          'Secure Intel Cascadelake Server Family',
+          'Intel Icelake Server Family',
+          'Secure Intel Icelake Server Family',
+          'AMD Opteron G4',
+          'AMD Opteron G5',
+          'AMD EPYC',
+          'Secure AMD EPYC',
+          'IBM POWER8',
+          'IBM POWER9',
+          'IBM z114, z196',
+          'IBM zBC12, zEC12',
+          'IBM z13s, z13',
+          'IBM z14'
+        ];
     }
+    setCpuOptions(options);
+    setCpuType(''); // CPU 유형 초기화
   }, [cpuArc]);
+
+  // cpuArc에 따른 cpuType 변화
+  useEffect(() => {
+    if (editMode && cluster?.cpuType && cpuOptions.includes(cluster.cpuType)) {
+      setCpuType(cluster.cpuType);
+    }
+  }, [cpuOptions, editMode, cluster]);
 
   // 폼 제출 핸들러
   const handleFormSubmit = () => {
@@ -155,6 +229,11 @@ const ClusterModal = ({
     const selectedNetwork = networks.find((n) => n.id === networkVoId);
     if (!selectedNetwork) {
       alert("네트워크를 선택해주세요.");
+      return;
+    }
+
+    if(name === ''){
+      alert("이름을 입력해주세요.");
       return;
     }
 
@@ -228,10 +307,11 @@ const ClusterModal = ({
               id="data_center"
               value={datacenterVoId}
               onChange={(e) => setDatacenterVoId(e.target.value)}
+              disabled={editMode}
             >
               {datacenters &&
                 datacenters.map((dc) => (
-                  <option key={dc.id} value={dc.id}>
+                  <option value={dc.id}>
                     {dc.name}
                   </option>
                 ))}
@@ -276,7 +356,7 @@ const ClusterModal = ({
               id="network"
               value={networkVoId}
               onChange={(e) => setNetworkVoId(e.target.value)}
-              disabled={isNetworksLoading || !datacenterVoId}
+              disabled={editMode || isNetworksLoading || !datacenterVoId}
             >
               {/* <option value="">선택</option> */}
               {networks &&
@@ -295,10 +375,10 @@ const ClusterModal = ({
               value={cpuArc}
               onChange={(e) => setCpuArc(e.target.value)}
             >
-              <option value="undefined">undefined</option>
-              <option value="x86_64">x86_64</option>
-              <option value="ppc64">ppc64</option>
-              <option value="s390x">s390x</option>
+              <option value="undefined">정의되지 않음</option>
+              <option value="X86_64">x86_64</option>
+              <option value="PPC64">ppc64</option>
+              <option value="S390X">s390x</option>
             </select>
           </div>
 
@@ -310,7 +390,6 @@ const ClusterModal = ({
               onChange={(e) => setCpuType(e.target.value)}
               disabled={cpuOptions.length === 0}
             >
-              {/* <option value="">선택</option> */}
               {cpuOptions.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -326,23 +405,35 @@ const ClusterModal = ({
               value={biosType}
               onChange={(e) => setBiosType(e.target.value)}
             >
-              <option value="cluster_default">cluster_default</option>
-              <option value="i440fx_sea_bios">i440fx_sea_bios</option>
-              <option value="q35_ovmf">q35_ovmf</option>
-              <option value="q35_sea_bios">q35_sea_bios</option>
-              <option value="q35_secure_boot">q35_secure_boot</option>
+              <option value="CLUSTER_DEFAULT">자동 감지</option>
+              <option value="I440FX_SEA_BIOS">BIOS의 I440FX 칩셋</option>
+              <option value="Q35_OVMF">UEFI의 Q35 칩셋</option>
+              <option value="Q35_SEA_BIOS">BIOS의 Q35 칩셋</option>
+              <option value="Q35_SECURE_BOOT">UEFI SecureBoot의 Q35 칩셋</option>
             </select>
           </div>
 
           {/* <div>
-            <input type='checkbox' >BIOS를 사용하여...</input>
+            <input type="checkbox" id="bios_change" name="bios_change" />
+            <label htmlFor="bios_change">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
           </div>
 
           <div>
-            <input type='radio' >가상머신을 </input>
-            <input type='radio' >고가용성 가상머신만 </input>
-            <input type='radio' >가상머신은 </input>
+            <div>복구 정책</div>
+            <div>
+              <input type="radio" id="migration_option" name="recovery_policy" />
+              <label htmlFor="migration_option">가상 머신을 마이그레이션함</label>
+            </div>
+            <div>
+              <input type="radio" id="high_usage_migration_option" name="recovery_policy" />
+              <label htmlFor="high_usage_migration_option">고가용성 가상 머신만 마이그레이션</label>
+            </div>
+            <div>
+              <input type="radio" id="no_migration_option" name="recovery_policy" />
+              <label htmlFor="no_migration_option">가상 머신은 마이그레이션 하지 않음</label>
+            </div>
           </div> */}
+
         </div>
 
         <div className="edit_footer">

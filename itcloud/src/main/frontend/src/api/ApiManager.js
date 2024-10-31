@@ -527,7 +527,6 @@ const ApiManager = {
         method: "PUT",
         url: ENDPOINTS.EDIT_CLUSTER(clusterId),
         data: clusterData, // PUT 요청 시 전송할 데이터
-        defaultValues: DEFAULT_VALUES.EDIT_CLUSTER
       });
     },
   /**
