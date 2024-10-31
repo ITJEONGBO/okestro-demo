@@ -108,6 +108,13 @@ const App = () => {
               <Route path="/computing/datacenters" element={<DataCenters />} />
               <Route path="/computing/datacenters/:id" element={<DataCenter />} />
               <Route path="/computing/datacenters/:id/:section" element={<DataCenter />} />
+
+               {/*네트워크쪽 데이터센터*/}
+              <Route path="/networks/datacenters/:id" element={<DataCenter />} />
+              <Route path="/networks/datacenters/:id/:section" element={<DataCenter />} />
+               {/*스토리지쪽 데이터센터*/}
+               <Route path="/storages/datacenters/:id" element={<DataCenter />} />
+              <Route path="/storages/datacenters/:id/:section" element={<DataCenter />} />
                             
               <Route path="/computing/clusters" element={<AllCluster />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} />

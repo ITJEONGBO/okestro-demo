@@ -21,17 +21,8 @@ import TableOuter from '../table/TableOuter';
 import { 
   useClustersFromDataCenter, 
   useDataCenter, 
-  useDomainsFromDataCenter, 
-  useEventsFromDataCenter, 
-  useHostsFromDataCenter, 
-  useNetworkById, 
-  useNetworksFromDataCenter, 
-  useVMsFromDataCenter 
 } from '../../api/RQHook';
 import Path from '../Header/Path';
-import HostDu from '../duplication/HostDu';
-import VmDu from '../duplication/VmDu';
-import EventDu from '../duplication/EventDu';
 import DatacenterCluster from './datacenterjs/DatacenterCluster';
 import DatacenterHost from './datacenterjs/DatacenterHost';
 import DatacenterVm from './datacenterjs/DatacenterVm';
@@ -52,14 +43,26 @@ const DataCenterDetail = () => {
   const locationState = location.state  
 
   
- const handleTabClick = (tab) => {
+  const handleTabClick = (tab) => {
     setActiveTab(tab);
-    if (tab !== 'cluster') {
-      navigate(`/computing/datacenters/${id}/${tab}`);
+  
+    let basePath;
+    if (location.pathname.startsWith('/computing')) {
+      basePath = `/computing/datacenters/${id}`;
+    } else if (location.pathname.startsWith('/networks')) {
+      basePath = `/networks/datacenters/${id}`;
+    } else if (location.pathname.startsWith('/storages')) {
+      basePath = `/storages/datacenters/${id}`;
+    }
+  
+    if (tab !== 'clusters') {
+      navigate(`${basePath}/${tab}`);
     } else {
-      navigate(`/computing/datacenters/${id}`);
+      navigate(basePath);
     }
   };
+  
+  
 useEffect(() => {
   if (!section) {
     setActiveTab('clusters');
@@ -127,94 +130,6 @@ useEffect(() => {
     dataCenterRefetch()
   }, [setShouldRefresh, dataCenterRefetch]);
 
-
-  // 클러스터
-  // const { 
-  //   data: clusters, 
-  //   status: clustersStatus, 
-  //   isLoading: isClustersLoading, 
-  //   isError: isClustersError 
-  // } = useClustersFromDataCenter(dataCenter?.id, toTableItemPredicateClusters);
-  // function toTableItemPredicateClusters(cluster) {
-  //   return {
-  //     name: cluster?.name ?? '없음',
-  //     description: cluster?.description ?? '없음',
-  //     version: cluster?.version ?? '없음',
-  //   };
-  // }
-  // 호스트
-  // const { 
-  //   data: hosts, 
-  //   status: hostsStatus, 
-  //   isLoading: isHostsLoading, 
-  //   isError: isHostsError 
-  // } = useHostsFromDataCenter(dataCenter?.id, toTableItemPredicateHosts);
-  // function toTableItemPredicateHosts(host) {
-  //   return {
-  //     name: host?.name ?? '없음',
-  //     comment: host?.comment ?? '없음',
-  //     hostNameIP: host?.hostNameIP ?? '알 수 없음',
-  //     clusterVo: host?.clusterVo?.name ?? '알 수 없음',
-  //     dataCenterVo: host?.dataCenterVo?.name ?? '알 수 없음',
-  //     status: host?.status ?? '알 수 없음',
-  //     vm: host?.vm ?? '#',
-  //     memory: host?.memory ? `${host.memory} GiB` : '#',
-  //     cpu: host?.cpu ?? '#',
-  //     network: host?.network ?? '#',
-  //     spmStatus: host?.spmStatus ?? '알 수 없음',
-  //   };
-  // }
-    // 스토리지
-    // const { 
-    //   data: domains, 
-    //   status: domainsStatus, 
-    //   isLoading: isDomainsLoading, 
-    //   isError: isDomainsError 
-    // } = useNetworksFromDataCenter(dataCenter?.id, toTableItemPredicateDomains);
-    // function toTableItemPredicateDomains(domain) {
-    //   return {
-    //     icon: '📁', // 첫 번째 이모티콘을 고정적으로 표시
-    //     icon2: '💾', // 두 번째 이모티콘을 고정적으로 표시
-    //     name: domain?.name ?? '없음', // 도메인 이름
-    //     domainType: domain?.domainType ?? '없음', // 도메인 유형
-    //     status: domain?.status ?? '알 수 없음', // 상태
-    //     availableSize: domain?.availableSize ?? '알 수 없음', // 여유 공간 (GiB)
-    //     usedSize: domain?.usedSize ?? '알 수 없음', // 사용된 공간
-    //     diskSize: domain?.diskSize ?? '알 수 없음', // 전체 공간 (GiB)
-    //     description: domain?.description ?? '설명 없음', // 설명
-    //   };
-    // }
-    // 논리네트워크
-    // const { 
-    //   data: networks, 
-    //   status: networksStatus, 
-    //   isLoading: isNetworksLoading, 
-    //   isError: isNetworksError 
-    // } = useNetworksFromDataCenter(dataCenter?.id, toTableItemPredicateNetworks);
-    // function toTableItemPredicateNetworks(network) {
-    //   return {
-    //     name: network?.name ?? '없음', // 네트워크 이름을 logicalName으로 매핑
-    //     description: network?.description ?? '설명 없음', // 네트워크 설명
-    //   };
-    // }
-  // 이벤트
-  // const { 
-  //   data: events, 
-  //   status: eventsStatus, 
-  //   isLoading: isEventsLoading, 
-  //   isError: isEventsError 
-  // } = useEventsFromDataCenter(dataCenter?.id, toTableItemPredicateEvents);
-  // function toTableItemPredicateEvents(event) {
-  //   return {
-  //     // id: event?.id ?? '', 
-  //     icon: '',                      
-  //     time: event?.time ?? '',                
-  //     description: event?.description ?? 'No message', 
-  //     correlationId: event?.correlationId ?? '',
-  //     source: event?.source ?? 'ovirt',     
-  //     userEventId: event?.userEventId ?? '',   
-  //   };
-  // }
 
   // Nav 컴포넌트
   const sections = [
@@ -312,57 +227,7 @@ useEffect(() => {
             </>
           
           )} */}
-          {/* {activeTab === 'hosts' && (
-            <>
-            <div className="header_right_btns">
-                <button onClick={() => handleOpenModal('host_new')}>새로 만들기</button>
-                <button onClick={() => handleOpenModal('host_new')}>편집</button>
-                <button onClick={() => handleOpenModal('host_new')}>삭제</button>
-                <button onClick={() => handleOpenModal('host_new')}>관리</button>
-                <button onClick={() => handleOpenModal('host_new')}>설치</button>
-                <button onClick={() => handleOpenModal('host_new')}>호스트 네트워크 복사</button>
-            </div>
-  
-            
-             <HostDu 
-                data={hosts} 
-                columns={TableColumnsInfo.HOSTS_ALL_DATA} 
-                handleRowClick={handleRowClick}
-                openPopup={[]}
-                
-              />
-            </>
-          )} */}
-          {/* {activeTab === 'vms' && (
-            <>
-            <VmDu 
-               // 가상머신 데이터를 전달
-              columns={TableColumnsInfo.VM_CHART}  // VM_CHART 테이블 컬럼 설정
-              handleRowClick={handleRowClick}  // 클릭 시 동작
-              openPopup={handleOpenModal}  // 모달 열기 함수
-              setActiveTab={setActiveTab}  // 탭 설정 함수
-              togglePopup={togglePopup}  // 팝업 토글 함수
-              isPopupOpen={isPopupOpen}  // 팝업 상태
-              dataCenterId={dataCenter?.id} 
-            />
-            </>
-          )} */}
-           {/* {activeTab === 'storageDomains' && (
-            <>
-              <div className="header_right_btns">
-                <button>새로 만들기</button>
-                <button className='disabled'>분리</button>
-                <button className='disabled'>활성</button>
-                <button>유지보수</button>
-                <button onClick={() => setActiveTab('storage_disk')}>디스크</button>
-              </div>
-              <TableOuter 
-                columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} 
-                data={domains}
-                onRowClick={handleRowClick}
-              />
-            </>
-          )} */}
+
            {activeTab === 'storage_disk' && (
             <>
               <div className="header_right_btns">
@@ -380,31 +245,7 @@ useEffect(() => {
             </>
           )}
 
-          {/* {activeTab === 'networks' && (
-            <>
-              <div className="header_right_btns">
-                <button>새로 만들기</button>
-                <button>편집</button>
-                <button>삭제</button>
-              </div>
-              <TableOuter 
-                columns={TableColumnsInfo.LUN_SIMPLE}
-                data={networks}
-                onRowClick={() => {
-                  navigate(`/networks/${id}`);
-                }}
-                clickableColumnIndex={[0]} 
-              />
-            </>
-          )} */}
-            {/* {activeTab === 'events' && (
-              <EventDu 
-                columns={TableColumnsInfo.EVENTS}
-                data={events}
-                handleRowClick={() => console.log('Row clicked')}
-              />
-        
-          )}           */}
+
         </div>
         
       </div>

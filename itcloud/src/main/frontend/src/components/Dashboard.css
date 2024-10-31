@@ -33,12 +33,12 @@
     padding: 0.1rem;
     font-size: 0.45rem;
     margin-top: 5px;
-    color: #1a74e7;
+    color: black;
     font-weight: 800;
     
 }
 .graphs{
-    height: 22vh;
+
     display: flex;
     justify-content: space-between;
 }
@@ -71,15 +71,14 @@
 .dash_section_contents>span{
     display: block;
     font-size: 0.33rem;
-    width: 50%;
+    width: 40%;
     color: #000000;
     text-align: center;
     padding: 0.18rem 0.04rem;
     margin-left: 0.2rem;
     margin-bottom: 0.4rem;
     font-weight: 600;
-    border-radius: 3px;
-    background: #E9F1F7;
+
 }
 .wave_graph>h2{
     font-size: 0.37rem;
