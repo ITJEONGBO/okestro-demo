@@ -776,6 +776,27 @@ export const useVmById = (vmId) => useQuery({
 
 
 /**
+ * @name useVm
+ * @description 가상머신 상세조회 useQuery 훅
+ * 
+ * @param {string} vmId 가상머신 ID
+ * @returns useQuery 훅
+ */
+export const useVm = (vmId) => useQuery({
+  queryKey: ['VmById', vmId],
+  queryFn: async () => {
+    if (!vmId) return {};  
+    console.log(`vmId ID: ${vmId}`);
+    const res = await ApiManager.findVM(vmId);
+    return res ?? {};
+  },
+  staleTime: 0,
+  cacheTime: 0,
+});
+
+
+
+/**
  * @name useSnapshotFromVM
  * @description 가상머신 내 스냅샷 목록조회 useQuery훅
  * 
@@ -822,6 +843,25 @@ export const useApplicationFromVM = (vmId, mapPredicate) => useQuery({
 });
 
 
+/**
+ * @name useVmConsole
+ * @description 가상머신 콘솔 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useVmConsole = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.consoleVM(vmId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allVMs'); 
+    },
+    onError: (error) => {
+      console.error('Error console vm:', error);
+    },  
+  });
+};
+
 //endregion: VM
 
 //region: TEMPLATE ----------------템플릿---------------------
@@ -840,6 +880,81 @@ export const useAllTemplates = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 });
+
+/**
+ * @name useTemplate
+ * @description Template 상세조회 useQuery 훅
+ * 
+ * @param {string} tId Template ID
+ * @returns useQuery 훅
+ */
+export const useTemplate = (tId) => useQuery({
+  queryKey: ['tId', tId],
+  queryFn: async () => {
+    if (!tId) return {};  
+    console.log(`Template ID: ${tId}`);
+    const res = await ApiManager.findTemplate(tId);
+    return res ?? {};
+  },
+  staleTime: 0,
+  cacheTime: 0,
+});
+
+
+/**
+ * @name useAddTemplate
+ * @description Template 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddTemplate = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (templateData) => await ApiManager.addTemplate(templateData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allTemplates');
+    },
+    onError: (error) => {
+      console.error('Error adding Template:', error);
+    },  
+  });
+};
+/**
+ * @name useEditTemplate
+ * @description Template 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditTemplate = () => {
+  const queryClient = useQueryClient();  
+  return useMutation({
+    mutationFn: async ({ templateId, templateData }) => await ApiManager.editTemplate(templateId, templateData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allTemplates');
+    },
+    onError: (error) => {
+      console.error('Error editing Template:', error);
+    },
+  });
+};
+/**
+ * @name useDeleteTemplate
+ * @description Template 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteTemplate = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({ 
+    mutationFn: async (templateId) => await ApiManager.deleteTemplate(templateId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allTemplates');
+    },
+    onError: (error) => {
+      console.error('Error deleting Template:', error);
+    },
+  });
+};
 //endregion: TEMPLATE
 
 
@@ -1014,7 +1129,6 @@ export const useAllVnicProfiles = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
-
 
 /**
  * @name useAddNetwork

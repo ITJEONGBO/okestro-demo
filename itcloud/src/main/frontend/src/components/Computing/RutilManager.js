@@ -11,7 +11,11 @@ import Clusters from './Rutil/Clusters';
 import Hosts from './Rutil/Hosts';
 import Vms from './Rutil/Vms';
 import Templates from './Rutil/Templates';
+import StorageDomains from './Rutil/StorageDomains'
 import Info from './Rutil/Info';
+import Disks from './Rutil/Disks';
+import Networks from './Rutil/Networks';
+import VnicProfiles from './Rutil/VnicProfiles';
 
 function RutilManager() {
   const {section } = useParams();
@@ -56,6 +60,10 @@ function RutilManager() {
     hosts: Hosts,
     vms: Vms,
     templates: Templates,
+    storageDomains: StorageDomains,
+    disks: Disks,
+    networks: Networks,
+    vnicProfiles: VnicProfiles
     // 추가적인 섹션들: vms, templates, 등등
   };
 

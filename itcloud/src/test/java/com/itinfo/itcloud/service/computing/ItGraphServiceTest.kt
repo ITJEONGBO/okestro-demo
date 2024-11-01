@@ -2,7 +2,7 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
-import com.itinfo.itcloud.model.computing.RutilVo
+import com.itinfo.itcloud.model.computing.SizeVo
 import com.itinfo.itcloud.repository.history.dto.HostUsageDto
 import com.itinfo.itcloud.repository.history.dto.LineDto
 import com.itinfo.itcloud.repository.history.dto.StorageUsageDto
@@ -26,6 +26,21 @@ class ItGraphServiceTest {
         hostVm = "932fd5bb-e06c-4d3a-91fc-48c926eee484"
     }
 
+    /**
+     * [should_getDataCenters]
+     * [ItGraphService.getDataCenters]에 대한 단위테스트
+     *
+     * @see ItGraphService.getDataCenters
+     **/
+    @Test
+    fun should_getDataCenters() {
+        log.debug("should_getDataCenters ... ")
+        val result: SizeVo =
+            service.getDataCenters()
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
 
     /**
      * [should_getDashboard]

@@ -119,7 +119,7 @@ const TableInfo = {
   NETWORKS: [
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '데이터센터', accessor: 'datacenterVo', clickable: false },
+    { header: '데이터센터', accessor: 'datacenter', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
     { header: '역할', accessor: 'role', clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
@@ -190,9 +190,9 @@ const TableInfo = {
     { header: '스토리지 유형', accessor: 'storageType' },
     { header: '포맷', accessor: 'format' },
     { header: '데이터 센터간 상태', accessor: 'dataCenterStatus' },
-    { header: '전체 공간(GB)', accessor: 'diskSize' },
-    { header: '여유 공간(GB)', accessor: 'availableSize' },
-    { header: '확보된 여유 공간(GB)', accessor: 'reservedSpace' },
+    { header: '전체 공간', accessor: 'diskSize' },
+    { header: '여유 공간', accessor: 'availableSize' },
+    { header: '사용된 공간', accessor: 'usedSize' },
     { header: '설명', accessor: 'description' },
   ],
   DATACENTERS_FROM_STORAGE_DOMAIN : [
@@ -239,10 +239,10 @@ const TableInfo = {
 
   DISKS: [
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '별칭', accessor: 'alias', clickable: true },
+    { header: '별칭', accessor: 'name', clickable: true },
     { header: 'ID', accessor: 'id', clickable: false },
     { header: '공유가능', accessor: 'icon1', clickable: false },
-    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '연결 대상', accessor: 'connectVm', clickable: false },
     { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },

@@ -179,7 +179,7 @@ const Dashboard = () => {
             { icon: faLayerGroup, title: "데이터센터", cntTotal: dashboard?.datacenters ?? 0, cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/rutil-manager/datacenters' },
             { icon: faEarthAmericas, title: "클러스터", cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/rutil-manager/clusters' },
             { icon: faUser, title: "호스트", cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/rutil-manager/hosts'},
-            { icon: faCloud, title: "스토리지 도메인", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/computing/rutil-manager/storagesdomains' },
+            { icon: faCloud, title: "스토리지 도메인", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/computing/rutil-manager/storageDomains' },
             { icon: faMicrochip, title: "가상머신", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/rutil-manager/vms' },
             { icon: faListUl, title: "이벤트", cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
           ]}

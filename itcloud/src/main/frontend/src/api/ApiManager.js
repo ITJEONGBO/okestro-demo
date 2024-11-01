@@ -14,7 +14,8 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
  * @param {*} 파라미터
  * @returns 결과값
  */
-const makeAPICall = async ({method = "GET", url, data, defaultValues}) => {
+// const makeAPICall = async ({method = "GET", url, data, defaultValues}) => {
+const makeAPICall = async ({method = "GET", url, data}) => {
   try {
     const res = (data == null || data == undefined) ? await axios.get(url) : await axios({
       method: method,
@@ -29,7 +30,6 @@ const makeAPICall = async ({method = "GET", url, data, defaultValues}) => {
   } catch(e) {
     console.error(`Error fetching '${url}':`, e);
     toast.error(`Error fetching '${url}'\n${e.message}`)
-    if (defaultValues) return defaultValues; 
   }
 }
 
@@ -45,7 +45,7 @@ const ApiManager = {
   findAllUsers: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_USERS(), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_USERS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_USERS
   }),
   /**
    * @name ApiManager.authenticate
@@ -74,7 +74,7 @@ const ApiManager = {
   findAllTreeNaviations: async (type = "none") => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_TREE_NAVIGATIONS(type), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_TREE_NAVIGATIONS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_TREE_NAVIGATIONS
   }),
   //endregion: TreeNavigation
 
@@ -90,7 +90,7 @@ const ApiManager = {
   getDashboard: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.GET_DASHBOARD(), 
-    defaultValues: DEFAULT_VALUES.GET_DASHBOARD
+    // defaultValues: DEFAULT_VALUES.GET_DASHBOARD
   }),
   /**
    * @name ApiManager.getCpuMemory
@@ -103,7 +103,7 @@ const ApiManager = {
   getCpuMemory: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.GET_CPU_MEMORY(), 
-    defaultValues: DEFAULT_VALUES.GET_CPU_MEMORY
+    // defaultValues: DEFAULT_VALUES.GET_CPU_MEMORY
   }),
   /**
    * @name ApiManager.getStorage
@@ -116,7 +116,7 @@ const ApiManager = {
   getStorage: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.GET_STORAGE(), 
-    defaultValues: DEFAULT_VALUES.GET_STORAGE
+    // defaultValues: DEFAULT_VALUES.GET_STORAGE
   }),
   /**
    * @name ApiManager.getVmCpu
@@ -231,7 +231,7 @@ const ApiManager = {
   findAllDataCenters: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_DATA_CENTERS(), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_DATA_CENTERS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_DATA_CENTERS
   }),
   /**
    * @name ApiManager.findDataCenter
@@ -245,7 +245,7 @@ const ApiManager = {
   findDataCenter: async (dataCenterId) => makeAPICall({ 
     method: "GET",  
     url: ENDPOINTS.FIND_DATA_CENTER(dataCenterId), 
-    defaultValues: DEFAULT_VALUES.FIND_DATACENTER
+    // defaultValues: DEFAULT_VALUES.FIND_DATACENTER
   }),
   /**
    * @name ApiManager.findAllClustersFromDataCenter
@@ -257,7 +257,7 @@ const ApiManager = {
   findAllClustersFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_CLUSTERS_FROM_DATA_CENTER(dataCenterId), 
-    defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_FROM_DATA_CENTER
+    // defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_FROM_DATA_CENTER
   }),
   /**
    * @name ApiManager.findAllHostsFromDataCenter
@@ -269,7 +269,7 @@ const ApiManager = {
   findAllHostsFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOSTS_FROM_DATA_CENTER(dataCenterId), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK
   }),
 
   /**
@@ -282,7 +282,7 @@ const ApiManager = {
   findAllVmsFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_FROM_DATA_CENTER(dataCenterId), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_VMS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_VMS
   }),
   /**
    * @name ApiManager.findAllDomainsFromDataCenter
@@ -294,7 +294,7 @@ const ApiManager = {
   findAllDomainsFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_DATA_CENTER(dataCenterId), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
   }),
   /**
    * @name ApiManager.findAllNetworksFromDataCenter
@@ -306,7 +306,7 @@ const ApiManager = {
   findAllNetworksFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NETWORKS_FROM_DATA_CENTER(dataCenterId), 
-    defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_DATA_CENTER
+    // defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_DATA_CENTER
   }),
   /**
    * @name ApiManager.findAllEventsFromDataCenter
@@ -318,7 +318,7 @@ const ApiManager = {
   findAllEventsFromDataCenter: async (dataCenterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_EVENTS_FROM_DATA_CENTER(dataCenterId), 
-    defaultValues: DEFAULT_VALUES.FIND_EVENT
+    // defaultValues: DEFAULT_VALUES.FIND_EVENT
   }),
 
   /**
@@ -333,7 +333,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_DATA_CENTER(),
       data: dataCenterData, // POST 요청 시 전송할 데이터
-      defaultValues: DEFAULT_VALUES.ADD_DATA_CENTER
+      // defaultValues: DEFAULT_VALUES.ADD_DATA_CENTER
     });
   },
   /**
@@ -379,7 +379,7 @@ const ApiManager = {
   findAllClusters: async ()  => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_CLUSTERS(), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
   }),
    /**
    * @name ApiManager.findCluster
@@ -393,7 +393,7 @@ const ApiManager = {
   findCluster: async (clusterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_CLUSTER(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_BY_ID
+    // defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_BY_ID
   }),
   /**
    * @name ApiManager.findHostsFromCluster
@@ -407,7 +407,7 @@ const ApiManager = {
   findHostsFromCluster : async (clusterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOSTS_FROM_CLUSTER(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
+    // defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
   }),
    /**
    * @name ApiManager.findVMsFromCluster
@@ -421,7 +421,7 @@ const ApiManager = {
   findVMsFromCluster : async (clusterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_FROM_CLUSTER(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_VM_FROM_CLUSTER
+    // defaultValues: DEFAULT_VALUES.FIND_VM_FROM_CLUSTER
   }),
    /**
    * @name ApiManager.findNetworksFromCluster
@@ -435,7 +435,7 @@ const ApiManager = {
   findNetworksFromCluster : async (clusterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NETWORKS_FROM_CLUSTER(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
+    // defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
   }),
    /**
    * @name ApiManager.addNetworkFromCluster
@@ -450,25 +450,25 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_NETWORK_FROM_CLUSTER(clusterId),
       data: networkData, // POST 요청 시 전송할 데이터
-      defaultValues: DEFAULT_VALUES.ADD_NETWORK_CLUSTER
+      // defaultValues: DEFAULT_VALUES.ADD_NETWORK_CLUSTER
     });
   },
-  //  /**
-  //  * @name ApiManager.addNetworkFromCluster
-  //  * @description 클러스터 네트워크 관리
-  //  * 
-  //  * @param {string} clusterId
-  //  * @param {Object} networkData - 추가할 클러스터 정보
-  //  * @returns {Promise<Object>} API 응답 결과
-  //  */
-  //  addNetworkFromCluster: async (clusterId, networkData) => {
-  //   return makeAPICall({
-  //     method: "POST",
-  //     url: ENDPOINTS.MANAGE_NETWORKS_FROM_CLUSTER(clusterId),
-  //     data: networkData, // POST 요청 시 전송할 데이터
-  //     defaultValues: DEFAULT_VALUES.ADD_NETWORK_CLUSTER
-  //   });
-  // },
+   /**
+   * @name ApiManager.addNetworkFromCluster
+   * @description 클러스터 네트워크 관리
+   * 
+   * @param {string} clusterId
+   * @param {Object} networkData - 추가할 클러스터 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+   addNetworkFromCluster: async (clusterId, networkData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.MANAGE_NETWORKS_FROM_CLUSTER(clusterId),
+      data: networkData, // POST 요청 시 전송할 데이터
+      // defaultValues: DEFAULT_VALUES.ADD_NETWORK_CLUSTER
+    });
+  },
    /**
    * @name ApiManager.findEventsFromCluster
    * @description 이벤트 목록 
@@ -481,7 +481,7 @@ const ApiManager = {
   findEventsFromCluster: async (clusterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_EVENTS_FROM_CLUSTER(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_EVENT_FROM_CLUSTER
+    // defaultValues: DEFAULT_VALUES.FIND_EVENT_FROM_CLUSTER
   }),
    /**
    * @name ApiManager.findCpuProfilesFromCluster
@@ -495,7 +495,7 @@ const ApiManager = {
    findCpuProfilesFromCluster: async (clusterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_CPU_PROFILES_FROM_CLUSTER(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_CPU_PROFILES_FROM_CLUSTER
+    // defaultValues: DEFAULT_VALUES.FIND_CPU_PROFILES_FROM_CLUSTER
   }),
 
 
@@ -511,7 +511,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_CLUSTER(),
       data: clusterData, // POST 요청 시 전송할 데이터
-      defaultValues: DEFAULT_VALUES.ADD_CLUSTER
+      // defaultValues: DEFAULT_VALUES.ADD_CLUSTER
     });
   },
   /**
@@ -558,7 +558,7 @@ const ApiManager = {
   findAllHosts : async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_HOSTS(), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_HOSTS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_HOSTS
   }),
   /**
    * @name ApiManager.findHost
@@ -572,7 +572,7 @@ const ApiManager = {
   findHost : async (hostId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOST(hostId), 
-    defaultValues: DEFAULT_VALUES.FIND_HOST
+    // defaultValues: DEFAULT_VALUES.FIND_HOST
   }),
   /**
    * @name ApiManager.findVmsFromHost
@@ -586,7 +586,7 @@ const ApiManager = {
   findVmsFromHost : async (hostId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_FROM_HOST(hostId), 
-    defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
+    // defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
   }),
   /**
    * @name ApiManager.findHostNicsFromHost
@@ -600,7 +600,7 @@ const ApiManager = {
   findHostNicsFromHost : async (hostId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOST_NICS_FROM_HOST(hostId), 
-    defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_HOST
+    // defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_HOST
   }),
   /**
    * @name ApiManager.findNetworksFromHost
@@ -614,22 +614,22 @@ const ApiManager = {
   findNetworksFromHost : async (hostId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NETWORKS_FROM_HOST(hostId), 
-    defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_HOST
+    // defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_HOST
   }),
-  // /**
-  //  * @name ApiManager.findSetHostNicsFromHost
-  //  * @description 
-  //  *
-  //  * @param {string} hostId
-  //  * @returns 
-  //  * 
-  //  * @see
-  //  */
-  // findSetHostNicsFromHost : async (hostId) => makeAPICall({
-  //   method: "GET", 
-  //   url: ENDPOINTS.SETUP_HOST_NICS_FROM_HOST(hostId), 
-  //   defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_HOST
-  // }),
+  /**
+   * @name ApiManager.findSetHostNicsFromHost
+   * @description 
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findSetHostNicsFromHost : async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.SETUP_HOST_NICS_FROM_HOST(hostId), 
+    // defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_HOST
+  }),
   /**
    * @name ApiManager.findHostdevicesFromHost
    * @description 호스트 장치 목록
@@ -642,7 +642,7 @@ const ApiManager = {
   findHostdevicesFromHost : async (hostId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOSTDEVICES_FROM_HOST(hostId), 
-    defaultValues: DEFAULT_VALUES.FIND_DEVICE_FROM_HOST
+    // defaultValues: DEFAULT_VALUES.FIND_DEVICE_FROM_HOST
   }),
   /**
    * @name ApiManager.findEventsFromHost
@@ -656,7 +656,7 @@ const ApiManager = {
   findEventsFromHost: async (hostId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_EVENTS_FROM_HOST(hostId), 
-    defaultValues: DEFAULT_VALUES.FIND_EVNET_FROM_HOST
+    // defaultValues: DEFAULT_VALUES.FIND_EVNET_FROM_HOST
   }),
 
 
@@ -672,7 +672,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_HOST(),
       data: hostData, // POST 요청 시 전송할 데이터
-      defaultValues: DEFAULT_VALUES.ADD_HOST
+      // defaultValues: DEFAULT_VALUES.ADD_HOST
     });
   },
   /**
@@ -688,7 +688,7 @@ const ApiManager = {
         method: "PUT",
         url: ENDPOINTS.EDIT_HOST(hostId),
         data: hostData, // PUT 요청 시 전송할 데이터
-        defaultValues: DEFAULT_VALUES.EDIT_HOST
+        // defaultValues: DEFAULT_VALUES.EDIT_HOST
       });
     },
   /**
@@ -702,7 +702,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_HOST(hostId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.DELETE_HOST
+      // defaultValues: DEFAULT_VALUES.DELETE_HOST
     });
   },
   /**
@@ -716,7 +716,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.ACTIVATE_HOST(hostId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.ACTIVATE_HOST
+      // defaultValues: DEFAULT_VALUES.ACTIVATE_HOST
     });
   },
   /**
@@ -730,7 +730,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.DEACTIVATE_HOST(hostId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.DEACTIVATE_HOST
+      // defaultValues: DEFAULT_VALUES.DEACTIVATE_HOST
     });
   },
   /**
@@ -744,7 +744,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.RESTART_HOST(hostId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.RESTART_HOST
+      // defaultValues: DEFAULT_VALUES.RESTART_HOST
     });
   },
   //endregion: Host
@@ -760,7 +760,6 @@ const ApiManager = {
   findAllVMs : async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_VMS(), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_VMS
   }),
   /**
    * @name ApiManager.findVM
@@ -774,7 +773,7 @@ const ApiManager = {
   findVM : async (vmId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VM(vmId), 
-    defaultValues: DEFAULT_VALUES.FIND_VM
+    // defaultValues: DEFAULT_VALUES.FIND_VM
   }),
 
   /**
@@ -789,7 +788,7 @@ const ApiManager = {
   findDisksFromVM : async (vmId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISKS_FROM_VM(vmId), 
-    defaultValues: DEFAULT_VALUES.FIND_DISKS_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_DISKS_FROM_VM
   }),
   /**
    * @name ApiManager.findDiskFromVM
@@ -804,7 +803,7 @@ const ApiManager = {
   findDiskFromVM : async (vmId, diskAttachmentId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISK_FROM_VM(vmId, diskAttachmentId), 
-    defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_VM
   }),
   /**
    * @name ApiManager.addDiskFromVM
@@ -819,7 +818,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_DISK_FROM_VM(vmId),
       data: diskData, // POST 요청 시 전송할 데이터
-      defaultValues: DEFAULT_VALUES.ADD_DISK_FROM_VM
+      // defaultValues: DEFAULT_VALUES.ADD_DISK_FROM_VM
     });
   },
   /**
@@ -835,7 +834,7 @@ const ApiManager = {
       method: "PUT",
       url: ENDPOINTS.EDIT_DISK_FROM_VM(hostId),
       data: diskData, // PUT 요청 시 전송할 데이터
-      defaultValues: DEFAULT_VALUES.EDIT_DISK_FROM_VM
+      // defaultValues: DEFAULT_VALUES.EDIT_DISK_FROM_VM
     });
   },
   /**
@@ -851,7 +850,7 @@ const ApiManager = {
       method: "DELETE",
       url: ENDPOINTS.DELETE_DISKS_FROM_VM(vmId), 
       data: diskData, // diskAttachmentId 목록
-      defaultValues: DEFAULT_VALUES.DELETE_DISKS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.DELETE_DISKS_FROM_VM
     });
   },
   /**
@@ -867,7 +866,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ATTACH_DISKS_FROM_VM(vmId), 
       data: diskData, // diskAttachmentId 목록
-      defaultValues: DEFAULT_VALUES.ATTACH_DISKS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.ATTACH_DISKS_FROM_VM
     });
   },
   /**
@@ -883,7 +882,7 @@ const ApiManager = {
   findStorageDomainsFromVM : async (vmId, diskAttachmentId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_VM(vmId, diskAttachmentId), 
-    defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_VM
   }),
   /**
    * @name ApiManager.activateDisksFromVM
@@ -898,7 +897,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ACTIVATE_DISKS_FROM_VM(vmId), 
       data: diskData,
-      defaultValues: DEFAULT_VALUES.ACTIVATE_DISKS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.ACTIVATE_DISKS_FROM_VM
     });
   },
   /**
@@ -914,7 +913,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.DEACTIVATE_DISKS_FROM_VM(vmId), 
       data: diskData,
-      defaultValues: DEFAULT_VALUES.DEACTIVATE_DISKS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.DEACTIVATE_DISKS_FROM_VM
     });
   },
   /**
@@ -930,7 +929,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.MOVE_DISK_FROM_VM(vmId), 
       data: diskData,
-      defaultValues: DEFAULT_VALUES.MOVE_DISK_FROM_VM
+      // defaultValues: DEFAULT_VALUES.MOVE_DISK_FROM_VM
     });
   },
 
@@ -946,7 +945,7 @@ const ApiManager = {
   findSnapshotsFromVM : async (vmId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_SNAPSHOTS_FROM_VM(vmId), 
-    defaultValues: DEFAULT_VALUES.FIND_SNAPSHOTS_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_SNAPSHOTS_FROM_VM
   }),
   /**
    * @name ApiManager.findSnapshotFromVm
@@ -961,7 +960,7 @@ const ApiManager = {
   findSnapshotFromVm : async (vmId, snapshotId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_SNAPSHOT_FROM_VM(vmId, snapshotId), 
-    defaultValues: DEFAULT_VALUES.FIND_SNAPSHOT_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_SNAPSHOT_FROM_VM
   }),
   /**
    * @name ApiManager.addSnapshotFromVM
@@ -976,7 +975,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_SNAPSHOT_FROM_VM(vmId),
       data: snapshotData, 
-      defaultValues: DEFAULT_VALUES.ADD_SNAPSHOT_FROM_VM
+      // defaultValues: DEFAULT_VALUES.ADD_SNAPSHOT_FROM_VM
     });
   },
   /**
@@ -992,7 +991,7 @@ const ApiManager = {
       method: "DELETE",
       url: ENDPOINTS.DELETE_SNAPSHOTS_FROM_VM(vmId), 
       data: snapshotData, 
-      defaultValues: DEFAULT_VALUES.DELETE_SNAPSHOTS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.DELETE_SNAPSHOTS_FROM_VM
     });
   },
   /**
@@ -1007,7 +1006,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.PREVIEW_SNAPSHOT_FROM_VM(vmId, snapshotId),
-      defaultValues: DEFAULT_VALUES.PREVIEW_SNAPSHOT_FROM_VM
+      // defaultValues: DEFAULT_VALUES.PREVIEW_SNAPSHOT_FROM_VM
     });
   },
   /**
@@ -1021,7 +1020,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.CLONE_SNAPSHOTS_FROM_VM(vmId),
-      defaultValues: DEFAULT_VALUES.CLONE_SNAPSHOTS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.CLONE_SNAPSHOTS_FROM_VM
     });
   },
   /**
@@ -1035,7 +1034,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.COMMIT_SNAPSHOTS_FROM_VM(vmId),
-      defaultValues: DEFAULT_VALUES.COMMIT_SNAPSHOTS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.COMMIT_SNAPSHOTS_FROM_VM
     });
   },
   /**
@@ -1049,7 +1048,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.UNDO_SNAPSHOTS_FROM_VM(vmId),
-      defaultValues: DEFAULT_VALUES.UNDO_SNAPSHOTS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.UNDO_SNAPSHOTS_FROM_VM
     });
   },
 
@@ -1063,7 +1062,7 @@ const ApiManager = {
   findNicsFromVM : async (vmId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NICS_FROM_VM(vmId), 
-    defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_VM
   }),
   /**
    * @name ApiManager.findNicFromVM
@@ -1078,7 +1077,7 @@ const ApiManager = {
   findNicFromVM : async (vmId, nicId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NIC_FROM_VM(vmId, nicId), 
-    defaultValues: DEFAULT_VALUES.FIND_NIC_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_NIC_FROM_VM
   }),
   /**
    * @name ApiManager.addNicFromVM
@@ -1093,7 +1092,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_NICS_FROM_VM(vmId),
       data: nicData,
-      defaultValues: DEFAULT_VALUES.ADD_NICS_FROM_VM
+      // defaultValues: DEFAULT_VALUES.ADD_NICS_FROM_VM
     });
   },
   /**
@@ -1110,7 +1109,7 @@ const ApiManager = {
       method: "PUT",
       url: ENDPOINTS.EDIT_NIC_FROM_VM(vmId, nicId),
       data: nicData, // PUT 요청 시 전송할 데이터
-      defaultValues: DEFAULT_VALUES.EDIT_NIC_FROM_VM
+      // defaultValues: DEFAULT_VALUES.EDIT_NIC_FROM_VM
     });
   },
   /**
@@ -1125,7 +1124,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_NIC_FROM_VM(vmId, nicId),
-      defaultValues: DEFAULT_VALUES.DELETE_NIC_FROM_VM
+      // defaultValues: DEFAULT_VALUES.DELETE_NIC_FROM_VM
     });
   },
 
@@ -1139,7 +1138,7 @@ const ApiManager = {
   findApplicationsFromVM : async (vmId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_APPLICATIONS_FROM_VM(vmId), 
-    defaultValues: DEFAULT_VALUES.FIND_APPLICATIONS_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_APPLICATIONS_FROM_VM
   }),
   /**
    * @name ApiManager.findHostDevicesFromVM
@@ -1151,7 +1150,7 @@ const ApiManager = {
   findHostDevicesFromVM : async (vmId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOST_DEVICES_FROM_VM(vmId), 
-    defaultValues: DEFAULT_VALUES.FIND_HOST_DEVICES_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_HOST_DEVICES_FROM_VM
   }),
   /**
    * @name ApiManager.findEventsFromVM
@@ -1163,7 +1162,7 @@ const ApiManager = {
   findEventsFromVM : async (vmId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_EVENTS_FROM_VM(vmId), 
-    defaultValues: DEFAULT_VALUES.FIND_EVENTS_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_EVENTS_FROM_VM
   }),
 
   /**
@@ -1175,7 +1174,7 @@ const ApiManager = {
   findAllISO : async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ISOS_FROM_VM(), 
-    defaultValues: DEFAULT_VALUES.FIND_ISOS_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_ISOS_FROM_VM
   }),
   /**
    * @name ApiManager.findDiskListFromVM
@@ -1186,19 +1185,19 @@ const ApiManager = {
   findDiskListFromVM : async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISK_LIST_FROM_VM(), 
-    defaultValues: DEFAULT_VALUES.FIND_DISK_LIST_FROM_VM
+    // defaultValues: DEFAULT_VALUES.FIND_DISK_LIST_FROM_VM
   }),
-  // /**
-  //  * @name ApiManager.findNicFromVM
-  //  * @description iso 목록
-  //  * 
-  //  * @returns 
-  //  **/
-  // findNicFromVM : async () => makeAPICall({
-  //   method: "GET", 
-  //   url: ENDPOINTS.FIND_NICS_FROM_CLUSTER(), 
-  //   defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_CLUSTER
-  // }),
+  /**
+   * @name ApiManager.findNicFromVM
+   * @description iso 목록
+   * 
+   * @returns 
+   **/
+  findNicFromVM : async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_NICS_FROM_CLUSTER(), 
+    defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_CLUSTER
+  }),
 
   /**
    * @name ApiManager.addVM
@@ -1212,7 +1211,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_VM(),
       data: vmData,
-      defaultValues: DEFAULT_VALUES.ADD_VM
+      // defaultValues: DEFAULT_VALUES.ADD_VM
     });
   },
   /**
@@ -1228,7 +1227,7 @@ const ApiManager = {
         method: "PUT",
         url: ENDPOINTS.EDIT_VM(vmId),
         data: vmData,
-        defaultValues: DEFAULT_VALUES.EDIT_VM
+        // defaultValues: DEFAULT_VALUES.EDIT_VM
       });
     },
   /**
@@ -1242,7 +1241,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_VM(vmId),
-      defaultValues: DEFAULT_VALUES.DELETE_VM
+      // defaultValues: DEFAULT_VALUES.DELETE_VM
     });
   },
 
@@ -1257,7 +1256,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.START_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.START_VM
+      // defaultValues: DEFAULT_VALUES.START_VM
     });
   },
   /**
@@ -1271,7 +1270,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.PAUSE_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.PAUSE_VM
+      // defaultValues: DEFAULT_VALUES.PAUSE_VM
     });
   },
   /**
@@ -1285,7 +1284,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.ACTIVATE_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.ACTIVATE_VM
+      // defaultValues: DEFAULT_VALUES.ACTIVATE_VM
     });
   },
   /**
@@ -1299,7 +1298,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.DEACTIVATE_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.DEACTIVATE_VM
+      // defaultValues: DEFAULT_VALUES.DEACTIVATE_VM
     });
   },
   /**
@@ -1313,7 +1312,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.REBOOT_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.REBOOT_VM
+      // defaultValues: DEFAULT_VALUES.REBOOT_VM
     });
   },
   /**
@@ -1327,7 +1326,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.POWER_OFF_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.POWER_OFF_VM
+      // defaultValues: DEFAULT_VALUES.POWER_OFF_VM
     });
   },
   /**
@@ -1341,7 +1340,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.SHUT_DOWN_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.SHUT_DOWN_VM
+      // defaultValues: DEFAULT_VALUES.SHUT_DOWN_VM
     });
   },
   /**
@@ -1355,7 +1354,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.RESET_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.RESET_VM
+      // defaultValues: DEFAULT_VALUES.RESET_VM
     });
   },
   /**
@@ -1369,7 +1368,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.EXPORT_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.EXPORT_VM
+      // defaultValues: DEFAULT_VALUES.EXPORT_VM
     });
   },
   /**
@@ -1383,7 +1382,7 @@ const ApiManager = {
     return makeAPICall({
       method: "GET",
       url: ENDPOINTS.MIGRATE_HOST_LIST_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.MIGRATE_HOST_LIST_VM
+      // defaultValues: DEFAULT_VALUES.MIGRATE_HOST_LIST_VM
     });
   },
   /**
@@ -1398,7 +1397,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.MIGRATE_VM(vmId, hostId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.MIGRATE_VM
+      // defaultValues: DEFAULT_VALUES.MIGRATE_VM
     });
   },
   /**
@@ -1412,7 +1411,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.CONSOLE_VM(vmId),  // ID를 URL에 포함
-      defaultValues: DEFAULT_VALUES.CONSOLE_VM
+      data: vmId
     });
   },
   //endregion : VM ----------------------------------------------
@@ -1428,7 +1427,7 @@ const ApiManager = {
   findAllTemplates : async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_TEMPLATES(), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES
   }),
   /**
    * @name ApiManager.findTemplate
@@ -1442,7 +1441,7 @@ const ApiManager = {
   findTemplate : async (templateId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_TEMPLATE(templateId), 
-    defaultValues: DEFAULT_VALUES.FIND_TEMPLATE
+    // defaultValues: DEFAULT_VALUES.FIND_TEMPLATE
   }),
   /**
    * @name ApiManager.findVMsFromTemplate
@@ -1456,7 +1455,7 @@ const ApiManager = {
   findVMsFromTemplate : async (templateId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_FROM_TEMPLATE(templateId), 
-    defaultValues: DEFAULT_VALUES.FIND_VMS_FROM_TEMPLATE
+    // defaultValues: DEFAULT_VALUES.FIND_VMS_FROM_TEMPLATE
   }),
   /**
    * @name ApiManager.findNicsFromTemplate
@@ -1470,7 +1469,7 @@ const ApiManager = {
   findNicsFromTemplate : async (templateId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NICS_FROM_TEMPLATE(templateId), 
-    defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_TEMPLATE
+    // defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_TEMPLATE
   }),
   /**
    * @name ApiManager.addNicFromTemplate
@@ -1485,7 +1484,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_NICS_FROM_TEMPLATE(templateId),
       data: nicData,
-      defaultValues: DEFAULT_VALUES.ADD_NICS_FROM_TEMPLATE
+      // defaultValues: DEFAULT_VALUES.ADD_NICS_FROM_TEMPLATE
     });
   },
   /**
@@ -1500,7 +1499,7 @@ const ApiManager = {
   findDisksFromTemplate : async (templateId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISKS_FROM_TEMPLATE(templateId), 
-    defaultValues: DEFAULT_VALUES.FIND_DISKS_FROM_TEMPLATE
+    // defaultValues: DEFAULT_VALUES.FIND_DISKS_FROM_TEMPLATE
   }),
   /**
    * @name ApiManager.findStorageDomainsFromTemplate
@@ -1514,7 +1513,7 @@ const ApiManager = {
   findStorageDomainsFromTemplate : async (templateId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_TEMPLATE(templateId), 
-    defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_TEMPLATE
+    // defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_TEMPLATE
   }),
   /**
    * @name ApiManager.findEventsFromTemplate
@@ -1528,7 +1527,7 @@ const ApiManager = {
   findEventsFromTemplate : async (templateId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_EVENTS_FROM_TEMPLATE(templateId), 
-    defaultValues: DEFAULT_VALUES.FIND_EVENTS_FROM_TEMPLATE
+    // defaultValues: DEFAULT_VALUES.FIND_EVENTS_FROM_TEMPLATE
   }),
 
   /**
@@ -1543,7 +1542,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_TEMPLATE(),
       data: templateData, 
-      defaultValues: DEFAULT_VALUES.ADD_TEMPLATE
+      // defaultValues: DEFAULT_VALUES.ADD_TEMPLATE
     });
   },
   /**
@@ -1559,7 +1558,7 @@ const ApiManager = {
         method: "PUT",
         url: ENDPOINTS.EDIT_TEMPLATE(templateId),
         data: templateData, 
-        defaultValues: DEFAULT_VALUES.EDIT_TEMPLATE
+        // defaultValues: DEFAULT_VALUES.EDIT_TEMPLATE
       });
     },
   /**
@@ -1573,7 +1572,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_TEMPLATE(templateId), 
-      defaultValues: DEFAULT_VALUES.DELETE_TEMPLATE
+      // defaultValues: DEFAULT_VALUES.DELETE_TEMPLATE
     });
   },
 
@@ -1590,7 +1589,7 @@ const ApiManager = {
   findAllNetworks: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_NETWORKS(),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_NETWORKS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_NETWORKS
   }),
   /**
    * @name ApiManager.findNetwork
@@ -1604,7 +1603,7 @@ const ApiManager = {
   findNetwork: async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NETWORK(networkId),
-    defaultValues: DEFAULT_VALUES.FIND_NETWORK_BY_ID
+    // defaultValues: DEFAULT_VALUES.FIND_NETWORK_BY_ID
   }),
   /**
    * @name ApiManager.findAllVnicProfilesFromNetwork
@@ -1618,7 +1617,7 @@ const ApiManager = {
   findAllVnicProfilesFromNetwork: async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VNIC_PROFILES_FROM_NETWORK(networkId),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK
   }),
   /**
    * @name ApiManager.findAllClustersFromNetwork
@@ -1632,7 +1631,7 @@ const ApiManager = {
   findAllClustersFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_CLUSTERS_FROM_NETWORK(networkId),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS_FROM_NETWORK
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS_FROM_NETWORK
   }),
    /**
    * @name ApiManager.findAllHostsFromNetwork
@@ -1646,7 +1645,7 @@ const ApiManager = {
   findAllHostsFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_HOSTS_FROM_NETWORK(networkId),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK
   }),
   /**
    * @name ApiManager.findAllVmsFromNetwork
@@ -1660,7 +1659,7 @@ const ApiManager = {
   findAllVmsFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_FROM_NETWORK(networkId),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_VMS_FROM_NETWORK
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_VMS_FROM_NETWORK
   }),
   /**
    * @name ApiManager.findAllTemplatesFromNetwork
@@ -1674,7 +1673,7 @@ const ApiManager = {
   findAllTemplatesFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_TEMPLATES_NETWORK(networkId),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK
   }),
 
   /**
@@ -1689,7 +1688,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_NETWORK(),
       data: networkData, 
-      defaultValues: DEFAULT_VALUES.ADD_NETWORK
+      // defaultValues: DEFAULT_VALUES.ADD_NETWORK
     });
   },
   /**
@@ -1705,7 +1704,7 @@ const ApiManager = {
         method: "PUT",
         url: ENDPOINTS.EDIT_NETWORK(networkId),
         data: networkData, 
-        defaultValues: DEFAULT_VALUES.EDIT_NETWORK
+        // defaultValues: DEFAULT_VALUES.EDIT_NETWORK
       });
     },
   /**
@@ -1735,7 +1734,7 @@ const ApiManager = {
   findAllNetworkProviders : async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NETWORK_PROVIDERS(),
-    defaultValues: DEFAULT_VALUES.FIND_NETWORK_PROVIDERS
+    // defaultValues: DEFAULT_VALUES.FIND_NETWORK_PROVIDERS
   }),
   /**
    * @name ApiManager.findAllNetworkFromProvider
@@ -1749,7 +1748,7 @@ const ApiManager = {
   findAllNetworkFromProvider : async (providerId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NETWORKS_FROM_PROVIDERS(providerId),
-    defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_PROVIDERS
+    // defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_PROVIDERS
   }),
   /**
    * @name ApiManager.findAllDatacentersFromNetwork
@@ -1763,7 +1762,7 @@ const ApiManager = {
   findAllDatacentersFromNetwork : async (openstackNetworkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DATA_CENTERS_FROM_NETWORK(openstackNetworkId),
-    defaultValues: DEFAULT_VALUES.FIND_DATA_CENTERS_FROM_NETWORK
+    // defaultValues: DEFAULT_VALUES.FIND_DATA_CENTERS_FROM_NETWORK
   }),
   /**
    * @name ApiManager.importNetwork
@@ -1779,7 +1778,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.IMPORT_NETWORK(),
       data: networkData, 
-      defaultValues: DEFAULT_VALUES.IMPORT_NETWORK
+      // defaultValues: DEFAULT_VALUES.IMPORT_NETWORK
     });
   },
  
@@ -1814,7 +1813,7 @@ const ApiManager = {
   findAllStorageDomains: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
   }),
   /**
    * @name ApiManager.findDomain
@@ -1828,7 +1827,7 @@ const ApiManager = {
   findDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_STORAGE_DOMAIN(storageDomainId),
-    defaultValues: DEFAULT_VALUES.FIND_DOMAIN_BY_ID
+    // defaultValues: DEFAULT_VALUES.FIND_DOMAIN_BY_ID
   }),
   /**
    * @name ApiManager.findAllDataCentersFromDomain
@@ -1842,7 +1841,7 @@ const ApiManager = {
   findAllDataCentersFromDomain : async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DATA_CENTERS_FROM_STORAGE_DOMAINS(storageDomainId),
-    defaultValues: DEFAULT_VALUES.FIND_DATACENTER_FROM_DOMAIN
+    // defaultValues: DEFAULT_VALUES.FIND_DATACENTER_FROM_DOMAIN
   }),
 
   /**
@@ -1857,7 +1856,7 @@ const ApiManager = {
   findAllVMsFromDomain : async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_FROM_STORAGE_DOMAINS(storageDomainId),
-    defaultValues: DEFAULT_VALUES.FIND_VMS_FROM_STORAGE_DOMAINS
+    // defaultValues: DEFAULT_VALUES.FIND_VMS_FROM_STORAGE_DOMAINS
   }),
 
   /**
@@ -1872,7 +1871,7 @@ const ApiManager = {
   findAllDisksFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISKS_FROM_STORAGE_DOMAINS(storageDomainId),
-    defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_DOMAIN
+    // defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_DOMAIN
   }),
 
 
@@ -1888,7 +1887,7 @@ const ApiManager = {
   findAllDiskSnapshotsFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISK_SNAPSHOTS_FROM_STORAGE_DOMAINS(storageDomainId),
-    defaultValues: DEFAULT_VALUES.DISK_SNAPSHOT_FROM_DOMAIN
+    // defaultValues: DEFAULT_VALUES.DISK_SNAPSHOT_FROM_DOMAIN
   }),
   /**
    * @name ApiManager.findAllTemplatesFromDomain
@@ -1902,7 +1901,7 @@ const ApiManager = {
   findAllTemplatesFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_TEMPLATES_FROM_STORAGE_DOMAINS(storageDomainId),
-    defaultValues: DEFAULT_VALUES.TEMPLATE_FROM_DOMAIN
+    // defaultValues: DEFAULT_VALUES.TEMPLATE_FROM_DOMAIN
   }),
   /**
    * @name ApiManager.findAllEventsFromDomain
@@ -1916,7 +1915,7 @@ const ApiManager = {
   findAllEventsFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_EVENTS_FROM_STORAGE_DOMAINS(storageDomainId),
-    defaultValues: DEFAULT_VALUES.FIND_EVENT
+    // defaultValues: DEFAULT_VALUES.FIND_EVENT
   }),
 
   /**
@@ -1931,7 +1930,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_STORAGE_DOMAIN(),
       data: domaineData, 
-      defaultValues: DEFAULT_VALUES.ADD_STORAGE_DOMAIN
+      // defaultValues: DEFAULT_VALUES.ADD_STORAGE_DOMAIN
     });
   },
   /**
@@ -1947,7 +1946,7 @@ const ApiManager = {
         method: "PUT",
         url: ENDPOINTS.EDIT_STORAGE_DOMAIN(storageDomainId),
         data: domaineData, 
-        defaultValues: DEFAULT_VALUES.EDIT_STORAGE_DOMAIN
+        // defaultValues: DEFAULT_VALUES.EDIT_STORAGE_DOMAIN
       });
     },
   /**
@@ -1961,7 +1960,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_STORAGE_DOMAIN(storageDomainId), 
-      defaultValues: DEFAULT_VALUES.DELETE_STORAGE_DOMAIN
+      // defaultValues: DEFAULT_VALUES.DELETE_STORAGE_DOMAIN
     });
   },
   //endregion: Domain
@@ -1980,7 +1979,7 @@ const ApiManager = {
   findAllDisks: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_DISKS(),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_DISK
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_DISK
   }),
 
   /**
@@ -1995,7 +1994,7 @@ const ApiManager = {
   findDisk: async (diskId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISK(diskId),
-    defaultValues: DEFAULT_VALUES.FIND_DISK_BY_ID
+    // defaultValues: DEFAULT_VALUES.FIND_DISK_BY_ID
   }),
 
   /**
@@ -2010,7 +2009,7 @@ const ApiManager = {
   findAllVmsFromDisk: async (diskId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_FROM_DISK(diskId),
-    defaultValues: DEFAULT_VALUES.VMS_FROM_DISK
+    // defaultValues: DEFAULT_VALUES.VMS_FROM_DISK
   }),
 
   /**
@@ -2025,7 +2024,7 @@ const ApiManager = {
   findAllStorageDomainsFromDisk: async (diskId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_DISK(diskId),
-    defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_DISK
+    // defaultValues: DEFAULT_VALUES.FIND_STORAGE_DOMAINS_FROM_DISK
   }),
 
   /**
@@ -2040,7 +2039,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.ADD_DISK(),
       data: diskData, 
-      defaultValues: DEFAULT_VALUES.ADD_DISK
+      // defaultValues: DEFAULT_VALUES.ADD_DISK
     });
   },
   /**
@@ -2056,7 +2055,7 @@ const ApiManager = {
         method: "PUT",
         url: ENDPOINTS.EDIT_DISK(diskId),
         data: diskData, 
-        defaultValues: DEFAULT_VALUES.EDIT_DISK
+        // defaultValues: DEFAULT_VALUES.EDIT_DISK
       });
     },
   /**
@@ -2070,7 +2069,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_DISK(diskId), 
-      defaultValues: DEFAULT_VALUES.DELETE_DISK
+      // defaultValues: DEFAULT_VALUES.DELETE_DISK
     });
   },
   /**
@@ -2086,7 +2085,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.COPY_DISK(diskId),
       data: diskData, 
-      defaultValues: DEFAULT_VALUES.COPY_DISK
+      // defaultValues: DEFAULT_VALUES.COPY_DISK
     });
   },
   /**
@@ -2102,7 +2101,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.MOVE_DISK(diskId),
       data: diskData, 
-      defaultValues: DEFAULT_VALUES.MOVE_DISK
+      // defaultValues: DEFAULT_VALUES.MOVE_DISK
     });
   },
   /**
@@ -2118,7 +2117,7 @@ const ApiManager = {
       method: "POST",
       url: ENDPOINTS.REFRESH_LUN_DISK(diskId),
       data: diskData, 
-      defaultValues: DEFAULT_VALUES.REFRESH_LUN_DISK
+      // defaultValues: DEFAULT_VALUES.REFRESH_LUN_DISK
     });
   },
   // uploadDisk
@@ -2135,7 +2134,7 @@ const ApiManager = {
   findAllEvent: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_EVENTS(),
-    defaultValues: DEFAULT_VALUES.FIND_ALL_EVENTS
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_EVENTS
   }),
   //endregion: event
 

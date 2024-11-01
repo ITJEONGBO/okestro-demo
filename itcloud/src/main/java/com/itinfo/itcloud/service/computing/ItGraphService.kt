@@ -2,9 +2,7 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
-import com.itinfo.itcloud.model.computing.DashBoardVo
-import com.itinfo.itcloud.model.computing.findNetworkListPercent
-import com.itinfo.itcloud.model.computing.toDashboardVo
+import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.*
 import com.itinfo.itcloud.repository.history.entity.*
@@ -19,6 +17,8 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 interface ItGraphService {
+
+	fun getDataCenters(): SizeVo
 	/**
 	 * 전체 사용량 정보 개수 (전체, up, down)
 	 * 데이터센터, 클러스터, 호스트, 가상머신, 스토리지 도메인, 이벤트
@@ -118,6 +118,12 @@ class GraphServiceImpl(
 	@Autowired private lateinit var vmSamplesHistoryRepository: VmSamplesHistoryRepository
 	@Autowired private lateinit var vmInterfaceSamplesHistoryRepository: VmInterfaceSamplesHistoryRepository
 	@Autowired private lateinit var storageDomainSamplesHistoryRepository: StorageDomainSamplesHistoryRepository
+
+
+	override fun getDataCenters(): SizeVo {
+		log.info("getDataCenters ... ")
+		return conn.findDataCenterCnt()
+	}
 
 	override fun getDashboard(): DashBoardVo {
 		log.info("getDashboard ... ")

@@ -16,7 +16,7 @@ const Templates = () => {
     status: templatesStatus,
     isRefetching: isTemplatesRefetching,
     refetch: refetchTemplates, 
-    isError: isTemplatesError, 
+    isError: isTemplates, 
     error: templatesError, 
     isLoading: isTemplatesLoading,
   } = useAllTemplates((e) => {
@@ -40,7 +40,7 @@ const Templates = () => {
   return (
     <>
       <div className="header_right_btns">
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
+        {/* <button onClick={() => toggleModal('create', true)}>새로 만들기</button> */}
         <button onClick={() => selectedTemplate?.id && toggleModal('edit', true)} disabled={!selectedTemplate?.id}>편집</button>
         <button onClick={() => selectedTemplate?.id && toggleModal('delete', true)} disabled={!selectedTemplate?.id}>제거</button>
       </div>
@@ -57,6 +57,7 @@ const Templates = () => {
 
       {/* 모달 컴포넌트를 사용할 때만 로딩 */}
       <Suspense>
+        {/* template 모달창이 가상머신과 유사(똑같음) */}
         {/* {(modals.create || (modals.edit && selectedTemplate)) && (
           <TemplateModal 
             isOpen={modals.create || modals.edit}

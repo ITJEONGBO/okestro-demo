@@ -116,7 +116,7 @@ const App = () => {
                <Route path="/storages/datacenters/:id" element={<DataCenter />} />
               <Route path="/storages/datacenters/:id/:section" element={<DataCenter />} />
                             
-              <Route path="/computing/clusters" element={<AllCluster />} />
+              <Route path="/computing/clusters" element={<Clusters />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} />
               <Route path="/computing/clusters/:id/:section" element={<ClusterName />} />  
               

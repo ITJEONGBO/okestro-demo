@@ -6,6 +6,10 @@ import {
   useDeleteDataCenter,
   useDeleteCluster,
   useDeleteHost,
+  // useDeleteVm,
+  // useDeleteTemplate,
+  // useDeleteStorageDomain,
+  // useDeleteDisk,
   useDeleteNetwork, // 네트워크 삭제 추가
 } from '../../api/RQHook';
 
@@ -22,6 +26,10 @@ const DeleteModal = ({
   const { mutate: deleteDataCenter } = useDeleteDataCenter();
   const { mutate: deleteCluster } = useDeleteCluster();
   const { mutate: deleteHost } = useDeleteHost();
+  // const { mutate: deleteVm } = useDeleteVm();
+  // const { mutate: deleteTemplate } = useDeleteTemplate();
+  // const { mutate: deleteStorageDomain } = useDeleteStorageDomain();
+  // const { mutate: deleteDisk } = useDeleteDisk();
   const { mutate: deleteNetwork } = useDeleteNetwork(); // 네트워크 삭제 추가
 
   useEffect(() => {
@@ -47,6 +55,18 @@ const DeleteModal = ({
     } else if (type === 'Host') {
       console.log('Deleting Host');
       handleDelete(deleteHost);
+    // } else if (type === 'Vm') {
+    //   console.log('Deleting Vm');
+    //   handleDelete(deleteVm);
+    // } else if (type === 'Template') {
+    //   console.log('Deleting Template');
+    //   handleDelete(deleteTemplate);
+    // } else if (type === 'StorageDoamin') {
+    //   console.log('Deleting StorageDoamin');
+    //   handleDelete(deleteStorageDoamin);
+    // } else if (type === 'Disk') {
+    //   console.log('Deleting Disk');
+    //   handleDelete(deleteDisk);
     } else if (type === 'Network') { // Network 삭제 처리 추가
       console.log('Deleting Network');
       handleDelete(deleteNetwork);

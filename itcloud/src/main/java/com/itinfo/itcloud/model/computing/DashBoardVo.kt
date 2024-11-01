@@ -4,8 +4,7 @@ import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.ovirtDf
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.types.StorageDomainStatus
-import org.ovirt.engine.sdk4.types.StorageType
+import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.util.Date
@@ -80,74 +79,56 @@ class DashBoardVo (
 }
 
 fun Connection.toDashboardVo(): DashBoardVo {
-    val statusUp = "status=up"
-    val dataCenters: Int =
-        this@toDashboardVo.findAllDataCenters()
-            .getOrDefault(listOf())
-            .size
-    val dataCentersUp: Int =
-        this@toDashboardVo.findAllDataCenters(statusUp)
-            .getOrDefault(listOf())
-            .size
-    val hosts: Int =
-        this@toDashboardVo.findAllHosts()
-            .getOrDefault(listOf())
-            .size
-    val hostsUp: Int =
-        this@toDashboardVo.findAllHosts(statusUp)
-            .getOrDefault(listOf())
-            .size
-    val vms: Int =
-        this@toDashboardVo.findAllVms()
-            .getOrDefault(listOf())
-            .size
-    val vmsUp: Int =
-        this@toDashboardVo.findAllVms(statusUp)
-            .getOrDefault(listOf())
-            .size
-    val clusters: Int =
-        this@toDashboardVo.findAllClusters()
-            .getOrDefault(listOf())
-            .size
-    val storageDomains: Int =
-        this@toDashboardVo.findAllStorageDomains()
-            .getOrDefault(listOf())
-            .filter { it.storage().type() != StorageType.GLANCE }
-            .size
-    val eventsAlert: Int =
-        this@toDashboardVo.findAllEvents("severity=alert")
-            .getOrDefault(listOf())
-            .size
-    val eventsError: Int =
-        this@toDashboardVo.findAllEvents(searchQuery = "severity=error and time > Today")
-            .getOrDefault(listOf())
-            .size
-    val eventsWarning: Int =
-        this@toDashboardVo.findAllEvents(searchQuery = "severity=warning and time > Today")
-            .getOrDefault(listOf())
-            .size
-    val date: Date =
-        this@toDashboardVo.findVms()
-        .first { it.origin() == "managed_hosted_engine" }
-        .creationTime()
+    val allDataCenters = this@toDashboardVo.findAllDataCenters().getOrDefault(listOf())
+    val allHosts = this@toDashboardVo.findAllHosts().getOrDefault(listOf())
+    val allVms = this@toDashboardVo.findAllVms().getOrDefault(listOf())
+    val allClusters = this@toDashboardVo.findAllClusters().getOrDefault(listOf())
+    val allStorageDomains = this@toDashboardVo.findAllStorageDomains().getOrDefault(listOf())
+    val allEvents = this@toDashboardVo.findAllEvents("time > Today").getOrDefault(listOf())
 
+    // 각 상태별 카운트를 필터링하여 계산
+    val dataCenters = allDataCenters.size
+    val dataCentersUp = allDataCenters.count { it.status() == DataCenterStatus.UP }
+    val dataCentersDown = dataCenters - dataCentersUp
+
+    val hosts = allHosts.size
+    val hostsUp = allHosts.count { it.status() == HostStatus.UP }
+    val hostsDown = hosts - hostsUp
+
+    val vms = allVms.size
+    val vmsUp = allVms.count { it.status() == VmStatus.UP }
+    val vmsDown = vms - vmsUp
+
+    val clusters = allClusters.size
+
+    // 스토리지 도메인 필터링 (GLANCE 제외)
+    val storageDomains = allStorageDomains.count { it.storage().type() != StorageType.GLANCE }
+
+    // 이벤트 필터링
+    val eventsAlert = allEvents.count { it.severity() == LogSeverity.ALERT }
+    val eventsError = allEvents.count { it.severity() == LogSeverity.ERROR }
+    val eventsWarning = allEvents.count { it.severity() == LogSeverity.WARNING }
+    val eventsTotal = eventsAlert + eventsError + eventsWarning
+
+    // 관리형 호스티드 엔진 VM의 생성 시간 가져오기
+    val date = allVms.firstOrNull { it.origin() == "managed_hosted_engine" }?.creationTime()
 
     return DashBoardVo.builder {
         datacenters { dataCenters }
         datacentersUp { dataCentersUp }
-        datacentersDown { dataCenters - dataCentersUp }
+        datacentersDown { dataCentersDown }
         clusters { clusters }
         hosts { hosts }
         hostsUp { hostsUp }
-        hostsDown { hosts - hostsUp }
+        hostsDown { hostsDown }
         vms { vms }
         vmsUp { vmsUp }
-        vmsDown { vms - vmsUp }
+        vmsDown { vmsDown }
         storageDomains { storageDomains }
-        events { eventsAlert + eventsError + eventsWarning }
+        events { eventsTotal }
         eventsAlert { eventsAlert }
         eventsError { eventsError }
         eventsWarning { eventsWarning }
-        bootTime { ovirtDf.format(date) }
+        bootTime { date?.let { ovirtDf.format(it) } }
     }
 }

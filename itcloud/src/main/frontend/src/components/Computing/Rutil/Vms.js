@@ -21,22 +21,29 @@ const Vms = () => {
     isLoading: isVmsLoading,
   } = useAllVMs((e) => {
     return {
-        ...e,
-        host: e?.hostVo?.name, 
-        cluster: e?.clusterVo?.name,        
-        dataCenter: e?.dataCenterVo?.name,
-        memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
+      ...e,
+      status: e?.status,
+      host: e?.hostVo?.name, 
+      cluster: e?.clusterVo?.name,        
+      dataCenter: e?.dataCenterVo?.name,
+      memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
       cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
       networkUsage: e?.usageDto.networkPercent === null ? '' : e?.usageDto.networkPercent + '%',
     }
   });
 
-  const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+  const [modals, setModals] = useState({ create: false, edit: false, delete: false, console: false });
   const [selectedVm, setSelectedVm] = useState(null);
 
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
+
+    if (type === 'console' && isOpen && selectedVm?.id && selectedVm?.status !== 'DOWN') {
+      navigate(`/computing/vms/${selectedVm.id}/console`);
+      // window.open(navigate(`/computing/vms/${selectedVm.id}/console`), '_blank', 'noopener,noreferrer');
+    }
   };
+
 
   const handleNameClick = (id) => {
       navigate(`/computing/vms/${id}`);
@@ -49,6 +56,7 @@ const Vms = () => {
         <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
         <button onClick={() => selectedVm?.id && toggleModal('edit', true)} disabled={!selectedVm?.id}>편집</button>
         <button onClick={() => selectedVm?.id && toggleModal('delete', true)} disabled={!selectedVm?.id}>제거</button>
+        <button onClick={() => selectedVm?.id && toggleModal('console', true)} disabled={!selectedVm?.id || selectedVm?.status === 'DOWN'}>콘솔</button>
       </div>
       <span>id = {selectedVm?.id || ''}</span>
 
@@ -76,10 +84,15 @@ const Vms = () => {
             isOpen={modals.delete}
             type={'Vm'}
             onRequestClose={() => toggleModal('delete', false)}
-            contentLabel={'클러스터'}
+            contentLabel={'가상머신'}
             data={selectedVm}
           />
         )}
+
+        {/* {modals.console && selectedVm && (
+          <VncViewerPage data={selectedVm}/>
+        )} */}
+
       </Suspense>
     </>
   );
