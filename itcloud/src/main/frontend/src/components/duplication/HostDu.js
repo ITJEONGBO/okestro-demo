@@ -65,8 +65,8 @@ const closePopup = () => {
         <button onClick={() => openPopup('host_edit')}>편집</button>
         <button onClick={() => openPopup('delete')}>삭제</button>
         <div className="manage_container">
-          <button id="manage_btn" onClick={handleManageClick} className="btn">
-            관리 <FontAwesomeIcon icon={faChevronDown} />
+        <button id="manage_btn" onClick={handleManageClick} className="btn" >
+            관리 <FontAwesomeIcon icon={faChevronDown} style={{marginLeft:'3px'}}/>
           </button>
           
           {isManageBoxVisible && (
@@ -153,7 +153,7 @@ const closePopup = () => {
                   </div>
             </div>
 
-          <div className='px-0.5 py-1'>
+          <div className='px-0.5 py-0.5'>
             <div className='host_checkboxs'>
               <div className='host_checkbox'>
                   <input type="checkbox" id="memory_balloon" name="memory_balloon" />

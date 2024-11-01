@@ -171,47 +171,47 @@ const NetworkNewModal = ({
                 </div>
               </div>
 
-              <div id="network_new_cluster_form">
-                                <span>클러스터에서 네트워크를 연결/분리</span>
-                                <div>
-                                    <table className="network_new_cluster_table">
-                                        <thead>
-                                            <tr>
-                                                <th>이름</th>
-                                                <th>
-                                                    <div className="checkbox_group">
-                                                        <input type="checkbox" id="connect_all" />
-                                                        <label htmlFor="connect_all"> 모두 연결</label>
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div className="checkbox_group">
-                                                        <input type="checkbox" id="require_all" />
-                                                        <label htmlFor="require_all"> 모두 필요</label>
-                                                    </div>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Default</td>
-                                                <td className="checkbox-group">
-                                                    <div className="checkbox_group">
-                                                        <input type="checkbox" id="connect_default" />
-                                                        <label htmlFor="connect_default"> 연결</label>
-                                                    </div>
-                                                </td>
-                                                <td className="checkbox-group">
-                                                    <div className="checkbox_group">
-                                                        <input type="checkbox" id="require_default" />
-                                                        <label htmlFor="require_default"> 필수</label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+              <div id="network_new_cluster_form" style={{ display: editMode ? 'none' : 'block' }}>
+  <span>클러스터에서 네트워크를 연결/분리</span>
+  <div>
+    <table className="network_new_cluster_table">
+      <thead>
+        <tr>
+          <th>이름</th>
+          <th>
+            <div className="checkbox_group">
+              <input type="checkbox" id="connect_all" />
+              <label htmlFor="connect_all"> 모두 연결</label>
+            </div>
+          </th>
+          <th>
+            <div className="checkbox_group">
+              <input type="checkbox" id="require_all" />
+              <label htmlFor="require_all"> 모두 필요</label>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Default</td>
+          <td className="checkbox-group">
+            <div className="checkbox_group">
+              <input type="checkbox" id="connect_default" />
+              <label htmlFor="connect_default"> 연결</label>
+            </div>
+          </td>
+          <td className="checkbox-group">
+            <div className="checkbox_group">
+              <input type="checkbox" id="require_default" />
+              <label htmlFor="require_default"> 필수</label>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
             </form>
           )}
         </div>

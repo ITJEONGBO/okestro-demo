@@ -149,7 +149,7 @@ const VmDisk = () => {
                         <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
                       </div>
                     </div>
-                    <div className="content_type">
+                    {/* <div className="content_type">
                       <label className='mr-1' htmlFor="contentType">컨텐츠 유형:</label>
                       <select id="contentType" value={activeContentType} onChange={handleContentTypeChange}>
                         <option value="all">모두</option>
@@ -162,7 +162,7 @@ const VmDisk = () => {
                         <option value="metadata">Hosted Engine Metadata</option>
                         <option value="conf">Hosted Engine Conf.</option>
                       </select>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="header_right_btns">
@@ -448,7 +448,7 @@ const VmDisk = () => {
                         <input type='checkbox'/>
                       </td>
                       <td>
-                        <FontAwesomeIcon icon={faChevronCircleRight} fixedWidth />
+                        <input type='checkbox'/>
                       </td>
                       <td>
                         <FontAwesomeIcon icon={faChevronCircleRight} fixedWidth />

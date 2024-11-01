@@ -124,13 +124,10 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
 const buttons = [
     // { id: 'new_btn', label: '새로 만들기',onClick:() => openPopup('new')},
     { id: 'edit_btn', label: '편집', onClick:() => openPopup('edit')},
-    { id: 'delete_btn', label: '삭제',onClick:() => openPopup('delete')},
     { id: 'run_btn', className:'disabled',label: <><i className="fa fa-play"></i>실행</>, onClick: () => console.log() },
     { id: 'pause_btn', label: <><i className="fa fa-pause"></i>일시중지</>, onClick: () => console.log() },
     { id: 'stop_btn', label: <><i className="fa fa-stop"></i>종료</>, onClick: () => console.log() },
     { id: 'reboot_btn', label: <><i className="fa fa-repeat"></i>재부팅</>, onClick: () => console.log() },
-    { id: 'console_btn', label: <><i className="fa fa-desktop"></i>콘솔</>, onClick: () => console.log() },
-    { id: 'template_btn', label: <><i className="fa fa-desktop"></i>템플릿</>, onClick: () => navigate('/computing/templates') },
     { id: 'snapshot_btn', label: '스냅샷 생성', onClick:() => openPopup('snapshot')},
     { id: 'migration_btn', label: '마이그레이션', onClick:() => openPopup('migration')} ,
   ];
@@ -138,11 +135,7 @@ const buttons = [
     { id: 'import', label: '가져오기', onClick: () => openPopup('bring') },
     { id: 'clone_vm', label: '가상 머신 복제',onClick: () => openPopup('vm_copy')  },
     { id: 'delete', label: '삭제',onClick: () => openPopup('delete')  },
-    { id: 'cancel_migration', label: '마이그레이션 취소' },
-    { id: 'cancel_conversion', label: '변환 취소' },
     { id: 'create_template', label: '템플릿 생성' },
-    { id: 'export_to_domain', label: '내보내기 도메인으로 내보내기' },
-    { id: 'export_to_data', label: 'Export to Data Domain' },
     { id: 'export_ova', label: 'OVA로 내보내기' ,onClick: () => openPopup('OVA') }
   ];
 

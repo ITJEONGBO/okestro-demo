@@ -1088,9 +1088,7 @@ input[disabled] {
 #host_second_content{
     padding: 2%;
 }
-#host_third_content{
-    padding: 0 2% 2% 0%;
-}
+
 
 #host_third_content>div{
     padding: 1% 0;
@@ -1411,8 +1409,8 @@ input[disabled] {
     padding: 0.25rem 0.29rem;
 }
 .edit_first_content>div:first-child{
-    margin-bottom: 0.4rem;
-    padding-top: 0.4rem;
+
+    padding-top: 0.3rem;
 }
 .edit_first_content{
     border-bottom: 1px solid #cecece;
@@ -1485,7 +1483,7 @@ input[disabled] {
     background: #fff;
     top: 50%;
     height: 42%;
-    width: 70%;
+    width: 53%;
     font-size: 0.33rem;
     left: 50%;
     transform: translate(-50%, -50%);

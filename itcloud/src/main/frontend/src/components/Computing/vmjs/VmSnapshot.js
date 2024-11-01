@@ -51,7 +51,7 @@ const VmSnapshot = ({vm}) => {
           <button className='disabled'>되돌리기</button>
           <button className='disabled'>삭제</button>
           <button className='disabled'>복제</button>
-          <button className='disabled'>템플릿 생성</button>
+
         </div>
 
         <div className="snapshot_content">

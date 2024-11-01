@@ -312,7 +312,8 @@ function HostDetail() {
                   <li onClick={() => openPopup('maintenance')}>유지보수</li>
                   <li>활성</li>
                   <li>기능을 새로 고침</li>
-                  <li style={{borderTop:'1px solid #DDDDDD',borderBottom:'1px solid #DDDDDD'}}>인증서 등록</li>
+                  <li style={{borderTop:'1px solid #DDDDDD'}}>다시 설치</li>
+                  <li style={{borderBottom:'1px solid #DDDDDD'}}>인증서 등록</li>
                   <li>재시작</li>
                   <li>중지</li>
                 </ul>
@@ -1258,8 +1259,8 @@ function HostDetail() {
                   <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
                 
-                <div className="host_network_outer px-1.5 text-sm">
-                <div className="py-2 font-bold underline">드래그 하여 변경</div>
+                <div className="host_network_outer px-1.5 pt-1.5 text-sm">
+                
 
                 <div className="host_network_separation">
             <div className="network_separation_left">

@@ -382,7 +382,7 @@ function ClusterName() {
                         </div>
                     
                         <div className="network_form_group">
-                        <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형</label>
+                        <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형<FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/></label>
                         <select id="chipset_firmware_type">
                             <option value="default">Default</option>
                         </select>
@@ -396,7 +396,7 @@ function ClusterName() {
                         <div>
                         <div className='font-bold px-1.5 py-0.5'>복구 정책<FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/></div>
                         <div className='host_text_radio_box px-1.5 py-0.5'>
-                            <input type="radio" id="migration_option" name="recovery_policy" />
+                            <input type="radio" id="migration_option" name="recovery_policy" checked/>
                             <label htmlFor="migration_option">가상 머신을 마이그레이션함</label>
                         </div>
 

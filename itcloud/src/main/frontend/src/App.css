@@ -42,7 +42,7 @@ button{
     cursor:pointer;
 }
 button:disabled {
-    background-color: #ccc; 
+    background-color: #e9e8e8cc; 
     color: #666;           
     cursor: not-allowed;    
 }
@@ -243,8 +243,8 @@ button:disabled {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 78%;
-    width: 41%;
+    height: 70%;
+    width: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
@@ -332,7 +332,7 @@ button:disabled {
     border-top: 1px solid #cecece;
 }
 .edit_fourth_content_select{
-    width: 80%;
+    min-width: 64%;
     display: flex;
     justify-content: space-between;
 }
@@ -364,7 +364,7 @@ button:disabled {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 78.4%;
+    max-height: 78.4%;
     width: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -508,7 +508,13 @@ input[type="text"]:focus {
     box-shadow: 0 0 8px rgba(22, 90, 190, 0.8);
     outline: none;
 }
-
+textarea{
+    border: 1px solid gray;
+    border-radius: 2px;
+    width: 100%;
+    padding: 0.1rem;
+    outline:none;
+}
 .section_table_outer input[type="text"],.section_table_outer select{
     border:1px solid #DDDDDD;
 }
@@ -602,7 +608,7 @@ input[type="text"]:focus {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 66.4vh;
+    height: 56.4vh;
     width: 43%;
     left: 50%;
     transform: translate(-50%, -50%);

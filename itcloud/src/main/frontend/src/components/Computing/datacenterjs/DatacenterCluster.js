@@ -81,7 +81,7 @@ const DatacenterCluster = ({ dataCenter }) => {
 
                 {/* 일반 */}
               
-                    <form className="cluster_common_form py-1">
+                    <form className="cluster_common_form py-0.5">
                         <div className="network_form_group">
                         <label htmlFor="data_center">데이터 센터</label>
                         <select id="data_center">
@@ -133,7 +133,7 @@ const DatacenterCluster = ({ dataCenter }) => {
                         </div>
                     
                         <div className="network_form_group">
-                        <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형</label>
+                        <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형<FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/></label>
                         <select id="chipset_firmware_type">
                             <option value="default">Default</option>
                         </select>
@@ -142,9 +142,10 @@ const DatacenterCluster = ({ dataCenter }) => {
                         <div className="network_checkbox_type2">
                         <input type="checkbox" id="bios_change" name="bios_change" />
                         <label htmlFor="bios_change">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
+                        
                         </div>
                     
-                        <div className="network_form_group">
+                        {/* <div className="network_form_group">
                         <label htmlFor="default_network_provider">기본 네트워크 공급자</label>
                         <select id="default_network_provider">
                             <option value="기본 공급자가 없습니다.">기본 공급자가 없습니다.</option>
@@ -157,12 +158,12 @@ const DatacenterCluster = ({ dataCenter }) => {
                         <select id="max_memory_limit">
                             <option value="default">Default</option>
                         </select>
-                        </div>
+                        </div> */}
 
                         <div>
                           <div className='font-bold px-1.5 py-0.5'>복구 정책<FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/></div>
                           <div className='host_text_radio_box px-1.5 py-0.5'>
-                            <input type="radio" id="migration_option" name="recovery_policy" />
+                            <input type="radio" id="migration_option" name="recovery_policy" checked/>
                             <label htmlFor="migration_option">가상 머신을 마이그레이션함</label>
                           </div>
 

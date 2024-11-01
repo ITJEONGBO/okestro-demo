@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableOuter from '../table/TableOuter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisV, faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleRight, faEllipsisV, faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import VncViewer from '../Vnc/VncViewer';
 import { createRoot } from 'react-dom/client';
@@ -11,7 +11,7 @@ import { createRoot } from 'react-dom/client';
 const VmDu = ({
   columns,
   onRowClick,
-  setActiveTab: parentSetActiveTab,
+  setActiveTab: parentSetActiveTab = () => {},
   showTemplateButton = true,
   data ,
 
@@ -46,7 +46,9 @@ const VmDu = ({
   const [activeTab, setActiveTab] = useState('img'); 
   const handleTabClick = (tab) => {
     setActiveTab(tab); // 로컬 상태를 업데이트
-    parentSetActiveTab(tab); // 상위 컴포넌트에서 받은 상태 업데이트 함수 호출
+    if (typeof parentSetActiveTab === 'function') {
+      parentSetActiveTab(tab); // 상위 컴포넌트에서 받은 함수 호출 (함수인지 확인 후 호출)
+    }
   };
 
   // 추가 모달
@@ -86,6 +88,11 @@ const VmDu = ({
     setSelectedModalTab(tab);
   };
 
+  // 새로만들기->초기실행 화살표 누르면 밑에열리기
+  const [isDomainHiddenBoxVisible, setDomainHiddenBoxVisible] = useState(false);
+  const toggleDomainHiddenBox = () => {
+    setDomainHiddenBoxVisible(!isDomainHiddenBoxVisible);
+  };
 
   //Vnc 열리게하기
   const handleButtonClick = () => {
@@ -208,6 +215,13 @@ const VmDu = ({
                     시스템
                     </div>
                     <div
+                    id="beginning_tab"
+                    className={selectedModalTab === 'beginning' ? 'active-tab' : 'inactive-tab'}
+                    onClick={() => setSelectedModalTab('beginning')}
+                    >
+                    초기 실행
+                    </div>
+                    <div
                     id="host_tab"
                     className={selectedModalTab === 'host' ? 'active-tab' : 'inactive-tab'}
                     onClick={() => setSelectedModalTab('host')}
@@ -221,13 +235,13 @@ const VmDu = ({
                     >
                     고가용성
                     </div>
-                    <div
+                    {/* <div
                     id="res_alloc_tab"
                     className={selectedModalTab === 'res_alloc' ? 'active-tab' : 'inactive-tab'}
                     onClick={() => setSelectedModalTab('res_alloc')}
                     >
                     리소스 할당
-                    </div>
+                    </div> */}
                     <div
                     id="boot_option_tab"
                     className={selectedModalTab === 'boot_outer' ? 'active-tab' : 'inactive-tab'}
@@ -241,7 +255,7 @@ const VmDu = ({
             {/* 탭 내용 */}
             <div className="vm_edit_select_tab">
               <div className="edit_first_content">
-                          <div>
+                          <div className='mb-1'>
                                 <label htmlFor="cluster">클러스터</label>
                                 <select id="cluster">
                                     <option value="default">Default</option>
@@ -250,7 +264,7 @@ const VmDu = ({
                             </div>
 
                             <div className='disabled'>
-                                <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                <label htmlFor="template" style={{ color: 'gray' }}>템플릿</label>
                                 <select id="template" disabled>
                                     <option value="test02">test02</option>
                                 </select>
@@ -305,11 +319,11 @@ const VmDu = ({
                                 </div>
                             </div>
                         </div>
-                        <span className='edit_fourth_span'>vNIC 프로파일을 선택하여 가상 머신 네트워크 인터페이스를 인스턴스화합니다.</span>
+                       
                         <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
                             
                             <div className='edit_fourth_content_select flex'>
-                                <label htmlFor="network_adapter">네트워크 어댑터 1</label>
+                                <label htmlFor="network_adapter">nic1</label>
                                 <select id="network_adapter">
                                     <option value="default">Default</option>
                                 </select>
@@ -354,6 +368,25 @@ const VmDu = ({
                             </div>
                             
                     </div>
+                </>
+                }
+                {selectedModalTab === 'beginning' && 
+                <>
+                  <div className='p-1.5'>
+                    <div className='checkbox_group mb-1.5'>
+                        <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
+                        <label htmlFor="enableBootMenu">Cloud-lnit</label>
+                    </div>
+
+                    <div>
+                      <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox}fixedWidth/>
+                      <span>사용자 지정 스크립트</span>
+                      <div className='mt-0.5' id="domain_hidden_box2" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
+                        <textarea name="content" cols="40" rows="8" >DVD</textarea>
+
+                      </div>
+                    </div>
+                  </div>
                 </>
                 }
                 {selectedModalTab === 'host' && 
@@ -404,17 +437,10 @@ const VmDu = ({
                                     <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
                                 </select>
                             </div>
+                            
                             <div>
                                 <div>
-                                    <span>마이그레이션 암호화 사용</span>
-                                </div>
-                                <select id="migration_encryption">
-                                    <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(암호화하지 마십시오)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <div>
-                                    <span>Parallel Migrations</span>
+                                    <span>마이그레이션 병행</span>
                                     <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
                                 </div>
                                 <select id="parallel_migrations" readOnly>
@@ -422,7 +448,7 @@ const VmDu = ({
                                 </select>
                             </div>
                             <div className='network_checkbox_type1 disabled'>
-                                <label htmlFor="memory_size">Number of VM Migration Connections</label>
+                                <label htmlFor="memory_size">마이그레이션 병행 개수</label>
                                 <input type="text" id="memory_size" value="" readOnly disabled/>
                             </div>
                             
@@ -471,7 +497,7 @@ const VmDu = ({
                         </div>
                 </>
                 }
-                {selectedModalTab === 'res_alloc' && 
+                {/* {selectedModalTab === 'res_alloc' && 
                 <>
         <div className="res_second_content">
                             <div className="cpu_res">
@@ -524,7 +550,7 @@ const VmDu = ({
                         </div>
 
                 </>
-                }
+                } */}
                 {selectedModalTab === 'boot_outer' && 
                 <>  
                   <div className='boot_outer_content'>
@@ -902,11 +928,11 @@ const VmDu = ({
                         </div>
 
                       
-                        <span className='edit_fourth_span'>vNIC 프로파일을 선택하여 가상 머신 네트워크 인터페이스를 인스턴스화합니다.</span>
+                        
                         <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
                             
                             <div className='edit_fourth_content_select flex'>
-                                <label htmlFor="network_adapter">네트워크 어댑터 1</label>
+                                <label htmlFor="network_adapter">nic 1</label>
                                 <select id="network_adapter">
                                     <option value="default">Default</option>
                                 </select>
@@ -1001,17 +1027,10 @@ const VmDu = ({
                                     <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
                                 </select>
                             </div>
+                            
                             <div>
                                 <div>
-                                    <span>마이그레이션 암호화 사용</span>
-                                </div>
-                                <select id="migration_encryption">
-                                    <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(암호화하지 마십시오)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <div>
-                                    <span>Parallel Migrations</span>
+                                    <span>마이그레이션 병행</span>
                                     <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
                                 </div>
                                 <select id="parallel_migrations" readOnly>
@@ -1019,7 +1038,7 @@ const VmDu = ({
                                 </select>
                             </div>
                             <div className='network_checkbox_type1 disabled'>
-                                <label htmlFor="memory_size">Number of VM Migration Connections</label>
+                                <label htmlFor="memory_size">마이그레이션 병행 개수</label>
                                 <input type="text" id="memory_size" value="" readOnly disabled/>
                             </div>
                             
