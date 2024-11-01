@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { useNetworkById } from '../../api/RQHook';
+import { useAddNetwork, useAllDataCenters, useEditNetwork, useNetworkById } from '../../api/RQHook';
 
 const NetworkNewModal = ({ 
     isOpen, 
     onRequestClose, 
-    onSave, 
     editMode = false,
     networkId // 네트워크 ID를 받아서 편집 모드에서 사용
   }) => {
     const [id, setId] = useState('');
+    const [datacenterVoId, setDatacenterVoId] = useState('');  
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [comment, setComment] = useState('');
@@ -22,19 +22,36 @@ const NetworkNewModal = ({
     const [dnsSettings, setDnsSettings] = useState(false);
     const [dnsServer, setDnsServer] = useState('');
     const [quotaMode, setQuotaMode] = useState();
+
+    const { mutate: addNetwork } = useAddNetwork();
+    const { mutate: editNetwork } = useEditNetwork();
   
-    // 예시: useNetwork Hook을 사용하여 기존 데이터를 가져옴
+    //  네트워크 데이터
     const { 
         data: network, 
         isLoading, 
         isError 
     } = useNetworkById(networkId);
+
+    // 데이터센터 가져오기
+    const {
+      data: datacenters,
+      status: datacentersStatus,
+      isRefetching: isDatacentersRefetching,
+      refetch: refetchDatacenters,
+      isError: isDatacentersError,
+      error: datacentersError,
+      isLoading: isDatacentersLoading
+    } = useAllDataCenters((e) => ({
+      ...e,
+    }));
   
     // 모달이 열릴 때 기존 데이터를 상태에 설정
     useEffect(() => {
       if (editMode && network) {
         
         setId(network.id);
+        setDatacenterVoId(network?.datacenterVo?.id || '');
         setName(network.name);
         setDescription(network.description);
         setComment(network.comment);
@@ -46,8 +63,11 @@ const NetworkNewModal = ({
         setDnsServer(network.dnsServer);
       } else { // 그게아니면 리셋 = 새로만들기
         resetForm();
+        if (datacenters && datacenters.length > 0) {
+          setDatacenterVoId(datacenters[0].id);
+        }
       }
-    }, [editMode, network]);
+    }, [editMode, network, datacenters]);
   
     const resetForm = () => {
       setName('');
@@ -62,6 +82,7 @@ const NetworkNewModal = ({
     };
   
     const handleFormSubmit = () => {
+      
       const dataToSubmit = {
         name,
         description,
@@ -72,10 +93,40 @@ const NetworkNewModal = ({
         mtu,
         dnsSettings,
         dnsServer,
+        datacenterVoId // 추가된 부분
       };
-      onSave(dataToSubmit); // 데이터를 부모 컴포넌트로 전달
-      onRequestClose(); // 모달 닫기
+    
+      if (editMode) {
+        // 편집 모드에서는 id를 포함해서 제출
+        dataToSubmit.id = id;  // 편집 시 필요한 id 추가
+    
+        editNetwork({
+          networkId: id,               // 네트워크 ID 전달
+          networkData: dataToSubmit    // 수정할 데이터
+        }, {
+          onSuccess: () => {
+            alert("네트워크 편집 완료(alert기능구현)");
+            onRequestClose();  // 성공 시 모달 닫기
+          },
+          onError: (error) => {
+            console.error('Error editing network:', error);
+          }
+        });
+      } else {
+        // 새 네트워크 생성 시 datacenterVoId를 함께 포함
+        addNetwork(dataToSubmit, {
+          onSuccess: () => {
+            alert("네트워크 생성 완료(alert기능구현)");
+            onRequestClose();
+          },
+          onError: (error) => {
+            console.error('Error adding network:', error);
+          }
+        });
+      }
     };
+    
+    
   
   const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
   const handleTabClick = (tab) => setSelectedTab(tab);
@@ -89,8 +140,9 @@ const NetworkNewModal = ({
       className="Modal"
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
+      
     >
-      <div className="network_new_popup">
+      <div className={`network_new_popup ${editMode ? 'edit-mode' : ''}`}>
         <div className="popup_header">
         <h1>{editMode ? '논리 네트워크 수정' : '새 논리적 네트워크'}</h1>
           <button onClick={onRequestClose}>
@@ -106,25 +158,48 @@ const NetworkNewModal = ({
                 <div className="network_form_group">
                   <label htmlFor="cluster">데이터 센터</label>
                   <select
-                    id="quota_mode"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    />
+                    id="data_center"
+                    value={datacenterVoId}
+                    onChange={(e) => setDatacenterVoId(e.target.value)}
+                    disabled={editMode}
+                  >
+                    {datacenters &&
+                      datacenters.map((dc) => (
+                        <option value={dc.id}>
+                          {dc.name}
+                        </option>
+                      ))}
+                  </select>
                 </div>
                 <div className="network_form_group">
                   <div className="checkbox_group">
                     <label htmlFor="name">이름</label>
                     <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth />
                   </div>
-                  <input type="text" id="name" />
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)} 
+                  />
                 </div>
                 <div className="network_form_group">
                   <label htmlFor="description">설명</label>
-                  <input type="text" id="description" />
+                  <input
+                    type="text"
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)} // onChange 핸들러 추가
+                  />
                 </div>
                 <div className="network_form_group">
                   <label htmlFor="comment">코멘트</label>
-                  <input type="text" id="comment" />
+                  <input
+                    type="text"
+                    id="comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                  />
                 </div>
               </div>
 
@@ -218,7 +293,7 @@ const NetworkNewModal = ({
 
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>
-          <button onClick={onSave}>OK</button>
+          <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>

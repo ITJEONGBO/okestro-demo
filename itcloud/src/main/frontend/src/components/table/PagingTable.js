@@ -4,7 +4,7 @@ import './Table.css';
 import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColumnIndex = [], itemsPerPage = 10, showSearchBox = true }) => {
+const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColumnIndex = [], itemsPerPage = 20, showSearchBox = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRowIndex, setSelectedRowIndex] = useState(null); // 선택된 행의 인덱스를 관리
   const [tooltips, setTooltips] = useState({}); // 툴팁 상태 관리

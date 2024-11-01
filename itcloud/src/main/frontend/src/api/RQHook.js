@@ -1014,6 +1014,45 @@ export const useAllVnicProfiles = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+
+
+/**
+ * @name useAddNetwork
+ * @description 네트워크 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddNetwork = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (networkData) => await ApiManager.addNetwork(networkData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allNetworks'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
+    },
+    onError: (error) => {
+      console.error('Error adding network:', error);
+    },  
+  });
+};
+/**
+ * @name useEditNetwork
+ * @description 네트워크 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditNetwork = () => {
+  const queryClient = useQueryClient();  
+  return useMutation({
+    mutationFn: async ({ networkId, networkData }) => await ApiManager.editNetwork(networkId, networkData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allNetworks');
+    },
+    onError: (error) => {
+      console.error('Error editing network:', error);
+    },
+  });
+};
+
 /**
  * @name useDeleteNetwork
  * @description 네트워크 삭제 useMutation 훅

@@ -364,13 +364,15 @@ button:disabled {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    max-height: 78.4%;
+    height: 78.4%;
     width: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-
+.network_new_popup.edit-mode {
+    height: 70%;
+}
 .network_new_nav{
     justify-content: space-between;
     border-bottom: 1px solid rgb(206, 206, 206);
