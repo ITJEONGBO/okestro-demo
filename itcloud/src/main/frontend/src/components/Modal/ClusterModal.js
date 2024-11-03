@@ -66,28 +66,6 @@ const ClusterModal = ({
     ...e,
   }));
 
-  // 모달이 열릴 때 데이터 초기화
-  // useEffect(() => {
-  //   if (editMode && cluster) {
-  //     // 데이터가 모두 로드된 경우에만 설정
-  //     setId(cluster?.id);
-  //     setDatacenterVoId(cluster?.datacenterVo?.id || '');
-  //     setName(cluster?.name);
-  //     setDescription(cluster?.description);
-  //     setComment(cluster?.comment);
-  //     setNetworkVoId(cluster?.networkVo?.id || '');
-  //     setCpuArc(cluster?.cpuArc);
-  //     setCpuType(cluster?.cpuType);
-  //     setBiosType(cluster?.biosType);
-  //     setErrorHandling(cluster?.errorHandling);
-  //   } else {
-  //     resetForm();
-  //     if (datacenters && datacenters.length > 0) {
-  //       setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본 선택
-  //     }
-  //   }
-  // }, [editMode, cluster, datacenters]);
-
   useEffect(() => {
     if (editMode && cluster && !isClusterLoading && !isClusterRefetching) {
       // 데이터가 모두 로드된 경우에만 설정
@@ -120,20 +98,6 @@ const ClusterModal = ({
     setBiosType('');
     setErrorHandling('');
   };
-
-  // 데이터센터 선택 시 네트워크 업데이트
-  // useEffect(() => {
-  //   if (datacenterVoId) {
-  //     setNetworkVoId(''); // 네트워크 값을 먼저 초기화
-  
-  //     // 데이터센터가 선택되었을 때 네트워크를 다시 가져옴
-  //     refetchNetworks({ datacenterId: datacenterVoId }).then((res) => {
-  //       if (res?.data && res.data.length > 0) {
-  //         setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
-  //       }
-  //     });
-  //   } 
-  // }, [datacenterVoId]);
 
   useEffect(() => {
     if (datacenterVoId) {
@@ -250,11 +214,6 @@ const ClusterModal = ({
     }
   }, [cpuOptions, editMode, cluster]);
 
-  // useEffect(() => {
-  //   if (biosType) {
-  //     setBiosChange(false);
-  //   }
-  // }, [biosType]);
 
   // 폼 제출 핸들러
   const handleFormSubmit = () => {
