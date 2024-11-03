@@ -27,13 +27,11 @@ const Grid = ({ type, data = [] }) => {
 
   const handleClick = (id) => {
     if (id && id.startsWith('placeholder')) return; // placeholder 클릭 방지
-    if (type === 'cpu') {
-      navigate(`/computing/vms/${id}`);
-    } else if (type === 'memory') {
-      navigate(`/computing/vms/${id}`);
-    } else {
+    if (type === 'domain') {
       navigate(`/storages/domains/${id}`);
-    }
+    } else {
+      navigate(`/computing/vms/${id}`);
+    } 
   };
 
   return (
@@ -48,6 +46,7 @@ const Grid = ({ type, data = [] }) => {
             backgroundColor: type === 'cpu' ? getBackgroundColor(item.cpuPercent) : getBackgroundColor(item.memoryPercent),
           }}
         >
+          
           {item.cpuPercent !== null && item.memoryPercent !== null ? (
             <div className="percent">{type === 'cpu' ? item.cpuPercent : item.memoryPercent}%</div>
           ) : (

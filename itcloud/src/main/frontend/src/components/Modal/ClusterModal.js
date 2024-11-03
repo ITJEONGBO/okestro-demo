@@ -27,6 +27,7 @@ const ClusterModal = ({
   const [cpuType, setCpuType] = useState('');
   const [cpuOptions, setCpuOptions] = useState([]);
   const [biosType, setBiosType] = useState('');
+  // const [biosChange, setBiosChange] = useState('');
   const [errorHandling, setErrorHandling] = useState('');
   
   const { mutate: addCluster } = useAddCluster();
@@ -66,10 +67,29 @@ const ClusterModal = ({
   }));
 
   // 모달이 열릴 때 데이터 초기화
+  // useEffect(() => {
+  //   if (editMode && cluster) {
+  //     // 데이터가 모두 로드된 경우에만 설정
+  //     setId(cluster?.id);
+  //     setDatacenterVoId(cluster?.datacenterVo?.id || '');
+  //     setName(cluster?.name);
+  //     setDescription(cluster?.description);
+  //     setComment(cluster?.comment);
+  //     setNetworkVoId(cluster?.networkVo?.id || '');
+  //     setCpuArc(cluster?.cpuArc);
+  //     setCpuType(cluster?.cpuType);
+  //     setBiosType(cluster?.biosType);
+  //     setErrorHandling(cluster?.errorHandling);
+  //   } else {
+  //     resetForm();
+  //     if (datacenters && datacenters.length > 0) {
+  //       setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본 선택
+  //     }
+  //   }
+  // }, [editMode, cluster, datacenters]);
+
   useEffect(() => {
-    if (editMode && cluster) {
-      console.log('---'+cluster.cpuType)
-      console.log('---'+cluster.biosType)
+    if (editMode && cluster && !isClusterLoading && !isClusterRefetching) {
       // 데이터가 모두 로드된 경우에만 설정
       setId(cluster?.id);
       setDatacenterVoId(cluster?.datacenterVo?.id || '');
@@ -81,13 +101,13 @@ const ClusterModal = ({
       setCpuType(cluster?.cpuType);
       setBiosType(cluster?.biosType);
       setErrorHandling(cluster?.errorHandling);
-    } else {
+    } else if (!editMode) {
       resetForm();
       if (datacenters && datacenters.length > 0) {
         setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본 선택
       }
     }
-  }, [editMode, cluster, datacenters]);
+  }, [editMode, cluster, datacenters, isClusterLoading, isClusterRefetching]);
   
   const resetForm = () => {
     setDatacenterVoId('');
@@ -102,6 +122,19 @@ const ClusterModal = ({
   };
 
   // 데이터센터 선택 시 네트워크 업데이트
+  // useEffect(() => {
+  //   if (datacenterVoId) {
+  //     setNetworkVoId(''); // 네트워크 값을 먼저 초기화
+  
+  //     // 데이터센터가 선택되었을 때 네트워크를 다시 가져옴
+  //     refetchNetworks({ datacenterId: datacenterVoId }).then((res) => {
+  //       if (res?.data && res.data.length > 0) {
+  //         setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
+  //       }
+  //     });
+  //   } 
+  // }, [datacenterVoId]);
+
   useEffect(() => {
     if (datacenterVoId) {
       setNetworkVoId(''); // 네트워크 값을 먼저 초기화
@@ -112,8 +145,8 @@ const ClusterModal = ({
           setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
         }
       });
-    } 
-  }, [datacenterVoId]);
+    }
+  }, [datacenterVoId, refetchNetworks]);
   
   // 데이터센터 리스트가 업데이트될 때 초기값 설정
   useEffect(() => {
@@ -124,7 +157,6 @@ const ClusterModal = ({
       }
     }
   }, [datacenters, editMode]);
-
 
   useEffect(() => {
     let options = [];
@@ -208,6 +240,7 @@ const ClusterModal = ({
     }
     setCpuOptions(options);
     setCpuType(''); // CPU 유형 초기화
+    setBiosType('');
   }, [cpuArc]);
 
   // cpuArc에 따른 cpuType 변화
@@ -216,6 +249,12 @@ const ClusterModal = ({
       setCpuType(cluster.cpuType);
     }
   }, [cpuOptions, editMode, cluster]);
+
+  // useEffect(() => {
+  //   if (biosType) {
+  //     setBiosChange(false);
+  //   }
+  // }, [biosType]);
 
   // 폼 제출 핸들러
   const handleFormSubmit = () => {
@@ -292,6 +331,7 @@ const ClusterModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
+      
       <div className="cluster_new_popup">
         <div className="popup_header">
           <h1>{editMode ? '클러스터 편집' : '새 클러스터'}</h1>
@@ -301,7 +341,7 @@ const ClusterModal = ({
         </div>
 
         <div className="cluster_new_content">
-          <div>
+          <div className="network_form_group">
             <label htmlFor="data_center">데이터 센터</label>
             <select
               id="data_center"
@@ -316,11 +356,11 @@ const ClusterModal = ({
                   </option>
                 ))}
             </select>
-            <span>{datacenterVoId}</span>
           </div>
+          <span>{datacenterVoId}</span>
           <hr/>
 
-          <div>
+          <div className="network_form_group">
             <label htmlFor="name">이름</label>
               <input
                 type="text"
@@ -330,7 +370,7 @@ const ClusterModal = ({
               />
           </div>
 
-          <div>
+          <div className="network_form_group">
             <label htmlFor="description">설명</label>
             <input
               type="text"
@@ -340,7 +380,7 @@ const ClusterModal = ({
             />
           </div>
 
-          <div>
+          <div className="network_form_group">
             <label htmlFor="comment">코멘트</label>
             <input
               type="text"
@@ -350,7 +390,7 @@ const ClusterModal = ({
             />
           </div>
 
-          <div>
+          <div className="network_form_group">
             <label htmlFor="network">관리 네트워크</label>
             <select
               id="network"
@@ -358,7 +398,7 @@ const ClusterModal = ({
               onChange={(e) => setNetworkVoId(e.target.value)}
               disabled={editMode || isNetworksLoading || !datacenterVoId}
             >
-              
+              {/* <option value="" defaultValue>선택</option> */}
               {networks &&
                 networks.map((n) => (
                   <option key={n.id} value={n.id}>
@@ -368,7 +408,8 @@ const ClusterModal = ({
             </select>
             <span>{networkVoId}</span>
           </div>
-          <div>
+
+          <div className="network_form_group">
             <label htmlFor="cpuArc">CPU 아키텍처</label>
             <select
               id="cpuArc"
@@ -382,7 +423,7 @@ const ClusterModal = ({
             </select>
           </div>
 
-          <div>
+          <div className="network_form_group">
             <label htmlFor="cpuType">CPU 유형</label>
             <select
               id="cpuType"
@@ -399,12 +440,13 @@ const ClusterModal = ({
             </select>
           </div>
           
-          <div>
+          <div className="network_form_group">
             <label htmlFor="biosType">칩셋/펌웨어 유형</label>
             <select
               id="biosType"
               value={biosType}
               onChange={(e) => setBiosType(e.target.value)}
+              disabled={cpuArc === 'PPC64' || cpuArc === 'S390X'}
             >
               <option value="CLUSTER_DEFAULT">자동 감지</option>
               <option value="I440FX_SEA_BIOS">BIOS의 I440FX 칩셋</option>
@@ -414,26 +456,52 @@ const ClusterModal = ({
             </select>
           </div>
 
-          {/* <div>
-            <input type="checkbox" id="bios_change" name="bios_change" />
-            <label htmlFor="bios_change">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
-          </div>
+          {/* <div className="network_checkbox_type2">
+            <input 
+              type="checkbox" 
+              value={''}
+              id="biosChange" 
+              name="biosChange" 
+              checked={isBiosChangeChecked}
+              onChange={(e) => setIsBiosChangeChecked(e.target.checked)}
+              disabled={!!biosType} // biosType이 선택된 경우 체크박스 비활성화
+            />
+            <label htmlFor="biosChange">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
+          </div> */}
 
-          <div>
-            <div>복구 정책</div>
-            <div>
-              <input type="radio" id="migration_option" name="recovery_policy" />
+          <div className='font-bold px-1.5 py-0.5'>
+            <label htmlFor="errorHandling">복구 정책</label>
+            <div className='host_text_radio_box px-1.5 py-0.5'>
+              <input 
+                type="radio" 
+                name="recovery_policy" 
+                value="migrate" 
+                checked={errorHandling === 'migrate'}
+                onChange={(e) => setErrorHandling(e.target.value)}
+              />
               <label htmlFor="migration_option">가상 머신을 마이그레이션함</label>
             </div>
-            <div>
-              <input type="radio" id="high_usage_migration_option" name="recovery_policy" />
+            <div className='host_text_radio_box px-1.5 py-0.5'>
+              <input 
+                type="radio" 
+                name="recovery_policy" 
+                value="migrate_highly_available"
+                checked={errorHandling === 'migrate_highly_available'}
+                onChange={(e) => setErrorHandling(e.target.value)}
+              />
               <label htmlFor="high_usage_migration_option">고가용성 가상 머신만 마이그레이션</label>
             </div>
-            <div>
-              <input type="radio" id="no_migration_option" name="recovery_policy" />
+            <div className='host_text_radio_box px-1.5 py-0.5'>
+              <input 
+                type="radio"
+                name="recovery_policy" 
+                value="do_not_migrate" 
+                checked={errorHandling === 'do_not_migrate'}
+                onChange={(e) => setErrorHandling(e.target.value)}
+              />
               <label htmlFor="no_migration_option">가상 머신은 마이그레이션 하지 않음</label>
             </div>
-          </div> */}
+          </div>
 
         </div>
 

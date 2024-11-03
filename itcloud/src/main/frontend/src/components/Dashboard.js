@@ -242,18 +242,15 @@ const Dashboard = () => {
         <div className="bar">
           <div>
             <span>CPU</span>
-            {/* <div><HeatMapChart type={'cpu'} vmMetrics={vmMetric} /></div> */}
             <div className='grid_outer'><Grid type={'cpu'} data={vmMetric}/></div>
           </div>
           <div>
             <span>MEMORY</span>
-            {/* <div><HeatMapChart vmMetrics={vmMetric} /></div> */}
             <div className='grid_outer'><Grid type={'memory'} data={vmMetric}/></div>
           </div>
           <div>
             <span>StorageDomain</span>
-            {/* <div><HeatMapChart vmMetrics={vmMetric} /></div> */}
-            <div className='grid_outer'><Grid data={storageMetric}/></div>
+            <div className='grid_outer'><Grid type={'domain'} data={storageMetric}/></div>
           </div>
         </div>
       </div> {/* 대시보드 section끝 */}

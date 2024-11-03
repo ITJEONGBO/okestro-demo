@@ -189,6 +189,7 @@ fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
 		logMaxMemoryType { this@toClusterInfo.logMaxMemoryUsedThresholdType() }
 		memoryOverCommit { this@toClusterInfo.memoryPolicy().overCommit().percentAsInteger() }
 		migrationPolicy { this@toClusterInfo.migration().autoConverge() }
+		errorHandling { this@toClusterInfo.errorHandling().onError().value() }
 		bandwidth { this@toClusterInfo.migration().bandwidth().assignmentMethod() }
 		version { this@toClusterInfo.version().major().toString() + "." + this@toClusterInfo.version().minor() }
 		datacenterVo { if(this@toClusterInfo.dataCenterPresent()) conn.findDataCenter(this@toClusterInfo.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() else null }
@@ -230,7 +231,7 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 		.comment(this@toClusterBuilder.comment)
 		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.networkVo.id).build())
 		.biosType(BiosType.fromValue(this@toClusterBuilder.biosType))
-		.fipsMode(FipsMode.DISABLED)
+		.fipsMode(FipsMode.UNDEFINED)
 		.version(VersionBuilder().major(4).minor(7).build())
 		.switchType(SwitchType.LEGACY)  // 편집에선 선택불가
 		.firewallType(FirewallType.FIREWALLD)
@@ -246,11 +247,11 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 //				.bandwidth(MigrationBandwidthBuilder().assignmentMethod(this@toClusterBuilder.bandwidth))
 //				.encrypted(this@toClusterBuilder.encrypted)
 //		)
-//		.fencingPolicy(
-//			FencingPolicyBuilder()
-//				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
-//				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
-//		)
+		.fencingPolicy(
+			FencingPolicyBuilder()
+				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
+				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
+		)
 }
 
 /**
