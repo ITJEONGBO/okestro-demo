@@ -18,6 +18,7 @@ const HostModal = ({
 }) => {
   const [id, setId] = useState('');
   const [clusterVoId, setClusterVoId] = useState('');
+  const [dataCenterName, setDataCenterName] = useState('');
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [hostIp, setHostIp] = useState('');
@@ -26,7 +27,7 @@ const HostModal = ({
   // 설치 후 호스트 다시 시작
   const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
-  const [vGpu, setVGpu] = useState('');
+  const [vgpu, setVgpu] = useState('');
   const [hostEngine, setHostEngine] = useState('');
   
   const { mutate: addHost } = useAddHost();
@@ -53,6 +54,7 @@ const HostModal = ({
     isLoading: isClustersLoading,
   } = useAllClusters((e) => ({
     ...e,
+    dataCenterName: e?.datacenterVo.name
   }));
 
    // 모달이 열릴 때 기존 데이터를 상태에 설정
@@ -60,13 +62,14 @@ const HostModal = ({
     if (editMode && host) {
       setId(host?.id);
       setClusterVoId(host?.clusterVo?.id || '')
+      // setDataCenterName()
       setName(host?.name);
       setComment(host?.comment);
       setHostIp(host?.address);
       setSshPort(host?.sshPort);
       setUserName(host?.sshName);
       setUserPassword(host?.sshPassWord);
-      // setVGpu(host?.);
+      setVgpu(host?.vgpu);
       // setHostEngine(host?.);
     } else {
       resetForm();
@@ -81,10 +84,10 @@ const HostModal = ({
     setClusterVoId('');
     setComment('');
     setHostIp('');
-    setSshPort('');
+    setSshPort('22');
     setUserName('');
     setUserPassword('');
-    // setVGpu('');
+    setVgpu('');
     // setHostEngine('');
   };
 
@@ -107,9 +110,9 @@ const HostModal = ({
       comment,
       hostIp,
       sshPort,
-      userName,
+      // userName,
       userPassword,
-      // VGpu,
+      vgpu,
       // HostEngine,
     };
   
@@ -166,14 +169,16 @@ const HostModal = ({
               id="cluster"
               value={clusterVoId}
               onChange={(e) => setClusterVoId(e.target.value)}
+              disabled={editMode}
             >
               {clusters &&
                 clusters.map((c) => (
-                  <option value={c.id}>{c.name} 데이터센터: {c.datacenterVo.name} </option>
+                  <option value={c.id}>{c.name} (데이터센터: {c.dataCenterName}) </option>
                 ))}
             </select>
             <span>{clusterVoId}</span>
           </div>
+          <hr/>
 
           <div>
             <label htmlFor="name">이름</label>
@@ -216,15 +221,15 @@ const HostModal = ({
               disabled={editMode}
             />
           </div>
-
-          <div>
+          <hr/>
+          {/* <div>
             <input type="checkbox" id="" name="" />
             <label htmlFor="">설치 후 호스트를 활성화</label>
           </div>
           <div>
             <input type="checkbox" id="" name="" />
             <label htmlFor="">설치 후 호스트를 다시 시작</label>
-          </div>
+          </div> */}
 
           <div><label>인증</label></div>
           <div>
@@ -233,14 +238,13 @@ const HostModal = ({
               type="text"
               id="userName"
               value={userName}
-              onChange={(e) => setSshPort(e.target.value)}
               disabled
             />
           </div>
           <div>
             <label htmlFor="userPassword">암호</label>
             <input
-              type="text"
+              type="password"
               id="userPassword"
               value={userPassword}
               onChange={(e) => setUserPassword(e.target.value)}
@@ -251,16 +255,31 @@ const HostModal = ({
           <div>
             <div>vGPU 배치</div>
             <div>
-              <input type="radio" id="vGpu" name="consolidated" />
+              <input 
+                type="radio" 
+                id="vgpu" 
+                name="consolidated" 
+                value="consolidated"
+                checked={vgpu === 'consolidated'}
+                onChange={(e) => setVgpu(e.target.value)}
+              />
               <label htmlFor="consolidated">통합</label>
-            </div>
-            <div>
-              <input type="radio" id="vGpu" name="sepa0rated" />
+            {/* </div> */}
+            {/* <div> */}
+              <input 
+                type="radio" 
+                id="vgpu" 
+                name="separated" 
+                value="separated"
+                
+                checked={vgpu === 'separated'}
+                onChange={(e) => setVgpu(e.target.value)}
+              />
               <label htmlFor="separated">분산</label>
             </div>
           </div>
 
-          <div>
+          {/* <div>
             <label htmlFor="hostEngine">호스트 엔진 배포 작업 선택</label>
             <select
               id="hostEngine"
@@ -270,7 +289,7 @@ const HostModal = ({
               <option value="false">없음</option>
               <option value="true">배포</option>
             </select>
-          </div>
+          </div> */}
         </div>
 
         <div className="edit_footer">

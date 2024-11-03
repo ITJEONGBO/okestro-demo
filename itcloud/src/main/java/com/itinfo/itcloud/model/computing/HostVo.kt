@@ -48,7 +48,7 @@ private val log = LoggerFactory.getLogger(HostVo::class.java)
  * @property vmActiveCnt [Int] summary
  * @property vmSizeVo [SizeVo]
  * @property vmMigratingCnt [Int] summary
- * @property vgpu []
+ * @property vgpu [String]   VgpuPlacement
  * 전원관리는 항상 비활성상태
  * <statistics>
  * @property memoryTotal [BigInteger]
@@ -227,6 +227,7 @@ fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfiguration
         id { this@toHostInfo.id() }
         name { this@toHostInfo.name() }
         comment { this@toHostInfo.comment() }
+        clusterVo { if(this@toHostInfo.clusterPresent()) conn.findCluster(this@toHostInfo.cluster().id()).getOrNull()?.fromClusterToIdentifiedVo() else null}
         address { this@toHostInfo.address() }
         hostedActive { if(this@toHostInfo.hostedEnginePresent()) this@toHostInfo.hostedEngine().active() else false }
         hostedScore { if(this@toHostInfo.hostedEnginePresent()) this@toHostInfo.hostedEngine().scoreAsInteger() else 0 }
@@ -299,6 +300,7 @@ fun HostVo.toHostBuilder(): HostBuilder {
         .rootPassword(this@toHostBuilder.sshPassWord)   // 비밀번호 잘못되면 보여줄 코드?
         .powerManagement(PowerManagementBuilder().enabled(false)) // 전원관리 비활성화 (기본)
         .spm(SpmBuilder().priority(this@toHostBuilder.spmPriority))
+        .vgpuPlacement(VgpuPlacement.fromValue(this@toHostBuilder.vgpu))
 //        .port()
         // ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨. port 변경을 cmd 에서만 하심
     // deployHostedEngine은 ext에서
