@@ -28,6 +28,7 @@ const makeAPICall = async ({method = "GET", url, data}) => {
     res.headers.get(`access_token`) && localStorage.setItem('token', res.headers.get(`access_token`)) // 로그인이 처음으로 성공했을 때 진행
     return res.data?.body
   } catch(e) {
+    
     console.error(`Error fetching '${url}':`, e);
     toast.error(`Error fetching '${url}'\n${e.message}`)
   }
@@ -1798,6 +1799,37 @@ const ApiManager = {
     url: ENDPOINTS.FIND_ALL_VNIC_PROFILES(),
     defaultValues: DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES
   }),
+
+  /**
+   * @name ApiManager.addVnicProfiles
+   * @description 새 vnic프로파일생성
+   * 
+   * @param {Object} dataCenterData 
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  addVnicProfiles: async (dataCenterData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_VNIC_PROFILE_FROM_NETWORK(),
+      data: dataCenterData, 
+    });
+  },
+  /**
+   * @name ApiManager.editVnicProfiles
+   * @description vnic프로파일 편집
+   * 
+   * @param {string} dataCenterId
+   * @param {Object} dataCenterData 
+   * @returns {Promise<Object>} API 응답 결과
+   */
+    editVnicProfiles: async (dataCenterId, dataCenterData) => {
+      return makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_VNIC_PROFILE_FROM_NETWORK(dataCenterId),
+        data: dataCenterData, 
+      });
+    },
+
   // endregion: vnicprofile
 
   

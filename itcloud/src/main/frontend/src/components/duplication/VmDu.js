@@ -7,25 +7,28 @@ import { faChevronCircleRight, faEllipsisV, faExclamationTriangle, faInfoCircle,
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import VncViewer from '../Vnc/VncViewer';
 import { createRoot } from 'react-dom/client';
+import TemplateDu from './TemplateDu';
 
 const VmDu = ({
   columns,
   onRowClick,
   setActiveTab: parentSetActiveTab = () => {},
   showTemplateButton = true,
-  data ,
-
+  data,
 }) => {
+  const [isTemplateView, setIsTemplateView] = useState(false); // 템플릿 보기 상태
   const navigate = useNavigate();
-  
+
   const [activePopup, setActivePopup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('common');
 
   const openModal = () => setIsModalOpen(true);
 
-
-
+  const handleTemplateButtonClick = () => {
+    setIsTemplateView(true); // 템플릿 보기 상태를 true로 설정
+    window.history.pushState({}, '', '/templates'); 
+  };
 
 
 
@@ -131,49 +134,54 @@ const VmDu = ({
 
   return (
     <>
-      <div className="header_right_btns">
-        <button onClick={() => handleOpenPopup('vm_new')}>새로만들기</button>
-        <button onClick={() => handleOpenPopup('vm_edit')}>편집</button>
-        <button className="disabled">실행</button>
-        <button className="disabled">일시중지</button>
-        <button className="disabled">종료</button>
-        <button className="disabled">재부팅</button>
-        {showTemplateButton && (
-          <button onClick={() => navigate('/computing/templates')}>템플릿</button>
-        )}
-        <button onClick={handleButtonClick}>콘솔</button>
-        <button onClick={() => handleOpenPopup('snapshot')}>스냅샷 생성</button>
-        <button onClick={() => handleOpenPopup('migration')}>마이그레이션</button>
-        <button className="content_header_popup_btn" onClick={togglePopup}>
-          <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
-          {isPopupOpen && (
-            <div className="content_header_popup">
-              <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup('bring'); }}>가져오기</div>
-              <div onClick={() => handleOpenPopup('vm_copy')}>가상 머신 복제</div>
-              <div onClick={() => handleOpenPopup('delete')}>삭제</div>
-              <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup(); }}>템플릿 생성</div>
-              <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup(); }}>OVA로 내보내기</div>
-            </div>
-          )}
-        </button>
-      </div>
-
-      <TableOuter 
-        columns={columns}
-        data={data} // 데이터가 배열인지 확인
-        onRowClick={onRowClick} // 행 클릭 시 호출되는 함수
-        showSearchBox={true}  // 검색창 표시 여부
-        clickableColumnIndex={[1,3,6,8]}
-        shouldHighlight1stCol={true} // 첫 번째 컬럼을 강조
-        onContextMenuItems={() => [
-          <div key="새로 만들기" onClick={() => console.log()}>새로 만들기</div>,
-          <div key="편집" onClick={() => console.log()}>편집</div>,
-          <div key="삭제" onClick={() => console.log()}>삭제</div>,
-          <div key="설치" onClick={() => console.log()}>설치</div>,
-          <div key="호스트 네트워크 복사" onClick={() => console.log()}>호스트 네트워크 복사</div>,
-        ]}
-      />
-
+      {isTemplateView ? (
+        <TemplateDu columns={columns} handleRowClick={onRowClick} />
+      ) : (
+        <div>
+          <div className="header_right_btns">
+            <button onClick={() => handleOpenPopup('vm_new')}>새로만들기</button>
+            <button onClick={() => handleOpenPopup('vm_edit')}>편집</button>
+            <button className="disabled">실행</button>
+            <button className="disabled">일시중지</button>
+            <button className="disabled">종료</button>
+            <button className="disabled">재부팅</button>
+            {showTemplateButton && (
+              <button onClick={handleTemplateButtonClick}>템플릿</button>
+            )}
+            <button onClick={handleButtonClick}>콘솔</button>
+            <button onClick={() => handleOpenPopup('snapshot')}>스냅샷 생성</button>
+            <button onClick={() => handleOpenPopup('migration')}>마이그레이션</button>
+            <button className="content_header_popup_btn" onClick={togglePopup}>
+              <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
+              {isPopupOpen && (
+                <div className="content_header_popup">
+                  <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup('bring'); }}>가져오기</div>
+                  <div onClick={() => handleOpenPopup('vm_copy')}>가상 머신 복제</div>
+                  <div onClick={() => handleOpenPopup('delete')}>삭제</div>
+                  <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup(); }}>템플릿 생성</div>
+                  <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup(); }}>OVA로 내보내기</div>
+                </div>
+              )}
+            </button>
+          </div>
+  
+          <TableOuter
+            columns={columns}
+            data={data}
+            onRowClick={onRowClick}
+            showSearchBox={true}
+            clickableColumnIndex={[1, 3, 6, 8]}
+            shouldHighlight1stCol={true}
+            onContextMenuItems={() => [
+              <div key="새로 만들기" onClick={() => console.log()}>새로 만들기</div>,
+              <div key="편집" onClick={() => console.log()}>편집</div>,
+              <div key="삭제" onClick={() => console.log()}>삭제</div>,
+              <div key="설치" onClick={() => console.log()}>설치</div>,
+              <div key="호스트 네트워크 복사" onClick={() => console.log()}>호스트 네트워크 복사</div>,
+            ]}
+          />
+  
+  
         {/* 새로만들기팝업 */}
         <Modal
             isOpen={activePopup === 'vm_new'}
@@ -1685,6 +1693,8 @@ const VmDu = ({
           </div>
         </div>
         </Modal>
+        </div>
+      )}
     </>
   );
 };

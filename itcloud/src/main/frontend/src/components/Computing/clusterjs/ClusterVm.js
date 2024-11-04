@@ -5,6 +5,7 @@ import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
 import { useNavigate } from 'react-router-dom';
 import VmDu from "../../duplication/VmDu";
+import TableInfo from "../../table/TableInfo";
 
 
 const ClusterVm = ({ cluster }) => {
@@ -37,7 +38,7 @@ const ClusterVm = ({ cluster }) => {
     return (
         <VmDu 
         data={vms} 
-        columns={TableColumnsInfo.VM_CHART} 
+        columns={TableInfo.VM_CHART} 
 
         />
     );

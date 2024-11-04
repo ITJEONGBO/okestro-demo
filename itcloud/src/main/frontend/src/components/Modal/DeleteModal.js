@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   useDeleteDataCenter,
   useDeleteCluster,
@@ -31,7 +32,8 @@ const DeleteModal = ({
   // const { mutate: deleteStorageDomain } = useDeleteStorageDomain();
   // const { mutate: deleteDisk } = useDeleteDisk();
   const { mutate: deleteNetwork } = useDeleteNetwork(); // 네트워크 삭제 추가
-
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     if (data) {
       setId(data.id || '');
@@ -73,10 +75,22 @@ const DeleteModal = ({
     }
   };
 
+  // 삭제한 후 동시에 그전url로돌아가기
   const handleDelete = (deleteFn) => {
     deleteFn(id, {
       onSuccess: () => {
-        onRequestClose(); // 삭제 완료 후 모달 닫기
+        onRequestClose(); // Close the modal after deletion
+  
+        // Extract the current path and check for the presence of the ID
+        const currentPath = location.pathname;
+        if (currentPath.includes(id)) {
+          // Remove the ID from the path and navigate back
+          const newPath = currentPath.replace(`/${id}`, '');
+          navigate(newPath);
+        } else {
+          // If the ID is not in the URL, refresh the page
+          window.location.reload();
+        }
       },
       onError: (error) => {
         console.error(`${contentLabel} ${name} 삭제 오류:`, error);
@@ -92,7 +106,7 @@ const DeleteModal = ({
       className="Modal"
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
-      style={{ overlay: { backgroundColor: 'transparent' } }}
+   
     >
       <div className="storage_delete_popup">
         <div className="popup_header">

@@ -24,10 +24,6 @@ const Event = () => {
   const navigate = useNavigate();
 
 
-  const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '편집', icon: faPencil, onClick:() => {}  },
-    { id: 'delete_btn', label: '삭제', icon: faArrowUp, onClick: () => {} }
-  ];
 
   const { 
     data: events, 

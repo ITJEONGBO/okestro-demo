@@ -603,6 +603,19 @@ textarea{
     justify-content: space-between;
 }
 /*호스트 네트워크설정*/
+.host_network_content_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 54.4vh;
+    width: 43%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
 .vnic_new_content_popup{
     border: 1px solid #dfdddd;
     position: absolute;
@@ -610,7 +623,7 @@ textarea{
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 56.4vh;
+    height: 68.4vh;
     width: 43%;
     left: 50%;
     transform: translate(-50%, -50%);

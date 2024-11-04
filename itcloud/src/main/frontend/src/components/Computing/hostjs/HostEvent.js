@@ -7,7 +7,7 @@ import { faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons"
 import Path from "../../Header/Path";
 
 
-const ClusterEvent = ({ host }) => {
+const HostEvent = ({ host }) => {
 
       const { 
         data: events, 
@@ -31,15 +31,15 @@ const ClusterEvent = ({ host }) => {
       }
 
     return (
-        <div className="host_btn_outer">
+       <>
             <Path pathElements={[]}/>
             <EventDu 
             columns={TableInfo.EVENTS}
             data={events}
             handleRowClick={() => console.log('Row clicked')}
             />
-        </div>
+       </>
     );
   };
   
-  export default ClusterEvent;
+  export default HostEvent;

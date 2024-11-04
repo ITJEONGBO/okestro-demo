@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
 import NavButton from '../navigation/NavButton';
@@ -46,6 +46,8 @@ import NetworkCluster from './networkjs/NetworkCluster';
 import NetworkHost from './networkjs/NetworkHost';
 import NetworkVm from './networkjs/NetworkVm';
 import NetworkTemplate from './networkjs/NetworkTemplate';
+import LogicalNetworkEdit from '../Modal/LogicalNetworkEdit';
+import DeleteModal from '../Modal/DeleteModal';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   
@@ -250,8 +252,26 @@ useEffect(() => {
   const handleVmFilterClick = (filter) => {
     setActiveVmFilter(filter);
   };
-  
-  const buttons = [{ id: 'edit_btn', label: '편집', onClick: () => openPopup('edit_popup') }, { id: 'delete_btn', label: '삭제', onClick: () => openPopup('delete') }];
+
+  const toggleModal = (type, isOpen) => {
+      setModals((prev) => ({ ...prev, [type]: isOpen }));
+  };
+  const buttons = [
+    { 
+      id: 'edit_btn', 
+      label: '편집', 
+      onClick: () => id ? toggleModal('edit', true) : alert('편집할 네트워크를 선택하세요.'), 
+      disabled: !id 
+    },
+    { 
+      id: 'delete_btn', 
+      label: '삭제', 
+      onClick: () => id 
+        ? toggleModal('delete', true) 
+        : alert('삭제할 네트워크를 선택할 수 없습니다.'), 
+      disabled: !id 
+    }
+  ];
 
   
   const [activeFilter, setActiveFilter] = useState('connected'); 
@@ -280,6 +300,9 @@ useEffect(() => {
       handleTabModalClick('ipv4');
     }
   }, [isSecondModalOpen]);
+
+  const [modals, setModals] = useState({ edit: false, delete: false });
+
 
 
   const sections = [
@@ -329,31 +352,7 @@ useEffect(() => {
       <div className="host_btn_outer">
         <Path pathElements={pathData} />
         {renderSectionContent()}
-        {/* {
-          activeTab === 'general' && <NetworkDetailGeneral network={network} />
-        } */}
-         
-        {/* {
-          activeTab === 'vnicProfiles' && (
-        <>
-          <div className="header_right_btns">
-              <button onClick={() => openPopup('vnic_new_popup')}>새로 만들기</button>
-              <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
-              <button onClick={() => openPopup('delete')} >제거</button>
-          </div>
-        
-          <TableOuter
-            columns={TableColumnsInfo.VNIC_PROFILES} 
-            data={vnicProfiles}
-            onRowClick={(row) => {
 
-         
-              navigate(`/computing/datacenters/${id}`);
-            }}
-            clickableColumnIndex={[2]} 
-          />
-       </>
-        )} */}
 
         {/* {activeTab === 'clusters' && (
         <>
@@ -427,101 +426,31 @@ useEffect(() => {
             )}
        </>
         )} */}
-{/* 
-        {activeTab === 'vms' && (
-        <>
-              <div className="header_right_btns">
-                  <button onClick={() => openPopup('delete')}>제거</button>
-              </div>
-              <div className="host_filter_btns">
-                <button
-                  className={activeVmFilter === 'running' ? 'active' : ''}
-                  onClick={() => handleVmFilterClick('running')}
-                >
-                  실행중
-                </button>
-                <button
-                  className={activeVmFilter === 'stopped' ? 'active' : ''}
-                  onClick={() => handleVmFilterClick('stopped')}
-                >
-                  정지중
-                </button>
-              </div>
-              {activeVmFilter === 'running' && (
-                  <TableOuter
-                    columns={TableColumnsInfo.VMS}
-                    data={vms}
-                    onRowClick={() => console.log('Row clicked')}
-                    clickableColumnIndex={[1]} 
-                  />
-                )}
 
-             
-                {activeVmFilter === 'stopped' && (
-                  <TableOuter
-                    columns={TableColumnsInfo.VMS_STOP}
-                    data={vms}
-                    onRowClick={() => console.log('Row clicked')}
-                  />
-                )}
-              </>
-       
-        )} */}
 
-        {/* {activeTab === 'templates' && (
-        <>
-            <div className="header_right_btns">
-                <button onClick={() => openPopup('delete')}>제거</button>
-               
-            </div>
-
-            <TableOuter 
-              columns={TableColumnsInfo.TEMPLATES}
-              data={templates} 
-              onRowClick={() => console.log('Row clicked')} 
-            />
-        </>
-        )} */}
-
-        {/*삭제예정 */}
-        {/* {activeTab === 'permission' && (
-
-        <>
-              <div className="header_right_btns">
-                <button onClick={() => openPopup('permission')}>추가</button>
-                <button onClick={() => openPopup('delete')}>제거</button>
-              </div>
-              
-     
-                <div className="host_filter_btns">
-                  <span>Permission Filters:</span>
-                  <div>
-                    <button
-                      className={activePermissionFilter === 'all' ? 'active' : ''}
-                      onClick={() => handlePermissionFilterClick('all')}
-                    >
-                      All
-                    </button>
-                    <button
-                      className={activePermissionFilter === 'direct' ? 'active' : ''}
-                      onClick={() => handlePermissionFilterClick('direct')}
-                    >
-                      Direct
-                    </button>
-                  </div>
-                </div>
-              
-              <TableOuter
-                columns={TableColumnsInfo.PERMISSIONS}
-                data={permissions}
-                onRowClick={() => console.log('Row clicked')}
-              />
-          </>
-        )} */}
 
         </div>
       </div>
-      
+      <Suspense>
+        {modals.edit && (
+          <LogicalNetworkEdit
+            isOpen={modals.edit}
+            onRequestClose={() => toggleModal('edit', false)}
+            editMode={true}
+            networkId={id}  // URL 파라미터로 받은 networkId 사용
+          />
+        )}
+        {modals.delete && network && (
+          <DeleteModal
+    isOpen={modals.delete}
+    type='Network'
+    onRequestClose={() => toggleModal('delete', false)}
+    contentLabel='네트워크'
+    data={network} 
+/>
+
+        )}
+      </Suspense>
 
       {/*header 편집버튼 팝업 */}
       <Modal
@@ -906,36 +835,7 @@ useEffect(() => {
         </div>
       </Modal>
 
-      {/*삭제 팝업 */}
-      <Modal
-      isOpen={activePopup === 'delete'}
-      onRequestClose={closePopup}
-      contentLabel="디스크 업로드"
-      className="Modal"
-      overlayClassName="Overlay"
-      shouldCloseOnOverlayClick={false}
-    >
-      <div className="storage_delete_popup">
-        <div className="popup_header">
-          <h1>디스크 삭제</h1>
-          <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-        </div>
-        
-        <div className='disk_delete_box'>
-          <div>
-            <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
-            <span>다음 항목을 삭제하시겠습니까?</span>
-          </div>
-        </div>
-
-
-        <div className="edit_footer">
-          <button style={{ display: 'none' }}></button>
-          <button>OK</button>
-          <button onClick={closePopup}>취소</button>
-        </div>
-      </div>
-      </Modal>
+ 
 
       {/*호스트(호스트 네트워크 설정 Before)*/}
       {/* <Modal

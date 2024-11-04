@@ -1,5 +1,5 @@
 import React, { useState,  useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams,useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
 import { useAllTemplates } from "../../api/RQHook";
 import VmTemplateChart from './VmTemplateChart';
@@ -13,6 +13,27 @@ import TableOuter from '../table/TableOuter';
 
 // 애플리케이션 섹션
 const Templates = () => {
+  const { id } = useParams(); // URL의 id 가져오기
+  const location = useLocation(); // 현재 URL 경로 가져오기
+  const [pathData, setPathData] = useState(['가상머신', '템플릿']); // 기본 경로 데이터
+  const fetchNameById = async (id) => {
+    // 서버에서 id로 이름을 가져오는 로직 구현
+    return '템플릿 이름'; // 실제 구현 시 서버 응답 데이터로 대체
+};
+useEffect(() => {
+  const previousPath = location.pathname.split('/').filter(Boolean); // 경로를 배열로 분할
+  
+  if (id) {
+      // id가 있는 경우 id에 맞는 name을 가져와서 pathData에 설정
+      const fetchTemplateName = async () => {
+          const name = await fetchNameById(id); // id에 해당하는 이름을 가져오는 함수
+          setPathData([...previousPath, name, '가상머신', '템플릿']);
+      };
+      fetchTemplateName();
+  } else {
+      setPathData([...previousPath, '가상머신', '템플릿']);
+  }
+}, [id, location.pathname]); // id나 경로가 변경될 때마다 실행
     const [activeSection, setActiveSection] = useState(null);
     const navigate = useNavigate();
     
@@ -96,7 +117,6 @@ const Templates = () => {
       // ];
       
 
-    const pathData = ['가상머신','템플릿'];
 
     const { 
         data: templates, 

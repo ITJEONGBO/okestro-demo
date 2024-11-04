@@ -33,6 +33,7 @@ const NetworkNewModal = ({
         isError 
     } = useNetworkById(networkId);
 
+
     // 데이터센터 가져오기
     const {
       data: datacenters,
@@ -48,26 +49,27 @@ const NetworkNewModal = ({
   
     // 모달이 열릴 때 기존 데이터를 상태에 설정
     useEffect(() => {
-      if (editMode && network) {
+      if (isOpen) { // 모달이 열릴 때 상태를 설정
+        if (editMode && network) {
+          console.log('Setting edit mode state with network:', network); // 디버깅 로그
+          setId(network.id);
+          setDatacenterVoId(network?.datacenterVo?.id || '');
+          setName(network.name);
+          setDescription(network.description);
+          setComment(network.comment);
+          setValnTagging(network.valnTagging);
+          setVmNetwork(network.vmNetwork);
+          setPhotoSeparation(network.photoSeparation);
+          setMtu(network.mtu);
+          setDnsSettings(network.dnsSettings);
+          setDnsServer(network.dnsServer);
+        } else {
+          console.log('Resetting form for create mode');
+          resetForm();
         
-        setId(network.id);
-        setDatacenterVoId(network?.datacenterVo?.id || '');
-        setName(network.name);
-        setDescription(network.description);
-        setComment(network.comment);
-        setValnTagging(network.valnTagging);
-        setVmNetwork(network.vmNetwork);
-        setPhotoSeparation(network.photoSeparation);
-        setMtu(network.mtu);
-        setDnsSettings(network.dnsSettings);
-        setDnsServer(network.dnsServer);
-      } else { // 그게아니면 리셋 = 새로만들기
-        resetForm();
-        if (datacenters && datacenters.length > 0) {
-          setDatacenterVoId(datacenters[0].id);
         }
       }
-    }, [editMode, network, datacenters]);
+    }, [isOpen, editMode, network, datacenters]);
   
     const resetForm = () => {
       setName('');
@@ -93,38 +95,36 @@ const NetworkNewModal = ({
         mtu,
         dnsSettings,
         dnsServer,
-        datacenterVoId // 추가된 부분
+        datacenterVoId
       };
-    
-      if (editMode) {
-        // 편집 모드에서는 id를 포함해서 제출
-        dataToSubmit.id = id;  // 편집 시 필요한 id 추가
-    
-        editNetwork({
-          networkId: id,               // 네트워크 ID 전달
-          networkData: dataToSubmit    // 수정할 데이터
-        }, {
-          onSuccess: () => {
-            alert("네트워크 편집 완료(alert기능구현)");
-            onRequestClose();  // 성공 시 모달 닫기
-          },
-          onError: (error) => {
-            console.error('Error editing network:', error);
-          }
-        });
-      } else {
-        // 새 네트워크 생성 시 datacenterVoId를 함께 포함
-        addNetwork(dataToSubmit, {
-          onSuccess: () => {
-            alert("네트워크 생성 완료(alert기능구현)");
-            onRequestClose();
-          },
-          onError: (error) => {
-            console.error('Error adding network:', error);
-          }
-        });
+      console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
+
+  if (editMode) {
+    dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
+    editNetwork({
+      networkId: id,
+      networkData: dataToSubmit
+    }, {
+      onSuccess: () => {
+        alert('네트워크 편집 완료');
+        onRequestClose();
+      },
+      onError: (error) => {
+        console.error('Error editing network:', error);
       }
-    };
+    });
+  } else {
+    addNetwork(dataToSubmit, {
+      onSuccess: () => {
+        alert('네트워크 생성 완료');
+        onRequestClose();
+      },
+      onError: (error) => {
+        console.error('Error adding network:', error);
+      }
+    });
+  }
+};
     
     
   
@@ -203,7 +203,7 @@ const NetworkNewModal = ({
                 </div>
               </div>
 
-              <div className="network_second_contents">
+              {/* <div className="network_second_contents">
                 <div className="network_checkbox_type1">
                   <div className="checkbox_group">
                     <input type="checkbox" id="valn_tagging" name="valn_tagging" />
@@ -286,7 +286,7 @@ const NetworkNewModal = ({
       </tbody>
     </table>
   </div>
-</div>
+</div> */}
             </form>
           )}
         </div>

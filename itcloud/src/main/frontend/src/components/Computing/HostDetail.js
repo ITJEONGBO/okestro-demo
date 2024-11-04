@@ -36,6 +36,11 @@ import PagingTableOuter from '../table/PagingTableOuter';
 import Path from '../Header/Path';
 import VmDu from '../duplication/VmDu';
 import EventDu from '../duplication/EventDu.js';
+import HostGeneral from './hostjs/HostGeneral.js';
+import HostVm from './hostjs/HostVm.js';
+import HostNetwork from './hostjs/HostNetwork.js';
+import HostDevice from './hostjs/HostDevice.js';
+import HostEvent from './hostjs/HostEvent.js';
 
 
 
@@ -139,26 +144,26 @@ function HostDetail() {
 
     
     // 가상머신 
-    const { 
-    data: vms, 
-    status: hostsStatus, 
-    isLoading: isHostsLoading, 
-    isError: isHostsError 
-  } = useVmFromHost(host?.id, toTableItemPredicateHosts);
-  function toTableItemPredicateHosts(host) {
-    return {
-      icon: <FontAwesomeIcon icon={faUniversity} fixedWidth />,
-      name: host?.name ?? 'Unknown', 
-      cluster: host?.clusterVo?.name ?? 'Default', 
-      ipv4: host?.ipv4 ?? 'Unknown',
-      fqdn: host?.fqdn ?? 'Unknown', 
-      memory: host?.memoryUsage ? `${host.memoryUsage}%` : 'Unknown', 
-      cpu: host?.cpuUsage ? `${host.cpuUsage}%` : 'Unknown', 
-      network: host?.networkUsage ? `${host.networkUsage}%` : 'Unknown', 
-      statusDetail: host?.statusDetail ?? 'Unknown', 
-      upTime: host?.upTime ?? 'Unknown', 
-    };
-  }
+  //   const { 
+  //   data: vms, 
+  //   status: hostsStatus, 
+  //   isLoading: isHostsLoading, 
+  //   isError: isHostsError 
+  // } = useVmFromHost(host?.id, toTableItemPredicateHosts);
+  // function toTableItemPredicateHosts(host) {
+  //   return {
+  //     icon: <FontAwesomeIcon icon={faUniversity} fixedWidth />,
+  //     name: host?.name ?? 'Unknown', 
+  //     cluster: host?.clusterVo?.name ?? 'Default', 
+  //     ipv4: host?.ipv4 ?? 'Unknown',
+  //     fqdn: host?.fqdn ?? 'Unknown', 
+  //     memory: host?.memoryUsage ? `${host.memoryUsage}%` : 'Unknown', 
+  //     cpu: host?.cpuUsage ? `${host.cpuUsage}%` : 'Unknown', 
+  //     network: host?.networkUsage ? `${host.networkUsage}%` : 'Unknown', 
+  //     statusDetail: host?.statusDetail ?? 'Unknown', 
+  //     upTime: host?.upTime ?? 'Unknown', 
+  //   };
+  // }
     
 
 
@@ -183,7 +188,7 @@ function HostDetail() {
       setVisibleBoxes(networkInterfaceData.map((_, index) => index)); // 모두 열기
     }
   };
-
+  // 네트워크(임시데이터)
   const networkInterfaceData = [
     {
       icon: <FontAwesomeIcon icon={faWrench} fixedWidth />,
@@ -207,8 +212,6 @@ function HostDetail() {
       pkts: '10,000',
     },
   ];
-
-  // 네트워크
   const networkdata = [
     {
       icon: <FontAwesomeIcon icon={faUniversity} fixedWidth />,
@@ -221,25 +224,25 @@ function HostDetail() {
   ];
 
   // 호스트 장치
-  const { 
-    data: hostDevices,     
-    status: hostDevicesStatus,  
-    isLoading: isHostDevicesLoading,  
-    isError: isHostDevicesError       
-  } = useHostdeviceFromHost(host?.id, toTableItemPredicateHostDevices);  
-  function toTableItemPredicateHostDevices(device) {
-    return {
-      name: device?.name ?? 'Unknown',
-      capability: device?.capability ?? 'Unknown',
-      vendorName: device?.vendorName ?? 'Unknown',
-      productName: device?.productName ?? 'Unknown',
-      driver: device?.driver ?? 'Unknown',
-      currentlyUsed: device?.currentlyUsed ?? 'Unknown',
-      connectedToVM: device?.connectedToVM ?? 'Unknown',
-      iommuGroup: device?.iommuGroup ?? '해당 없음',
-      mdevType: device?.mdevType ?? '해당 없음',
-    };
-  }
+  // const { 
+  //   data: hostDevices,     
+  //   status: hostDevicesStatus,  
+  //   isLoading: isHostDevicesLoading,  
+  //   isError: isHostDevicesError       
+  // } = useHostdeviceFromHost(host?.id, toTableItemPredicateHostDevices);  
+  // function toTableItemPredicateHostDevices(device) {
+  //   return {
+  //     name: device?.name ?? 'Unknown',
+  //     capability: device?.capability ?? 'Unknown',
+  //     vendorName: device?.vendorName ?? 'Unknown',
+  //     productName: device?.productName ?? 'Unknown',
+  //     driver: device?.driver ?? 'Unknown',
+  //     currentlyUsed: device?.currentlyUsed ?? 'Unknown',
+  //     connectedToVM: device?.connectedToVM ?? 'Unknown',
+  //     iommuGroup: device?.iommuGroup ?? '해당 없음',
+  //     mdevType: device?.mdevType ?? '해당 없음',
+  //   };
+  // }
 
 
   // 토글 방식으로 열고 닫기(관리)
@@ -336,10 +339,10 @@ function HostDetail() {
     // nav컴포넌트
     const sections = [
         { id: 'general', label: '일반' },
-        { id: 'machine', label: '가상머신' },
-        { id: 'networkinterface', label: '네트워크 인터페이스' },
-        { id: 'hostdevice', label: '호스트 장치' },
-        { id: 'event', label: '이벤트' }
+        { id: 'vms', label: '가상머신' },
+        { id: 'nics', label: '네트워크 인터페이스' },
+        { id: 'devices', label: '호스트 장치' },
+        { id: 'events', label: '이벤트' }
       ];
       const pathData = [
         host?.name || 'Default',  // 호스트 이름이 없으면 'Default'로 대체
@@ -347,7 +350,24 @@ function HostDetail() {
         activeTab === 'template' ? '템플릿' : '' // 템플릿일 때만 '템플릿' 추가
       ].filter(Boolean);
       
+      const renderSectionContent = () => {
+        switch (activeTab) {
+          case 'general':
+            return <HostGeneral host={host} />; // 일반 탭인 경우 래퍼 없이 반환
+          case 'vms':
+            return <HostVm host={host} />;
+          case 'nics':
+            return <HostNetwork host={host} />;
+          case 'devices':
+            return <HostDevice host={host} />;
+          case 'events':
+            return <HostEvent host={host} />;
+          default:
+            return <HostGeneral host={host} />;
+        }
+      };
       
+    
       
     return (
         <div id='section'>
@@ -363,15 +383,30 @@ function HostDetail() {
 
 
             <div className="content_outer">
+           
                 <NavButton
-                    sections={sections} 
+                    sections={sections}   
                     activeSection={activeTab} 
                     handleSectionClick={handleTabClick} 
                 />
-                
+                 
+                  
+                  {activeTab === 'general' ? (
+                    // 일반 탭인 경우
+                    <>
+                  
+                    {renderSectionContent()}
+                    </>
+                  ) : (
+                    // 다른 탭인 경우
+                    <div className="host_btn_outer">
+                      <Path pathElements={pathData} />
+                      {renderSectionContent()}
+                    </div>
+                  )}
                 
                 {/* 일반 */}
-                {activeTab === 'general' && (
+                {/* {activeTab === 'general' && (
                 
                 <div className="host_content_outer">
                     <div className='ml-2'>
@@ -598,10 +633,10 @@ function HostDetail() {
                     
                 </div>
                
-                )}
+                )} */}
                 
                 {/* 가상머신 */}
-                {activeTab === 'machine' && (
+                {/* {activeTab === 'machine' && (
                 <div className="host_btn_outer">
                     <Path pathElements={pathData}/>
                     <VmDu 
@@ -614,9 +649,9 @@ function HostDetail() {
                       isPopupOpen={isPopupOpen} 
                     />
                 </div>
-                )}
+                )} */}
                 {/* 템플릿 */}
-                {activeTab === 'template' && (
+                {/* {activeTab === 'template' && (
                   <div className="host_btn_outer">
                     <Path pathElements={pathData}/>  
                     <TemplateDu 
@@ -625,7 +660,7 @@ function HostDetail() {
                       handleRowClick={() => console.log("Row clicked")}  
                     />
                    </div>
-                  )}
+                  )} */}
 
                 {/* 네트워크 인터페이스 */}
                 {activeTab === 'networkinterface' && (
@@ -671,7 +706,7 @@ function HostDetail() {
                   </div>
                 )}
                 {/* 호스트 장치 */}
-                {activeTab === 'hostdevice' && (
+                {/* {activeTab === 'hostdevice' && (
                 <div className="host_btn_outer">
                   <Path pathElements={pathData}/>
                   <div className="host_empty_outer">
@@ -683,7 +718,7 @@ function HostDetail() {
                     />
                   </div>
                 </div>
-                )}
+                )} */}
                
                 {/* 권한(삭제예정) */}
                 {/* {activeTab === 'permission' && (
@@ -719,19 +754,19 @@ function HostDetail() {
                 )} */}
           
                 {/* 이벤트 */}
-                {activeTab === 'event' && (
+                {/* {activeTab === 'event' && (
                 <div className="host_btn_outer">
-                  {/* <Path pathElements={pathData}/>
+                  <Path pathElements={pathData}/>
                   <EventDu 
                     columns={TableColumnsInfo.EVENTS}
                     data={events}
                     handleRowClick={() => console.log('Row clicked')}
-                  /> */}
+                  />
                 </div>
-                )}
+                )} */}
                
-            </div>
-
+             </div>
+  
             {/*관리(유지보수)*/}
             <Modal
                 isOpen={activePopup === 'maintenance'}
@@ -772,265 +807,109 @@ function HostDetail() {
               </Modal>
             {/* 편집 팝업*/}
             <Modal
-              isOpen={activePopup === 'host_edit'}
-              onRequestClose={closePopup}
-              contentLabel="편집"
-              className="host_new_popup"
-              overlayClassName="host_new_outer"
-              shouldCloseOnOverlayClick={false}
-            >
-              <div className="popup_header">
-                <h1>호스트 수정</h1>
-                <button onClick={closePopup}>
-                  <FontAwesomeIcon icon={faTimes} fixedWidth/>
-                </button>
-              </div>
+      isOpen={activePopup === 'host_edit'}
+      onRequestClose={closePopup}
+      contentLabel="새로 만들기"
+      className="Modal"
+      overlayClassName="Overlay"
+      shouldCloseOnOverlayClick={false}
 
-              <div className="edit_body" style={{height:'70vh'}}>
-            
-                {/* <div className="edit_aside">
-                  <div
-                    className={`edit_aside_item`}
-                    id="일반_섹션_btn"
-                    onClick={() => 섹션변경('일반_섹션')}
-                    style={{ backgroundColor: 활성화된섹션 === '일반_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '일반_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '일반_섹션' ? '1px solid blue' : 'none' }}
-                  >
-                    <span>일반</span>
-                  </div>
-                  <div
-                    className={`edit_aside_item`}
-                    id="전원관리_섹션_btn"
-                    onClick={() => 섹션변경('전원관리_섹션')}
-                    style={{ backgroundColor: 활성화된섹션 === '전원관리_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '전원관리_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '전원관리_섹션' ? '1px solid blue' : 'none' }}
-                  >
-                    <span>전원 관리</span>
-                  </div>
-                  <div
-                    className={`edit_aside_item`}
-                    id="호스트엔진_섹션_btn"
-                    onClick={() => 섹션변경('호스트엔진_섹션')}
-                    style={{ backgroundColor: 활성화된섹션 === '호스트엔진_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '호스트엔진_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '호스트엔진_섹션' ? '1px solid blue' : 'none' }}
-                  >
-                    <span>호스트 엔진</span>
-                  </div>
-                  <div
-                    className={`edit_aside_item`}
-                    id="선호도_섹션_btn"
-                    onClick={() => 섹션변경('선호도_섹션')}
-                    style={{ backgroundColor: 활성화된섹션 === '선호도_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '선호도_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '선호도_섹션' ? '1px solid blue' : 'none' }}
-                  >
-                    <span>선호도</span>
-                  </div>
-                </div> */}
-
-                {/* 폼의 다양한 섹션들 */}
-                <form action="#">
-                  {/* 공통 섹션 */}
-                  <div
-                    id="일반_섹션"
-                    style={{ display: 활성화된섹션 === '일반_섹션' ? 'block' : 'none' }}
-                  >
-                <div className="edit_first_content">
-                         <div id='cluster_first_content'>
-                                <label htmlFor="cluster">클러스터</label>
-                                <select id="cluster">
-                                    <option value="default">Default</option>
-                                </select>
-                                <div className='datacenter_span'>데이터센터 Default</div>
-                            </div>
-                        <div>
-                            <label htmlFor="name1">이름</label>
-                            <input type="text" id="name1" />
-                        </div>
-                        <div>
-                            <label htmlFor="comment">코멘트</label>
-                            <input type="text" id="comment" />
-                        </div>
-                        <div>
-                            <label htmlFor="hostname">호스트이름/IP</label>
-                            <input type="text" id="hostname" />
-                        </div>
-                        <div>
-                            <label htmlFor="ssh_port">SSH 포트</label>
-                            <input type="text" id="ssh_port" value="22" />
-                        </div>
-                    </div>
-
-          <div className='host_checkboxs'>
-            <div className='host_checkbox'>
-              <input type="checkbox" id="host_activation" name="host_activation" checked/>
-              <label htmlFor="host_activation">설치 후 호스트를 활성화</label>
-            </div>
-            <div className='host_checkbox'>
-              <input type="checkbox" id="host_restart" name="host_restart" checked />
-              <label htmlFor="host_restart">설치 후 호스트를 다시 시작</label>
-              <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
-            </div>
+    >
+        <div className="host_new_add">
+          <div className="popup_header">
+            <h1>호스트 수정</h1>
+            <button onClick={() =>closePopup('host_new')}>
+              <FontAwesomeIcon icon={faTimes} fixedWidth/>
+            </button>
           </div>
-          
-          <div>
-            <span className='font-bold px-1.5'>인증</span>
+
+    
+        
+        <form action="#">
+          <div className="edit_first_content">
+                  <div>
+                      <label htmlFor="host_cluster">호스트 클러스터</label>
+                      <select id="cluster">
+                          <option value="default">Default</option>
+                      </select>
+                  
+                  </div>
+                  <div>
+                      <label htmlFor="name1">이름</label>
+                      <input type="text" id="name1" />
+                  </div>
+                  <div>
+                      <label htmlFor="comment">코멘트</label>
+                      <input type="text" id="comment" />
+                  </div>
+                  <div>
+                      <label htmlFor="hostname">호스트이름/IP<FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/></label>
+                      <input type="text" id="hostname" />
+                  </div>
+                  <div>
+                      <label htmlFor="ssh_port">SSH 포트</label>
+                      <input type="text" id="ssh_port" value="22" />
+                  </div>
+            </div>
+
+          <div className='py-1'>
             <div className='host_checkboxs'>
-              <div className='host_textbox disabled'>
+              <div className='host_checkbox'>
+                  <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                  <label htmlFor="headless_mode">설치 후 호스트를 활성화</label>
+              </div>
+              <div className='host_checkbox'>
+                  <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
+                  <label htmlFor="headless_mode_info">설치 후 호스트를 다시 시작</label>
+                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
+              </div>
+            </div>
+
+            <div className='host_checkboxs'>
+              <span className='px-1'>인증</span>
+              <div className='host_textbox' style={{paddingTop:'0'}}>
                   <label htmlFor="user_name">사용자 이름</label>
                   <input type="text" id="user_name" />
               </div>
+
+              <div className='host_text_raido_box'>
+                  <div>
+                    <input type="radio" id="password" name="name_option" />
+                    <label htmlFor="password">암호</label>
+                  </div>
+                  <input type="text" id="radio1_name" />
+              </div>
             </div>
+
+            <div className='vGPU_radiobox'>
+              <div className='font-bold'>
+                vGPU 배치<FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
+              </div>
+              <div>
+                  <input type="radio" id="memory_balloon" name="memory_balloon" />
+                  <label htmlFor="headless_mode">통합</label>
+              </div>
+              <div>
+                  <input type="radio" id="memory_balloon" name="memory_balloon" />
+                  <label htmlFor="headless_mode">분산</label>
+              </div>
+            </div>
+            
             <div className="host_select_set">
-              <label htmlFor="host_related_action">호스트 연관 배포 작업 선택</label>
-              <select id="host_related_action">
-                <option value="none">없음</option>
-              </select>
+                      <label htmlFor="host_related_action">호스트 연관 배포 작업 선택</label>
+                      <select id="host_related_action">
+                        <option value="none">없음</option>
+                      </select>
             </div>
           </div>
-            {/* <div className='host_text_raido_box'>
-                <div>
-                  <input type="radio" id="password" name="name_option" />
-                  <label htmlFor="password">암호</label>
-                </div>
-                <input type="text" id="radio1_name" />
-            </div>
+        </form>
+      
 
-            <div className='host_radiobox'>
-                <input type="radio" id="ssh_key" name="name_option" />
-                <label htmlFor="ssh_key">SSH 공개키</label>
-            </div> */}
-
-          
-
-                  </div>{/*일반섹션끝 */}
-
-                  {/* 전원 관리 섹션 */}
-                  <div
-                    id="전원관리_섹션"
-                    style={{ display: 활성화된섹션 === '전원관리_섹션' ? 'block' : 'none' }}
-                  >
-                    
-                    <div className='host_checkboxs'>
-                      <div className='host_checkbox'>
-                          <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
-                          <label htmlFor="enable_forwarding">전송 관리 활성</label>
-                      </div>
-                      <div className='host_checkbox'>
-                          <input type="checkbox" id="kdump_usage" name="kdump_usage" checked />
-                          <label htmlFor="kdump_usage">Kdump 통합</label>
-                      </div>
-                      <div className='host_checkbox'>
-                          <input type="checkbox" id="disable_forwarding_policy" name="disable_forwarding_policy" />
-                          <label htmlFor="disable_forwarding_policy">전송 관리 정책 제어를 비활성화</label>
-                      </div>
-
-
-                      <span className='sorted_agents'>순서대로 정렬된 에이전트</span>
-                    </div>
-                    
-                    
-                    <div className='addFence_agent'>
-                      <span>펜스 에이전트 추가</span>
-                      <button>+</button>
-                    </div>
-
-                    <div className='advanced_objec_add'>
-                      <div className='flex'>
-                        <button style={{marginRight:'0.2rem'}}onClick={toggleHiddenParameter} >
-                          {isHiddenParameterVisible ? '-' : '+'}
-                        </button>
-                        <span >고급 매개 변수</span>
-                      </div>
-                      {isHiddenParameterVisible && (
-                      <div className='host_hidden_parameter'>
-                      
-                        <div>전원 관리 프록시 설정</div>
-                        <div>
-                          <div className='proxy_content'>
-                            <div className='font-bold'>1.</div>
-                            <div className='w-6'>cluster</div>
-                            <div>  
-                              <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
-                              <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
-                            </div>
-                            <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
-                          </div>
-                          <div className='proxy_content'>
-                            <div className='font-bold'>2.</div>
-                            <div className='w-6'>dc</div>
-                            <div>  
-                              <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
-                              <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
-                            </div>
-                            <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
-                          </div>
-                        </div>
-
-                        <div className='proxy_add'>
-                          <div>전원 관리 프록시 추가</div>
-                          <button><FontAwesomeIcon icon={faPlus} fixedWidth /></button>
-                        </div>
-                      </div>
-                      )}
-                   </div>
-                    
-
-                  </div>
-
-                  {/* 호스트 엔진 섹션 */}
-                  <div
-                    id="호스트엔진_섹션"
-                    style={{ display: 활성화된섹션 === '호스트엔진_섹션' ? 'block' : 'none' }}
-                  >
-                    <div className="host_policy">
-                        <label htmlFor="host_action">호스트 연관 전처리 작업 선택</label>
-                        <select id="host_action">
-                            <option value="none">없음</option>
-                        </select>
-                    </div>
-
-
-                  </div>
-
-                  {/* 선호도 섹션 */}
-                  <div
-                    id="선호도_섹션"
-                    style={{ display: 활성화된섹션 === '선호도_섹션' ? 'block' : 'none' }}
-                  >
-                    <div className="preference_outer">
-                      <div className="preference_content">
-                        <label htmlFor="preference_group">선호도 그룹을 선택하십시오</label>
-                          <div>
-                            <select id="preference_group">
-                              <option value="none"></option>
-                            </select>
-                            <button>추가</button>
-                          </div>
-                      </div>
-                      <div className="preference_noncontent">
-                        <div>선택된 선호도 그룹</div>
-                        <div>선택된 선호도 그룹이 없습니다</div>
-                      </div>
-                      <div className="preference_content">
-                        <label htmlFor="preference_label">선호도 레이블 선택</label>
-                        <div>
-                          <select id="preference_label">
-                            <option value="none"></option>
-                          </select>
-                          <button>추가</button>
-                        </div>
-                      </div>
-                      <div className="preference_noncontent">
-                        <div>선택한 선호도 레이블</div>
-                        <div>선호도 레이블이 선택되어있지 않습니다</div>
-                      </div>
-
-                    </div>
-                  </div>
-
-                </form>
-              </div>
-
-              <div className="edit_footer">
-                <button>OK</button>
-                <button onClick={closePopup}>취소</button>
-              </div>
+        <div className="edit_footer">
+          <button>OK</button>
+          <button onClick={() =>closePopup('host_new')}>취소</button>
+        </div>
+      </div>
             </Modal>
             {/*호스트(호스트 네트워크 설정)*/}
             <Modal

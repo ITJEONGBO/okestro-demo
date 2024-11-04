@@ -1155,11 +1155,12 @@ export const useAddNetwork = () => {
  * @returns useMutation 훅
  */
 export const useEditNetwork = () => {
-  const queryClient = useQueryClient();  
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ networkId, networkData }) => await ApiManager.editNetwork(networkId, networkData),
-    onSuccess: () => {
-      queryClient.invalidateQueries('allNetworks');
+    onSuccess: (data, { networkId }) => {
+      queryClient.invalidateQueries('allNetworks'); // 전체 네트워크 목록 업데이트
+      queryClient.invalidateQueries(['networkById', networkId]); // 수정된 네트워크 상세 정보 업데이트
     },
     onError: (error) => {
       console.error('Error editing network:', error);
@@ -1186,6 +1187,42 @@ export const useDeleteNetwork = () => {
   });
 };
 
+/**
+ * @name useAddVnicProfile
+ * @description vnic 새로만들기 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddVnicProfile = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (dataCenterData) => await ApiManager.addDataCenter(dataCenterData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allNetworks'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
+    },
+    onError: (error) => {
+      console.error('Error adding vnic:', error);
+    },  
+  });
+};
+/**
+ * @name useEditVnicProfile
+ * @description vnic 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditVnicProfile = () => {
+  const queryClient = useQueryClient();  
+  return useMutation({
+    mutationFn: async ({ dataCenterId, dataCenterData }) => await ApiManager.editDataCenter(dataCenterId, dataCenterData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allNetworks');
+    },
+    onError: (error) => {
+      console.error('Error editing vnic:', error);
+    },
+  });
+};
 
 
 //region: storage -----------------스토리지---------------------

@@ -286,7 +286,7 @@ const TemplateDu = ({ columns, handleRowClick }) => {
     </div>
         </Modal>
       </>
-
+    
     );
   };
 
