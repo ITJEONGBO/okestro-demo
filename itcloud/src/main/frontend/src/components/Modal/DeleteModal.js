@@ -11,7 +11,8 @@ import {
   // useDeleteTemplate,
   // useDeleteStorageDomain,
   // useDeleteDisk,
-  useDeleteNetwork, // 네트워크 삭제 추가
+  useDeleteNetwork,
+  useDeleteVnicProfile, // 네트워크 삭제 추가
 } from '../../api/RQHook';
 
 const DeleteModal = ({ 
@@ -27,11 +28,13 @@ const DeleteModal = ({
   const { mutate: deleteDataCenter } = useDeleteDataCenter();
   const { mutate: deleteCluster } = useDeleteCluster();
   const { mutate: deleteHost } = useDeleteHost();
+
   // const { mutate: deleteVm } = useDeleteVm();
   // const { mutate: deleteTemplate } = useDeleteTemplate();
   // const { mutate: deleteStorageDomain } = useDeleteStorageDomain();
   // const { mutate: deleteDisk } = useDeleteDisk();
   const { mutate: deleteNetwork } = useDeleteNetwork(); // 네트워크 삭제 추가
+  const { mutate: deleteVnicProfile } = useDeleteVnicProfile();
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -72,6 +75,9 @@ const DeleteModal = ({
     } else if (type === 'Network') { // Network 삭제 처리 추가
       console.log('Deleting Network');
       handleDelete(deleteNetwork);
+    }else if (type === 'vnic') {
+      console.log('Deleting vNIC');
+      deleteVnicProfile({ networkId: data.networkId, vnicProfileId: id });
     }
   };
 

@@ -3,10 +3,10 @@
 }
 
 #popup_box {
-    width: 210px;
+    min-width: 856%;
     position: absolute;
     background-color: white;
-    top: 116% ; /* 부모 요소에 대해 상대적인 위치 사용 */
+    top: 116%;
     right: 0;
     display: none;
     border: 1px solid #DDDDDD;

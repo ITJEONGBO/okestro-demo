@@ -55,10 +55,10 @@ const TemplateDu = ({ columns, handleRowClick }) => {
           </div>
   
           <div className="header_right_btns">
-          <button onClick={() => openPopup('bring')}>가져오기</button>
+          {/* <button onClick={() => openPopup('bring')}>가져오기</button> */}
             <button onClick={() => openPopup('edit')}>편집</button>
             <button onClick={() => openPopup('delete')}>삭제</button>
-            <button className="disabled">내보내기</button>
+            {/* <button className="disabled">내보내기</button> */}
             <button className="disabled">새 가상머신</button>
           </div>        
         </div>

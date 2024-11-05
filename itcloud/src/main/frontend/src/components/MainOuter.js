@@ -180,33 +180,50 @@ const {
 // 새로고침해도 섹션유지-----------------------------
 const [isSecondVisible, setIsSecondVisible] = useState(
     JSON.parse(localStorage.getItem('isSecondVisible')) || false
-  );
-  const [openDataCenters, setOpenDataCenters] = useState(() => 
+);
+const [openDataCenters, setOpenDataCenters] = useState(() => 
     JSON.parse(localStorage.getItem('openDataCenters')) || {}
-  );
-  const [openClusters, setOpenClusters] = useState(() => 
+);
+const [openClusters, setOpenClusters] = useState(() => 
     JSON.parse(localStorage.getItem('openClusters')) || {}
-  );
-  const [openHosts, setOpenHosts] = useState(() => 
+);
+const [openHosts, setOpenHosts] = useState(() => 
     JSON.parse(localStorage.getItem('openHosts')) || {}
-  );
-  
-  // 상태가 변경될 때마다 localStorage에 저장
-  useEffect(() => {
+);
+const [openDomains, setOpenDomains] = useState(() => 
+    JSON.parse(localStorage.getItem('openDomains')) || {}
+);
+const [openNetworks, setOpenNetworks] = useState(() => 
+    JSON.parse(localStorage.getItem('openNetworks')) || {}
+);
+
+
+// 상태가 변경될 때마다 localStorage에 저장
+useEffect(() => {
     localStorage.setItem('isSecondVisible', JSON.stringify(isSecondVisible));
-  }, [isSecondVisible]);
-  
-  useEffect(() => {
+}, [isSecondVisible]);
+
+useEffect(() => {
     localStorage.setItem('openDataCenters', JSON.stringify(openDataCenters));
-  }, [openDataCenters]);
-  
-  useEffect(() => {
+}, [openDataCenters]);
+
+useEffect(() => {
     localStorage.setItem('openClusters', JSON.stringify(openClusters));
-  }, [openClusters]);
-  
-  useEffect(() => {
+}, [openClusters]);
+
+useEffect(() => {
     localStorage.setItem('openHosts', JSON.stringify(openHosts));
-  }, [openHosts]);
+}, [openHosts]);
+
+useEffect(() => {
+    localStorage.setItem('openDomains', JSON.stringify(openDomains));
+}, [openDomains]);
+
+useEffect(() => {
+    localStorage.setItem('openNetworks', JSON.stringify(openNetworks));
+}, [openNetworks]);
+
+
 
 // 열림/닫힘 상태 변경 함수
 const toggleDataCenter = (dataCenterId) => {
@@ -679,7 +696,7 @@ const toggleDataCenter = (dataCenterId) => {
   }, [navNetworksRefetch]);
 
     // 네트워크 열림/닫힘 토글 함수
-  const [openNetworks, setOpenNetworks] = useState({});
+
   const toggleNetwork = (networkId) => {
     setOpenNetworks((prevState) => ({
       ...prevState,
@@ -687,11 +704,9 @@ const toggleDataCenter = (dataCenterId) => {
     }));
   };
 
-    // 데이터 센터 열림/닫힘 토글 함수
 
 
 
-    const [openDomains, setOpenDomains] = useState({});
     const toggleDomain = (domainId) => {
         setOpenDomains((prevState) => ({
             ...prevState,

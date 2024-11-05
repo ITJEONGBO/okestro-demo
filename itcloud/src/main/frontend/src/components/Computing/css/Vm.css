@@ -462,15 +462,6 @@
     display: flex;
     justify-content: space-between;
 }
-.img_input_box,.img_select_box{
-    padding-bottom: 0.5rem;
-}
-
-.img_input_box span,.img_select_box label{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
 
 input[disabled] {
     background-color: #f0f0f0; /* 회색 배경색 */
@@ -1316,8 +1307,8 @@ input[disabled] {
     background: #fff;
     top: 50%;
     font-size: 0.34rem;
-    height: 91%;
-    width: 70%;
+    height: 85%;
+    width: 69%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);

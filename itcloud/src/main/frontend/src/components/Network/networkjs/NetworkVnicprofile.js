@@ -2,10 +2,12 @@ import { useAllVnicProfilesFromNetwork } from "../../../api/RQHook";
 import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
 import { useNavigate} from 'react-router-dom';
-import { useState } from 'react'; 
+import { Suspense, useState } from 'react'; 
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import VnicProfileModal from "../../Modal/VnicProfileModal";
+import DeleteModal from "../../Modal/DeleteModal";
 
 // 애플리케이션 섹션
 const NetworkVnicprofile = ({network}) => {
@@ -14,6 +16,13 @@ const NetworkVnicprofile = ({network}) => {
   const [activePopup, setActivePopup] = useState(null);
     const openPopup = (popupType) => setActivePopup(popupType);
     const closePopup = () => setActivePopup(null);
+
+    const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+    const [selectedVnicProfiles, setSelectedVnicProfiles] = useState(null);
+    const toggleModal = (type, isOpen) => {
+      setModals((prev) => ({ ...prev, [type]: isOpen }));
+  };
+
     const { 
         data: vnicProfiles,
         status: vnicProfilesStatus,
@@ -42,28 +51,62 @@ const NetworkVnicprofile = ({network}) => {
     return (
         <>
         <div className="header_right_btns">
-            <button onClick={() => openPopup('vnic_new_popup')}>새로 만들기</button>
-            <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
-            <button onClick={() => openPopup('delete')} >제거</button>
+            <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
+            <button 
+                onClick={() => selectedVnicProfiles?.id && toggleModal('edit', true)} 
+                disabled={!selectedVnicProfiles?.id}
+            >
+                편집
+            </button>
+            <button 
+                onClick={() => selectedVnicProfiles?.id && toggleModal('delete', true)} 
+                disabled={!selectedVnicProfiles?.id}
+            >
+                제거
+            </button>
         </div>
+        <span>id = {selectedVnicProfiles?.id || ''}</span>
         {/* vNIC 프로파일 */}
         <TableOuter
           columns={TableColumnsInfo.VNIC_PROFILES} 
           data={vnicProfiles}
           onRowClick={(row, column, colIndex) => {
+            setSelectedVnicProfiles(row);
             if (colIndex === 2) {
               navigate(`/computing/datacenters/${row.dataCenterId}`);
             } 
           }}
           clickableColumnIndex={[2]} 
           onContextMenuItems={() => [
-            <div key="새로 만들기" onClick={() => console.log()}>새로 만들기</div>,
+            <div key="새로 만들기"  onClick={() => console.log()}>새로 만들기</div>,
             <div key="편집" onClick={() => console.log()}>편집</div>,
             <div key="제거" onClick={() => console.log()}>제거</div>,
           ]}
         />
       {/*vNIC 프로파일(새로만들기)팝업 */}
-      <Modal
+      <Suspense>
+          {(modals.create || (modals.edit && selectedVnicProfiles)) && (
+              <VnicProfileModal
+                  isOpen={modals.create || modals.edit}
+                  onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+                  editMode={modals.edit}
+                  vnicProfile={selectedVnicProfiles}
+                  networkName={selectedVnicProfiles?.network}// 네트워크 이름 전달
+              />
+          )}
+          {modals.delete && selectedVnicProfiles && (
+                <DeleteModal
+                    isOpen={modals.delete}
+                    type='vnic'
+                    onRequestClose={() => toggleModal('delete', false)}
+                    contentLabel={'네트워크'}
+                    data={selectedVnicProfiles}
+                />
+                )}
+        </Suspense>
+
+
+      {/* <Modal
         isOpen={activePopup === 'vnic_new_popup'}
         onRequestClose={closePopup}
         contentLabel="새로만들기"
@@ -126,20 +169,7 @@ const NetworkVnicprofile = ({network}) => {
                 <input type="checkbox" id="port_mirroring" />
                 <label htmlFor="port_mirroring">포트 미러링</label>
               </div>
-              
-              {/* <div className="vnic_new_inputs">
-                <span>사용자 정의 속성</span>
-                <div className="vnic_new_buttons">
-                  <select id="custom_property_key">
-                    <option value="none">키를 선택하십시오</option>
-                  </select>
-                  <div>
-                    <div>+</div>
-                    <div>-</div>
-                  </div>
-                </div>
-              </div> */}
-
+  
               <div className="vnic_new_checkbox">
                 <input type="checkbox" id="allow_all_users" checked />
                 <label htmlFor="allow_all_users">모든 사용자가 이 프로파일을 사용하도록 허용</label>
@@ -159,9 +189,9 @@ const NetworkVnicprofile = ({network}) => {
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
       {/*vNIC 프로파일(편집)팝업 */}
-      <Modal
+      {/* <Modal
         isOpen={activePopup === 'vnic_eidt_popup'}
         onRequestClose={closePopup}
         contentLabel="편집"
@@ -239,7 +269,7 @@ const NetworkVnicprofile = ({network}) => {
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
      </>
     );
   };

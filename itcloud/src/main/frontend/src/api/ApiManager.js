@@ -456,13 +456,13 @@ const ApiManager = {
   },
    /**
    * @name ApiManager.addNetworkFromCluster
-   * @description 클러스터 네트워크 관리
+   * @description 클러스터 네트워크 편집
    * 
    * @param {string} clusterId
    * @param {Object} networkData - 추가할 클러스터 정보
    * @returns {Promise<Object>} API 응답 결과
    */
-   addNetworkFromCluster: async (clusterId, networkData) => {
+    editNetworkFromCluster: async (clusterId, networkData) => {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.MANAGE_NETWORKS_FROM_CLUSTER(clusterId),
@@ -1829,8 +1829,23 @@ const ApiManager = {
         data: dataCenterData, 
       });
     },
-
+  /**
+   * @name ApiManager.deleteVnicProfiles
+   * @description vnic프로파일 삭제
+   * 
+   * @param {String} nicId - 삭제할 호스트 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  deleteVnicProfiles: async (networkId, vnicProfileId) => {
+    return makeAPICall({
+      method: "DELETE",
+      url: ENDPOINTS.DELETE_VNIC_PROFILE_FROM_NETWORK(networkId, vnicProfileId),
+    });
+  },
   // endregion: vnicprofile
+
+
+
 
   
   //region: Domain

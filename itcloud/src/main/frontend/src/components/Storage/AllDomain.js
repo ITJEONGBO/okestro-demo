@@ -245,7 +245,7 @@ function toTableItemPredicateDomains(domaindata) {
               <div className="header_right_btns">
                 <button onClick={() => openPopup('newDomain')}>도메인 생성</button>
                 <button onClick={() => openPopup('newDomain')}>도메인 가져오기</button>
-                <button onClick={() => openPopup('manageDomain')}>도메인 관리</button>
+                <button onClick={() => openPopup('newDomain')}>도메인 관리</button>
                 <button onClick={() => openPopup('delete')}>삭제</button>
                 <button>LUN 새로고침</button>
                 <button onClick={() => navigate('/storages/disks')}>디스크</button>
@@ -359,11 +359,10 @@ function toTableItemPredicateDomains(domaindata) {
                     <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
                     </div>
 
-                    <div>
-                    <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}fixedWidth/>
-                    <span>사용자 정의 연결 매개 변수</span>
-                    <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
-                        <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                  
+                   
+                    <div id="domain_hidden_box">
+                  
                         <div className="domain_new_select">
                         <label htmlFor="nfs_version">NFS 버전</label>
                         <select id="nfs_version">
@@ -383,11 +382,10 @@ function toTableItemPredicateDomains(domaindata) {
                         <input type="text" />
                         </div> */}
                     </div>
-                    </div>
-                    <div>
-                    <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}fixedWidth/>
-                    <span>고급 매개 변수</span>
-                    <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
+                
+               
+                   
+                    <div id="domain_hidden_box2">
                         <div className="domain_new_select">
                         <label>디스크 공간 부족 경고 표시(%)</label>
                         <input type="text" />
@@ -416,7 +414,7 @@ function toTableItemPredicateDomains(domaindata) {
                         </div> */}
 
                     </div>
-                    </div>
+                   
                 </div>
                 )}
 

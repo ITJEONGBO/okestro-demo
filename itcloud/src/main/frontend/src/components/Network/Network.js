@@ -18,6 +18,7 @@ import TableInfo from '../table/TableInfo';
 import DeleteModal from '../Modal/DeleteModal';
 import NetworkNewModal from '../Modal/NetworkNewModal';
 
+
 Modal.setAppElement('#root');
 const Network = () => {
     const { 

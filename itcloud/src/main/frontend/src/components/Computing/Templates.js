@@ -146,7 +146,7 @@ useEffect(() => {
         <div id="section">
             <HeaderButton
             titleIcon={faDesktop}
-            title="가상머신 "
+            title=""
             subtitle=""
             buttons={[]}
             popupItems={[]}

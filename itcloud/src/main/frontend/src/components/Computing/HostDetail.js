@@ -76,8 +76,12 @@ function HostDetail() {
   const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
   const [activeButton, setActiveButton] = useState('network');
   const [isLabelVisible, setIsLabelVisible] = useState(false); // 라벨 표시 상태 관리
-  
+  const [isInstallBoxVisible, setIsInstallBoxVisible] = useState(false); // 설치 드롭다운 상태
 
+// 설치 드롭다운 클릭 핸들러
+const handleInstallClick = () => {
+  setIsInstallBoxVisible(!isInstallBoxVisible);
+};
   
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const togglePopup = () => setIsPopupOpen(!isPopupOpen);
@@ -278,6 +282,26 @@ function HostDetail() {
     };
   }, []);
 
+// 팝업 외부 클릭 시 설치 드롭다운 닫히기
+// useEffect(() => {
+//   const handleClickOutside = (event) => {
+//     const installBox = document.getElementById('install_box');
+//     const installBtn = document.getElementById('install_btn');
+//     if (
+//       installBox && !installBox.contains(event.target) &&
+//       installBtn && !installBtn.contains(event.target)
+//     ) {
+//       setIsInstallBoxVisible(false);
+//     }
+//   };
+
+//   document.addEventListener('mousedown', handleClickOutside);
+//   return () => {
+//     document.removeEventListener('mousedown', handleClickOutside);
+//   };
+// }, []);
+
+
   // 연필 추가모달
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   useEffect(() => {
@@ -324,7 +348,24 @@ function HostDetail() {
             </div>
           ),
          
-        }
+        },
+        // {
+        //   id: 'install_btn',
+        //   label: (
+        //     <div className="install_container">
+        //       <div id="install_btn" onClick={handleInstallClick} className="btn">
+        //         설치 <FontAwesomeIcon icon={faChevronDown} />
+        //       </div>
+        //       {isInstallBoxVisible && (
+        //         <ul id="install_box" className="dropdown-menu">
+        //           <li>설치 옵션 1</li>
+        //           <li>설치 옵션 2</li>
+        //           <li>설치 옵션 3</li>
+        //         </ul>
+        //       )}
+        //     </div>
+        //   ),
+        // }
       ];
       
     

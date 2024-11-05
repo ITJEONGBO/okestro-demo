@@ -1,13 +1,19 @@
+import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {useDomainsFromDataCenter} from "../../../api/RQHook";
 import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableInfo from "../../table/TableInfo";
 import TableOuter from "../../table/TableOuter";
 import { useNavigate } from 'react-router-dom';
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 
 
 const DatacenterStorage = ({ dataCenter }) => {
     const navigate = useNavigate();
-
+    const [activePopup, setActivePopup] = useState(null);
+    const openPopup = (popupType) => setActivePopup(popupType);
+    const closePopup = () => setActivePopup(null);
+    const [isPopupBoxVisible, setPopupBoxVisibility] = useState(false);
     const { 
         data: domains, 
         status: domainsStatus, 
@@ -27,6 +33,33 @@ const DatacenterStorage = ({ dataCenter }) => {
           description: domain?.description ?? '설명 없음', // 설명
         };
       }
+      const [isPopupOpen, setIsPopupOpen] = useState(false);
+  // 버튼 클릭 시 팝업의 열림/닫힘 상태를 토글하는 함수
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
+  const handlePopupBoxItemClick = (e) => e.stopPropagation();
+    // 팝업 외부 클릭 시 닫히도록 처리
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        const popupBox = document.querySelector(".content_header_popup"); // 팝업 컨테이너 클래스
+        const popupBtn = document.querySelector(".content_header_popup_btn"); // 팝업 버튼 클래스
+        if (
+          popupBox &&
+          !popupBox.contains(event.target) &&
+          popupBtn &&
+          !popupBtn.contains(event.target)
+        ) {
+          setIsPopupOpen(false); // 팝업 외부 클릭 시 팝업 닫기
+        }
+      };
+    
+      document.addEventListener("mousedown", handleClickOutside); // 이벤트 리스너 추가
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside); // 컴포넌트 언마운트 시 이벤트 리스너 제거
+      };
+    }, []);
+    
 
     return (
             <>
@@ -36,6 +69,15 @@ const DatacenterStorage = ({ dataCenter }) => {
                 <button className='disabled'>활성</button>
                 <button>유지보수</button>
                 <button onClick={() => {}}>디스크</button>
+                <button className="content_header_popup_btn" onClick={togglePopup}>
+                <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
+                {isPopupOpen && (
+                    <div className="content_header_popup">
+                      <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(); }}>파괴</div>
+                      <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>마스터 스토리지 도메인으로 선택</div>
+                    </div>
+                  )}
+                </button>
               </div>
               <TableOuter 
                 columns={TableInfo.STORAGES_FROM_DATACENTER} 

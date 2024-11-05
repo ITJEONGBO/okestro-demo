@@ -26,11 +26,11 @@ const VmDu = ({
   const openModal = () => setIsModalOpen(true);
 
   const handleTemplateButtonClick = () => {
-    setIsTemplateView(true); // 템플릿 보기 상태를 true로 설정
-    window.history.pushState({}, '', '/templates'); 
+    const currentPath = window.location.pathname + window.location.hash; // 현재 경로와 해시 부분을 합침
+    const newPath = currentPath.endsWith('/templates') ? currentPath : `${currentPath}/templates`; // 이미 templates가 끝에 있지 않은 경우 추가
+    window.history.pushState({}, '', newPath);
+    setIsTemplateView(true); // 상태를 직접 업데이트하여 화면 갱신
   };
-
-
 
   // 모달 관련 상태 및 함수
   const handleOpenPopup = (popupType) => { 
@@ -158,7 +158,7 @@ const VmDu = ({
                   <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup('bring'); }}>가져오기</div>
                   <div onClick={() => handleOpenPopup('vm_copy')}>가상 머신 복제</div>
                   <div onClick={() => handleOpenPopup('delete')}>삭제</div>
-                  <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup(); }}>템플릿 생성</div>
+                  <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup('new_template'); }}>템플릿 생성</div>
                   <div onClick={(e) => { handlePopupBoxItemClick(e); handleOpenPopup(); }}>OVA로 내보내기</div>
                 </div>
               )}
@@ -1641,6 +1641,119 @@ const VmDu = ({
                 </div>
             </div>
         
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+        </Modal>
+        {/*...버튼 템플릿생성 팝업 */}
+        <Modal
+        isOpen={activePopup === 'new_template'}
+        onRequestClose={closeModal}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="new_template_popup">
+            <div className="popup_header">
+                <h1>새 템플릿</h1>
+                <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+            </div>
+         
+            <div className="edit_first_content">
+              <div className='host_textbox'>
+                    <label htmlFor="user_name">이름</label>
+                    <input type="text" id="user_name" value={'#'} />
+                </div>
+                <div className='host_textbox'>
+                    <label htmlFor="description">설명</label>
+                    <input type="text" id="description" />
+                </div>
+                <div className='host_textbox'>
+                    <label htmlFor="comment">코멘트</label>
+                    <input type="text" id="comment" />
+                </div>
+                <div className='edit_fourth_content_select flex'>
+                    <label htmlFor="cluster_select">클러스터</label>
+                    <select id="cluster_select">
+                        <option value="default">Default</option>
+                    </select>
+                </div>
+                <div className='edit_fourth_content_select flex'>
+                    <label htmlFor="cpu_profile_select">CPU 프로파일</label>
+                    <select id="cpu_profile_select">
+                        <option value="default">Default</option>
+                    </select>
+                </div>   
+            </div>
+
+            <div className='flex mb-1.5'>
+              <div className="vnic_new_checkbox">
+                  <input type="checkbox" id="create_as_subtemplate" />
+                  <label htmlFor="create_as_subtemplate">서브 템플릿 버전으로 생성</label>
+              </div>
+            </div>
+
+            <div className='font-bold'>디스크 할당:</div>
+            <div className="section_table_outer py-1">
+              <table >
+        <thead>
+          <tr>
+            <th>별칭</th>
+            <th>가상 크기</th>
+            <th>포맷</th>
+            <th>대상</th>
+            <th>디스크 프로파일</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>he_sanlock</td>
+            <td>1 GiB</td>
+            <td>
+              <select>
+                <option>NFS</option>
+                <option>Option 2</option>
+              </select>
+            </td>
+            <td>
+              <select>
+                <option>NFS (499 GiB)</option>
+                <option>Option 2</option>
+              </select>
+            </td>
+            <td>
+              <select>
+                <option>NFS</option>
+                <option>Option 2</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+              </table>
+            </div>
+        
+          
+            <div className="vnic_new_checkbox">
+                <input type="checkbox" id="allow_all_access" checked/>
+                <label htmlFor="allow_all_access">모든 사용자에게 이 템플릿 접근을 허용</label>
+            </div>
+            <div className="vnic_new_checkbox">
+                <input type="checkbox" id="copy_vm_permissions" />
+                <label htmlFor="copy_vm_permissions">가상 머신 권한 복사</label>
+            </div>
+            <div className="vnic_new_checkbox">
+                <input type="checkbox" id="seal_template_linux_only" />
+                <label htmlFor="seal_template_linux_only">템플릿 봉인 (Linux만 해당)</label>
+            </div>
+
+            
+
+
 
           <div className="edit_footer">
             <button style={{ display: 'none' }}></button>

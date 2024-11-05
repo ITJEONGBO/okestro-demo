@@ -190,9 +190,11 @@ function ClusterName() {
         activeTab === 'storage' || activeTab === 'storage_disk' ? '스토리지' :
         sections.find(section => section.id === activeTab)?.label,
         activeTab === 'template' ? '템플릿' : 
-        activeTab === 'storage_disk' ? '디스크' : ''  
+        activeTab === 'storage_disk' ? '디스크' : ''  ,
+        location.pathname.includes('/templates') ? '템플릿' : ''  // '/templates'가 URL에 포함되어 있으면 추가
     ].filter(Boolean);
-
+    console.log(location.pathname); // 현재 경로 출력
+    console.log(location.pathname.includes('/templates')); // 조건 확인
     const renderSectionContent = () => {
         switch (activeTab) {
           case 'general':

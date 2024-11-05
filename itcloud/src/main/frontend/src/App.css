@@ -169,6 +169,16 @@ button:disabled {
     font-size: 0.29rem; 
     outline: none;
 }
+.img_input_box,.img_select_box{
+    padding-bottom: 0.3rem;
+}
+
+.img_input_box span,.img_select_box label{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
 .table_container_left{
     width: 33%;
     border-right: 1px solid #d1d1d1;
@@ -519,6 +529,7 @@ textarea{
 }
 .section_table_outer input[type="text"],.section_table_outer select{
     border:1px solid #DDDDDD;
+    width:100%;
 }
     /*info 설명박스*/
 .tooltip-box {
@@ -1619,12 +1630,13 @@ textarea{
     right: 0%;
     top: 130%;
     font-weight: 400;
-    min-width: 1500%;
+    min-width: 1000%;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     text-align: left;
 }
 .content_header_popup>div{
     padding: 2% 3%;
+    font-size: 0.3rem;
 }
 .content_header_popup>div:hover{
     background-color: #ececec;
@@ -1845,15 +1857,6 @@ textarea{
 .disk_new_img_left>div, #disk_managed_block_left >div{
     display: flex;
     justify-content: space-between;
-}
-.img_input_box,.img_select_box{
-    padding-bottom: 0.5rem;
-}
-
-.img_input_box span,.img_select_box label{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
 }
 
 input[disabled] {
@@ -2766,9 +2769,30 @@ display: flex; /* Flexbox 설정 추가 */
 
 
 /*hostDetail.js*/
+/*가상머신 ... 버튼 새템플릿 생성*/
+.new_template_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 77vh;
+    width: 45%;
+    left: 50%;
+    font-size:0.33rem;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.new_template_popup .edit_first_content{
+    border-bottom:none;
+}
 
-
-
+/*설치 버튼 팝업*/
+#install_box{
+    right: 1.5rem;
+    top: 1.2rem;
+}
 /*반응형*/
 @media (max-width:1390px) {
 

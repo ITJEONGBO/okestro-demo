@@ -24,34 +24,54 @@ const closePopup = () => {
   const handleManageClick = () => {
     setIsManageBoxVisible(!isManageBoxVisible);
   };
-    // 팝업 외부 클릭 시 닫히도록 처리
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        const manageBox = document.getElementById('manage_hidden_box');
-        const manageBtn = document.getElementById('manage_btn');
-        const ellipsisBox = document.getElementById('ellipsis_hidden_box');
-        const ellipsisBtn = document.getElementById('ellipsis_btn');
-        
-        // 클릭한 요소가 manage_box 내부의 li인지 확인
-        const isLiElement = event.target.tagName === 'LI';
-  
-        // manage_box, manage_btn, ellipsis_box, ellipsis_btn 그리고 각 li가 아닌 곳을 클릭했을 때만 팝업 닫기
-        if (
-          (manageBox && !manageBox.contains(event.target) && manageBtn && !manageBtn.contains(event.target)) ||
-          (ellipsisBox && !ellipsisBox.contains(event.target) && ellipsisBtn && !ellipsisBtn.contains(event.target)) &&
-          !isLiElement // li 요소를 클릭한 경우는 제외
-        ) {
-          setIsManageBoxVisible(false);
-          setPopupOpen(false); // ellipsis 팝업도 닫기
-        }
-      };
-  
-      document.addEventListener('mousedown', handleClickOutside);
-  
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }, []);
+  // 설치 드롭다운 상태
+const [isInstallBoxVisible, setIsInstallBoxVisible] = useState(false);
+
+// 설치 버튼 핸들러
+const handleInstallClick = () => {
+  setIsInstallBoxVisible(!isInstallBoxVisible);
+};
+// 팝업 외부 클릭 시 닫히도록 처리
+// 팝업 외부 클릭 시 닫히도록 처리
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    const manageBox = document.getElementById('manage_hidden_box');
+    const manageBtn = document.getElementById('manage_btn');
+    const installBox = document.getElementById('install_hidden_box');
+    const installBtn = document.getElementById('install_btn');
+    const installContainer = document.getElementById('install_container');
+    const ellipsisBox = document.getElementById('ellipsis_hidden_box');
+    const ellipsisBtn = document.getElementById('ellipsis_btn');
+    
+    // 클릭한 요소가 각 팝업 내부의 li인지 확인
+    const isLiElement = event.target.tagName === 'LI';
+
+    // 관리, 설치, ... 버튼과 해당 요소 외부 클릭 시 팝업 닫기
+    if (
+      !(
+        (manageBox && manageBox.contains(event.target)) ||
+        (manageBtn && manageBtn.contains(event.target)) ||
+        (installBox && installBox.contains(event.target)) ||
+        (installBtn && installBtn.contains(event.target)) ||
+        (installContainer && installContainer.contains(event.target)) ||
+        (ellipsisBox && ellipsisBox.contains(event.target)) ||
+        (ellipsisBtn && ellipsisBtn.contains(event.target)) ||
+        isLiElement // li 요소 클릭 시 제외
+      )
+    ) {
+      setIsManageBoxVisible(false);
+      setIsInstallBoxVisible(false); // 설치 드롭다운 닫기
+      setPopupOpen(false); // ellipsis 팝업 닫기
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
+
+
 
     // ...버튼
     const [popupOpen, setPopupOpen] = useState(false);
@@ -81,7 +101,20 @@ const closePopup = () => {
             </ul>
           )}
         </div>
-        <button>설치</button>
+        <div className="install_container">
+          <button id="install_btn" onClick={handleInstallClick} className="btn">
+            설치 <FontAwesomeIcon icon={faChevronDown} style={{ marginLeft: '3px' }} />
+          </button>
+
+          {isInstallBoxVisible && (
+            <ul id="install_hidden_box" className="dropdown-menu">
+              <li>설치 옵션 1</li>
+              <li>설치 옵션 2</li>
+              <li style={{ borderTop: '1px solid #DDDDDD' }}>설치 옵션 3</li>
+              <li style={{ borderBottom: '1px solid #DDDDDD' }}>설치 옵션 4</li>
+            </ul>
+          )}
+        </div>
         <button>호스트 네트워크 복사</button>
         <div className="ellipsis_container">
           <button id="ellipsis_btn" onClick={togglePopupMenu} className="btn">
@@ -156,11 +189,11 @@ const closePopup = () => {
           <div className='px-0.5 py-0.5'>
             <div className='host_checkboxs'>
               <div className='host_checkbox'>
-                  <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                  <input type="checkbox" id="memory_balloon" name="memory_balloon" checked/>
                   <label htmlFor="headless_mode">설치 후 호스트를 활성화</label>
               </div>
               <div className='host_checkbox'>
-                  <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
+                  <input type="checkbox" id="headless_mode_info" name="headless_mode_info" checked/>
                   <label htmlFor="headless_mode_info">설치 후 호스트를 다시 시작</label>
                   <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
               </div>
@@ -175,7 +208,7 @@ const closePopup = () => {
 
               <div className='host_text_raido_box'>
                   <div>
-                    <input type="radio" id="password" name="name_option" />
+                    <input type="radio" id="password" name="name_option" checked />
                     <label htmlFor="password">암호</label>
                   </div>
                   <input type="text" id="radio1_name" />
@@ -187,7 +220,7 @@ const closePopup = () => {
                 vGPU 배치<FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
               </div>
               <div>
-                  <input type="radio" id="memory_balloon" name="memory_balloon" />
+                  <input type="radio" id="memory_balloon" name="memory_balloon" checked/>
                   <label htmlFor="headless_mode">통합</label>
               </div>
               <div>

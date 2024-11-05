@@ -128,7 +128,7 @@ const App = () => {
               <Route path="/computing/vms/:id" element={<VmDetail />} />
               <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
               
-              <Route path="/computing/templates" element={<Templates />} />
+              {/* <Route path="/computing/templates" element={<Templates />} /> */}
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
 
 

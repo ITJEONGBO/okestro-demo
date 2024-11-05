@@ -8,6 +8,9 @@ import VmDu from "../../duplication/VmDu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrown, faExclamationTriangle, faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import Modal from 'react-modal';
+import { Suspense } from "react";
+import NetworkNewModal from "../../Modal/NetworkNewModal";
+import DeleteModal from "../../Modal/DeleteModal";
 
 const ClusterNetwrok = ({ cluster }) => {
     const navigate = useNavigate();
@@ -24,7 +27,11 @@ const ClusterNetwrok = ({ cluster }) => {
     const closePopup = () => {
         setActivePopup(null);
     };
-
+    const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+    const [selectedNetwork, setSelectedNetwork] = useState(null);
+    const toggleModal = (type, isOpen) => {
+        setModals((prev) => ({ ...prev, [type]: isOpen }));
+    };
 
     const { 
       data: networks, 
@@ -44,21 +51,41 @@ const ClusterNetwrok = ({ cluster }) => {
     return (
         <>
         <div className="header_right_btns">
-            <button onClick={() => openPopup('newNetwork')}>새로 만들기</button>
-            <button onClick={() => openPopup('editNetwork')}>편집</button>
-            <button onClick={() => openPopup('delete')}> 삭제</button>
+            <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
+            <button onClick={() => selectedNetwork?.id && toggleModal('edit', true)} disabled={!selectedNetwork?.id}>편집</button>
+            <button onClick={() => selectedNetwork?.id && toggleModal('delete', true)} disabled={!selectedNetwork?.id}>제거</button>
         </div>
+        <span>id = {selectedNetwork?.id || ''}</span>
         <TableOuter
           columns={TableColumnsInfo.LUNS} 
           data={networks} 
           clickableColumnIndex={[0]} 
           onRowClick={(row, column, colIndex) => {
+            setSelectedNetwork(row);
             if (colIndex === 0) {
               navigate(`/networks/${row.id}`); 
             }
           }}
            />
-
+            <Suspense>
+                {(modals.create || (modals.edit && selectedNetwork)) && (
+                    <NetworkNewModal
+                        isOpen={modals.create || modals.edit}
+                        onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+                        editMode={modals.edit}
+                        networkId={selectedNetwork?.id || null}
+                    />
+                )}
+                {modals.delete && selectedNetwork && (
+                <DeleteModal
+                    isOpen={modals.delete}
+                    type='Network'
+                    onRequestClose={() => toggleModal('delete', false)}
+                    contentLabel={'네트워크'}
+                    data={selectedNetwork}
+                />
+                )}
+            </Suspense>
             {/* 논리네트워크 새로 만들기*/}
             <Modal
 

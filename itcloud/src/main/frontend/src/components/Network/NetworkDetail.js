@@ -442,12 +442,12 @@ useEffect(() => {
         )}
         {modals.delete && network && (
           <DeleteModal
-    isOpen={modals.delete}
-    type='Network'
-    onRequestClose={() => toggleModal('delete', false)}
-    contentLabel='네트워크'
-    data={network} 
-/>
+            isOpen={modals.delete}
+            type='Network'
+            onRequestClose={() => toggleModal('delete', false)}
+            contentLabel='네트워크'
+            data={network} 
+        />
 
         )}
       </Suspense>
