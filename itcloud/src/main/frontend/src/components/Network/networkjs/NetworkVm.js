@@ -1,57 +1,72 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {useAllVmsFromNetwork} from "../../../api/RQHook";
+import { useAllVmsFromNetwork } from "../../../api/RQHook";
 import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
-import { useNavigate} from 'react-router-dom';
-import { useState } from 'react'; 
-import { faChevronDown,faPlay } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from 'react-router-dom';
+import { Suspense, useState } from 'react';
+import { faChevronDown, faPlay } from "@fortawesome/free-solid-svg-icons";
+import DeleteModal from "../../Modal/DeleteModal";
 
-const NetworkVm = ({network}) => {
-    const navigate = useNavigate();
-    // 모달 관련 상태 및 함수
+const NetworkVm = ({ network }) => {
+  const navigate = useNavigate();
   const [activePopup, setActivePopup] = useState(null);
-    const openPopup = (popupType) => setActivePopup(popupType);
-    const closePopup = () => setActivePopup(null);
-    const [activeVmFilter, setActiveVmFilter] = useState('running');
-    const handleVmFilterClick = (filter) => {
-      setActiveVmFilter(filter);
-    };
-    
-  //가상머신
+  const openPopup = (popupType) => setActivePopup(popupType);
+  const closePopup = () => setActivePopup(null);
+  const [activeVmFilter, setActiveVmFilter] = useState('running');
+  
+  const handleVmFilterClick = (filter) => {
+    setActiveVmFilter(filter);
+  };
+
+  const [modals, setModals] = useState({ delete: false });
+  const [selectedVms, setSelectedVms] = useState(null);
+  const toggleModal = (type, isOpen) => {
+    setModals((prev) => ({ ...prev, [type]: isOpen }));
+};
+
+
   const { 
-    data: vms, 
-    status: vmsStatus, 
-    isLoading: isVmsLoading, 
-    isError: isVmsError 
+    data: vms = [],  // 기본값 설정
+    status: vmsStatus,
+    isLoading: isVmsLoading,
+    isError: isVmsError
   } = useAllVmsFromNetwork(network?.id, toTableItemPredicateVms);
+
   function toTableItemPredicateVms(vm) {
     const status = vm?.status ?? '';
     const icon = status === 'UP' 
-    ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem',transform: 'rotate(270deg)' }} />
-    : status === 'DOWN' 
-    ? <FontAwesomeIcon icon={faPlay} fixedWidth  style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)'}}/>
-    : '';
+      ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />
+      : status === 'DOWN' 
+      ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />
+      : '';
+    
     return {
-      id: vm?.id ?? '없음',  // 가상 머신 ID
-      name: vm?.name ?? '없음',  // 가상 머신 이름
-      cluster: vm?.clusterVo?.name ?? '없음',  // 클러스터 이름
-      ipAddress: vm?.ipAddress ?? '없음',  // IP 주소
-      fqdn:  vm?.fqdn ?? '',
+      id: vm?.id ?? '없음',  
+      name: vm?.name ?? '없음',  
+      cluster: vm?.clusterVo?.name ?? '없음',
+      ipAddress: vm?.ipAddress ?? '없음',
+      fqdn: vm?.fqdn ?? '',
       icon: icon,
-      status: status, 
-      vnic: vm?.vnic ?? '',  // vNIC 이름
-      vnicRx: vm?.vnicRx ?? '',  // vNIC 수신 속도
-      vnicTx: vm?.vnicTx ?? '',  // vNIC 송신 속도
-      totalRx: vm?.totalRx ?? '',  // 총 수신 데이터
-      totalTx: vm?.totalTx ?? '',  // 총 송신 데이터
-      description: vm?.description ?? '없음'  // 가상 머신 설명
+      status: status,
+      vnic: vm?.vnic ?? '',
+      vnicRx: vm?.vnicRx ?? '',
+      vnicTx: vm?.vnicTx ?? '',
+      totalRx: vm?.totalRx ?? '',
+      totalTx: vm?.totalTx ?? '',
+      description: vm?.description ?? '없음'
     };
   }
-    return (
-      <>
+
+  // 실행 중인 VM과 정지된 VM을 각각 필터링
+  const runningVms = vms.filter(vm => vm.status === 'UP');
+  const stoppedVms = vms.filter(vm => vm.status === 'DOWN');
+
+  return (
+    <>
       <div className="header_right_btns">
-          <button onClick={() => openPopup('delete')}>제거</button>
+      <button onClick={() => selectedVms?.id && toggleModal('delete', true)} disabled={!selectedVms?.id}>제거</button>
       </div>
+      
       <div className="host_filter_btns">
         <button
           className={activeVmFilter === 'running' ? 'active' : ''}
@@ -66,28 +81,50 @@ const NetworkVm = ({network}) => {
           정지중
         </button>
       </div>
-      {activeVmFilter === 'running' && (
-          <TableOuter
-            columns={TableColumnsInfo.VMS_NIC}
-            data={vms}
-            onRowClick={() => console.log('Row clicked')}
-            clickableColumnIndex={[1]} 
-            onContextMenuItems={() => [
-              <div key="제거" onClick={() => console.log()}>제거</div>,
-            ]}
-          />
-        )}
 
-        {/* 정지중 테이블 */}
-        {activeVmFilter === 'stopped' && (
-          <TableOuter
-            columns={TableColumnsInfo.VMS_STOP}
-            data={vms}
-            onRowClick={() => console.log('Row clicked')}
-          />
-        )}
-      </>
-    );
-  };
+      <span>id = {selectedVms?.id || ''}</span>
+      {activeVmFilter === 'running' && (
+        <TableOuter
+          columns={TableColumnsInfo.VMS_NIC}
+          data={runningVms} // 실행 중인 VM 데이터만 전달
+          onRowClick={(row, column, colIndex) => {
+            console.log('선택한 vNIC Profile 행 데이터:', row);
   
-  export default NetworkVm;
+            setSelectedVms(row);
+            if (colIndex === 1) {
+              navigate(`/computing/vms/${row.id}`);
+            } 
+          }}
+          clickableColumnIndex={[1]}
+          onContextMenuItems={() => [
+            <div key="제거" onClick={() => console.log()}>제거</div>,
+          ]}
+        />
+      )}
+
+      {activeVmFilter === 'stopped' && (
+        <TableOuter
+          columns={TableColumnsInfo.VMS_STOP}
+          data={stoppedVms} // 정지된 VM 데이터만 전달
+          onRowClick={() => console.log('Row clicked')}
+        />
+      )}
+      <Suspense>
+         {/*api없음 */}
+          {modals.delete && selectedVms && (
+            <DeleteModal
+                isOpen={modals.delete}
+                type='가상머신'
+                onRequestClose={() => toggleModal('delete', false)}
+                contentLabel={'가상머신'}
+                data={ selectedVms}
+                networkId={network?.id}
+            />
+            )}
+        </Suspense>
+
+    </>
+  );
+};
+
+export default NetworkVm;

@@ -197,6 +197,25 @@ const [openNetworks, setOpenNetworks] = useState(() =>
     JSON.parse(localStorage.getItem('openNetworks')) || {}
 );
 
+//처음에 안열릴때
+// const [isSecondVisible, setIsSecondVisible] = useState(
+//     localStorage.getItem('isSecondVisible') !== null ? JSON.parse(localStorage.getItem('isSecondVisible')) : false
+// );
+// const [openDataCenters, setOpenDataCenters] = useState(() => 
+//     localStorage.getItem('openDataCenters') !== null ? JSON.parse(localStorage.getItem('openDataCenters')) : {}
+// );
+// const [openClusters, setOpenClusters] = useState(() => 
+//     localStorage.getItem('openClusters') !== null ? JSON.parse(localStorage.getItem('openClusters')) : {}
+// );
+// const [openHosts, setOpenHosts] = useState(() => 
+//     localStorage.getItem('openHosts') !== null ? JSON.parse(localStorage.getItem('openHosts')) : {}
+// );
+// const [openDomains, setOpenDomains] = useState(() => 
+//     localStorage.getItem('openDomains') !== null ? JSON.parse(localStorage.getItem('openDomains')) : {}
+// );
+// const [openNetworks, setOpenNetworks] = useState(() => 
+//     localStorage.getItem('openNetworks') !== null ? JSON.parse(localStorage.getItem('openNetworks')) : {}
+// );
 
 // 상태가 변경될 때마다 localStorage에 저장
 useEffect(() => {

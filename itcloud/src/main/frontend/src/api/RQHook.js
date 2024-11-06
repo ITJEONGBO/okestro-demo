@@ -1104,13 +1104,16 @@ export const useAllVnicProfilesFromNetwork = (networkId, mapPredicate) => useQue
   refetchOnWindowFocus: true,
   queryKey: ['vnicProfilesFromNetwork', networkId],
   queryFn: async () => {
-    console.log(`useAllVnicProfilesFromNetwork ... ${networkId}`)
-    const res = await ApiManager.findAllVnicProfilesFromNetwork(networkId)
-    // setShouldRefresh(prevValue => false)
-    return res?.map((e) => mapPredicate(e)) ?? []
-  }
-})
-
+    if (!networkId) {
+      console.warn('networkId가 존재하지 않습니다.');
+      return [];
+    }
+    console.log(`useAllVnicProfilesFromNetwork모든목록조회 ... ${networkId}`);
+    const res = await ApiManager.findAllVnicProfilesFromNetwork(networkId);
+    return res?.map((e) => mapPredicate(e)) ?? [];
+  },
+  enabled: !!networkId, 
+});
 
 /**
  * @name useAllVnicProfiles
@@ -1235,7 +1238,13 @@ export const useEditVnicProfile = () => {
 export const useDeleteVnicProfile = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async ({ networkId, vnicProfileId }) => await ApiManager.deleteVnicProfiles(networkId, vnicProfileId),
+    mutationFn: async ({ networkId, vnicProfileId }) => {
+      // ID들이 제대로 전달되는지 확인하기 위해 로그 추가
+      console.log('Deleting VnicProfile with networkId:', networkId);
+      console.log('Deleting VnicProfile with vnicProfileId:', vnicProfileId);
+      
+      return await ApiManager.deleteVnicProfiles(networkId, vnicProfileId);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries('vnicProfilesFromNetwork');
     },
@@ -1244,6 +1253,7 @@ export const useDeleteVnicProfile = () => {
     },
   });
 };
+
 
 //region: storage -----------------스토리지---------------------
 
@@ -1382,6 +1392,45 @@ export const useAllEventFromDomain = (storageDomainId, mapPredicate) => useQuery
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })
+
+/**
+ * @name useAddDomain
+ * @description 도메인 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddDomain = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (networkData) => await ApiManager.addNetwork(networkData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allNetworks'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
+    },
+    onError: (error) => {
+      console.error('Error adding network:', error);
+    },  
+  });
+};
+/**
+ * @name useEditDomain
+ * @description 도메인 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditDomain = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ networkId, networkData }) => await ApiManager.editNetwork(networkId, networkData),
+    onSuccess: (data, { networkId }) => {
+      queryClient.invalidateQueries('allNetworks'); // 전체 네트워크 목록 업데이트
+      queryClient.invalidateQueries(['networkById', networkId]); // 수정된 네트워크 상세 정보 업데이트
+    },
+    onError: (error) => {
+      console.error('Error editing network:', error);
+    },
+  });
+};
+
 //region: storage -----------------디스크---------------------
 /**
  * @name useAllDisks

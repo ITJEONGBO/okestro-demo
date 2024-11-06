@@ -1840,6 +1840,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_VNIC_PROFILE_FROM_NETWORK(networkId, vnicProfileId),
+      data: vnicProfileId,
     });
   },
   // endregion: vnicprofile

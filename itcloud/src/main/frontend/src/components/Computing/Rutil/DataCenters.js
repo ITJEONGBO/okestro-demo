@@ -26,7 +26,6 @@ const DataCenters = () => {
 
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
   const [selectedDataCenter, setSelectedDataCenter] = useState(null);
-
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
   };

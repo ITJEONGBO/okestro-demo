@@ -10,11 +10,14 @@ import { faChevronLeft, faTimes } from "@fortawesome/free-solid-svg-icons";
 // 애플리케이션 섹션
 const NetworkCluster = ({ network }) => {
     const navigate = useNavigate();
+    
     // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
     const openPopup = (popupType) => setActivePopup(popupType);
     const closePopup = () => setActivePopup(null);
 
+
+    
   const { 
     data: clusters, 
     status: clustersStatus, 
@@ -33,7 +36,9 @@ const NetworkCluster = ({ network }) => {
       networkRole: cluster?.networkRole ?? '',
     };
   }
-
+  if (!network) {
+    return <div>네트워크 데이터가 없습니다.</div>;
+  }
   
   // 클러스터 팝업 임시데이터(보류)
   const clusterPopupData = [
@@ -65,6 +70,7 @@ const NetworkCluster = ({ network }) => {
   
 
     return (
+      
         <>
         <div className="header_right_btns">
             <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
@@ -74,15 +80,21 @@ const NetworkCluster = ({ network }) => {
           columns={TableColumnsInfo.CLUSTERS}
           data={clusters}
           onRowClick={(row, column, colIndex) => {
+            if (!row || !row.id) {
+              console.error('Row 데이터가 비어있거나 ID가 없습니다.');
+              return;
+            }
+          
             const clickableCols = [0];
             if (clickableCols.includes(colIndex)) {
-                if (colIndex === 0) {
-                    navigate(`/computing/clusters/${row.id}`);
-                }
+              if (colIndex === 0) {
+                navigate(`/computing/clusters/${row.id}`);
+              }
             } else {
               console.log('Selected Cluster ID:', row.id);
             }
-        }}
+          }}
+          
           clickableColumnIndex={[0]}
           onContextMenuItems={() => [
             <div key="네트워크 관리" onClick={() => console.log()}>네트워크 관리</div>,

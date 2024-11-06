@@ -208,7 +208,7 @@ const TableColumnsInfo = {
     { header: '데이터 센터', accessor: 'dataCenterVo', clickable: false },
     { header: '호환 버전', accessor: 'compatVersion', clickable: false },
     { header: 'QoS 이름', accessor: 'qosName', clickable: false },
-    { header: '네트워크 필터', accessor: 'networkFilter', clickable: false },
+    { header: '네트워크 필터', accessor: 'networkFilterVo', clickable: false },
     { header: '포트 미러링', accessor: 'portMirroring', clickable: false },
     { header: '통과', accessor: 'passThrough', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
@@ -371,6 +371,7 @@ const TableColumnsInfo = {
     { header: '이름', accessor: 'name', clickable: false },
   ],
   VMS_STOP: [
+    { header: '상태', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },

@@ -2,7 +2,7 @@ import { useAllVnicProfilesFromNetwork } from "../../../api/RQHook";
 import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
 import { useNavigate} from 'react-router-dom';
-import { Suspense, useState } from 'react'; 
+import { Suspense, useState,useEffect } from 'react'; 
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -11,6 +11,7 @@ import DeleteModal from "../../Modal/DeleteModal";
 
 // 애플리케이션 섹션
 const NetworkVnicprofile = ({network}) => {
+  console.log('Network prop:', network);
     const navigate = useNavigate();
     // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
@@ -33,7 +34,7 @@ const NetworkVnicprofile = ({network}) => {
         isLoading
       } = useAllVnicProfilesFromNetwork(network?.id, toTableItemPredicateVnicProfiles);
       function toTableItemPredicateVnicProfiles(vnicProfile) {
-        console.log('vnicProfile data:', vnicProfile);
+        console.log('vnicProfile data 확인!!!!:', vnicProfile);
         return {
           id: vnicProfile?.id ?? '없음',
           dataCenterId: vnicProfile?.dataCenterVo?.id ?? '', 
@@ -42,12 +43,16 @@ const NetworkVnicprofile = ({network}) => {
           dataCenterVo: vnicProfile?.dataCenterVo?.name ?? '',  // 데이터 센터
           compatVersion: vnicProfile?.compatVersion ?? '없음',  // 호환 버전
           qosName: vnicProfile?.qosName ?? '',  // QoS 이름
-          networkFilter: vnicProfile?.networkFilterVo?.name ?? '없음',  // 네트워크 필터
+          networkFilterVo: vnicProfile?.networkFilterVo?.name ?? '없음',  // 네트워크 필터
           portMirroring: vnicProfile?.portMirroring ? '사용' : '사용 안함',  // 포트 미러링 여부
           passThrough: vnicProfile?.passThrough ? '통과' : '아니요',  // 통과 여부
           description: vnicProfile?.description ?? '없음',  // 설명
         };
       }
+      
+  useEffect(() => {
+    console.log('Current network prop in NetworkVnicprofile:', network);
+  }, [network]);
     return (
         <>
         <div className="header_right_btns">
@@ -71,6 +76,8 @@ const NetworkVnicprofile = ({network}) => {
           columns={TableColumnsInfo.VNIC_PROFILES} 
           data={vnicProfiles}
           onRowClick={(row, column, colIndex) => {
+            console.log('선택한 vNIC Profile 행 데이터:', row);
+  
             setSelectedVnicProfiles(row);
             if (colIndex === 2) {
               navigate(`/computing/datacenters/${row.dataCenterId}`);
@@ -91,7 +98,7 @@ const NetworkVnicprofile = ({network}) => {
                   onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
                   editMode={modals.edit}
                   vnicProfile={selectedVnicProfiles}
-                  networkName={selectedVnicProfiles?.network}// 네트워크 이름 전달
+                  networkId={network?.id} // 네트워크 이름 전달
               />
           )}
           {modals.delete && selectedVnicProfiles && (
@@ -99,8 +106,9 @@ const NetworkVnicprofile = ({network}) => {
                     isOpen={modals.delete}
                     type='vnic'
                     onRequestClose={() => toggleModal('delete', false)}
-                    contentLabel={'네트워크'}
-                    data={selectedVnicProfiles}
+                    contentLabel={'vnic'}
+                    data={ selectedVnicProfiles}
+                    networkId={network?.id}
                 />
                 )}
         </Suspense>

@@ -8,31 +8,34 @@ const VnicProfileModal = ({
   isOpen, 
   onRequestClose,
   editMode = false,
-  vnicProfile
+  vnicProfile,
+  networkId 
 }) => {
   const [datacenterVoId, setDatacenterVoId] = useState(vnicProfile?.dataCenterId || '');  
   const [name, setName] = useState(vnicProfile?.name || '');
   const [description, setDescription] = useState(vnicProfile?.description || '');
-  const [passthrough, setPassthrough] = useState(vnicProfile?.passThrough === '통과');
-  const [portMirroring, setPortMirroring] = useState(vnicProfile?.portMirroring === '사용');
+  const [passthrough, setPassthrough] = useState(vnicProfile?.passThrough !== 'DISABLED');
+  const [portMirroring, setPortMirroring] = useState(vnicProfile?.portMirroring === true);
   const [allowAllUsers, setAllowAllUsers] = useState(true);
   const [networkName, setNetworkName] = useState(vnicProfile?.network || ''); // 네트워크 이름 초기화
+  const [networkFilter, setNetworkFilter] = useState(vnicProfile?.networkFilterVo?.name || '');
 
   const { mutate: addVnicProfile } = useAddVnicProfile();
   const { mutate: editVnicProfile } = useEditVnicProfile();
   const { data: datacenters } = useAllDataCenters((e) => ({ ...e }));
-  const { data: networks } = useAllNetworks((n) => ({ id: n.id, name: n.name })); // 네트워크 데이터 가져오기
+  const { data: networks } = useAllNetworks((n) => ({ id: n.id, name: n.name , networkFilter: n.networkFilterVo?.name })); // 네트워크 데이터 가져오기
 
   useEffect(() => {
     if (editMode && vnicProfile) {
       setName(vnicProfile.name || '');
       setDescription(vnicProfile.description || '');
-      setPassthrough(vnicProfile.passThrough === '통과');
-      setPortMirroring(vnicProfile.portMirroring === '사용');
+      setPassthrough(vnicProfile.passThrough !== 'DISABLED');
+      setPortMirroring(vnicProfile.portMirroring === true);
       setAllowAllUsers(true);
       setNetworkName(vnicProfile.network || '');
-    } else{
-        resetForm();
+      setNetworkFilter(vnicProfile.networkFilterVo?.name || '');
+    } else {
+      resetForm();
     }
   }, [editMode, vnicProfile, networks]);
 
@@ -42,7 +45,7 @@ const VnicProfileModal = ({
     setPassthrough(false);
     setPortMirroring(false);
     setAllowAllUsers(true);
-
+    setNetworkFilter('');
   };
 
   const handleFormSubmit = () => {
@@ -52,6 +55,7 @@ const VnicProfileModal = ({
       passthrough,
       portMirroring,
       allowAllUsers,
+      networkFilter,
     };
 
     if (editMode && vnicProfile) {
@@ -149,8 +153,8 @@ const VnicProfileModal = ({
             {/* 네트워크 필터 */}
             <div className="vnic_new_box">
               <label htmlFor="network_filter">네트워크 필터</label>
-              <select id="network_filter">
-                <option value="linux">Linux</option>
+              <select id="network_filter" value={networkFilter} onChange={(e) => setNetworkFilter(e.target.value)}>
+                <option value={networkFilter}>{networkFilter}</option>
               </select>
             </div>
             {/* 통과 */}

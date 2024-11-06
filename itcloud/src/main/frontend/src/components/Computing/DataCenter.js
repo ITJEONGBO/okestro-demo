@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect, Suspense } from 'react';
 import Modal from 'react-modal';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
@@ -29,6 +29,8 @@ import DatacenterVm from './datacenterjs/DatacenterVm';
 import DatacenterStorage from './datacenterjs/DatacenterStorage';
 import DatacenterNetwork from './datacenterjs/DatacenterNetwork';
 import DatacenterEvent from './datacenterjs/DatacenterEvent';
+import DataCenterModal from '../Modal/DataCenterModal';
+import DeleteModal from '../Modal/DeleteModal';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -79,12 +81,15 @@ useEffect(() => {
 
  
   const handleOpenModal = (type) => {
+    setSelectedDataCenter(dataCenter); // 선택된 데이터센터 설정
     setIsModalOpen((prev) => ({ ...prev, [type]: true }));
   };
-
+  
   const handleCloseModal = (type) => {
     setIsModalOpen((prev) => ({ ...prev, [type]: false }));
+    setSelectedDataCenter(null); // 모달 닫을 때 선택된 데이터센터 초기화
   };
+  
 
   const [inputName, setInputName] = useState(name); // 데이터 센터 이름 관리 상태
 
@@ -98,10 +103,30 @@ useEffect(() => {
       navigate(`/networks/${row.id}`);  // row에서 id를 사용하여 경로로 이동
     }
   };
+ 
 
+  const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+  const [selectedDataCenter, setSelectedDataCenter] = useState(null);
+  const toggleModal = (type, isOpen) => {
+    setModals((prev) => ({ ...prev, [type]: isOpen }));
+  };
   const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '데이터센터 편집', onClick: () => handleOpenModal('edit') },
-    { id: 'delete_btn', label: '삭제', onClick: () => handleOpenModal('delete') },
+    { 
+      id: 'edit_btn', 
+      label: '데이터센터 편집', 
+      onClick: () => dataCenter?.id 
+        ? handleOpenModal('edit') 
+        : alert('편집할 데이터센터를 선택하세요.'), 
+      disabled: !id 
+    },
+    { 
+      id: 'delete_btn', 
+      label: '삭제', 
+      onClick: () => dataCenter?.id 
+        ? handleOpenModal('delete') 
+        : alert('삭제할 데이터센터를 선택하세요.'), 
+      disabled: !id 
+    }
   ];
 
   // VmDu...버튼
@@ -109,9 +134,6 @@ useEffect(() => {
     const togglePopup = () => {
       setIsPopupOpen(!isPopupOpen);
     };
- 
-
-
 
 
 
@@ -228,7 +250,7 @@ useEffect(() => {
           
           )} */}
 
-           {activeTab === 'storage_disk' && (
+           {/* {activeTab === 'storage_disk' && (
             <>
               <div className="header_right_btns">
                 <button>새로 만들기</button>
@@ -243,16 +265,34 @@ useEffect(() => {
                 onRowClick={handleRowClick}
               />
             </>
+          )} */}
+
+        <Suspense>
+          {isModalOpen.edit && (
+            <DataCenterModal
+              isOpen={isModalOpen.edit}
+              onRequestClose={() => handleCloseModal('edit')}
+              editMode={true}
+              dcId={id}
+            />
           )}
-
-
+          {isModalOpen.delete && selectedDataCenter && (
+            <DeleteModal
+              isOpen={isModalOpen.delete}
+              type='Datacenter'
+              onRequestClose={() => handleCloseModal('delete')}
+              contentLabel={'데이터센터'}
+              data={selectedDataCenter}
+            />
+          )}
+       </Suspense>
         </div>
         
       </div>
       <Footer/>
 
         {/* 데이터 센터 편집 모달 */}
-        <Modal
+        {/* <Modal
           isOpen={isModalOpen.edit}
           onRequestClose={() => handleCloseModal('edit')}
           contentLabel="새로 만들기"
@@ -305,7 +345,7 @@ useEffect(() => {
               <button onClick={() => handleCloseModal('edit')}>취소</button>
             </div>
           </div>
-        </Modal>
+        </Modal> */}
       
          {/* 클러스터 새로 만들기 팝업Before(삭제예정) */}
          {/* <Modal
@@ -830,7 +870,7 @@ useEffect(() => {
 
        
        {/*삭제팝업 */}
-        <Modal
+        {/* <Modal
         isOpen={isModalOpen.delete}
         onRequestClose={() => handleCloseModal('delete')}
         contentLabel="디스크 업로드"
@@ -858,11 +898,8 @@ useEffect(() => {
             <button onClick={() => handleCloseModal('delete')}>취소</button>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
 
-
-      {/* Permission 모달 컴포넌트 */}
-      <Permission isOpen={isModalOpen.permission} onRequestClose={() => handleCloseModal('permission')} />
     </div>
   );
 };

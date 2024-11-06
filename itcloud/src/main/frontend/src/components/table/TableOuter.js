@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Table from './Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -13,20 +14,31 @@ const TableOuter = ({
   onContextMenuItems,
   onClickableColumnClick
 }) => {
-  
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // '이름' 컬럼에서만 검색 쿼리를 적용합니다.
+  const filteredData = data.filter((row) => 
+    String(row['name'] || '').toLowerCase().startsWith(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="section_table_outer">
-      {showSearchBox && ( // showSearchBox가 true일 때만 렌더링
+      {showSearchBox && (
         <div className="search_box">
-          <input type="text" />
+          <input 
+            type="text" 
+            placeholder="검색어를 입력하세요" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} 
+          />
           <button><FontAwesomeIcon icon={faSearch} fixedWidth /></button>
-          <button><FontAwesomeIcon icon={faRefresh} fixedWidth /></button>
+          <button onClick={() => setSearchQuery('')}><FontAwesomeIcon icon={faRefresh} fixedWidth /></button>
         </div>
       )}
       
       <Table 
         columns={columns}  
-        data={data}   // data가 없으면 Table 컴포넌트에서 처리
+        data={filteredData}  // 필터링된 데이터를 Table에 전달합니다.
         onRowClick={onRowClick} 
         clickableColumnIndex={clickableColumnIndex} 
         shouldHighlight1stCol={shouldHighlight1stCol} 
@@ -35,6 +47,6 @@ const TableOuter = ({
       />
     </div>
   );
-}
+};
 
 export default TableOuter;

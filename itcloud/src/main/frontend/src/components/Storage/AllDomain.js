@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,6 +18,9 @@ import './css/AllDomain.css';
 import Table from '../table/Table';
 import { useAllStorageDomains } from '../../api/RQHook';
 import TableInfo from '../table/TableInfo';
+import StorageDomainsModal from '../Modal/StorageDomainModal';
+
+import DeleteModal from '../Modal/DeleteModal';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
@@ -43,14 +46,7 @@ const Storage = () => {
   };
 
 
-  const handleDomainNameClick = (row, column, colIndex) => {
-    const clickableCols = [1]; 
-    if (clickableCols.includes(colIndex)) {
-      if (colIndex === 1) {
-        navigate(`/storages/domains/${row.id}`, { state: { name: row.name } });
-      }
-    } 
-  };
+
 
   // 팝업 테이블 컴포넌트
   const data = [
@@ -138,6 +134,7 @@ function toTableItemPredicateDomains(domaindata) {
   return {
     icon: icon,
     id: domaindata?.id ?? '',
+    dataCenterId: domaindata?.datacenterVo?.id ?? '',
     status: domaindata?.status ?? '',
     name: domaindata?.name ?? 'Unknown',
     comment: domaindata?.comment ?? '',
@@ -151,6 +148,13 @@ function toTableItemPredicateDomains(domaindata) {
     description: domaindata?.description ?? '',
   };
 }
+
+const [modals, setModals] = useState({ create: false, bring:false, manage:false, edit: false, delete: false });
+const [selectedDomain, setSelectedDomain] = useState(null);
+const toggleModal = (type, isOpen) => {
+  setModals((prev) => ({ ...prev, [type]: isOpen }));
+};
+
 
   // 팝업 외부 클릭 시 닫히도록 처리
   useEffect(() => {
@@ -243,7 +247,7 @@ function toTableItemPredicateDomains(domaindata) {
         <div className="host_btn_outer">
               <>
               <div className="header_right_btns">
-                <button onClick={() => openPopup('newDomain')}>도메인 생성</button>
+              <button onClick={() => toggleModal('create', true)}>도메인 생성</button>
                 <button onClick={() => openPopup('newDomain')}>도메인 가져오기</button>
                 <button onClick={() => openPopup('newDomain')}>도메인 관리</button>
                 <button onClick={() => openPopup('delete')}>삭제</button>
@@ -260,11 +264,17 @@ function toTableItemPredicateDomains(domaindata) {
                 </button>
               </div>
 
+                <span>id = {selectedDomain?.id || ''}</span>
                 {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
                 <TableOuter
                   columns={TableInfo.STORAGE_DOMAINS} 
                   data={domaindata} 
-                  onRowClick={handleDomainNameClick} 
+                  onRowClick={(row, column, colIndex) => {
+                    setSelectedDomain(row);
+                   if (colIndex === 1) {
+                     navigate(`/storages/domains/${row.id}`);
+                   } 
+                 }}
                   clickableColumnIndex={[1]}
                   showSearchBox={true} 
                   onContextMenuItems={() => [
@@ -282,6 +292,31 @@ function toTableItemPredicateDomains(domaindata) {
         </div>
 
         <Footer/>
+
+        <Suspense>
+                {(modals.create || (modals.edit && selectedDomain)) && (
+                  <StorageDomainsModal
+                    isOpen={modals.create || modals.edit}
+                    onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+                    storageType={storageType} 
+                    domainId={selectedDomain?.id || null}
+                    handleStorageTypeChange={handleStorageTypeChange}
+                    isDomainHiddenBoxVisible={isDomainHiddenBoxVisible}
+                    toggleDomainHiddenBox={toggleDomainHiddenBox}
+                    isDomainHiddenBox2Visible={isDomainHiddenBox2Visible}
+                    toggleDomainHiddenBox2={toggleDomainHiddenBox2}
+                />
+                )}
+                {modals.delete && selectedDomain && (
+                <DeleteModal
+                    isOpen={modals.delete}
+                    type='Domain'
+                    onRequestClose={() => toggleModal('delete', false)}
+                    contentLabel={'스토리지 도메인'}
+                    data={selectedDomain}
+                />
+                )}
+            </Suspense>
       </div> 
 
 
