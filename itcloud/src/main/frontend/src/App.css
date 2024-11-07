@@ -41,11 +41,11 @@ button{
     align-items: center; /* 수직 가운데 정렬 추가 */
     cursor:pointer;
 }
-button:disabled {
+/* button:disabled {
     background-color: #e9e8e8cc; 
     color: #666;           
     cursor: not-allowed;    
-}
+} */
 .Overlay {
  
     background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
@@ -1859,11 +1859,11 @@ textarea{
     justify-content: space-between;
 }
 
-input[disabled] {
-    background-color: #f0f0f0; /* 회색 배경색 */
-    color: #a0a0a0; /* 회색 글자색 */
-    border: 1px solid #ccc; /* 회색 테두리 */
-    cursor:no-drop;
+button[disabled],select[disabled],input[disabled]{
+    background-color: #efefef;
+    color: #6d6d6d;
+    border: 1px solid #b3b3b3;
+    cursor: no-drop;
 }
 #disk_managed_block_left>span{
     color: red;
@@ -2620,12 +2620,12 @@ display: flex; /* Flexbox 설정 추가 */
 .volume_third_content>div{
     margin-bottom: 0.15rem;
 }
-.disabled_button{
+/* .disabled_button{
     color: #d82626;
     background-color: #eeeeee;
     cursor: no-drop;
     
-}
+} */
     /*볼륨(스냅샷)*/
 .storage_volume_snap_outer{
     display: none;

@@ -18,7 +18,7 @@ const TableOuter = ({
 
   // '이름' 컬럼에서만 검색 쿼리를 적용합니다.
   const filteredData = data.filter((row) => 
-    String(row['name'] || '').toLowerCase().startsWith(searchQuery.toLowerCase())
+    String(row['name'] || '' || row['alias']).toLowerCase().startsWith(searchQuery.toLowerCase())
   );
 
   return (

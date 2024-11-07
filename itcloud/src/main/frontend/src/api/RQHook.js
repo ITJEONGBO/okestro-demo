@@ -1395,7 +1395,7 @@ export const useAllEventFromDomain = (storageDomainId, mapPredicate) => useQuery
 
 /**
  * @name useAddDomain
- * @description 도메인 생성 useMutation 훅
+ * @description 도메인 생성 useMutation 훅(수정해야됨)
  * 
  * @returns useMutation 훅
  */
@@ -1413,7 +1413,7 @@ export const useAddDomain = () => {
 };
 /**
  * @name useEditDomain
- * @description 도메인 수정 useMutation 훅
+ * @description 도메인 수정 useMutation 훅(수정해야됨)
  * 
  * @returns useMutation 훅
  */
@@ -1430,6 +1430,26 @@ export const useEditDomain = () => {
     },
   });
 };
+
+/**
+ * @name useDeleteDomain
+ * @description 도메인 삭제 useMutation 훅(확인안해봄-생성해보고 삭제해보기)
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteDomain = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({ 
+    mutationFn: async (storageDomainId) => await ApiManager.deleteDomain(storageDomainId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allStorageDomains');
+    },
+    onError: (error) => {
+      console.error('Error deleting domain:', error);
+    },
+  });
+};
+
 
 //region: storage -----------------디스크---------------------
 /**

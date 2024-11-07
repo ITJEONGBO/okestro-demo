@@ -134,7 +134,8 @@ function toTableItemPredicateDomains(domaindata) {
   return {
     icon: icon,
     id: domaindata?.id ?? '',
-    dataCenterId: domaindata?.datacenterVo?.id ?? '',
+    dataCenterId: domaindata?.dataCenterVo?.id ?? '',
+    dataCenterName: domaindata?.dataCenterVo?.name ?? '',
     status: domaindata?.status ?? '',
     name: domaindata?.name ?? 'Unknown',
     comment: domaindata?.comment ?? '',
@@ -146,6 +147,7 @@ function toTableItemPredicateDomains(domaindata) {
     availableSize: domaindata?.availableSize ?? 'Unknown',
     reservedSpace: domaindata?.reservedSpace ?? 'Unknown',
     description: domaindata?.description ?? '',
+    HostName: domaindata?.hostVo?.name ?? '',
   };
 }
 
@@ -155,7 +157,7 @@ const toggleModal = (type, isOpen) => {
   setModals((prev) => ({ ...prev, [type]: isOpen }));
 };
 
-
+console.log("selectedDomain아아아아:", selectedDomain);
   // 팝업 외부 클릭 시 닫히도록 처리
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -247,10 +249,10 @@ const toggleModal = (type, isOpen) => {
         <div className="host_btn_outer">
               <>
               <div className="header_right_btns">
-              <button onClick={() => toggleModal('create', true)}>도메인 생성</button>
-                <button onClick={() => openPopup('newDomain')}>도메인 가져오기</button>
-                <button onClick={() => openPopup('newDomain')}>도메인 관리</button>
-                <button onClick={() => openPopup('delete')}>삭제</button>
+                <button onClick={() => toggleModal('create', true)}>도메인 생성</button>
+                <button onClick={() => toggleModal('bring', true)}>도메인 가져오기</button>
+                <button onClick={() => selectedDomain?.id && toggleModal('edit', true)} disabled={!selectedDomain?.id}>도메인 관리</button>
+                <button onClick={() => selectedDomain?.id && toggleModal('delete', true)} disabled={!selectedDomain?.id}>제거</button>
                 <button>LUN 새로고침</button>
                 <button onClick={() => navigate('/storages/disks')}>디스크</button>
                 <button className="content_header_popup_btn" onClick={togglePopup}>
@@ -264,7 +266,11 @@ const toggleModal = (type, isOpen) => {
                 </button>
               </div>
 
-                <span>id = {selectedDomain?.id || ''}</span>
+                <span>id = {selectedDomain?.id || ''}</span><br/>
+                <span>datacenter = {selectedDomain?.dataCenterName || ''}</span><br/>
+                <span>스토리지유형 = {selectedDomain?.storageType|| ''}</span><br/>
+                <span>호스트이름 = {selectedDomain?.HostName|| ''}</span>
+
                 {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
                 <TableOuter
                   columns={TableInfo.STORAGE_DOMAINS} 
@@ -286,26 +292,26 @@ const toggleModal = (type, isOpen) => {
                   ]}
                 />
               </>
-        
-
-       
         </div>
 
         <Footer/>
 
         <Suspense>
-                {(modals.create || (modals.edit && selectedDomain)) && (
+                {(modals.create || modals.edit || modals.bring) && (
                   <StorageDomainsModal
-                    isOpen={modals.create || modals.edit}
-                    onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+                    isOpen={modals.create || modals.edit || modals.bring}
+                    onRequestClose={() => toggleModal(modals.create ? 'create' : modals.edit ? 'edit' : 'bring', false)}
                     storageType={storageType} 
                     domainId={selectedDomain?.id || null}
+                    domainData={selectedDomain}
+                    editMode={modals.edit}
+                    bringMode={modals.bring} 
                     handleStorageTypeChange={handleStorageTypeChange}
                     isDomainHiddenBoxVisible={isDomainHiddenBoxVisible}
                     toggleDomainHiddenBox={toggleDomainHiddenBox}
                     isDomainHiddenBox2Visible={isDomainHiddenBox2Visible}
                     toggleDomainHiddenBox2={toggleDomainHiddenBox2}
-                />
+                  />
                 )}
                 {modals.delete && selectedDomain && (
                 <DeleteModal

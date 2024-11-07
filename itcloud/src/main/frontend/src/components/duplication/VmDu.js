@@ -1,4 +1,4 @@
-import React, { useState,  useEffect } from 'react';
+import React, { useState,  useEffect, Suspense } from 'react';
 import Modal from 'react-modal';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableOuter from '../table/TableOuter';
@@ -8,6 +8,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import VncViewer from '../Vnc/VncViewer';
 import { createRoot } from 'react-dom/client';
 import TemplateDu from './TemplateDu';
+import VmModal from '../Modal/VmModal';
 
 const VmDu = ({
   columns,
@@ -45,6 +46,13 @@ const VmDu = ({
     setActiveSection('common'); 
     setSelectedModalTab('common'); 
   };
+
+  const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+  const [selectedVms, setSelectedVms] = useState(null);
+  const toggleModal = (type, isOpen) => {
+      setModals((prev) => ({ ...prev, [type]: isOpen }));
+  };
+
 
   const [activeTab, setActiveTab] = useState('img'); 
   const handleTabClick = (tab) => {
@@ -139,7 +147,8 @@ const VmDu = ({
       ) : (
         <div>
           <div className="header_right_btns">
-            <button onClick={() => handleOpenPopup('vm_new')}>새로만들기</button>
+            {/* <button onClick={() => handleOpenPopup('vm_new')}>새로만들기</button> */}
+            <button onClick={() => toggleModal('create', true)}>새로만들기</button>
             <button onClick={() => handleOpenPopup('vm_edit')}>편집</button>
             <button className="disabled">실행</button>
             <button className="disabled">일시중지</button>
@@ -180,7 +189,26 @@ const VmDu = ({
               <div key="호스트 네트워크 복사" onClick={() => console.log()}>호스트 네트워크 복사</div>,
             ]}
           />
-  
+
+            <Suspense>
+              {(modals.create || (modals.edit && selectedVms)) && (
+                  <VmModal
+                      isOpen={modals.create || modals.edit}
+                      onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+                      editMode={modals.edit}
+                      networkId={selectedVms?.id || null}
+                  />
+              )}
+              {/* {modals.delete && selectedVms && (
+              <DeleteModal
+                  isOpen={modals.delete}
+                  type='Network'
+                  onRequestClose={() => toggleModal('delete', false)}
+                  contentLabel={'네트워크'}
+                  data={selectedVms}
+              />
+              )} */}
+          </Suspense>
   
         {/* 새로만들기팝업 */}
         <Modal
