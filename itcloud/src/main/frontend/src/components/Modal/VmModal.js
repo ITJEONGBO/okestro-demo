@@ -1,25 +1,117 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle, faChevronCircleRight } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip } from 'react-tooltip';
+import { useAddVm, useAllVMs, useEditVm } from '../../api/RQHook';
 
 const VmModal = ({ 
     isOpen, 
     onRequestClose, 
     onSubmit, 
-    vmId 
+    editMode = false,
+    vmId,
+    vmdata,
 }) => {
+    const [id, setId] = useState('');
+    const [datacenterVoId, setDatacenterVoId] = useState('');  
+    const [name, setName] = useState('');
+    const [comment, setComment] = useState('');
+    const [description, setDescription] = useState('');
+
+    // 가상머신 데이터 가져오기
+    const { 
+        data: vms, 
+        status: vmsStatus,
+        isRefetching: isVMsRefetching,
+        refetch: refetchVMs, 
+        isError: isVMsError, 
+        error: vmsError, 
+        isLoading: isVMsLoading,
+    } = useAllVMs(vmId);
+
+    useEffect(() => {
+        if (vmdata) {
+          console.log("선택한 id에대한정보:", vmdata); // domainData 출력
+        }
+      }, [vmdata]);
+
+    // 모달이 열릴 때 기존 데이터를 상태에 설정
+    useEffect(() => {
+        if (isOpen) {
+            if (editMode && vms) {
+                console.log('Setting edit mode state with domain:', vms); // Debugging log
+                setId(vms.id);
+                setDatacenterVoId(vms?.datacenterVo?.id || '');
+                setName(vms.name); 
+                setDescription(vms.description);
+                setComment(vms.comment);
+            } else {
+                console.log('Resetting form for create mode');
+                resetForm();
+            }
+        }
+    }, [isOpen, editMode, vms]);
+
+
+    const resetForm = () => {
+        setName('');
+        setDescription('');
+        setComment('');
+        };
+
+        useEffect(() => {
+            console.log("vmData:", vmdata); // vmData를 콘솔에 출력
+        }, [vmdata]); // vmData가 변경될 때마다 실행
+
+
+    const { mutate: addVM } = useAddVm();
+    const { mutate: editVM } = useEditVm();
+
   const [activeSection, setActiveSection] = useState('common_outer');
-
+  const [activeLunTab, setActiveLunTab] = useState('target_lun');
   const handleSectionChange = (section) => setActiveSection(section);
+  const [selectedModalTab, setSelectedModalTab] = useState('common');
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(); // 부모 컴포넌트로 폼 제출 시 데이터를 전달
+
+  const handleFormSubmit = () => {
+    const dataToSubmit = {
+      name,
+      description,
+      comment,
+      datacenterVoId
+    };
+    console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
+
+    if (editMode) {
+      dataToSubmit.id = id; // 수정 모드에서는 id를 추가
+      editVM({
+        vmId: id,
+        vmdata: dataToSubmit
+      }, {
+        onSuccess: () => {
+          alert('도메인 편집 완료');
+          onRequestClose();
+        },
+        onError: (error) => {
+          console.error('Error editing domain:', error);
+        }
+      });
+    } else {
+        addVM(dataToSubmit, {
+        onSuccess: () => {
+          alert('도메인 생성 완료');
+          onRequestClose();
+        },
+        onError: (error) => {
+          console.error('Error adding domain:', error);
+        }
+      });
+    }
   };
 
-  const [selectedModalTab, setSelectedModalTab] = useState('common');
-  
+
+
   // 추가 모달
   const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false);
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
@@ -40,7 +132,7 @@ const VmModal = ({
     >
       <div className="vm_edit_popup">
         <div className="popup_header">
-          <h1>가상머신 생성</h1>
+            <h1>{editMode ? '가상머신 편집' : '가상머신 생성'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
@@ -149,16 +241,31 @@ const VmModal = ({
             
                         <div className="edit_second_content mb-1">
                             <div>
-                                <label htmlFor="name">이름</label>
-                                <input type="text" id="name" value="test02" />
+                                <label htmlFor="name">이름ddd</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={vmdata.name}
+                                    onChange={(e) => setName(e.target.value)} 
+                                />
                             </div>
                             <div>
                                 <label htmlFor="description">설명</label>
-                                <input type="text" id="description" />
+                                <input
+                                type="text"
+                                id="description"
+                                value={vmdata.description}
+                                onChange={(e) => setDescription(e.target.value)} 
+                            />
                             </div>
                             <div>
                                 <label htmlFor="comment">코멘트</label>
-                                <input type="text" id="comment" />
+                                <input
+                                    type="text"
+                                    id="comment"
+                                    value={vmdata.comment}
+                                    onChange={(e) => setComment(e.target.value)} 
+                                />
                             </div>
                         </div>
                         <div className='px-1 font-bold'>인스턴스 이미지</div>
@@ -202,7 +309,14 @@ const VmModal = ({
                             <div>
                                 <div>
                                     <label htmlFor="max_memory">최대 메모리</label>
-                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
+                                    <FontAwesomeIcon
+                                        icon={faInfoCircle}
+                                        style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                                        data-tooltip-id="max-memory-tooltip"
+                                        />
+                                        <Tooltip id="max-memory-tooltip" className="icon_tooltip" place="top" effect="solid">
+                                        메모리 핫 플러그를 실행할 수 있는 가상 머신 메모리 상한
+                                        </Tooltip>
                                 </div>
                                 <input type="text" id="max_memory" value="8192 MB" readOnly />
                             </div>
@@ -210,7 +324,14 @@ const VmModal = ({
                             <div>
                                 <div>
                                     <label htmlFor="actual_memory">할당할 실제 메모리</label>
-                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
+                                    <FontAwesomeIcon
+                                        icon={faInfoCircle}
+                                        style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                                        data-tooltip-id="actual-memory-tooltip"
+                                        />
+                                    <Tooltip id="actual-memory-tooltip" className="icon_tooltip" place="top" effect="solid">
+                                    ballooning 기능 사용 여부에 관계없이 가상 머신에 확보된 메모리 양입니다.
+                                    </Tooltip>
                                 </div>
                                 <input type="text" id="actual_memory" value="2048 MB" readOnly />
                             </div>
@@ -218,7 +339,14 @@ const VmModal = ({
                             <div>
                                 <div>
                                     <label htmlFor="total_cpu">총 가상 CPU</label>
-                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
+                                    <FontAwesomeIcon
+                                        icon={faInfoCircle}
+                                        style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                                        data-tooltip-id="total-cpu-tooltip"
+                                        />
+                                        <Tooltip id="total-cpu-tooltip" className="icon_tooltip" place="top" effect="solid">
+                                        소켓 수를 변경하여 CPU를 핫애드합니다. CPU 핫애드가 올바르게 지원되는지 확인하려면 게스트 운영 체제 관련 문서를 참조하십시오.
+                                        </Tooltip>
                                 </div>
                                 <input type="text" id="total_cpu" value="1" readOnly />
                             </div>
@@ -449,7 +577,7 @@ const VmModal = ({
             </div>
 
         <div className="edit_footer">
-          <button type="submit">OK</button>
+            <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>

@@ -46,6 +46,10 @@ button{
     color: #666;           
     cursor: not-allowed;    
 } */
+.icon_tooltip {
+    max-width: 9vw !important;
+    text-align: center;
+  }
 .Overlay {
  
     background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */

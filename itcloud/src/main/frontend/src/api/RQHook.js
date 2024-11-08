@@ -271,7 +271,8 @@ export const useDomainsFromDataCenter = (dataCenterId, mapPredicate) => useQuery
     console.log(`domainsFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findAllDomainsFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!dataCenterId, // dataCenterId가 있을 때만 쿼리 실행
 });
 /**
  * @name useNetworksFromDataCenter
@@ -859,6 +860,44 @@ export const useVmConsole = () => {
     onError: (error) => {
       console.error('Error console vm:', error);
     },  
+  });
+};
+
+/**
+ * @name useAddVm
+ * @description 가상머신 생성 useMutation 훅(수정해야됨)
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddVm = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmData) => await ApiManager.addVM(vmData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allVMs'); 
+    },
+    onError: (error) => {
+      console.error('Error adding VM:', error);
+    },  
+  });
+};
+/**
+ * @name useEditVm
+ * @description 가상머신 수정 useMutation 훅(수정해야됨)
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditVm = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ vmId, vmData }) => await ApiManager.editVM(vmId, vmData),
+    onSuccess: (data, { vmId }) => {
+      queryClient.invalidateQueries('allVMs');
+      queryClient.invalidateQueries(['vmId', vmId]); 
+    },
+    onError: (error) => {
+      console.error('Error editing VM:', error);
+    },
   });
 };
 

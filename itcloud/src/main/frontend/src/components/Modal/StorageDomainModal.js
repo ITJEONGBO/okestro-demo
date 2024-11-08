@@ -12,7 +12,7 @@ const StorageDomainsModal = ({
   storageType,
   handleStorageTypeChange,
   editMode = false,
-  bringMode = false, // bringMode 추가
+  bringMode = false, 
   domainId,
   domainData,
   isDomainHiddenBoxVisible,

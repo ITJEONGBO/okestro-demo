@@ -15,10 +15,29 @@ const VmDu = ({
   onRowClick,
   setActiveTab: parentSetActiveTab = () => {},
   showTemplateButton = true,
-  data,
+  Vmdata,
 }) => {
   const [isTemplateView, setIsTemplateView] = useState(false); // 템플릿 보기 상태
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Data received in VmDu:", Vmdata); // 데이터 콘솔 출력
+  }, [Vmdata]);
+
+
+  const handleRowClick = (row, column, colIndex) => {
+    setSelectedVms(row);
+    if (colIndex === 1) {
+      navigate(`/computing/vms/${row.id}`);
+    } else if (colIndex === 3) {
+      navigate(`/computing/hosts/${row.hostId}`);
+    } else if (colIndex === 6) {
+      navigate(`/computing/clusters/${row.clusterId}`);
+    } else if (colIndex === 8) {
+      navigate(`/computing/datacenters/${row.dataCenterId}`);
+    }
+  };
+
 
   const [activePopup, setActivePopup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,12 +66,12 @@ const VmDu = ({
     setSelectedModalTab('common'); 
   };
 
-  const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+  const [modals, setModals] = useState({ create: false, edit: false});
   const [selectedVms, setSelectedVms] = useState(null);
   const toggleModal = (type, isOpen) => {
       setModals((prev) => ({ ...prev, [type]: isOpen }));
   };
-
+  console.log("selectedVms호호:", selectedVms);
 
   const [activeTab, setActiveTab] = useState('img'); 
   const handleTabClick = (tab) => {
@@ -143,15 +162,18 @@ const VmDu = ({
   return (
     <>
       {isTemplateView ? (
-        <TemplateDu columns={columns} handleRowClick={onRowClick} />
+        <TemplateDu columns={columns} handleRowClick={handleRowClick} />
       ) : (
         <div>
           <div className="header_right_btns">
             {/* <button onClick={() => handleOpenPopup('vm_new')}>새로만들기</button> */}
             <button onClick={() => toggleModal('create', true)}>새로만들기</button>
-            <button onClick={() => handleOpenPopup('vm_edit')}>편집</button>
+            {/* <button onClick={() => handleOpenPopup('vm_edit')}>편집</button> */}
+            <button onClick={() => selectedVms?.id && toggleModal('edit', true)} disabled={!selectedVms?.id}>편집</button>
             <button className="disabled">실행</button>
-            <button className="disabled">일시중지</button>
+            <button className={Vmdata.status === 'UP' ? '' : 'disabled'} disabled={Vmdata.status !== 'UP'}>
+              일시중지
+            </button>
             <button className="disabled">종료</button>
             <button className="disabled">재부팅</button>
             {showTemplateButton && (
@@ -173,45 +195,38 @@ const VmDu = ({
               )}
             </button>
           </div>
-  
+          
+          <span>id = {selectedVms?.id || ''}</span><br/>
           <TableOuter
             columns={columns}
-            data={data}
-            onRowClick={onRowClick}
+            data={Vmdata}
+            onRowClick={handleRowClick} // 내부에서 정의한 handleRowClick을 전달
             showSearchBox={true}
             clickableColumnIndex={[1, 3, 6, 8]}
             shouldHighlight1stCol={true}
             onContextMenuItems={() => [
-              <div key="새로 만들기" onClick={() => console.log()}>새로 만들기</div>,
-              <div key="편집" onClick={() => console.log()}>편집</div>,
-              <div key="삭제" onClick={() => console.log()}>삭제</div>,
-              <div key="설치" onClick={() => console.log()}>설치</div>,
-              <div key="호스트 네트워크 복사" onClick={() => console.log()}>호스트 네트워크 복사</div>,
+              <div key="새로 만들기" onClick={() => console.log("새로 만들기")}>새로 만들기</div>,
+              <div key="편집" onClick={() => console.log("편집")}>편집</div>,
+              <div key="삭제" onClick={() => console.log("삭제")}>삭제</div>,
+              <div key="설치" onClick={() => console.log("설치")}>설치</div>,
+              <div key="호스트 네트워크 복사" onClick={() => console.log("호스트 네트워크 복사")}>호스트 네트워크 복사</div>,
             ]}
           />
 
             <Suspense>
               {(modals.create || (modals.edit && selectedVms)) && (
                   <VmModal
-                      isOpen={modals.create || modals.edit}
-                      onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
-                      editMode={modals.edit}
-                      networkId={selectedVms?.id || null}
-                  />
+                  isOpen={modals.create || modals.edit}
+                  onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+                  editMode={modals.edit}
+                  vmdata={selectedVms}  // 선택된 VM 데이터만 전달
+                />
               )}
-              {/* {modals.delete && selectedVms && (
-              <DeleteModal
-                  isOpen={modals.delete}
-                  type='Network'
-                  onRequestClose={() => toggleModal('delete', false)}
-                  contentLabel={'네트워크'}
-                  data={selectedVms}
-              />
-              )} */}
+           
           </Suspense>
   
         {/* 새로만들기팝업 */}
-        <Modal
+        {/* <Modal
             isOpen={activePopup === 'vm_new'}
             onRequestClose={closeModal}
             contentLabel="가상머신 편집"
@@ -271,13 +286,7 @@ const VmDu = ({
                     >
                     고가용성
                     </div>
-                    {/* <div
-                    id="res_alloc_tab"
-                    className={selectedModalTab === 'res_alloc' ? 'active-tab' : 'inactive-tab'}
-                    onClick={() => setSelectedModalTab('res_alloc')}
-                    >
-                    리소스 할당
-                    </div> */}
+        
                     <div
                     id="boot_option_tab"
                     className={selectedModalTab === 'boot_outer' ? 'active-tab' : 'inactive-tab'}
@@ -288,7 +297,7 @@ const VmDu = ({
 
                 </div>
 
-            {/* 탭 내용 */}
+      
             <div className="vm_edit_select_tab">
               <div className="edit_first_content">
                           <div className='mb-1'>
@@ -533,60 +542,7 @@ const VmDu = ({
                         </div>
                 </>
                 }
-                {/* {selectedModalTab === 'res_alloc' && 
-                <>
-        <div className="res_second_content">
-                            <div className="cpu_res">
-                                <span style={{ fontWeight: 600 }}>CPU 할당:</span>
-                                <div className='cpu_res_box'>
-                                    <span>CPU 프로파일</span>
-                                    <select id="watchdog_action">
-                                        <option value="없음">Default</option>
-                                    </select>
-                                </div>
-                                <div className='cpu_res_box'>
-                                    <span>CPU 공유</span>
-                                    <div id="cpu_sharing">
-                                        <select id="watchdog_action" style={{ width: '63%' }}>
-                                            <option value="없음">비활성화됨</option>
-                                        </select>
-                                        <input type="text" value="0" disabled />
-                                    </div>
-                                </div>
-                                <div className='cpu_res_box'>
-                                    <span>CPU Pinning Policy</span>
-                                    <select id="watchdog_action">
-                                        <option value="없음">None</option>
-                                    </select>
-                                </div>
-                                <div className='cpu_res_box'>
-                                    <div>
-                                        <span>CPU 피닝 토폴로지</span>
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
-                                    </div>
-                                    <input type="text" disabled />
-                                </div>
-                            </div>
-
-                            
-
-                            <span style={{ fontWeight: 600 }}>I/O 스레드:</span>
-                            <div id="threads">
-                                <div className='checkbox_group'>
-                                    <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
-                                    <label htmlFor="enableIOThreads">I/O 스레드 활성화</label>
-                                </div>
-                                <div className='text_icon_box'>
-                                    <input type="text" />
-                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
-                                </div>
-                            </div>
-
-                                
-                        </div>
-
-                </>
-                } */}
+              
                 {selectedModalTab === 'boot_outer' && 
                 <>  
                   <div className='boot_outer_content'>
@@ -634,7 +590,7 @@ const VmDu = ({
             <button onClick={closeModal}>취소</button>
             </div>
         </div>
-        </Modal>
+        </Modal> */}
         {/*새로만들기(연결)추가팝업*/}
         <Modal
      isOpen={isConnectionPopupOpen}

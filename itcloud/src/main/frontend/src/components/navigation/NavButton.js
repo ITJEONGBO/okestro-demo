@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback  } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 
@@ -9,13 +9,14 @@ const NavButton = React.memo(({ sections, handleSectionClick }) => {
   useEffect(() => {
     const pathParts = pathname.split('/');
     const lastPart = pathParts[pathParts.length - 1];
-  
-    if (lastPart !== activeSection && sections.some(section => section.id === lastPart)) {
+    
+    // URL이 변경될 때 첫 번째 요소를 active 상태로 설정
+    if (sections.some(section => section.id === lastPart)) {
       setActiveSection(lastPart);
-    } else if (!sections.some(section => section.id === activeSection)) {
-      setActiveSection(sections[0]?.id || '');
+    } else {
+      setActiveSection(sections[0]?.id || ''); // URL에 맞는 섹션이 없으면 첫 번째 섹션을 기본으로 설정
     }
-  }, [pathname]);
+  }, [pathname, sections]); // pathname 또는 sections가 변경될 때마다 실행
 
   const handleClick = useCallback((sectionId) => {
     setActiveSection(sectionId);

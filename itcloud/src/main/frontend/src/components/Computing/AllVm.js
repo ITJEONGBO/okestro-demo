@@ -9,9 +9,10 @@ import Footer from '../footer/Footer';
 import { useAllTemplates, useAllVMs } from '../../api/RQHook';
 import Templates from './Templates';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faDesktop, faInfoCircle, faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableOuter from '../table/TableOuter';
 import VmDu from '../duplication/VmDu';
+import { Tooltip } from 'react-tooltip';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -55,9 +56,9 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
    // 탭 클릭 핸들러
 
  
-
+   const [selectedVms, setSelectedVms] = useState(null);
    const { 
-    data: vms, 
+    data: vms = [], 
     status: vmsStatus,
     isRefetching: isVMsRefetching,
     refetch: refetchVMs, 
@@ -67,13 +68,41 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
 } = useAllVMs(toTableItemPredicateVMs);
 
 function toTableItemPredicateVMs(vm) {
+  const status = vm?.status ?? '';
+  const icon = status === 'UP' 
+    ? (
+      <>
+        <FontAwesomeIcon
+          icon={faPlay}
+          fixedWidth
+          style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }}
+          data-tooltip-id="up-tooltip"
+        />
+        <Tooltip id="up-tooltip" className="icon_tooltip" place="top" effect="solid">
+          Up
+        </Tooltip>
+      </>
+    ) : status === 'DOWN' 
+    ? (
+      <>
+        <FontAwesomeIcon
+          icon={faPlay}
+          fixedWidth
+          style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }}
+          data-tooltip-id="down-tooltip"
+        />
+        <Tooltip id="down-tooltip" place="top" effect="solid">
+          정지
+        </Tooltip>
+      </>
+    ) : null;
     return {
         status: vm?.status ?? 'Unknown',       
         id: vm?.id ?? '',
         hostId: vm?.hostVo?.id ?? '',  // 클러스터의 ID
         clusterId: vm?.clusterVo?.id ?? '',  // 클러스터의 ID
         dataCenterId: vm?.dataCenterVo?.id ?? '',  // 데이터 센터의 ID 
-        icon: '🖥️',                                   
+        icon: icon,                               
         name: vm?.name ?? 'Unknown',               
         comment: vm?.comment ?? '',                 
         host: vm?.hostVo?.name ?? 'Unknown',         
@@ -145,23 +174,14 @@ function toTableItemPredicateVMs(vm) {
            
           </div>
         </div> */}
-   <VmDu 
-        columns={TableColumnsInfo.VM_CHART} 
-        data={vms}
-        openPopup={openPopup} 
-   
-        onRowClick={(row, column, colIndex) => {
-        if (colIndex === 1) {
-          navigate(`/computing/vms/${row.id}`); 
-        }else if (colIndex === 3) {
-            navigate(`/computing/hosts/${row.hostId}`); 
-        }else if (colIndex === 6) {
-            navigate(`/computing/clusters/${row.clusterId}`); 
-        }else if (colIndex === 8) {
-            navigate(`/computing/datacenters/${row.dataCenterId}`); 
-        }
-      }}
-      />
+        
+        <VmDu 
+            columns={TableColumnsInfo.VM_CHART} 
+            Vmdata={vms}
+            openPopup={openPopup}
+            navigate={navigate} // navigate 전달
+            setSelectedVms={setSelectedVms} // setSelectedVms 전달
+        />
       </div>
   
            
