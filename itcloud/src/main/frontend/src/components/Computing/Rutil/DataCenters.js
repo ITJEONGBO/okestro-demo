@@ -22,6 +22,7 @@ const DataCenters = () => {
   } = useAllDataCenters((e) => ({
     ...e,
     storageType: e?.storageType ? '로컬' : '공유됨',
+    status: e?.status === 'UNINITIALIZED' ? '초기화되지 않음' : 'UP'
   }));
 
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });

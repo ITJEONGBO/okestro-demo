@@ -67,25 +67,25 @@ const ClusterModal = ({
   }));
 
   useEffect(() => {
-    if (editMode && cluster && !isClusterLoading && !isClusterRefetching) {
+    if (editMode && cluster) {
       // 데이터가 모두 로드된 경우에만 설정
-      setId(cluster?.id);
-      setDatacenterVoId(cluster?.datacenterVo?.id || '');
-      setName(cluster?.name);
-      setDescription(cluster?.description);
-      setComment(cluster?.comment);
-      setNetworkVoId(cluster?.networkVo?.id || '');
-      setCpuArc(cluster?.cpuArc);
-      setCpuType(cluster?.cpuType);
-      setBiosType(cluster?.biosType);
-      setErrorHandling(cluster?.errorHandling);
+      setId(cluster.id);
+      setDatacenterVoId(cluster.datacenterVo?.id || '');
+      setName(cluster.name);
+      setDescription(cluster.description);
+      setComment(cluster.comment);
+      setNetworkVoId(cluster.networkVo?.id || '');
+      setCpuArc(cluster.cpuArc);
+      setCpuType(cluster.cpuType);
+      setBiosType(cluster.biosType);
+      setErrorHandling(cluster.errorHandling);
     } else if (!editMode) {
       resetForm();
       if (datacenters && datacenters.length > 0) {
         setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본 선택
       }
     }
-  }, [editMode, cluster, datacenters, isClusterLoading, isClusterRefetching]);
+  }, [editMode, cluster, datacenters]);
   
   const resetForm = () => {
     setDatacenterVoId('');
@@ -96,7 +96,7 @@ const ClusterModal = ({
     setCpuArc('');
     setCpuType('');
     setBiosType('');
-    setErrorHandling('');
+    setErrorHandling('migrate');
   };
 
   useEffect(() => {
@@ -302,6 +302,7 @@ const ClusterModal = ({
         <div className="cluster_new_content">
           <div className="network_form_group">
             <label htmlFor="data_center">데이터 센터</label>
+            {/* 만약 데이터센터가 삭제된상태라면 전체 데이터센터 목록을 보여줘야함 */}
             <select
               id="data_center"
               value={datacenterVoId}

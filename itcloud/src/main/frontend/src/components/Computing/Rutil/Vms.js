@@ -4,6 +4,8 @@ import '../css/Computing.css'
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllVMs } from '../../../api/RQHook';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 
 const VmModal = React.lazy(() => import('../../Modal/VmModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -44,11 +46,18 @@ const Vms = () => {
     }
   };
 
+  const renderStatusIcon = (status) => {
+    if (status === 'UP') {
+      return <FontAwesomeIcon icon={faArrowUp} />;
+    } else if (status === 'DOWN') {
+      return <FontAwesomeIcon icon={faArrowDown} />;
+    }
+    return status;
+  };
 
   const handleNameClick = (id) => {
       navigate(`/computing/vms/${id}`);
   };
-
 
   return (
     <>
@@ -62,7 +71,10 @@ const Vms = () => {
 
       <TablesOuter
         columns={TableInfo.VMS} 
-        data={vms} 
+        data={vms?.map((vm) => ({
+          ...vm,
+          status: renderStatusIcon(vm.status),
+        }))} 
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedVm(row)}
         clickableColumnIndex={[1]} // "이름" 열의 인덱스 설정
