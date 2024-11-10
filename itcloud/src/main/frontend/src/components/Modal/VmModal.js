@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle, faChevronCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
-import { useAddVm, useAllVMs, useEditVm } from '../../api/RQHook';
+import { useAddVm, useAllClusters, useAllDataCenters, useAllVMs, useEditVm, useVmById } from '../../api/RQHook';
 
 const VmModal = ({ 
     isOpen, 
@@ -14,11 +14,13 @@ const VmModal = ({
     vmdata,
 }) => {
     const [id, setId] = useState('');
-    const [datacenterVoId, setDatacenterVoId] = useState('');  
+    const [clusterVoId, setClusterVoId] = useState('');  
     const [name, setName] = useState('');
     const [comment, setComment] = useState('');
     const [description, setDescription] = useState('');
 
+    const { mutate: addVM } = useAddVm();
+    const { mutate: editVM } = useEditVm();
     // 가상머신 데이터 가져오기
     const { 
         data: vms, 
@@ -28,7 +30,28 @@ const VmModal = ({
         isError: isVMsError, 
         error: vmsError, 
         isLoading: isVMsLoading,
-    } = useAllVMs(vmId);
+    } = useVmById(vmId);
+
+//   데이터센터 가져오기
+  const {
+    data: clusters,
+    status: datacentersStatus,
+    isRefetching: isDatacentersRefetching,
+    refetch: refetchDatacenters,
+    isError: isDatacentersError,
+    error: datacentersError,
+    isLoading: isDatacentersLoading
+  } = useAllClusters((e) => ({
+    ...e,
+  }));
+
+  useEffect(() => {
+    // editMode가 아닐 때만 첫 번째 데이터센터 ID를 기본값으로 설정
+    if (!editMode && clusters && clusters.length > 0) {
+        setClusterVoId(clusters[0].id);
+    }
+  }, [editMode, clusters]);
+
 
     useEffect(() => {
         if (vmdata) {
@@ -39,34 +62,64 @@ const VmModal = ({
     // 모달이 열릴 때 기존 데이터를 상태에 설정
     useEffect(() => {
         if (isOpen) {
-            if (editMode && vms) {
-                console.log('Setting edit mode state with domain:', vms); // Debugging log
-                setId(vms.id);
-                setDatacenterVoId(vms?.datacenterVo?.id || '');
-                setName(vms.name); 
-                setDescription(vms.description);
-                setComment(vms.comment);
+            if (editMode && vmdata) { // 편집 모드에서 데이터가 있을 때 필드에 값 설정
+                setId(vmdata.id);
+                setName(vmdata.name);
+                setDescription(vmdata.description);
+                setComment(vmdata.comment);
             } else {
-                console.log('Resetting form for create mode');
-                resetForm();
+                resetForm(); // 새로 만들기 모드에서는 필드를 초기화
             }
         }
-    }, [isOpen, editMode, vms]);
+    }, [isOpen, editMode, vmdata]); // `isOpen`, `editMode`, `vmdata`에 따라 업데이트
+    
 
 
     const resetForm = () => {
+        setId('');
+        setClusterVoId('');
         setName('');
         setDescription('');
         setComment('');
+    };
+    const handleFormSubmit = () => {
+        const dataToSubmit = {
+            name,
+            description,
+            comment,
+            // datacenterVoId
         };
+        console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
+    
+        if (editMode) {
+            dataToSubmit.id = id; // 수정 모드에서는 id를 추가
+            editVM({
+                vmId: id,
+                vmdata: dataToSubmit
+            }, {
+            onSuccess: () => {
+                alert('도메인 편집 완료');
+                onRequestClose();
+            },
+            onError: (error) => {
+                console.error('Error editing domain:', error);
+            }
+            });
+        } else {
+            addVM(dataToSubmit, {
+            onSuccess: () => {
+                alert('도메인 생성 완료');
+                onRequestClose();
+            },
+            onError: (error) => {
+                console.error('Error adding domain:', error);
+            }
+            });
+        }
+    };
+    
 
-        useEffect(() => {
-            console.log("vmData:", vmdata); // vmData를 콘솔에 출력
-        }, [vmdata]); // vmData가 변경될 때마다 실행
 
-
-    const { mutate: addVM } = useAddVm();
-    const { mutate: editVM } = useEditVm();
 
   const [activeSection, setActiveSection] = useState('common_outer');
   const [activeLunTab, setActiveLunTab] = useState('target_lun');
@@ -74,41 +127,6 @@ const VmModal = ({
   const [selectedModalTab, setSelectedModalTab] = useState('common');
 
 
-  const handleFormSubmit = () => {
-    const dataToSubmit = {
-      name,
-      description,
-      comment,
-      datacenterVoId
-    };
-    console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
-
-    if (editMode) {
-      dataToSubmit.id = id; // 수정 모드에서는 id를 추가
-      editVM({
-        vmId: id,
-        vmdata: dataToSubmit
-      }, {
-        onSuccess: () => {
-          alert('도메인 편집 완료');
-          onRequestClose();
-        },
-        onError: (error) => {
-          console.error('Error editing domain:', error);
-        }
-      });
-    } else {
-        addVM(dataToSubmit, {
-        onSuccess: () => {
-          alert('도메인 생성 완료');
-          onRequestClose();
-        },
-        onError: (error) => {
-          console.error('Error adding domain:', error);
-        }
-      });
-    }
-  };
 
 
 
@@ -205,8 +223,21 @@ const VmModal = ({
               <div className="edit_first_content">
                           <div className='mb-1'>
                                 <label htmlFor="cluster">클러스터</label>
-                                <select id="cluster">
-                                    <option value="default">Default</option>
+                                <select 
+                                    id="cluster_location" 
+                                    value={clusterVoId} 
+                                    onChange={(e) => setClusterVoId(e.target.value)} 
+                                    disabled={editMode} // 편집 모드일 경우 비활성화
+                                    >
+                                    {editMode && vmdata?.clusterName ? (
+                                        // 편집 모드에서는 고정된 클러스터만 표시
+                                        <option value={vmdata.clusterName}>{vmdata.clusterName}</option>
+                                    ) : (
+                                        // editMode가 아닐 경우 클러스터 목록 표시
+                                        clusters && clusters.map((cluster) => (
+                                        <option key={cluster.id} value={cluster.id}>{cluster.name}</option>
+                                        ))
+                                    )}
                                 </select>
                                 <div className='datacenter_span'>데이터센터 Default</div>
                             </div>
@@ -245,7 +276,7 @@ const VmModal = ({
                                 <input
                                     type="text"
                                     id="name"
-                                    value={vmdata.name}
+                                    value={name}
                                     onChange={(e) => setName(e.target.value)} 
                                 />
                             </div>
@@ -254,7 +285,7 @@ const VmModal = ({
                                 <input
                                 type="text"
                                 id="description"
-                                value={vmdata.description}
+                                value={description}
                                 onChange={(e) => setDescription(e.target.value)} 
                             />
                             </div>
@@ -263,7 +294,7 @@ const VmModal = ({
                                 <input
                                     type="text"
                                     id="comment"
-                                    value={vmdata.comment}
+                                    value={comment}
                                     onChange={(e) => setComment(e.target.value)} 
                                 />
                             </div>

@@ -881,6 +881,7 @@ export const useAddVm = () => {
     },  
   });
 };
+
 /**
  * @name useEditVm
  * @description 가상머신 수정 useMutation 훅(수정해야됨)
@@ -891,15 +892,18 @@ export const useEditVm = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ vmId, vmData }) => await ApiManager.editVM(vmId, vmData),
-    onSuccess: (data, { vmId }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries('allVMs');
-      queryClient.invalidateQueries(['vmId', vmId]); 
+      // queryClient.invalidateQueries(['vmId', vmId]); 
     },
     onError: (error) => {
       console.error('Error editing VM:', error);
     },
   });
 };
+
+
+
 
 //endregion: VM
 
