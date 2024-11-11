@@ -366,7 +366,7 @@ const toggleDataCenter = (dataCenterId) => {
                       }}
                       onClick={() => {
                           setSelectedDiv(dataCenter.id);
-                          navigate(`/computing/datacenters/${dataCenter.id}`);
+                          navigate(`/computing/datacenters/${dataCenter.id}/clusters`);
                       }}
                   >
                       {hasClusters && (

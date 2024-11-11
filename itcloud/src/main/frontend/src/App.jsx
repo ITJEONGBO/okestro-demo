@@ -28,6 +28,7 @@ import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
 import DataCenters from './components/Computing/Rutil/DataCenters';
 import Clusters from './components/Computing/Rutil/Clusters'
+import DataCenterInfo from './components/Computing/datacenters/DataCenterInfo';
 
 
 
@@ -103,8 +104,9 @@ const App = () => {
               <Route path="/computing/rutil-manager/:section" element={<RutilManager />} />
 
               <Route path="/computing/datacenters" element={<DataCenters />} />
-              <Route path="/computing/datacenters/:id" element={<DataCenter />} />
-              <Route path="/computing/datacenters/:id/:section" element={<DataCenter />} />
+              {/* <Route path="/computing/datacenters/:id" element={<DataCenterInfo />} /> */}
+              {/* <Route path="/computing/datacenters/:id" element={<DataCenter />} /> */}
+              <Route path="/computing/datacenters/:id/:section" element={<DataCenterInfo />} />
 
                {/*네트워크쪽 데이터센터*/}
               <Route path="/networks/datacenters/:id" element={<DataCenter />} />

@@ -9,23 +9,16 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.repository.engine.DiskVmElementRepository
-import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
-import com.itinfo.itcloud.repository.history.VmInterfaceSamplesHistoryRepository
-import com.itinfo.itcloud.repository.history.VmSamplesHistoryRepository
-import com.itinfo.itcloud.repository.history.dto.UsageDto
-import com.itinfo.itcloud.repository.history.entity.VmInterfaceSamplesHistoryEntity
-import com.itinfo.itcloud.repository.history.entity.getUsage
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.computing.HostServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.Error
+
 
 interface ItVmService {
 	/**

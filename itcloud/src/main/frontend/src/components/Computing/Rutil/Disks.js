@@ -24,7 +24,7 @@ const Disks = () => {
       ...e,
       name: e?.alias, 
       storageDomain: e?.storageDomainVo.name,
-      virtualSize: e?.virtualSize/(Math.pow(1024, 3))+" GB",
+      virtualSize: (e?.virtualSize / Math.pow(1024, 3)).toFixed(2) + " GB",
       connectVm: e?.connectVm.name
     }
   });

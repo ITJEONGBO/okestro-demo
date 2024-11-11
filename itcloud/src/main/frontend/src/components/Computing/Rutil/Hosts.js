@@ -10,8 +10,6 @@ const HostModal = React.lazy(() => import('../../Modal/HostModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
 const Hosts = () => {
-  const navigate = useNavigate();
-  
   const {
       data: hosts,
       status: hostsStatus,
@@ -33,6 +31,7 @@ const Hosts = () => {
     }
   });
 
+  const navigate = useNavigate();
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
   const [selectedHost, setSelectedHost] = useState(null);
 

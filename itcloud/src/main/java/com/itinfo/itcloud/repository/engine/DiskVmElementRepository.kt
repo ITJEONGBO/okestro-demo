@@ -9,5 +9,7 @@ import java.util.*
 interface DiskVmElementRepository : JpaRepository<DiskVmElementEntity, UUID> {
 	fun findByDiskId(diskId: UUID): Optional<DiskVmElementEntity>
 
+	fun findByDiskIdIn(diskIds: List<UUID>): List<DiskVmElementEntity>
+
 	fun findByVmId(vmId: UUID): List<DiskVmElementEntity>
 }

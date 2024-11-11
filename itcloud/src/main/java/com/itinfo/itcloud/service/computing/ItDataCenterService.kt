@@ -233,7 +233,7 @@ class DataCenterServiceImpl(
 		log.info("findAllClustersFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Cluster> =
 			conn.findAllClustersFromDataCenter(dataCenterId).getOrDefault(listOf())
-				.filter { it.cpuPresent() }
+//				.filter { it.cpuPresent() }
 		return res.toClustersMenu(conn)
 	}
 

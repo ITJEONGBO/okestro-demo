@@ -8,6 +8,7 @@ import {
   useEditCluster, 
   useCluster,
   useAllDataCenters, 
+  useDataCenter,
   useNetworksFromDataCenter
 } from '../../api/RQHook';
 
@@ -15,10 +16,12 @@ const ClusterModal = ({
   isOpen, 
   onRequestClose, 
   editMode = false, 
-  cId
+  cId, 
+  datacenterId
 }) => {
   const [id, setId] = useState('');
-  const [datacenterVoId, setDatacenterVoId] = useState('');  
+  // const [datacenterVoId, setDatacenterVoId] = useState('');  
+  const [datacenterVoId, setDatacenterVoId] = useState(datacenterId || '');  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [comment, setComment] = useState('');
@@ -27,7 +30,6 @@ const ClusterModal = ({
   const [cpuType, setCpuType] = useState('');
   const [cpuOptions, setCpuOptions] = useState([]);
   const [biosType, setBiosType] = useState('');
-  // const [biosChange, setBiosChange] = useState('');
   const [errorHandling, setErrorHandling] = useState('');
   
   const { mutate: addCluster } = useAddCluster();
@@ -57,6 +59,18 @@ const ClusterModal = ({
     ...e,
   }));
 
+  const {
+    data: dataCenter,
+    status: dataCenterStatus,
+    isRefetching: isDataCenterRefetching,
+    refetch: dataCenterRefetch,
+    isError: isDataCenterError,
+    error: dataCenterError,
+    isLoading: isDataCenterLoading,
+  } = useDataCenter(datacenterId, (e) => ({
+    ...e,
+  }));
+
   // 네트워크 가져오기
   const {
     data: networks,
@@ -65,6 +79,12 @@ const ClusterModal = ({
   } = useNetworksFromDataCenter(datacenterVoId, (e) => ({
     ...e,
   }));
+
+  useEffect(() => {
+    if (!editMode && datacenterId) {
+      setDatacenterVoId(datacenterId);
+    }
+  }, [editMode, datacenterId]);
 
   useEffect(() => {
     if (editMode && cluster) {
@@ -98,6 +118,31 @@ const ClusterModal = ({
     setBiosType('');
     setErrorHandling('migrate');
   };
+
+  useEffect(() => {
+    if (editMode && cluster) {
+      setId(cluster?.id);
+      setDatacenterVoId(cluster?.datacenterVo?.id || '');
+      setName(cluster?.name);
+      setDescription(cluster?.description);
+      setComment(cluster?.comment);
+      setNetworkVoId(cluster?.networkVo?.id || '');
+      setCpuArc(cluster?.cpuArc);
+      setCpuType(cluster?.cpuType);
+      setBiosType(cluster?.biosType);
+      setErrorHandling(cluster?.errorHandling);
+    } else if (!editMode && datacenterId) {
+      resetForm();
+      setDatacenterVoId(datacenterId);
+      // 네트워크 목록을 가져오고 첫 번째 네트워크를 기본값으로 설정
+      refetchNetworks({ datacenterId }).then((res) => {
+        if (res?.data && res.data.length > 0) {
+          setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
+        }
+      });
+    }
+  }, [editMode, cluster, datacenterId, refetchNetworks]);
+
 
   useEffect(() => {
     if (datacenterVoId) {
@@ -252,6 +297,7 @@ const ClusterModal = ({
       biosType,
       errorHandling
     };
+    console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
     
     if (editMode) {
       dataToSubmit.id = id;
@@ -302,7 +348,30 @@ const ClusterModal = ({
         <div className="cluster_new_content">
           <div className="network_form_group">
             <label htmlFor="data_center">데이터 센터</label>
+            {datacenterId ? (
+              <input 
+                type="text" 
+                value={dataCenter?.name} 
+                readOnly 
+              />
+            ) : (
+              <select
+                id="data_center"
+                value={datacenterVoId}
+                onChange={(e) => setDatacenterVoId(e.target.value)}
+                disabled={editMode}
+              >
+                {datacenters &&
+                  datacenters.map((dc) => (
+                    <option key={dc.id} value={dc.id}>
+                      {dc.name}
+                    </option>
+                  ))}
+              </select>
+            )}
+            
             {/* 만약 데이터센터가 삭제된상태라면 전체 데이터센터 목록을 보여줘야함 */}
+            {/* <label htmlFor="data_center">데이터 센터</label>            
             <select
               id="data_center"
               value={datacenterVoId}
@@ -315,9 +384,8 @@ const ClusterModal = ({
                     {dc.name}
                   </option>
                 ))}
-            </select>
+            </select> */}
           </div>
-          <span>{datacenterVoId}</span>
           <hr/>
 
           <div className="network_form_group">

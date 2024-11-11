@@ -181,8 +181,8 @@ fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
 		name { this@toClusterInfo.name() }
 		description {this@toClusterInfo.description() }
 		comment { this@toClusterInfo.comment() }
-		biosType { this@toClusterInfo.biosType().toString() }
-		cpuArc { this@toClusterInfo.cpu().architecture().toString() }
+		biosType { if(this@toClusterInfo.biosTypePresent()) this@toClusterInfo.biosType().toString() else null}
+		cpuArc { if(this@toClusterInfo.cpuPresent()) this@toClusterInfo.cpu().architecture().toString() else null}
 		cpuType { if (this@toClusterInfo.cpuPresent()) this@toClusterInfo.cpu().type() else null }
 		firewallType { this@toClusterInfo.firewallType() }
 		haReservation { this@toClusterInfo.haReservation() }

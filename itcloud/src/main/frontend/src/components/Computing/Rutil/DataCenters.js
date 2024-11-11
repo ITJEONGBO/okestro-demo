@@ -9,8 +9,6 @@ const DataCenterModal = React.lazy(() => import('../../Modal/DataCenterModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
 const DataCenters = () => {
-  const navigate = useNavigate();
-
   const {
     data: datacenters,
     status: datacentersStatus,
@@ -25,16 +23,17 @@ const DataCenters = () => {
     status: e?.status === 'UNINITIALIZED' ? '초기화되지 않음' : 'UP'
   }));
 
+  const navigate = useNavigate();
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
   const [selectedDataCenter, setSelectedDataCenter] = useState(null);
+  
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
   };
 
   const handleNameClick = (id) => {
-    navigate(`/computing/datacenters/${id}`);
+    navigate(`/computing/datacenters/${id}/clusters`);
   };
-
 
   return (
     <>

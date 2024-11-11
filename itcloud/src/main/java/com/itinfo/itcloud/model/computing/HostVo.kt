@@ -191,8 +191,7 @@ fun List<Host>.toHostsIdName(): List<HostVo> =
  */
 fun Host.toHostMenu(conn: Connection, usageDto: UsageDto?): HostVo {
     val cluster: Cluster? =
-        conn.findCluster(this@toHostMenu.cluster().id())
-            .getOrNull()
+        conn.findCluster(this@toHostMenu.cluster().id()).getOrNull()
     val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
         conn.findDataCenter(it).getOrNull()
     }

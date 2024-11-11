@@ -31,7 +31,7 @@ import java.math.BigInteger
  * @property wipeAfterDelete [Boolean] 삭제 후 초기화
  * @property sharable [Boolean] 공유가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
  * @property backup [Boolean] 증분 백업 사용 (기본이 true)
- * @property virtualSize [BigInteger] 가상크기
+ * @property virtualSize [BigInteger] 가상크기 (provisionedSize)
  * @property actualSize [BigInteger] 실제크기
  * @property status [DiskStatus] 디스크상태
  * @property contentType [DiskContentType]
@@ -119,16 +119,20 @@ fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 	var templateIdentifiedVo: IdentifiedVo? = null
 
 	if (id.isNotEmpty()) {
-		val vm: Vm? =
+		val vmCache = mutableMapOf<String, Vm?>()
+		val templateCache = mutableMapOf<String, Template?>()
+
+		val vm = vmCache.getOrPut(id) {
 			try { conn.findVm(id).getOrNull() }
 			catch (e: Exception) { null }
+		}
 
-		// VM이 없을 경우에만 템플릿 조회
-		val template: Template? =
+		val template = templateCache.getOrPut(id) {
 			if (vm == null) {
 				try { conn.findTemplate(id).getOrNull() }
 				catch (e: Exception) { null }
 			} else { null }
+		}
 
 		vmIdentifiedVo = vm?.let {
 			IdentifiedVo.builder {
@@ -149,7 +153,7 @@ fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 		alias { this@toDiskMenu.alias() }
 		sharable { this@toDiskMenu.shareable() }
 		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
-		virtualSize { this@toDiskMenu.totalSize() }
+		virtualSize { this@toDiskMenu.provisionedSize() }
 		actualSize { this@toDiskMenu.actualSize() }
 		status { this@toDiskMenu.status() }
 		sparse { this@toDiskMenu.sparse() }
@@ -174,7 +178,7 @@ fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 		description { this@toDiskInfo.description() }
 		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
 		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
-		virtualSize { this@toDiskInfo.totalSize() }
+		virtualSize { this@toDiskInfo.provisionedSize() }
 		actualSize { this@toDiskInfo.actualSize() }
 	}
 }
@@ -207,7 +211,7 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 		wipeAfterDelete { this@toDiskImageVo.wipeAfterDelete() }
 		sharable { this@toDiskImageVo.shareable() }
 		backup { this@toDiskImageVo.backup() == DiskBackup.INCREMENTAL }
-		virtualSize { this@toDiskImageVo.totalSize() }
+		virtualSize { this@toDiskImageVo.provisionedSize() }
 		actualSize { this@toDiskImageVo.actualSize() }
 		status { this@toDiskImageVo.status() }
 		contentType { this@toDiskImageVo.contentType() }
@@ -246,7 +250,7 @@ fun Disk.toDiskVo(conn: Connection, vmId: String): DiskImageVo {
 		wipeAfterDelete { this@toDiskVo.wipeAfterDelete() }
 		sharable { this@toDiskVo.shareable() }
 		backup { this@toDiskVo.backup() == DiskBackup.INCREMENTAL }
-		virtualSize { this@toDiskVo.totalSize() }
+		virtualSize { this@toDiskVo.provisionedSize() }
 		actualSize { this@toDiskVo.actualSize() }
 		status { this@toDiskVo.status() }
 		contentType { this@toDiskVo.contentType() }

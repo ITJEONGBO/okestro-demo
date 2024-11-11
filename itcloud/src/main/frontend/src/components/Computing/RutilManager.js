@@ -6,19 +6,19 @@ import { faBuilding, faTimes, faEllipsisV } from '@fortawesome/free-solid-svg-ic
 import './css/RutilManager.css';
 import Path from '../Header/Path';
 import Footer from '../footer/Footer';
+import Info from './Rutil/Info';
 import DataCenters from './Rutil/DataCenters';
 import Clusters from './Rutil/Clusters';
 import Hosts from './Rutil/Hosts';
 import Vms from './Rutil/Vms';
 import Templates from './Rutil/Templates';
 import StorageDomains from './Rutil/StorageDomains'
-import Info from './Rutil/Info';
 import Disks from './Rutil/Disks';
 import Networks from './Rutil/Networks';
 import VnicProfiles from './Rutil/VnicProfiles';
 
 function RutilManager() {
-  const {section } = useParams();
+  const { section } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('info') // 기본 탭은 info로 
 
@@ -64,7 +64,6 @@ function RutilManager() {
     disks: Disks,
     networks: Networks,
     vnicProfiles: VnicProfiles
-    // 추가적인 섹션들: vms, templates, 등등
   };
 
   const renderSectionContent = () => {
@@ -75,8 +74,8 @@ function RutilManager() {
   return (
     <div id="section">
       <HeaderButton
-        title="Rutil Manager"
         titleIcon={faBuilding}
+        title="Rutil Manager"
       />
       <div className="content_outer">
         <NavButton 
