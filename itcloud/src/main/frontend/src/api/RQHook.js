@@ -1347,9 +1347,36 @@ export const useAllDataCenterFromDomain = (storageDomainId, mapPredicate) => use
   refetchOnWindowFocus: true,
   queryKey: ['AllDataCenterFromDomain', storageDomainId], 
   queryFn: async () => {
+    if (!storageDomainId) {
+      console.warn('networkId가 존재하지 않습니다.');
+      return [];
+    }
     console.log(`useAllDataCenterFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!storageDomainId,
+  staleTime: 0,
+  cacheTime: 0,
+})
+
+/**
+ * @name useAllVMFromDomain
+ * @description 도메인 내 디스크 목록조회 useQuery훅
+ * 
+ * @param {string} storageDomainId 도메인ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllVMsFromDomain
+ */
+export const useAllVMFromDomain = (storageDomainId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllVMFromDomain', storageDomainId], 
+  queryFn: async () => {
+    console.log(`useAllVMFromDomain ... ${storageDomainId}`);
+    const res = await ApiManager.findAllVMsFromDomain(storageDomainId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
   },
   enabled: !!storageDomainId,
   staleTime: 0,

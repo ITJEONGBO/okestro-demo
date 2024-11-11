@@ -50,16 +50,16 @@ const DomainDisk = ({ domain }) => {
       alias: disk?.alias ?? '없음',  // 별칭
       icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
       icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
-      virtualSize: disk?.virtualSize ? disk.virtualSize : '알 수 없음', 
-      actualSize: disk?.actualSize ? disk.actualSize : '알 수 없음',
-      allocationPolicy: disk?.allocationPolicy ?? '알 수 없음', 
-      storageDomain: disk?.storageDomain ?? '없음',  
+      virtualSize: disk?.virtualSize ? `${(disk.virtualSize / (1024 ** 3)).toFixed(2)} GIB` : '',
+      actualSize: disk?.actualSize ? `${(disk.actualSize / (1024 ** 3)).toFixed(2)} GIB` : '',
+      allocationPolicy: disk?.allocationPolicy ?? '', 
+      storageDomainVo: disk?.storageDomainVo?.name ?? '',  
       createDate: disk?.createDate ?? '알 수 없음', 
       lastUpdate: disk?.lastUpdate ?? '알 수 없음',
       icon3: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
-      connectionTarget: disk?.connectionTarget ?? '없음',
+      connectVm: disk?.connectVm?.name ?? '없음',
       status: disk?.status ?? '알 수 없음',
-      type: disk?.type ?? '알 수 없음', 
+      storageType: disk?.storageType ?? '', 
       description: disk?.description ?? '없음', 
     };
   }

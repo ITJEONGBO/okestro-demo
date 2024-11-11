@@ -34,6 +34,14 @@ const DomainDatacenter = ({ domain }) => {
     };
   }
 
+ useEffect(() => {
+  console.log("dataCenters 아아아:", domain?.id);
+}, [dataCenters]);
+ // 데이터 변경 시 콘솔에 출력
+ useEffect(() => {
+  console.log("dataCenters dfaffsdfafd:", dataCenters);
+}, [dataCenters]);
+
     return (
         <>
               <div className="header_right_btns">
@@ -43,6 +51,19 @@ const DomainDatacenter = ({ domain }) => {
                 <button onClick={() => openModal('maintenance')}>유지보수</button>
               </div>
               
+              <div className="data-info">
+                <span>ID: {dataCenters?.id ?? '없음'}</span><br />
+                <span>이름: {dataCenters?.name ?? '없음'}</span><br />
+                <span>상태: {dataCenters?.status ?? '알 수 없음'}</span><br />
+                <span>도메인 유형: {dataCenters?.domainType ?? '알 수 없음'}</span><br />
+                <span>저장소 유형: {dataCenters?.storageType ?? '알 수 없음'}</span><br />
+                <span>포맷: {dataCenters?.format ?? '알 수 없음'}</span><br />
+                <span>활성 상태: {dataCenters?.active ? '활성화' : '비활성화'}</span><br />
+                <span>디스크 크기: {dataCenters?.diskSize ?? '알 수 없음'}</span><br />
+                <span>사용 가능한 크기: {dataCenters?.availableSize ?? '알 수 없음'}</span><br />
+                <span>데이터 센터 이름: {dataCenters?.dataCenterVo?.name ?? '없음'}</span><br />
+                <span>호스트 이름: {dataCenters?.hostVo?.name ?? '없음'}</span><br />
+            </div>
               <TableOuter 
                 columns={TableInfo.DATACENTERS_FROM_STORAGE_DOMAIN}
                 data={dataCenters} 

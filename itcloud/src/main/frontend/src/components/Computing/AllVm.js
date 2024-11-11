@@ -68,6 +68,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
 } = useAllVMs(toTableItemPredicateVMs);
 
 function toTableItemPredicateVMs(vm) {
+  if (!vm) return {}; 
   const status = vm?.status ?? '';
   const icon = status === 'UP' 
     ? (

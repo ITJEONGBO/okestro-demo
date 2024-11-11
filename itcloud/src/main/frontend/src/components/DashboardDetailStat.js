@@ -1,3 +1,4 @@
+import SuperAreaChart from './Chart/SuperAreaChart'
 import './DashboardDetailStat.css'
 
 const DashboardDetailStat = ({title, totalPercentage}) => {

@@ -78,7 +78,7 @@ const NetworkNewModal = ({
       setValnTagging(false);
       setVmNetwork(true);
       setPhotoSeparation(false);
-      setMtu('default');
+      setMtu('');
       setDnsSettings(false);
       setDnsServer('');
     };
@@ -203,7 +203,7 @@ const NetworkNewModal = ({
                 </div>
               </div>
 
-              {/* <div className="network_second_contents">
+              <div className="network_second_contents">
                 <div className="network_checkbox_type1">
                   <div className="checkbox_group">
                     <input type="checkbox" id="valn_tagging" name="valn_tagging" />
@@ -286,7 +286,7 @@ const NetworkNewModal = ({
       </tbody>
     </table>
   </div>
-</div> */}
+</div>
             </form>
           )}
         </div>

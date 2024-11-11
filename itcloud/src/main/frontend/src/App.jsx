@@ -16,19 +16,16 @@ import StorageDiskDetail from './components/Storage/StorageDiskDetail';
 import DataCenter from './components/Computing/DataCenter';
 import VmTemplateChart from './components/Computing/VmTemplateChart';
 import NetworkDetail from './components/Network/NetworkDetail';
-import DomainParts from './components/Storage/StorageDomainPart';
 import STOMP from './Socket'
 import { Toaster, toast } from 'react-hot-toast';
 import './App.css';
 import TemplateDetail from './components/Computing/TemplateDetail';
-import Templates from './components/Computing/Templates';
 import AllVm from './components/Computing/AllVm';
 import AllDisk from './components/Storage/AllDisk';
 import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
-import AllCluster from './components/Computing/AllCluster';
 import DataCenters from './components/Computing/Rutil/DataCenters';
 import Clusters from './components/Computing/Rutil/Clusters'
 
@@ -139,7 +136,7 @@ const App = () => {
               <Route path="/storages/domains" element={<AllDomain />} />
               <Route path="/storages/domains/:id" element={<StorageDomainDetail />} /> 
               <Route path="/storages/domains/:id/:section" element={<StorageDomainDetail />} /> 
-              <Route path="/storage-domainpart" element={<DomainParts />} />
+              {/* <Route path="/storage-domainpart" element={<DomainParts />} /> */}
 
               <Route path="/storages/disks" element={<AllDisk />} />
               <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />

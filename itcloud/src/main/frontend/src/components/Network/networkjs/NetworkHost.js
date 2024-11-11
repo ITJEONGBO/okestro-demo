@@ -78,11 +78,25 @@ const NetworkHost = ({ network }) => {
           dataCenterVo: host?.dataCenterVo?.name ?? 'N/A',
           networkDeviceStatus: host?.hostNicVos?.[0]?.status ?? 'Unknown', 
           networkDevice: host?.hostNicVos?.[0]?.name ?? 'N/A', 
-          speed: host?.hostNicVos?.[0]?.speed ?? 'N/A', 
-          rx: host?.hostNicVos?.[0]?.rxSpeed ?? 'N/A', 
-          tx: host?.hostNicVos?.[0]?.txSpeed ?? 'N/A', 
-          totalRx: host?.hostNicVos?.[0]?.rxTotalSpeed ?? 'N/A', 
-          totalTx: host?.hostNicVos?.[0]?.txTotalSpeed ?? 'N/A', 
+          speed: host?.hostNicVos?.[0]?.speed
+          ? Math.round(host.hostNicVos[0].speed / (1024 ** 2)) // Mbps 단위로 변환하고 반올림
+          : 'N/A',
+      
+      rx: host?.hostNicVos?.[0]?.rxSpeed
+          ? Math.round(host.hostNicVos[0].rxSpeed / (1024 ** 2)) // Mbps 단위로 변환하고 반올림
+          : 'N/A',
+      
+      tx: host?.hostNicVos?.[0]?.txSpeed
+          ? Math.round(host.hostNicVos[0].txSpeed / (1024 ** 2)) // Mbps 단위로 변환하고 반올림
+          : 'N/A',
+      
+          totalRx: host?.hostNicVos?.[0]?.rxTotalSpeed
+          ? host.hostNicVos[0].rxTotalSpeed.toLocaleString() // 천 단위 구분 기호 추가
+          : 'N/A',
+      
+      totalTx: host?.hostNicVos?.[0]?.txTotalSpeed
+          ? host.hostNicVos[0].txTotalSpeed.toLocaleString() // 천 단위 구분 기호 추가
+          : 'N/A',
         };
       }
     return (

@@ -2770,7 +2770,12 @@ display: flex; /* Flexbox 설정 추가 */
     width: 40%;
     justify-content: space-between;
 }
+.capacity>div{
+    display:flex;
+        display: flex; /* Flexbox 설정 추가 */
 
+    align-items: center; /* 수직 가운데 정렬 */
+}
 
 /*hostDetail.js*/
 /*가상머신 ... 버튼 새템플릿 생성*/

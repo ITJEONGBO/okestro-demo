@@ -363,8 +363,8 @@ const TableColumnsInfo = {
     { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: 'vNIC Rx', accessor: 'vnicRx', clickable: false },
     { header: 'vNIC Tx', accessor: 'vnicTx', clickable: false },
-    { header: '총 Rx', accessor: 'totalRx', clickable: false },
-    { header: '총 Tx', accessor: 'totalTx', clickable: false },
+    { header: '총 Rx', accessor: 'rxTotalSpeed', clickable: false },
+    { header: '총 Tx', accessor: 'txTotalSpeed', clickable: false },
     { header: '설명', accessor: 'description', clickable: false }
   ],
   VM_BRING_POPUP:[

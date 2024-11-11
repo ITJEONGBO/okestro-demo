@@ -30,9 +30,9 @@ const NetworkCluster = ({ network }) => {
       name: cluster?.name ?? '없음',
       description: cluster?.description ?? '없음',
       version: cluster?.version ?? '없음',
-      connectedNetwork: cluster?.connected ? <input type="checkbox" checked /> : <input type="checkbox" />,
+      connectedNetwork: cluster?.connected ? <input type="checkbox" checked disabled/> : <input type="checkbox" disabled/>,
       networkStatus: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
-      requiredNetwork: cluster?.requiredNetwork ? <input type="checkbox" checked /> : <input type="checkbox" />,
+      requiredNetwork: cluster?.requiredNetwork ? <input type="checkbox" checked disabled/> : <input type="checkbox" disabled/>,
       networkRole: cluster?.networkRole ?? '',
     };
   }

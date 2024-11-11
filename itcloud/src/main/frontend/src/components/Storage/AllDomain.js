@@ -143,8 +143,19 @@ function toTableItemPredicateDomains(domaindata) {
     storageType: domaindata?.storageType ?? 'Unknown',
     format: domaindata?.format ?? 'Unknown',
     dataCenterStatus: domaindata?.dataCenterStatus ?? 'Unknown',
-    diskSize: domaindata?.diskSize ?? 'Unknown',
-    availableSize: domaindata?.availableSize ?? 'Unknown',
+    diskSize: domaindata?.diskSize 
+    ? ((domaindata.diskSize / (1024 ** 3)) % 1 === 0 
+        ? (domaindata.diskSize / (1024 ** 3)).toFixed(0) 
+        : (domaindata.diskSize / (1024 ** 3)).toFixed(2)) + ' GiB' 
+    : 'Unknown',
+
+availableSize: domaindata?.availableSize 
+    ? ((domaindata.availableSize / (1024 ** 3)) % 1 === 0 
+        ? (domaindata.availableSize / (1024 ** 3)).toFixed(0) 
+        : (domaindata.availableSize / (1024 ** 3)).toFixed(2)) + ' GiB' 
+    : 'Unknown',
+
+    
     reservedSpace: domaindata?.reservedSpace ?? 'Unknown',
     description: domaindata?.description ?? '',
     HostName: domaindata?.hostVo?.name ?? '',

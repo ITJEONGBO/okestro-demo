@@ -1,23 +1,48 @@
 import React, { useState } from 'react';
 import { faDesktop, faMinusCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAllVMFromDomain } from '../../../api/RQHook';
 
-const DomainVm = ({disk}) => {
+const DomainVm = ({ domain }) => {
+  const [isRowExpanded, setRowExpanded] = useState({});
 
-  // 데이터센터 박스떨어지게
-  const [isFirstRowExpanded, setFirstRowExpanded] = useState(false);
-  const [isSecondRowExpanded, setSecondRowExpanded] = useState(false);
-  const toggleFirstRow = () => {
-    setFirstRowExpanded(!isFirstRowExpanded);
+  const toggleRow = (id) => {
+    setRowExpanded((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
 
-  const toggleSecondRow = () => {
-    setSecondRowExpanded(!isSecondRowExpanded);
-  };
+  const { 
+    data: vms = [],  // 기본값을 빈 배열로 설정하여 undefined 방지
+    status: vmsStatus, 
+    isLoading: isVmsLoading, 
+    isError: isVmsError,
+  } = useAllVMFromDomain(domain?.id, toTableItemPredicateVms);
 
-    return (
-        <>
- <div className="host_empty_outer">
+  function toTableItemPredicateVms(vm) {
+    const firstDisk = vm?.diskAttachmentVos?.[0]?.diskImageVo || {};  // 첫 번째 디스크 정보 가져오기
+
+    return {
+      id: vm?.id ?? '',
+      name: vm?.name ?? '',
+      status: vm?.status ?? 'UNKNOWN',
+      creationTime: vm?.creationTime ?? '',
+      memoryInstalled: vm?.memoryInstalled ?? 0,
+      memoryUsed: vm?.memoryUsed ?? 0,
+      clusterName: vm?.clusterVo?.name ?? 'Unknown',
+      templateName: vm?.templateVo?.name ?? 'None',
+      virtualSize: firstDisk.virtualSize ?? 0,  // 첫 번째 디스크의 가상 크기
+      actualSize: firstDisk.actualSize ?? 0,    // 첫 번째 디스크의 실제 크기
+      diskAttachments: vm?.diskAttachmentVos || [], // undefined 방지를 위해 빈 배열 설정
+    };
+  }
+
+  if (isVmsLoading) return <div>Loading...</div>;
+  if (isVmsError) return <div>Error loading VMs data.</div>;
+
+  return (
+    <div className="host_empty_outer">
       <div className="section_table_outer">
         <table>
           <thead>
@@ -31,61 +56,43 @@ const DomainVm = ({disk}) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td onClick={toggleFirstRow} style={{ cursor: 'pointer' }}>
-                <FontAwesomeIcon icon={isFirstRowExpanded ? faMinusCircle : faPlusCircle} fixedWidth />
-                <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: '0 5px 0 10px' }} />
-                test02
-              </td>
-              <td>1</td>
-              <td>Blank</td>
-              <td>1 GIB</td>
-              <td>5 GIB</td>
-              <td>2024.1.19 AM9:21:57</td>
-            </tr>
-          </tbody>
-
-          {/* 첫번째 하위 행 */}
-          {isFirstRowExpanded && (
-            <>
-              <tbody className="detail_machine_second">
+            {/*하위는 무슨 api를 넣어야?? 생성일자 컬럼 */}
+            {vms.map((vm) => (
+              <React.Fragment key={vm.id}>
                 <tr>
-                  <td onClick={toggleSecondRow} style={{ cursor: 'pointer' }}>
-                    <FontAwesomeIcon icon={isSecondRowExpanded ? faMinusCircle : faPlusCircle} fixedWidth style={{ marginLeft: ' 15px' }}/>
-                    <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: ' 0 5px 0 5px' }} />
-                    he_virtio_disk
+                  <td onClick={() => toggleRow(vm.id)} style={{ cursor: 'pointer' }}>
+                    <FontAwesomeIcon icon={isRowExpanded[vm.id] ? faMinusCircle : faPlusCircle} fixedWidth />
+                    <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: '0 5px 0 10px' }} />
+                    {vm.name}
                   </td>
-                  <td>90 GIB</td>
-                  <td>5 GIB</td>
-                  <td>90 GIB</td>
-                  <td>5 GIB</td>
-                  <td>2023.12.28 11:58:49</td>
+                  <td>{vm.diskAttachments?.length || 0}</td>
+                  <td>{vm.templateName}</td>
+                  <td>{vm.virtualSize} GIB</td>  {/* 첫 번째 디스크의 가상 크기 */}
+                  <td>{vm.actualSize} GIB</td>  {/* 첫 번째 디스크의 실제 크기 */}
+                  <td>{vm.creationTime || 'N/A'}</td>
                 </tr>
-              </tbody>
-
-              {/* 두번째 하위 행 */}
-              {isSecondRowExpanded && (
-                <tbody className="detail_machine_last">
-                  <tr>
-                    <td>
-                      <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: '0 5px 0 50px' }} />
-                      Active VM
+                
+                {/* 하위 행 디스크 정보 */}
+                {isRowExpanded[vm.id] && vm.diskAttachments && vm.diskAttachments.map((disk, index) => (
+                  <tr key={`${vm.id}-${index}`} className="detail_machine_second">
+                    <td style={{ paddingLeft: '30px' }}>
+                      <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: '0 5px 0 5px' }} />
+                      {disk.diskImageVo?.alias || 'Unnamed Disk'}
                     </td>
-                    <td>90 GIB</td>
-                    <td>5 GIB</td>
-                    <td>90 GIB</td>
-                    <td>5 GIB</td>
-                    <td>2023.12.28 11:58:49</td>
+                    <td>{disk.diskImageVo?.virtualSize || 0} GIB</td>
+                    <td>{disk.diskImageVo?.actualSize || 0} GIB</td>
+                    <td>{disk.diskImageVo?.virtualSize || 0} GIB</td>
+                    <td>{disk.diskImageVo?.actualSize || 0} GIB</td>
+                    <td>{disk.diskImageVo?.createDate || 'N/A'}</td>
                   </tr>
-                </tbody>
-              )}
-            </>
-          )}
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
-        </>
-    );
-  };
-  
-  export default DomainVm;
+  );
+};
+
+export default DomainVm;

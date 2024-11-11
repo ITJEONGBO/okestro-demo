@@ -51,8 +51,12 @@ const NetworkVm = ({ network }) => {
       vnic: vm?.vnic ?? '',
       vnicRx: vm?.vnicRx ?? '',
       vnicTx: vm?.vnicTx ?? '',
-      totalRx: vm?.totalRx ?? '',
-      totalTx: vm?.totalTx ?? '',
+      rxTotalSpeed: vm?.rxTotalSpeed
+      ? vm.rxTotalSpeed.toLocaleString() // 천 단위 구분 기호 추가
+      : '',
+      txTotalSpeed: vm?.txTotalSpeed
+      ? vm.txTotalSpeed.toLocaleString() // 천 단위 구분 기호 추가
+      : '',
       description: vm?.description ?? '없음'
     };
   }
