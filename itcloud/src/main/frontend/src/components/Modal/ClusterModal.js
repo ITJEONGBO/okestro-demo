@@ -69,16 +69,16 @@ const ClusterModal = ({
   useEffect(() => {
     if (editMode && cluster) {
       // 데이터가 모두 로드된 경우에만 설정
-      setId(cluster.id);
-      setDatacenterVoId(cluster.datacenterVo?.id || '');
-      setName(cluster.name);
-      setDescription(cluster.description);
-      setComment(cluster.comment);
-      setNetworkVoId(cluster.networkVo?.id || '');
-      setCpuArc(cluster.cpuArc);
-      setCpuType(cluster.cpuType);
-      setBiosType(cluster.biosType);
-      setErrorHandling(cluster.errorHandling);
+      setId(cluster?.id);
+      setDatacenterVoId(cluster?.datacenterVo?.id || '');
+      setName(cluster?.name);
+      setDescription(cluster?.description);
+      setComment(cluster?.comment);
+      setNetworkVoId(cluster?.networkVo?.id || '');
+      setCpuArc(cluster?.cpuArc);
+      setCpuType(cluster?.cpuType);
+      setBiosType(cluster?.biosType);
+      setErrorHandling(cluster?.errorHandling);
     } else if (!editMode) {
       resetForm();
       if (datacenters && datacenters.length > 0) {
