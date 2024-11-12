@@ -2,14 +2,49 @@ import React, { useState, useEffect ,useParams} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faArrowCircleUp, faChevronRight, faGlassWhiskey, faPlug, faTimes } from  '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-modal';
+import { useHostdevicesFromVM, useNetworkInterfaceFromVM } from '../../../api/RQHook';
 
 
 
 // 네트워크 인터페이스
-const VmNetwork = () => {
+const VmNetwork = ({vm}) => {
 
-    // const { name} = useParams(); 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    console.log('VM ID:', vm?.id);
+
+    const { 
+        data: nics, 
+        status: disksStatus, 
+        isLoading: isDisksLoading, 
+        isError: isDisksError,
+    } = useNetworkInterfaceFromVM(vm?.id, toTableItemPredicateDisks);
+
+    // API 응답 데이터 확인
+    useEffect(() => {
+        console.log('네트워크 인터페이스 데이터:', nics);
+    }, [nics]);
+
+    function toTableItemPredicateDisks(nic) {
+        return {
+            id: nic?.id ?? '', 
+            name: nic?.name ?? '', 
+            status: nic?.status ?? '',
+            ipv4: nic?.ipv4 ?? '',
+            ipv6: nic?.ipv6 ?? '',
+            macAddress: nic?.macAddress ?? '',
+            networkVo: nic?.networkVo?.name ?? '',
+            vnicProfileVo: nic?.vnicProfileVo?.name ?? '',
+            interfaceType: nic?.interface_ ?? 'VIRTIO',
+            linked: nic?.linked ?? false,
+            rxSpeed: nic?.rxSpeed ?? '',
+            txSpeed: nic?.txSpeed ?? '',
+            rxTotalSpeed: nic?.rxTotalSpeed ?? '',
+            txTotalSpeed: nic?.txTotalSpeed ?? '',
+            rxTotalError: nic?.rxTotalError ?? '',
+            txTotalError: nic?.txTotalError ?? ''
+        };
+    }
+
     const [visibleDetails, setVisibleDetails] = useState([]);
     useEffect(() => {
       setVisibleDetails(Array(3).fill(false)); // 초기 상태: 모든 detail 숨김
@@ -20,74 +55,141 @@ const VmNetwork = () => {
     
 
     const [activePopup, setActivePopup] = useState(null);
-
     const openPopup = (popupType) => {
       setActivePopup(popupType);
     };
     const closePopup = () => {
       setActivePopup(null);
     };
-    //table반복
-    // useEffect(() => {
-    //   const container = document.getElementById("network_content_outer");
-    //   const originalContent = document.querySelector('.network_content');
-      
+
   
-    //   for (let i = 0; i < 3; i++) {
-    //     const clone = originalContent.cloneNode(true);
-    //     container.appendChild(clone);
-    //   }
-    // }, []);
-  
-    const toggleDetails = (index) => {
-      setVisibleDetails((prevDetails) => {
-        const newDetails = [...prevDetails];
-        newDetails[index] = !newDetails[index];
-        return newDetails;
-      });
-    };
+    const toggleDetails = (id) => {
+        setVisibleDetails((prevDetails) => ({
+          ...prevDetails,
+          [id]: !prevDetails[id]
+        }));
+      };
     
     return (
-      <>
-      
-          <div className="header_right_btns">
-            <button id="network_popup_new" onClick={() => openPopup('network_interface_new')}>새로 만들기</button>
-            <button onClick={() => openPopup('network_interface_edit')}>편집</button>
-            <button className='disabled'>제거</button>
-          </div>
-          {Array.from({ length: 3 }).map((_, index) => (
-    <div key={index}>
-      <div className="network_content">
-        <div>
-          <FontAwesomeIcon icon={faChevronRight} onClick={() => toggleDetails(index)}fixedWidth/>
-          <FontAwesomeIcon icon={faArrowCircleUp} style={{ color: '#21c50b', marginLeft: '0.3rem' }}fixedWidth/>
-          <FontAwesomeIcon icon={faPlug} fixedWidth/>
-          {/* <FontAwesomeIcon icon={faUsb} fixedWidth/> */}
-          <span>nic1</span>
-        </div>
-        <div>
-          <div>네트워크 이름</div>
-          <div>ddf</div>
-        </div>
-        <div>
-          <div>IPv4</div>
-          <div>192.168.10.147</div>
-        </div>
-        <div>
-          <div>IPv6</div>
-          <div>192.168.10.147</div>
-        </div>
-        <div style={{ paddingRight: '3%' }}>
-          <div>MAC</div>
-          <div>192.168.10.147</div>
-        </div>
-      </div>
-      <div className='network_content_detail' style={{ display: visibleDetails[index] ? 'block' : 'none' }}>
-        설명입력
-      </div>
-    </div>
-  ))}
+            <>
+              <div className="header_right_btns">
+                <button id="network_popup_new" onClick={() => openPopup('network_interface_new')}>새로 만들기</button>
+                <button onClick={() => openPopup('network_interface_edit')}>편집</button>
+                <button className="disabled">제거</button>
+              </div>
+        
+            <div className='network_interface_outer'>
+              {nics?.map((nic, index) => (
+                <div  key={nic.id}>
+                  <div className="network_content">
+                    <div>
+                      <FontAwesomeIcon icon={faChevronRight} onClick={() => toggleDetails(nic.id)} fixedWidth />
+                      <FontAwesomeIcon icon={faArrowCircleUp} style={{ color: '#21c50b', marginLeft: '0.3rem' }} fixedWidth />
+                      <FontAwesomeIcon icon={faPlug} fixedWidth />
+                      <span>{nic?.name || `NIC ${index + 1}`}</span>
+                    </div>
+                    <div>
+                      <div>네트워크 이름</div>
+                      <div>{nic?.networkVo}</div>
+                    </div>
+                    <div>
+                        <div>IPv4</div>
+                        <div>{nic.ipv4 || '해당 없음'}</div>
+                    </div>
+                    <div>
+                        <div>IPv6</div>
+                        <div>{nic.ipv6 || '해당 없음'}</div>
+                    </div>
+                    <div style={{ paddingRight: '3%' }}>
+                        <div>MAC</div>
+                        <div>{nic.macAddress}</div>
+                    </div>
+                  </div>
+                  <div className="network_content_detail" style={{ display: visibleDetails[nic.id] ? 'flex' : 'none' }}>
+                  <div className="network_content_detail_box">
+                            <div>일반</div>
+                            <table className="snap_table">
+                                <tbody>
+                                    <tr>
+                                        <th>연결됨</th>
+                                        <td>{nic.linked ? '연결됨' : '연결 안 됨'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>네트워크 이름</th>
+                                        <td>{nic.networkVo || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>프로파일 이름</th>
+                                        <td>{nic.vnicProfileVo || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>QoS 이름</th>
+                                        <td>{nic.qosName || '해당 없음'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>링크 상태</th>
+                                        <td>{nic.status || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>유형</th>
+                                        <td>{nic.interfaceType}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>속도 (Mbps)</th>
+                                        <td>{nic.speed || '10000'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>포트 미러링</th>
+                                        <td>{nic.portMirroring || '비활성화됨'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>게스트 인터페이스 이름</th>
+                                        <td>{nic.guestInterfaceName || ''}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="network_content_detail_box">
+                            <div>통계</div>
+                            <table className="snap_table">
+                                <tbody>
+                                    <tr>
+                                        <th>Rx 속도 (Mbps)</th>
+                                        <td>{nic.rxSpeed || '<1'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tx 속도 (Mbps)</th>
+                                        <td>{nic.txSpeed || '<1'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>총 Rx</th>
+                                        <td>{nic.rxTotalSpeed || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>총 Tx</th>
+                                        <td>{nic.txTotalSpeed || ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>중단 (Pkts)</th>
+                                        <td>{nic.rxTotalError || ''}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
+
+                    <div className="network_content_detail_box">
+                        <div>네트워크 필터 매개변수</div>
+                        <table className="snap_table">
+          <tbody>
+           
+          </tbody>
+                        </table>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
     {/*네트워크 인터페이스(새로만들기) */}
     <Modal
         isOpen={activePopup === 'network_interface_new'}

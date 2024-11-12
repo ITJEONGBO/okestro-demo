@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
+import { useDisksFromVM } from '../../../api/RQHook';
 
 
 // 디스크
-const VmDisk = () => {
+const VmDisk = ({vm}) => {
 
     const [isJoinDiskModalOpen, setIsJoinDiskModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('img');
@@ -66,58 +67,38 @@ const VmDisk = () => {
   }, []);
 
 
-    // 테이블 컴포넌트
-    const columns = [
-      { header: '', accessor: 'statusIcon', clickable: false },
-      { header: '변경', accessor: 'change', clickable: false },
-      { header: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>, accessor: 'glass1', clickable: false },
-      { header: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>, accessor: 'glass2', clickable: false },
-      { header: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>, accessor: 'glass3', clickable: false },
-      { header: '가상 크기', accessor: 'virtualSize', clickable: false },
-      { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
-      { header: '인터페이스', accessor: 'interface', clickable: false },
-      { header: '논리적 이름', accessor: 'logicalName', clickable: false },
-      { header: '상태', accessor: 'status', clickable: false },
-      { header: '유형', accessor: 'type', clickable: false },
-      { header: '설명', accessor: 'description', clickable: false },
-    ];
-  
-    const data = [
-      {
-        statusIcon: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
-        change: 'on20-ap01',
-        glass1: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
-        glass2: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
-        glass3: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
-        virtualSize: 'on20-ap01',
-        connectionTarget: 'VirtIO-SCSI',
-        interface: '/dev/sda',
-        logicalName: 'OK',
-        status: '이미지',
-        type: '',
-        description: '',
-      },
-    ];
 
-      // 연결 데이터
-      // 이미지
-      const imageDiskColumns = [
-        { header: '별칭', accessor: 'alias' },
-        { header: '가상 크기', accessor: 'virtualSize' },
-        { header: '실제 크기', accessor: 'actualSize' },
-        { header: '스토리지 도메인', accessor: 'storageDomain' },
-        { header: '생성 일자', accessor: 'createdDate' },
-      ];
+  const { 
+    data: disks, 
+    status: disksStatus,
+    isRefetching: isDisksRefetching,
+    refetch: refetchDisks, 
+    isError: isDisksError, 
+    error: disksError, 
+    isLoading: isDisksLoading,
+  } = useDisksFromVM(vm?.id, toTableItemPredicateDisks);
+  function toTableItemPredicateDisks(disk) {
+    return {
+        id: disk?.id,
+        alias: disk?.diskImageVo?.alias || '',  // 별칭
+        size:disk?.size || '',
+        icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
+        icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
+        connectionTarget: disk?.vmVo?.name || '', // 연결 대상
+        storageDomain: disk?.diskImageVo?.storageDomainVo?.name || '',  // 스토리지 도메인
+        virtualSize: disk?.diskImageVo?.virtualSize ? `${(disk.diskImageVo.virtualSize / (1024 ** 3)).toFixed(2)} GIB` : '',
+        status: disk?.diskImageVo?.status || '알 수 없음', // 상태
+        contentType: disk?.diskImageVo?.contentType || '알 수 없음', // 콘텐츠 유형
+        storageType: disk?.diskImageVo?.storageType || '',  // 유형
+        description: disk?.diskImageVo?.description || '' // 설명
+      }
     
-      const imageDiskData = [
-        {
-          alias: 'Disk1',
-          virtualSize: '10 GiB',
-          actualSize: '8 GiB',
-          storageDomain: 'Storage1',
-          createdDate: '2023-10-01',
-        },
-      ];
+  };
+  
+  
+  
+  
+
         // LUN 테이블 컬럼 및 데이터
   const lunDiskColumns = [
     { header: 'LUN ID', accessor: 'lunId' },
@@ -191,7 +172,7 @@ const VmDisk = () => {
                 {activeDiskType === 'all' && (
                   <TableOuter 
                     columns={TableColumnsInfo.ALL_DISK}
-                    data={data}
+                    data={disks}
                     onRowClick={() => console.log('Row clicked')}
                   />
                 )}
@@ -199,7 +180,7 @@ const VmDisk = () => {
                 {activeDiskType === 'image' && (
                   <TableOuter 
                     columns={TableColumnsInfo.IMG_DISK}
-                    data={data}
+                    data={disks}
                     onRowClick={() => console.log('Row clicked')}
                   />
                 )}
@@ -207,10 +188,12 @@ const VmDisk = () => {
                 {activeDiskType === 'lun' && (
                   <TableOuter 
                     columns={TableColumnsInfo.LUN_DISK}
-                    data={data}
+                    data={disks}
                     onRowClick={() => console.log('Row clicked')}
                   />
                 )}
+
+
             {/*디스크(새로만들기)팝업 */}
             <Modal
             isOpen={activePopup === 'newDisk'}

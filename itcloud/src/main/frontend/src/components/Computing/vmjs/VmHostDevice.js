@@ -1,46 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { faCheck, faExclamation, faTimes } from '@fortawesome/free-solid-svg-icons';
+import React, {useState } from 'react';
+import {faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
-import { useHost, useHostdeviceFromHost } from '../../../api/RQHook';
+import { useHost, useHostdeviceFromHost, useHostdevicesFromVM } from '../../../api/RQHook';
 
 // 이벤트 섹션
-const VmHostDevice = () => {
+const VmHostDevice = ({vm}) => {
   const [activePopup, setActivePopup] = useState(null);
   const openPopup = (popupType) => setActivePopup(popupType);
   const closePopup = () => setActivePopup(null);
   // 호스트 장치
   const { id } = useParams();
-  const { 
-    data: host,
-    status: networkStatus,
-    isRefetching: isNetworkRefetching,
-    refetch: hostRefetch, 
-    isError: isNetworkError,
-    error: networkError, 
-    isLoading: isNetworkLoading,
-  } = useHost(id);
+  // const { 
+  //   data: host,
+  //   status: networkStatus,
+  //   isRefetching: isNetworkRefetching,
+  //   refetch: hostRefetch, 
+  //   isError: isNetworkError,
+  //   error: networkError, 
+  //   isLoading: isNetworkLoading,
+  // } = useHost(id);
+
   const { 
     data: hostDevices,     
     status: hostDevicesStatus,  
     isLoading: isHostDevicesLoading,  
     isError: isHostDevicesError       
-  } = useHostdeviceFromHost(host?.id, toTableItemPredicateHostDevices);  
+  } = useHostdevicesFromVM(vm?.id, toTableItemPredicateHostDevices);  
   
-  function toTableItemPredicateHostDevices(device) {
+  function toTableItemPredicateHostDevices(hostDevice) {
     return {
-      name: device?.name ?? 'Unknown',
-      capability: device?.capability ?? 'Unknown',
-      vendorName: device?.vendorName ?? 'Unknown',
-      productName: device?.productName ?? 'Unknown',
-      driver: device?.driver ?? 'Unknown',
-      currentlyUsed: device?.currentlyUsed ?? 'Unknown',
-      connectedToVM: device?.connectedToVM ?? 'Unknown',
-      iommuGroup: device?.iommuGroup ?? '해당 없음',
-      mdevType: device?.mdevType ?? '해당 없음',
+      name: hostDevice?.name ?? 'Unknown',
+      capability: hostDevice?.capability ?? 'Unknown',
+      vendorName: hostDevice?.vendorName ?? 'Unknown',
+      productName: hostDevice?.productName ?? 'Unknown',
+      driver: hostDevice?.driver ?? 'Unknown',
+      currentlyUsed: hostDevice?.currentlyUsed ?? 'Unknown',
+      connectedToVM: hostDevice?.connectedToVM ?? 'Unknown',
+      iommuGroup: hostDevice?.iommuGroup ?? '해당 없음',
+      mdevType: hostDevice?.mdevType ?? '해당 없음',
     };
   }
     return (
@@ -98,7 +99,7 @@ const VmHostDevice = () => {
               <div className='able_host_device_table'>
               <TableOuter 
                     columns={TableColumnsInfo.ALL_DISK}
-                    data={host}
+                    data={hostDevices}
                     onRowClick={() => console.log('Row clicked')}
                   />
             </div>
@@ -109,7 +110,7 @@ const VmHostDevice = () => {
               <div className='able_host_device_table'>
               <TableOuter 
                     columns={TableColumnsInfo.ALL_DISK}
-                    data={host}
+                    data={hostDevices}
                     onRowClick={() => console.log('Row clicked')}
                   />
             </div>

@@ -258,12 +258,6 @@
     font-size: 0.27rem;
     color:#4F4F4F;
 }
-.network_content_detail{
-    height: 20vh;
-    font-size: 0.3rem;
-    padding: 0.2rem;
-    display: none;
-}
 
     
     .select_box select,

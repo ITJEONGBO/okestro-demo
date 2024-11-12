@@ -33,12 +33,22 @@ const VmSnapshot = ({vm}) => {
     return {
       id: snapshot?.id ?? '', 
       vmId: snapshot?.vm?.id ?? '',  
-      name: snapshot?.description ?? 'Unknown', 
-      status: snapshot?.snapshotStatus ?? 'Unknown',  
+      name: snapshot?.description ?? '', 
+      status: snapshot?.status ?? '',  
+      fqdn: snapshot?.fqdn ?? '',  
       created: snapshot?.creationDate ?? 'N/A', 
       vmStatus: snapshot?.vm?.status ?? 'N/A', 
       memorySize: snapshot?.memorySize ?? 'N/A', 
       diskSize: snapshot?.diskSize ?? 'N/A', 
+      actualSize: snapshot?.snapshotDiskVos?.[0]?.actualSize
+      ? `${(snapshot.snapshotDiskVos[0].actualSize / (1024 ** 3)).toFixed(2)} GB`
+      : 'N/A', // 크기
+    creationDate: snapshot?.date ?? 'N/A', // 생성 일자
+    snapshotCreationDate: snapshot?.snapshotDiskVos?.[0]?.createDate ?? 'N/A', // 스냅샷 생성일
+    alias: snapshot?.snapshotDiskVos?.[0]?.alias || '없음', // 디스크 별칭
+    description: snapshot?.snapshotDiskVos?.[0]?.description || '없음', // 스냅샷 설명
+    target: snapshot?.vmVo?.name || '없음', // 연결 대상
+    diskSnapshotId: snapshot?.snapshotDiskVos?.[0]?.id || '', // 디스크 스냅샷 ID
     };
   }
 
@@ -100,91 +110,74 @@ const VmSnapshot = ({vm}) => {
       </div>
 
         
-        <div className={`snap_hidden_content ${activeSection === 'general' ? 'active' : ''}`}>
-          <table className="snap_table">
-              <tbody>
-                <tr>
-                  <th>유형:</th>
-                  <td>Linux</td>
-                </tr>
-                <tr>
-                  <th>아키텍쳐:</th>
-                  <td>x86_64</td>
-                </tr>
-                <tr>
-                  <th>운영체제:</th>
-                  <td>CentOS Linux 7</td>
-                </tr>
-                <tr>
-                  <th>커널 버전</th>
-                  <td>3.10.0-1062.el7_x86_64</td>
-                </tr>
-                <tr>
-                  <th>시간대:</th>
-                  <td>KST (UTC + 09:00)</td>
-                </tr>
-                <tr>
-                  <th>로그인된 사용자:</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>콘솔 사용자:</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>콘솔 클라이언트 IP:</th>
-                  <td></td>
-                </tr>
-              </tbody>
-          </table>
-        </div>
+     {/* General Section */}
+     <div className={`snap_hidden_content ${activeSection === 'general' ? 'active' : ''}`}>
+        <table className="snap_table">
+          <tbody>
+            <tr>
+              <th>상태:</th>
+              <td>{vm?.status || '알 수 없음'}</td>
+            </tr>
+            <tr>
+              <th>운영 시간:</th>
+              <td>{vm?.vmVo?.upTime || '알 수 없음'}</td>
+            </tr>
+            <tr>
+              <th>설치된 메모리:</th>
+              <td>{vm?.vmVo?.memoryInstalled ? `${(vm.vmVo.memoryInstalled / (1024 ** 3)).toFixed(2)} GB` : '알 수 없음'}</td>
+            </tr>
+            <tr>
+              <th>사용 중 메모리:</th>
+              <td>{vm?.vmVo?.memoryUsed ? `${(vm.vmVo.memoryUsed / (1024 ** 3)).toFixed(2)} GB` : '알 수 없음'}</td>
+            </tr>
+            <tr>
+              <th>시간대:</th>
+              <td>{vm?.vmVo?.timeOffset || 'KST (UTC + 09:00)'}</td>
+            </tr>
+            <tr>
+              <th>커널 버전:</th>
+              <td>{vm?.applicationVos?.find((app) => app.name.includes('kernel'))?.name || '알 수 없음'}</td>
+            </tr>
+            <tr>
+              <th>FQDN:</th>
+              <td>{vm?.fqdn || '알 수 없음'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        <div className={`snap_hidden_content ${activeSection === 'disk' ? 'active' : ''}`}>
-            <TableOuter 
-              columns={TableInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
-              data={snapshots}
-              onRowClick={() => console.log('Row clicked')}
-            />
-        </div>
+      {/* Disk Section */}
+      <div className={`snap_hidden_content ${activeSection === 'disk' ? 'active' : ''}`}>
+        <TableOuter
+          columns={TableInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
+          data={snapshots}
+          onRowClick={() => console.log('Row clicked')}
+        />
+      </div>
 
-        <div className={`snap_hidden_content ${activeSection === 'network' ? 'active' : ''}`}>
-          <table className="snap_table">
-              <tbody>
-                <tr>
-                  <th>유형:</th>
-                  <td>Linux</td>
-                </tr>
-                <tr>
-                  <th>아키텍쳐:</th>
-                  <td>x86_64</td>
-                </tr>
-                <tr>
-                  <th>운영체제:</th>
-                  <td>CentOS Linux 7</td>
-                </tr>
-                <tr>
-                  <th>커널 버전</th>
-                  <td>3.10.0-1062.el7_x86_64</td>
-                </tr>
-                <tr>
-                  <th>시간대:</th>
-                  <td>KST (UTC + 09:00)</td>
-                </tr>
-                <tr>
-                  <th>로그인된 사용자:</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>콘솔 사용자:</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>콘솔 클라이언트 IP:</th>
-                  <td></td>
-                </tr>
-              </tbody>
-          </table>
-        </div>
+      {/* Network Section */}
+      <div className={`snap_hidden_content ${activeSection === 'network' ? 'active' : ''}`}>
+        <table className="snap_table">
+          <tbody>
+            <tr>
+              <th>네트워크 이름:</th>
+              <td>{vm?.nicVos?.[0]?.networkVo?.name || '알 수 없음'}</td>
+            </tr>
+            <tr>
+              <th>MAC 주소:</th>
+              <td>{vm?.nicVos?.[0]?.macAddress || '알 수 없음'}</td>
+            </tr>
+            <tr>
+              <th>IPv4 주소:</th>
+              <td>{vm?.nicVos?.[0]?.ipv4 || '알 수 없음'}</td>
+            </tr>
+            <tr>
+              <th>IPv6 주소:</th>
+              <td>{vm?.nicVos?.[0]?.ipv6 || '알 수 없음'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
         <div className={`snap_hidden_content ${activeSection === 'applications' ? 'active' : ''}`}>
           설치된 애플리케이션 섹션 내용

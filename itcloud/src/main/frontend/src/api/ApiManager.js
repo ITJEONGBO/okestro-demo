@@ -933,6 +933,20 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.MOVE_DISK_FROM_VM
     });
   },
+  /**
+   * @name ApiManager.findHostdevicesFromVM
+   * @description 가상머신 호스트 장치 목록
+   *
+   * @param {string} vmId
+   * @returns 
+   * 
+   * @see
+   */
+  findHostdevicesFromVM : async (vmId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_HOST_DEVICES_FROM_VM(vmId), 
+    // defaultValues: DEFAULT_VALUES.FIND_DEVICE_FROM_HOST
+  }),
 
     /**
    * @name ApiManager.findSnapshotsFromVM
@@ -1685,6 +1699,7 @@ const ApiManager = {
    * @returns {Promise<Object>}
    */
   addNetwork: async (networkData) => {
+    console.log("네트워크 생성 넘어온데이터확인:", networkData); // 데이터 확인
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.ADD_NETWORK(),

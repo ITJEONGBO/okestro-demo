@@ -796,6 +796,28 @@ export const useVm = (vmId) => useQuery({
 });
 
 
+/**
+ * @name useDisksFromVM
+ * @description 가상머신 내 디스크 목록조회 useQuery훅
+ * 
+ * @param {string} vmId 가상머신ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findDisksFromVM
+ */
+export const useDisksFromVM = (vmId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['DisksFromVM', vmId], 
+  queryFn: async () => {
+    console.log(`useDisksFromVM ... ${vmId}`);
+    const res = await ApiManager.findDisksFromVM(vmId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!vmId, 
+  staleTime: 0,
+  cacheTime: 0,
+});
 
 /**
  * @name useSnapshotFromVM
@@ -821,6 +843,52 @@ export const useSnapshotFromVM = (vmId, mapPredicate) => useQuery({
 });
 
 /**
+ * @name useHostdevicesFromVM
+ * @description 가상머신 내 호스트 장치 목록조회 useQuery훅
+ * 
+ * @param {string} vmId 가상머신ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findHostdevicesFromVM
+ */
+export const useHostdevicesFromVM = (vmId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['HostdevicesFromVM', vmId], 
+  queryFn: async () => {
+    console.log(`useHostdevicesFromVM ... ${vmId}`);
+    const res = await ApiManager.findHostdevicesFromVM(vmId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!vmId, 
+  staleTime: 0,
+  cacheTime: 0,
+});
+
+/**
+ * @name useNetworkInterfaceFromVM
+ * @description 가상머신 내 네트워크인터페이스 목록조회 useQuery훅
+ * 
+ * @param {string} vmId 가상머신ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findHostdevicesFromVM
+ */
+export const useNetworkInterfaceFromVM = (vmId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['NetworkInterfaceFromVM', vmId], 
+  queryFn: async () => {
+    console.log(`useNetworkInterfaceFromVM ... ${vmId}`);
+    const res = await ApiManager.findNicsFromVM(vmId); 
+    console.log('API Response:', res); // 반환된 데이터 구조 확인
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!vmId, 
+  staleTime: 0,
+  cacheTime: 0,
+});
+/**
  * @name useApplicationFromVM
  * @description 가상머신 내 어플리케이션 목록조회 useQuery훅
  * 
@@ -841,8 +909,27 @@ export const useApplicationFromVM = (vmId, mapPredicate) => useQuery({
   enabled: !!vmId, 
   staleTime: 0,
   cacheTime: 0,
-});
 
+});
+/**
+ * @name useAllEventFromVM
+ * @description  가상머신 내  이벤트 목록조회 useQuery훅
+ * 
+ * @param {string} vmId 가상머신ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllDataCenterFromDomain
+ */
+export const useAllEventFromVM = (vmId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllEventFromVM', vmId], 
+  queryFn: async () => {
+    console.log(`useAllEventFromDomain ... ${vmId}`);
+    const res = await ApiManager.findEventsFromVM(vmId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  }
+})
 
 /**
  * @name useVmConsole

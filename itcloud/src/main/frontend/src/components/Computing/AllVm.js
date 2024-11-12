@@ -1,18 +1,15 @@
-import React, { useState,  useEffect } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import HeaderButton from '../button/HeaderButton';
-import Table from '../table/Table';
-import TableColumnsInfo from '../table/TableColumnsInfo';
 import './css/Vm.css';
 import Footer from '../footer/Footer';
-import { useAllTemplates, useAllVMs } from '../../api/RQHook';
-import Templates from './Templates';
+import {useAllVMs } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop, faInfoCircle, faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
-import TableOuter from '../table/TableOuter';
+import {faDesktop, faInfoCircle, faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
 import VmDu from '../duplication/VmDu';
 import { Tooltip } from 'react-tooltip';
+import TableInfo from '../table/TableInfo';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -39,10 +36,7 @@ const closeModal = () => {
     setActiveSection('common'); // 모달 닫을 때 '일반' 섹션으로 초기화
     setSelectedModalTab('common'); // 편집모달창 초기화
 };
-const [activeTab, setActiveTab] = useState('img');
-const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
+
 // 추가모달
 const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 연결 팝업 상태
 const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
@@ -57,69 +51,35 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
 
  
    const [selectedVms, setSelectedVms] = useState(null);
+
    const { 
-    data: vms = [], 
+    data: vms, 
     status: vmsStatus,
-    isRefetching: isVMsRefetching,
-    refetch: refetchVMs, 
-    isError: isVMsError, 
+    isRefetching: isVmsRefetching,
+    refetch: refetchVms, 
+    isError: isVmsError, 
     error: vmsError, 
-    isLoading: isVMsLoading,
-} = useAllVMs(toTableItemPredicateVMs);
-
-function toTableItemPredicateVMs(vm) {
-  if (!vm) return {}; 
-  const status = vm?.status ?? '';
-  const icon = status === 'UP' 
-    ? (
-      <>
-        <FontAwesomeIcon
-          icon={faPlay}
-          fixedWidth
-          style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }}
-          data-tooltip-id="up-tooltip"
-        />
-        <Tooltip id="up-tooltip" className="icon_tooltip" place="top" effect="solid">
-          Up
-        </Tooltip>
-      </>
-    ) : status === 'DOWN' 
-    ? (
-      <>
-        <FontAwesomeIcon
-          icon={faPlay}
-          fixedWidth
-          style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }}
-          data-tooltip-id="down-tooltip"
-        />
-        <Tooltip id="down-tooltip" place="top" effect="solid">
-          정지
-        </Tooltip>
-      </>
-    ) : null;
+    isLoading: isVmsLoading,
+  } = useAllVMs((e) => {
     return {
-        status: vm?.status ?? 'Unknown',       
-        id: vm?.id ?? '',
-        hostId: vm?.hostVo?.id ?? '',  // 클러스터의 ID
-        clusterId: vm?.clusterVo?.id ?? '',  // 클러스터의 ID
-        dataCenterId: vm?.dataCenterVo?.id ?? '',  // 데이터 센터의 ID 
-        icon: icon,                               
-        name: vm?.name ?? 'Unknown',               
-        comment: vm?.comment ?? '',                 
-        host: vm?.hostVo?.name ?? 'Unknown',         
-        ipv4: vm?.ipv4?.[0] ?? 'Unknown', 
-        fqdn: vm?.fqdn ?? '',                      
-        cluster: vm?.clusterVo?.name ?? 'Unknown',        
-        datacenter: vm?.dataCenterVo?.name ?? 'Unknown', 
-        memory: vm?.memoryInstalled ?? '',  
-        cpu: vm?.cpu ?? '',  
-        clusterVo: vm?.clusterVo?.id ?? '',
-        network: vm?.network ?? '',  
-        upTime: vm?.upTime ?? '',                    
-        description: vm?.description ?? 'No description',  
-    };
-}
-
+      ...e,
+      status: e?.status,
+      host: e?.hostVo?.name, 
+      cluster: e?.clusterVo?.name,        
+      dataCenter: e?.dataCenterVo?.name,
+      memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
+      cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
+      networkUsage: e?.usageDto.networkPercent === null ? '' : e?.usageDto.networkPercent + '%',
+    }
+  });
+  const renderStatusIcon = (status) => {
+    if (status === 'UP') {
+      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+    } else if (status === 'DOWN') {
+      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+    }
+    return status;
+  };
   return (
     <div id="section">
       <HeaderButton
@@ -176,13 +136,18 @@ function toTableItemPredicateVMs(vm) {
           </div>
         </div> */}
         
-        <VmDu 
-            columns={TableColumnsInfo.VM_CHART} 
-            Vmdata={vms}
-            openPopup={openPopup}
-            navigate={navigate} // navigate 전달
-            setSelectedVms={setSelectedVms} // setSelectedVms 전달
-        />
+        {vmsStatus === 'success' && vms && (
+    <VmDu 
+        columns={TableInfo.VMS} 
+        Vmdata={vms.map((vm) => ({
+            ...vm,
+            status: vm ? renderStatusIcon(vm.status) : '#',
+        }))} 
+        openPopup={openPopup}
+        navigate={navigate}
+        setSelectedVms={setSelectedVms}
+    />
+)}
       </div>
   
            

@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faTimes, faInfoCircle, faPencil, faArrowUp,
+  faTimes, faInfoCircle,
   faExclamationTriangle,
   faServer
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
-import TableColumnsInfo from '../table/TableColumnsInfo';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
 import { adjustFontSize } from '../../UIEvent';
@@ -48,20 +47,6 @@ const Network = () => {
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
     const navigate = useNavigate();
-
-    // const handleNetworkNameClick = (row, column) => {
-    //     if (column.accessor === 'name') {
-    //       navigate(
-    //         `/networks/${row.id}`, 
-    //         { state: { name: row.name } }
-    //       );
-    //     } else if (column.accessor === 'dataCenter') {
-    //       navigate(
-    //         `/computing/datacenters/${row.id}`
-    //       );
-    //     }
-    //   };
-      
 
     useEffect(() => {
       window.addEventListener('resize', adjustFontSize);
@@ -120,7 +105,7 @@ const Network = () => {
                         if (colIndex === 0) {
                           navigate(`/networks/${row.id}`);  // 1번 컬럼 클릭 시 이동할 경로
                         } else if (colIndex === 2) {
-                          navigate(`/computing/datacenters/${row.dataCenterId}`);  // 2번 컬럼 클릭 시 이동할 경로
+                          navigate(`/computing/datacenters/${row.dataCenterId}/clusters`);  // 2번 컬럼 클릭 시 이동할 경로
                         }
                       }}
                     clickableColumnIndex={[0, 2]} // 0번과 2번 열에서 클릭 시 navigate 처리

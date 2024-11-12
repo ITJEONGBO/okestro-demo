@@ -29,11 +29,11 @@ const VmDu = ({
     setSelectedVms(row);
     if (colIndex === 1) {
       navigate(`/computing/vms/${row.id}`);
-    } else if (colIndex === 3) {
+    } else if (colIndex === 5) {
       navigate(`/computing/hosts/${row.hostId}`);
     } else if (colIndex === 6) {
       navigate(`/computing/clusters/${row.clusterId}`);
-    } else if (colIndex === 8) {
+    } else if (colIndex === 7) {
       navigate(`/computing/datacenters/${row.dataCenterId}`);
     }
   };
@@ -202,7 +202,7 @@ const VmDu = ({
             data={Vmdata}
             onRowClick={handleRowClick} // 내부에서 정의한 handleRowClick을 전달
             showSearchBox={true}
-            clickableColumnIndex={[1, 3, 6, 8]}
+            clickableColumnIndex={[1, 5, 6, 7]}
             shouldHighlight1stCol={true}
             onContextMenuItems={() => [
               <div key="새로 만들기" onClick={() => console.log("새로 만들기")}>새로 만들기</div>,

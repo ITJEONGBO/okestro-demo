@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { useAddNetwork, useAllDataCenters, useEditNetwork, useNetworkById } from '../../api/RQHook';
+import { useAddNetwork, useAllDataCenters, useDataCenter, useEditNetwork, useNetworkById } from '../../api/RQHook';
 
 const NetworkNewModal = ({ 
     isOpen, 
@@ -21,7 +21,6 @@ const NetworkNewModal = ({
     const [mtu, setMtu] = useState('default');
     const [dnsSettings, setDnsSettings] = useState(false);
     const [dnsServer, setDnsServer] = useState('');
-    const [quotaMode, setQuotaMode] = useState();
 
     const { mutate: addNetwork } = useAddNetwork();
     const { mutate: editNetwork } = useEditNetwork();
@@ -47,9 +46,11 @@ const NetworkNewModal = ({
       ...e,
     }));
   
+
+
+
     // 모달이 열릴 때 기존 데이터를 상태에 설정
     useEffect(() => {
-      if (isOpen) { // 모달이 열릴 때 상태를 설정
         if (editMode && network) {
           console.log('Setting edit mode state with network:', network); // 디버깅 로그
           setId(network.id);
@@ -66,20 +67,24 @@ const NetworkNewModal = ({
         } else {
           console.log('Resetting form for create mode');
           resetForm();
-        
+          if (networkId) {
+            setDatacenterVoId(networkId);
+          } else if (datacenters && datacenters.length > 0) {
+            setDatacenterVoId(datacenters[0].id);
+          }
         }
-      }
-    }, [isOpen, editMode, network, datacenters]);
+      
+    }, [isOpen, editMode, network, datacenters,networkId]);
   
     const resetForm = () => {
       setName('');
       setDescription('');
       setComment('');
-      setValnTagging(false);
-      setVmNetwork(true);
-      setPhotoSeparation(false);
+      setValnTagging('');
+      setVmNetwork('');
+      setPhotoSeparation('');
       setMtu('');
-      setDnsSettings(false);
+      setDnsSettings('');
       setDnsServer('');
     };
   
@@ -89,13 +94,12 @@ const NetworkNewModal = ({
         name,
         description,
         comment,
-        valnTagging,
-        vmNetwork,
-        photoSeparation,
-        mtu,
-        dnsSettings,
-        dnsServer,
-        datacenterVoId
+        datacenterVoId,
+        valnTagging: valnTagging || false,  // Boolean 기본값 설정
+        vmNetwork: vmNetwork || true,       // Boolean 기본값 설정
+        mtu: mtu || 1500,                   // MTU 기본값 설정
+        dnsSettings: dnsSettings || false,
+        dnsServer: dnsServer || 'DAFDF',
       };
       console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
@@ -203,7 +207,7 @@ const NetworkNewModal = ({
                 </div>
               </div>
 
-              <div className="network_second_contents">
+              {/* <div className="network_second_contents">
                 <div className="network_checkbox_type1">
                   <div className="checkbox_group">
                     <input type="checkbox" id="valn_tagging" name="valn_tagging" />
@@ -286,7 +290,7 @@ const NetworkNewModal = ({
       </tbody>
     </table>
   </div>
-</div>
+</div> */}
             </form>
           )}
         </div>
