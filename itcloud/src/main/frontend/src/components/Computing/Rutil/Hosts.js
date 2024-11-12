@@ -4,7 +4,8 @@ import '../css/Computing.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllHosts } from '../../../api/RQHook';
-import { faArrowUp, faArrowDown, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faArrowDown, faMinus, faPlus, faPlay } from '@fortawesome/free-solid-svg-icons';
 
 const HostModal = React.lazy(() => import('../../Modal/HostModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -39,6 +40,15 @@ const Hosts = () => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
   };
 
+  const renderStatusIcon = (status) => {
+    if (status === 'UP') {
+      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+    } else if (status === 'DOWN') {
+      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+    }
+    return status;
+  };
+
   const handleNameClick = (id) => {
     navigate(`/computing/hosts/${id}`);
   };
@@ -54,7 +64,10 @@ const Hosts = () => {
 
       <TablesOuter
         columns={TableInfo.HOSTS}
-        data={hosts}
+        data={hosts?.map((host)=> ({
+          ...host,
+          status: renderStatusIcon(host.status),
+        }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedHost(row)}
         clickableColumnIndex={[1]} // "이름" 열의 인덱스 설정

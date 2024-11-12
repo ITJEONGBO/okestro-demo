@@ -6,6 +6,7 @@ import TableInfo from '../../table/TableInfo';
 import { 
   useVMsFromDataCenter 
 } from '../../../api/RQHook';
+import renderStatusIcon from '../renderStatusIcon';
 
 const VmModal = React.lazy(() => import('../../Modal/VmModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -50,7 +51,10 @@ const DataCenterVms = ({datacenterId}) => {
       <span>id = {selectedVm?.id || ''}</span>
       <TablesOuter
         columns={TableInfo.VMS}
-        data={vms}
+        data={vms?.map((vm) => ({
+          ...vm,
+          status: renderStatusIcon(vm.status),
+        }))} 
         shouldHighlight1stCol={true}
         onRowClick={(row) => {setSelectedVm(row)}}
         clickableColumnIndex={[1]} 

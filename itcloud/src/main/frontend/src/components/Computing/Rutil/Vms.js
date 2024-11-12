@@ -4,8 +4,7 @@ import '../css/Computing.css'
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllVMs } from '../../../api/RQHook';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
+import renderStatusIcon from '../renderStatusIcon';
 
 const VmModal = React.lazy(() => import('../../Modal/VmModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -44,15 +43,6 @@ const Vms = () => {
       navigate(`/computing/vms/${selectedVm.id}/console`);
       // window.open(navigate(`/computing/vms/${selectedVm.id}/console`), '_blank', 'noopener,noreferrer');
     }
-  };
-
-  const renderStatusIcon = (status) => {
-    if (status === 'UP') {
-      return <FontAwesomeIcon icon={faArrowUp} />;
-    } else if (status === 'DOWN') {
-      return <FontAwesomeIcon icon={faArrowDown} />;
-    }
-    return status;
   };
 
   const handleNameClick = (id) => {

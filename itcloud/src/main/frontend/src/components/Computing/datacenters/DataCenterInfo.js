@@ -10,6 +10,8 @@ import Path from '../../Header/Path';
 import DataCenterClusters from './DataCenterClusters';
 import DataCenterHosts from './DataCenterHosts';
 import DataCenterVms from './DataCenterVms';
+import DataCenterDomains from './DataCenterDomains';
+import DataCenterNetworks from './DataCenterNetwork';
 
 const DataCenterModal = React.lazy(() => import('../../Modal/DataCenterModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -61,7 +63,9 @@ const DataCenterInfo = () => {
     clusters: DataCenterClusters,
     hosts: DataCenterHosts,
     vms: DataCenterVms,
-    // hosts, vms, storageDomains, networks, events 컴포넌트를 추가로 정의하여 사용할 수 있습니다.
+    storageDomains: DataCenterDomains,
+    networks: DataCenterNetworks,
+    // networks, events 컴포넌트를 추가
   };
 
   const renderSectionContent = () => {

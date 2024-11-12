@@ -1,18 +1,16 @@
-import React, { useEffect, useState, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../css/Computing.css';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import '../css/DataCenter.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
-import { useAllStorageDomains } from '../../../api/RQHook';
+import { useDomainsFromDataCenter } from '../../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 
 const StorageDomainModal = React.lazy(() => import('../../Modal/StorageDomainModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
-const StorageDomains = () => {
-  const navigate = useNavigate();
-
+const DataCenterDomains = ({datacenterId}) => {
   const {
     data: storageDomains,
     status: storageDomainsStatus,
@@ -21,17 +19,18 @@ const StorageDomains = () => {
     isError: isStorageDomainsError,
     error: storageDomainsError,
     isLoading: isStorageDomainsLoading
-  } = useAllStorageDomains((e) => ({
+  } = useDomainsFromDataCenter(datacenterId, (e) => ({
     ...e,
-    // domainTypeMaster: e?domainTypeMaster == true ? "마스터":"",
-    hostedEngine: e?.hostedEngine ? 'O' : 'X',
+    domainTypeMaster: e?.domainTypeMaster ? '마스터' : '',
     diskSize: e?.diskSize/(Math.pow(1024, 3))+" GB",
     availableSize: e?.availableSize/(Math.pow(1024, 3))+" GB",
     usedSize: e?.usedSize/(Math.pow(1024, 3))+" GB",
+    hostedEngine: e?.hostedEngine ? 'O' : 'X'
   }));
-
-  const [modals, setModals] = useState({ create: false, edit: false, delete: false });
-  const [selectedStorageDomain, setSelectedStorageDomain] = useState(null);
+  
+  const navigate = useNavigate();
+  const [modals, setModals] = useState({ create: false, edit: false, delete: false });  
+  const [selectedDomain, setSelectedDomain] = useState(null);
 
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
@@ -48,51 +47,51 @@ const StorageDomains = () => {
     navigate(`/storages/domains/${id}`);
   };
 
-
   return (
     <>
       <div className="header_right_btns">
-        {/* 도메인 가져오기와 생성은 같은 창, 관리가 편집 */}
         <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedStorageDomain?.id && toggleModal('edit', true)} disabled={!selectedStorageDomain?.id}>편집</button>
-        <button onClick={() => selectedStorageDomain?.id && toggleModal('delete', true)} disabled={!selectedStorageDomain?.id}>제거</button>
+        <button onClick={() => selectedDomain?.id && toggleModal('separate', true)} disabled={!selectedDomain?.id}>분리</button>
+        <button onClick={() => selectedDomain?.id && toggleModal('active', true)} disabled={!selectedDomain?.id}>활성</button>
+        <button onClick={() => selectedDomain?.id && toggleModal('maintain', true)} disabled={!selectedDomain?.id}>유지보수</button>
+        <button >디스크</button>
       </div>
-      <span>id = {selectedStorageDomain?.id || ''}</span>
 
+      <span>id = {selectedDomain?.id || ''}</span>
       <TablesOuter
-        columns={TableInfo.STORAGE_DOMAINS}
+        columns={TableInfo.STORAGES_FROM_DATACENTER}
         data={storageDomains?.map((domain)=> ({
           ...domain,
           status: renderStatusIcon(domain.status),
         }))}
         shouldHighlight1stCol={true}
-        onRowClick={(row) => setSelectedStorageDomain(row)}
-        clickableColumnIndex={[2]} // "이름" 열의 인덱스 설정
-        onClickableColumnClick={(row) => handleNameClick(row.id)}
+        onRowClick={(row) => {setSelectedDomain(row)}}
+        clickableColumnIndex={[2]} 
+        onClickableColumnClick={(row) => {handleNameClick(row.id);}}
       />
 
       {/* 모달 컴포넌트를 사용할 때만 로딩 */}
       <Suspense>
-        {(modals.create || (modals.edit && selectedStorageDomain)) && (
-          <StorageDomainModal
+        {(modals.create || (modals.edit && selectedDomain)) && (
+          <StorageDomainModal 
             isOpen={modals.create || modals.edit}
             onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
             editMode={modals.edit}
-            domainId={selectedStorageDomain?.id || null}
+            hId={selectedDomain?.id || null}
           />
         )}
-        {modals.delete && selectedStorageDomain && (
+        {modals.delete && selectedDomain && (
           <DeleteModal
             isOpen={modals.delete}
-            type='StorageDomain'
+            type={'StorageDomain'}
             onRequestClose={() => toggleModal('delete', false)}
             contentLabel={'스토리지 도메인'}
-            data={selectedStorageDomain}
+            data={selectedDomain}
           />
         )}
-       </Suspense>
+      </Suspense>
     </>
   );
 };
 
-export default StorageDomains;
+export default DataCenterDomains;

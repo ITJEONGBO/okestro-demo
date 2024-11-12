@@ -28,6 +28,7 @@ private val log = LoggerFactory.getLogger(StorageDomainVo::class.java)
  * @property status [StorageDomainStatus] 상태
  * @property domainType [StorageDomainType] 도메인 유형
  * @property domainTypeMaster [Boolean] 마스터 여부
+ * @property hostedEngine [Boolean] 호스트 엔진 가상머신 데이터 포함
  * @property storageType [StorageType] 스토리지 유형
  * @property format [StorageFormat] 포맷
  * @property active [Boolean] 데이터 센터간 상태: 활성화
@@ -55,6 +56,7 @@ class StorageDomainVo(
 	val status: StorageDomainStatus = StorageDomainStatus.UNKNOWN,
 	val domainType: String = "", /*StorageDomainType.IMAGE*/
 	val domainTypeMaster: Boolean = false,
+	val hostedEngine: Boolean = false,
 	val storageType: String = "", /*StorageType.NFS*/
 	val format: StorageFormat = StorageFormat.V5,
 	val active: Boolean = false,
@@ -84,6 +86,7 @@ class StorageDomainVo(
 		private var bStatus: StorageDomainStatus = StorageDomainStatus.UNKNOWN;fun status(block: () -> StorageDomainStatus?) { bStatus = block() ?: StorageDomainStatus.UNKNOWN }
 		private var bDomainType: String = "";fun domainType(block: () -> String?) { bDomainType = block() ?: "" }
 		private var bDomainTypeMaster: Boolean = false;fun domainTypeMaster(block: () -> Boolean?) { bDomainTypeMaster = block() ?: false }
+		private var bHostedEngine: Boolean = false;fun hostedEngine(block: () -> Boolean?) { bHostedEngine = block() ?: false }
 		private var bStorageType: String = "";fun storageType(block: () -> String?) { bStorageType = block() ?: "" }
 		private var bFormat: StorageFormat = StorageFormat.V1;fun format(block: () -> StorageFormat?) { bFormat = block() ?: StorageFormat.V1 }
 		private var bActive: Boolean = false;fun active(block: () -> Boolean?) { bActive = block() ?: false }
@@ -103,7 +106,7 @@ class StorageDomainVo(
 		private var bDiskImageVos: List<DiskImageVo> = listOf();fun diskImageVos(block: () -> List<DiskImageVo>?) { bDiskImageVos = block() ?: listOf() }
 		private var bProfileVos: List<IdentifiedVo> = listOf();fun profileVos(block: () -> List<IdentifiedVo>?) { bProfileVos = block() ?: listOf() }
 
-		fun build(): StorageDomainVo = StorageDomainVo(bId, bName, bDescription, bComment, bStatus, bDomainType, bDomainTypeMaster, bStorageType, bFormat, bActive, bDiskSize, bAvailableSize, bUsedSize, bCommitedSize, bOverCommit, bImage, bStoragePath, bStorageAddress, bLogicalUnits, bWarning, bSpaceBlocker, bDataCenterVo, bHostVo, bDiskImageVos, bProfileVos, )
+		fun build(): StorageDomainVo = StorageDomainVo(bId, bName, bDescription, bComment, bStatus, bDomainType, bDomainTypeMaster, bHostedEngine, bStorageType, bFormat, bActive, bDiskSize, bAvailableSize, bUsedSize, bCommitedSize, bOverCommit, bImage, bStoragePath, bStorageAddress, bLogicalUnits, bWarning, bSpaceBlocker, bDataCenterVo, bHostVo, bDiskImageVos, bProfileVos, )
 	}
 	
 	companion object {
@@ -154,15 +157,18 @@ fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
 		if(this@toStorageDomainMenu.dataCentersPresent())
 			conn.findDataCenter(this@toStorageDomainMenu.dataCenters().first().id()).getOrNull()
 		else null
-
 	val s: StorageDomain? =
 		dataCenter?.let { conn.findAttachedStorageDomainFromDataCenter(it.id(), this@toStorageDomainMenu.id()).getOrNull() }
+	val hostedVm =
+		conn.findAllVmsFromStorageDomain(this@toStorageDomainMenu.id()).getOrDefault(listOf())
+			.any { it.name() == "HostedEngine" }
 
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainMenu.id() }
 		name { this@toStorageDomainMenu.name() }
 		description { this@toStorageDomainMenu.description() }
 		status { s?.status() }
+		hostedEngine { hostedVm }
 		comment { this@toStorageDomainMenu.comment() }
 		domainType { this@toStorageDomainMenu.type().value() }
 		domainTypeMaster {

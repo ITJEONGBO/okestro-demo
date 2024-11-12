@@ -4,6 +4,7 @@ import '../css/DataCenter.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useHostsFromDataCenter } from '../../../api/RQHook';
+import renderStatusIcon from '../renderStatusIcon';
 
 const HostModal = React.lazy(() => import('../../Modal/HostModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -43,12 +44,18 @@ const DataCenterHosts = ({datacenterId}) => {
         <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
         <button onClick={() => selectedHost?.id && toggleModal('edit', true)} disabled={!selectedHost?.id}>편집</button>
         <button onClick={() => selectedHost?.id && toggleModal('delete', true)} disabled={!selectedHost?.id}>제거</button>
+        <button onClick={() => selectedHost?.id && toggleModal('manage', true)} disabled={!selectedHost?.id}>관리</button>
+        <button onClick={() => selectedHost?.id && toggleModal('manage', true)} disabled={!selectedHost?.id}>설치</button>
+        <button onClick={() => selectedHost?.id && toggleModal('manage', true)} disabled={!selectedHost?.id}>호스트 네트워크 복사</button>
       </div>
 
       <span>id = {selectedHost?.id || ''}</span>
       <TablesOuter
         columns={TableInfo.HOSTS}
-        data={hosts}
+        data={hosts?.map((host)=> ({
+          ...host,
+          status: renderStatusIcon(host.status),
+        }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => {setSelectedHost(row)}}
         clickableColumnIndex={[1]} 

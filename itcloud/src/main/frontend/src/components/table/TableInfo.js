@@ -20,9 +20,23 @@ const TableInfo = {
     { header: '호환 버전', accessor: 'version' },  // 호환 버전 열 추가
     { header: '설명', accessor: 'description' }
   ],
+  STORAGES_FROM_DATACENTER: [
+    // { header: '', accessor: 'icon' },
+    { header: '상태', accessor: 'status' },
+    { header: 'crown', accessor: 'hostedEngine' }, // 이모티콘을 표시할 열
+    { header: '도메인 이름', accessor: 'name' },
+    { header: '도메인 유형', accessor: 'domainType' },
+    { header: '여유 공간 (GiB)', accessor: 'availableSize', clickable: false },
+    { header: '사용된 공간 (GiB)', accessor: 'usedSize', clickable: false },
+    { header: '전체 공간 (GiB)', accessor: 'diskSize', clickable: false },
+    { header: '설명', accessor: 'description' },
+  ],
+  NETWORK_FROM_DATACENTER: [
+    { header: '이름', accessor: 'name', clickable: true },
+    { header: '설명', accessor: 'description', clickable: false },
+  ],
   // 호스트 HOSTS
   // 가상머신 VMS
-  // 스토리지 도메인 STORAGE_DOMAINS
   // 네트워크 NETOWORKS
 
   CLUSTERS: [
@@ -119,7 +133,7 @@ const TableInfo = {
   NETWORKS: [
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '데이터센터', accessor: 'datacenterVo', clickable: false },
+    { header: '데이터센터', accessor: 'datacenter', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
     { header: '역할', accessor: 'role', clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
@@ -183,7 +197,8 @@ const TableInfo = {
 
 
   STORAGE_DOMAINS: [
-    { header: '', accessor: 'icon' },
+    { header: '상태', accessor: 'status' },
+    { header: '', accessor: 'hostedEngine' },
     { header: '도메인 이름', accessor: 'name' },
     { header: '코멘트', accessor: 'comment' },
     { header: '도메인 유형', accessor: 'domainType' },
@@ -264,7 +279,7 @@ const TableInfo = {
   ],
   STORAGE_DOMAINS_FROM_DISK: [
     { header: '', accessor: 'icon1', clickable: false },
-    { header: '', accessor: 'icon2', clickable: false },
+    { header: '', accessor: 'hostedEngine', clickable: false },
     { header: '도메인 이름', accessor: 'name', clickable: false },
     { header: '도메인 유형', accessor: 'domainType', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
@@ -300,19 +315,6 @@ const TableInfo = {
     { header: '설명', accessor: 'description' },
   ],
 
-  
-  STORAGES_FROM_DATACENTER: [
-    { header: '', accessor: 'icon' }, // 이모티콘을 표시할 열
-    { header: '', accessor: 'icon2' }, // 이모티콘을 표시할 열
-    { header: '도메인 이름', accessor: 'name' },
-    { header: '도메인 유형', accessor: 'domainType' },
-    { header: '상태', accessor: 'status' },
-    { header: '여유 공간 (GiB)', accessor: 'availableSize', clickable: false },
-    { header: '사용된 공간 (GiB)', accessor: 'usedSize', clickable: false },
-    { header: '전체 공간 (GiB)', accessor: 'diskSize', clickable: false },
-    { header: '설명', accessor: 'description' },
-  ],
-  
   
   DISKS_FROM_:  [
     { header: '이름', accessor: 'alias', clickable: true },
