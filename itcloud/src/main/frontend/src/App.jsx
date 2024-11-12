@@ -104,8 +104,6 @@ const App = () => {
               <Route path="/computing/rutil-manager/:section" element={<RutilManager />} />
 
               <Route path="/computing/datacenters" element={<DataCenters />} />
-              {/* <Route path="/computing/datacenters/:id" element={<DataCenterInfo />} /> */}
-              {/* <Route path="/computing/datacenters/:id" element={<DataCenter />} /> */}
               <Route path="/computing/datacenters/:id/:section" element={<DataCenterInfo />} />
 
                {/*네트워크쪽 데이터센터*/}

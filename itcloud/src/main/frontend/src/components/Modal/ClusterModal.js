@@ -79,26 +79,28 @@ const ClusterModal = ({
   }));
 
   useEffect(() => {
-    if (editMode && cluster) {  // 편집 시
-      setId(cluster?.id);
-      setDatacenterVoId(cluster?.datacenterVo?.id);
-      setNetworkVoId(cluster?.networkVo?.id);
-      setName(cluster?.name);
-      setDescription(cluster?.description || '');
-      setComment(cluster?.comment || '');
-      setBiosType(cluster?.biosType);
-      setCpuArc(cluster?.cpuArc);
-      setCpuType(cluster?.cpuType);
-      setErrorHandling(cluster?.errorHandling);
-    } else if (!editMode) { // 생성 시
-      resetForm();
-      if (datacenterId) {
-        setDatacenterVoId(datacenterId);
-      } else if (datacenters && datacenters.length > 0) {
-        setDatacenterVoId(datacenters[0].id);
+    if (isOpen) {
+      if (editMode && cluster) {  // 편집 시
+        setId(cluster?.id);
+        setDatacenterVoId(cluster?.datacenterVo?.id);
+        setNetworkVoId(cluster?.networkVo?.id);
+        setName(cluster?.name);
+        setDescription(cluster?.description || '');
+        setComment(cluster?.comment || '');
+        setBiosType(cluster?.biosType);
+        setCpuArc(cluster?.cpuArc);
+        setCpuType(cluster?.cpuType);
+        setErrorHandling(cluster?.errorHandling);
+      } else if (!editMode) { // 생성 시
+        resetForm();
+        if (datacenterId) {
+          setDatacenterVoId(datacenterId);
+        } else if (datacenters && datacenters.length > 0) {
+          setDatacenterVoId(datacenters[0].id);
+        }
       }
     }
-  }, [editMode, cluster, datacenters, datacenterId]);
+  }, [isOpen, editMode, cluster, datacenters, datacenterId]);
   
   // datacenterVoId가 설정되었을 때만 네트워크 목록을 가져오도록 제한
   useEffect(() => {
@@ -110,7 +112,6 @@ const ClusterModal = ({
       });
     }
   }, [datacenterVoId]);
-  
   
   
   const resetForm = () => {
@@ -307,7 +308,7 @@ const ClusterModal = ({
         </div>
 
         <div className="cluster_new_content">
-        <div className="network_form_group">
+          <div className="network_form_group">
             <label htmlFor="data_center">데이터 센터</label>
             {datacenterId ? (
               <input 
@@ -327,9 +328,11 @@ const ClusterModal = ({
                     <option key={dc.id} value={dc.id}>
                       {dc.name}
                     </option>
-                  ))}
+                  ))
+                }
               </select>
             )}
+            <span>{datacenterVoId}</span>
           </div>
           <hr/>
 

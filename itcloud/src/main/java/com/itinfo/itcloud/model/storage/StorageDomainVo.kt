@@ -53,9 +53,9 @@ class StorageDomainVo(
 	val description: String = "",
 	val comment: String = "",
 	val status: StorageDomainStatus = StorageDomainStatus.UNKNOWN,
-	val domainType: StorageDomainType = StorageDomainType.IMAGE,
+	val domainType: String = "", /*StorageDomainType.IMAGE*/
 	val domainTypeMaster: Boolean = false,
-	val storageType: StorageType = StorageType.NFS,
+	val storageType: String = "", /*StorageType.NFS*/
 	val format: StorageFormat = StorageFormat.V5,
 	val active: Boolean = false,
 	val diskSize: BigInteger = BigInteger.ZERO,
@@ -82,9 +82,9 @@ class StorageDomainVo(
 		private var bDescription: String = "";fun description(block: () -> String?) { bDescription = block() ?: "" }
 		private var bComment: String = "";fun comment(block: () -> String?) { bComment = block() ?: "" }
 		private var bStatus: StorageDomainStatus = StorageDomainStatus.UNKNOWN;fun status(block: () -> StorageDomainStatus?) { bStatus = block() ?: StorageDomainStatus.UNKNOWN }
-		private var bDomainType: StorageDomainType = StorageDomainType.IMAGE;fun domainType(block: () -> StorageDomainType?) { bDomainType = block() ?: StorageDomainType.IMAGE }
+		private var bDomainType: String = "";fun domainType(block: () -> String?) { bDomainType = block() ?: "" }
 		private var bDomainTypeMaster: Boolean = false;fun domainTypeMaster(block: () -> Boolean?) { bDomainTypeMaster = block() ?: false }
-		private var bStorageType: StorageType = StorageType.NFS;fun storageType(block: () -> StorageType?) { bStorageType = block() ?: StorageType.NFS }
+		private var bStorageType: String = "";fun storageType(block: () -> String?) { bStorageType = block() ?: "" }
 		private var bFormat: StorageFormat = StorageFormat.V1;fun format(block: () -> StorageFormat?) { bFormat = block() ?: StorageFormat.V1 }
 		private var bActive: Boolean = false;fun active(block: () -> Boolean?) { bActive = block() ?: false }
 		private var bDiskSize: BigInteger = BigInteger.ZERO;fun diskSize(block: () -> BigInteger?) { bDiskSize = block() ?: BigInteger.ZERO }
@@ -164,13 +164,13 @@ fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
 		description { this@toStorageDomainMenu.description() }
 		status { s?.status() }
 		comment { this@toStorageDomainMenu.comment() }
-		domainType { this@toStorageDomainMenu.type() }
+		domainType { this@toStorageDomainMenu.type().value() }
 		domainTypeMaster {
 			if (this@toStorageDomainMenu.masterPresent()) this@toStorageDomainMenu.master()
 			else false
 		}
 		storageType {
-			if (this@toStorageDomainMenu.storagePresent()) this@toStorageDomainMenu.storage().type()
+			if (this@toStorageDomainMenu.storagePresent()) this@toStorageDomainMenu.storage().type().value()
 			else null
 		}
 		format { this@toStorageDomainMenu.storageFormat() }
@@ -203,9 +203,9 @@ fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
 		description { this@toStorageDomainVo.description() }
 //		status { status }
 		comment { this@toStorageDomainVo.comment() }
-		domainType { this@toStorageDomainVo.type() }
+		domainType { this@toStorageDomainVo.type().value() }
 		domainTypeMaster { if(this@toStorageDomainVo.masterPresent()) this@toStorageDomainVo.master() else false}
-		storageType { if(this@toStorageDomainVo.storagePresent()) this@toStorageDomainVo.storage().type() else null }
+		storageType { if(this@toStorageDomainVo.storagePresent()) this@toStorageDomainVo.storage().type().value() else null }
 		format { this@toStorageDomainVo.storageFormat() }
 		usedSize { this@toStorageDomainVo.used() }
 		availableSize { this@toStorageDomainVo.available() }
@@ -236,8 +236,6 @@ fun List<StorageDomain>.toStorageDomainSizes(): List<StorageDomainVo> =
 
 
 
-
-
 // region: 빌더
 /**
  * 스토리지 도메인 생성 빌더
@@ -246,16 +244,16 @@ fun List<StorageDomain>.toStorageDomainSizes(): List<StorageDomainVo> =
 fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
 	return StorageDomainBuilder()
 		.name(this@toAddStorageDomainBuilder.name)
-		.type(this@toAddStorageDomainBuilder.domainType)
+		.type(StorageDomainType.fromValue(this@toAddStorageDomainBuilder.domainType))
 		.description(this@toAddStorageDomainBuilder.description)
 		.warningLowSpaceIndicator(this@toAddStorageDomainBuilder.warning)
-		.criticalSpaceActionBlocker(this@toAddStorageDomainBuilder.spaceBlocker)
+		.criticalSpaceActionBlocker(this@toAddStorageDomainBuilder.spaceBlocker)  //디스크 공간 동작 차단
 		.dataCenters(*arrayOf(DataCenterBuilder().id(this@toAddStorageDomainBuilder.dataCenterVo.id).build()))
 		.host(HostBuilder().name(this@toAddStorageDomainBuilder.hostVo.name).build())
 		.storage(
-			if(this@toAddStorageDomainBuilder.storageType == StorageType.NFS) {
+			if(StorageType.fromValue(this@toAddStorageDomainBuilder.storageType) == StorageType.NFS) {
 				this@toAddStorageDomainBuilder.toAddNFSBuilder()
-			} else {
+			} else { // ISCSI, Fibre Channel
 				this@toAddStorageDomainBuilder.toAddEtcBuilder()
 			}
 		).build()
@@ -269,7 +267,7 @@ fun StorageDomainVo.toAddNFSBuilder(): HostStorage {
 			.address(this@toAddNFSBuilder.storageAddress)
 //			.nfsVersion(NfsVersion.AUTO)
 			.path(this@toAddNFSBuilder.storagePath)
-			.type(this@toAddNFSBuilder.storageType)
+			.type(StorageType.fromValue(this@toAddNFSBuilder.storageType))
 	.build()
 }
 
@@ -278,7 +276,7 @@ fun StorageDomainVo.toAddNFSBuilder(): HostStorage {
  */
 fun StorageDomainVo.toAddEtcBuilder(): HostStorage {
 	return HostStorageBuilder()
-			.type(this@toAddEtcBuilder.storageType)
+		.type(StorageType.fromValue(this@toAddEtcBuilder.storageType))
 			.logicalUnits(this@toAddEtcBuilder.logicalUnits.map {
 				LogicalUnitBuilder().id(it).build()
 			})

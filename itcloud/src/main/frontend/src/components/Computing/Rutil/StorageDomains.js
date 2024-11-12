@@ -42,6 +42,7 @@ const StorageDomains = () => {
   return (
     <>
       <div className="header_right_btns">
+        {/* 도메인 가져오기와 생성은 같은 창, 관리가 편집 */}
         <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
         <button onClick={() => selectedStorageDomain?.id && toggleModal('edit', true)} disabled={!selectedStorageDomain?.id}>편집</button>
         <button onClick={() => selectedStorageDomain?.id && toggleModal('delete', true)} disabled={!selectedStorageDomain?.id}>제거</button>
@@ -64,7 +65,7 @@ const StorageDomains = () => {
             isOpen={modals.create || modals.edit}
             onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
             editMode={modals.edit}
-            dcId={selectedStorageDomain?.id || null}
+            domainId={selectedStorageDomain?.id || null}
           />
         )}
         {modals.delete && selectedStorageDomain && (
