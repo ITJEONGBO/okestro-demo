@@ -28,7 +28,10 @@ const DataCenters = () => {
   const [selectedDataCenter, setSelectedDataCenter] = useState(null);
   
   const toggleModal = (type, isOpen) => {
-    setModals((prev) => ({ ...prev, [type]: isOpen }));
+    setModals((prev) => {
+      if (prev[type] === isOpen) return prev; // 이미 열려 있으면 무시
+      return { ...prev, [type]: isOpen };
+    });
   };
 
   const handleNameClick = (id) => {

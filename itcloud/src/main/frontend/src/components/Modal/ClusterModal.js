@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import './css/MCluster.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
   useAddCluster, 
   useEditCluster, 
@@ -20,8 +20,7 @@ const ClusterModal = ({
   datacenterId
 }) => {
   const [id, setId] = useState('');
-  // const [datacenterVoId, setDatacenterVoId] = useState('');  
-  const [datacenterVoId, setDatacenterVoId] = useState(datacenterId || '');  
+  const [datacenterVoId, setDatacenterVoId] = useState('');  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [comment, setComment] = useState('');
@@ -59,6 +58,7 @@ const ClusterModal = ({
     ...e,
   }));
 
+  // 데이터센터에서 클러스터 생성시 자신의 데이터센터 아이디 넣기
   const {
     data: dataCenter,
     status: dataCenterStatus,
@@ -67,9 +67,7 @@ const ClusterModal = ({
     isError: isDataCenterError,
     error: dataCenterError,
     isLoading: isDataCenterLoading,
-  } = useDataCenter(datacenterId, (e) => ({
-    ...e,
-  }));
+  } = useDataCenter(datacenterId);
 
   // 네트워크 가져오기
   const {
@@ -81,31 +79,39 @@ const ClusterModal = ({
   }));
 
   useEffect(() => {
-    if (!editMode && datacenterId) {
-      setDatacenterVoId(datacenterId);
-    }
-  }, [editMode, datacenterId]);
-
-  useEffect(() => {
-    if (editMode && cluster) {
-      // 데이터가 모두 로드된 경우에만 설정
+    if (editMode && cluster) {  // 편집 시
       setId(cluster?.id);
-      setDatacenterVoId(cluster?.datacenterVo?.id || '');
+      setDatacenterVoId(cluster?.datacenterVo?.id);
+      setNetworkVoId(cluster?.networkVo?.id);
       setName(cluster?.name);
-      setDescription(cluster?.description);
-      setComment(cluster?.comment);
-      setNetworkVoId(cluster?.networkVo?.id || '');
+      setDescription(cluster?.description || '');
+      setComment(cluster?.comment || '');
+      setBiosType(cluster?.biosType);
       setCpuArc(cluster?.cpuArc);
       setCpuType(cluster?.cpuType);
-      setBiosType(cluster?.biosType);
       setErrorHandling(cluster?.errorHandling);
-    } else if (!editMode) {
+    } else if (!editMode) { // 생성 시
       resetForm();
-      if (datacenters && datacenters.length > 0) {
-        setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본 선택
+      if (datacenterId) {
+        setDatacenterVoId(datacenterId);
+      } else if (datacenters && datacenters.length > 0) {
+        setDatacenterVoId(datacenters[0].id);
       }
     }
-  }, [editMode, cluster, datacenters]);
+  }, [editMode, cluster, datacenters, datacenterId]);
+  
+  // datacenterVoId가 설정되었을 때만 네트워크 목록을 가져오도록 제한
+  useEffect(() => {
+    if (datacenterVoId) {  
+      refetchNetworks({ datacenterVoId }).then((res) => {
+        if (res?.data && res.data.length > 0) {
+          setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
+        }
+      });
+    }
+  }, [datacenterVoId]);
+  
+  
   
   const resetForm = () => {
     setDatacenterVoId('');
@@ -119,54 +125,7 @@ const ClusterModal = ({
     setErrorHandling('migrate');
   };
 
-  useEffect(() => {
-    if (editMode && cluster) {
-      setId(cluster?.id);
-      setDatacenterVoId(cluster?.datacenterVo?.id || '');
-      setName(cluster?.name);
-      setDescription(cluster?.description);
-      setComment(cluster?.comment);
-      setNetworkVoId(cluster?.networkVo?.id || '');
-      setCpuArc(cluster?.cpuArc);
-      setCpuType(cluster?.cpuType);
-      setBiosType(cluster?.biosType);
-      setErrorHandling(cluster?.errorHandling);
-    } else if (!editMode && datacenterId) {
-      resetForm();
-      setDatacenterVoId(datacenterId);
-      // 네트워크 목록을 가져오고 첫 번째 네트워크를 기본값으로 설정
-      refetchNetworks({ datacenterId }).then((res) => {
-        if (res?.data && res.data.length > 0) {
-          setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
-        }
-      });
-    }
-  }, [editMode, cluster, datacenterId, refetchNetworks]);
-
-
-  useEffect(() => {
-    if (datacenterVoId) {
-      setNetworkVoId(''); // 네트워크 값을 먼저 초기화
-  
-      // 데이터센터가 선택되었을 때 네트워크를 다시 가져옴
-      refetchNetworks({ datacenterId: datacenterVoId }).then((res) => {
-        if (res?.data && res.data.length > 0) {
-          setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
-        }
-      });
-    }
-  }, [datacenterVoId, refetchNetworks]);
-  
-  // 데이터센터 리스트가 업데이트될 때 초기값 설정
-  useEffect(() => {
-    if (datacenters && datacenters.length > 0) {
-      if (!editMode) {
-        // 데이터센터 리스트의 첫 번째 값으로 초기화
-        setDatacenterVoId(datacenters[0].id);
-      }
-    }
-  }, [datacenters, editMode]);
-
+  // cpuArc, biosType
   useEffect(() => {
     let options = [];
     switch (cpuArc) {
@@ -248,9 +207,11 @@ const ClusterModal = ({
         ];
     }
     setCpuOptions(options);
-    setCpuType(''); // CPU 유형 초기화
-    setBiosType('');
-  }, [cpuArc]);
+    if (!editMode) {  // 편집 모드가 아닐 때만 초기화
+      setCpuType('');
+      setBiosType('');
+    }
+  }, [cpuArc, editMode]);
 
   // cpuArc에 따른 cpuType 변화
   useEffect(() => {
@@ -297,7 +258,7 @@ const ClusterModal = ({
       biosType,
       errorHandling
     };
-    console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
+    console.log('Data:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
     
     if (editMode) {
       dataToSubmit.id = id;
@@ -346,7 +307,7 @@ const ClusterModal = ({
         </div>
 
         <div className="cluster_new_content">
-          <div className="network_form_group">
+        <div className="network_form_group">
             <label htmlFor="data_center">데이터 센터</label>
             {datacenterId ? (
               <input 
@@ -369,22 +330,6 @@ const ClusterModal = ({
                   ))}
               </select>
             )}
-            
-            {/* 만약 데이터센터가 삭제된상태라면 전체 데이터센터 목록을 보여줘야함 */}
-            {/* <label htmlFor="data_center">데이터 센터</label>            
-            <select
-              id="data_center"
-              value={datacenterVoId}
-              onChange={(e) => setDatacenterVoId(e.target.value)}
-              disabled={editMode}
-            >
-              {datacenters &&
-                datacenters.map((dc) => (
-                  <option value={dc.id}>
-                    {dc.name}
-                  </option>
-                ))}
-            </select> */}
           </div>
           <hr/>
 
@@ -426,13 +371,12 @@ const ClusterModal = ({
               onChange={(e) => setNetworkVoId(e.target.value)}
               disabled={editMode || isNetworksLoading || !datacenterVoId}
             >
-              {/* <option value="" defaultValue>선택</option> */}
               {networks &&
-                networks.map((n) => (
-                  <option key={n.id} value={n.id}>
+                networks.map((n) => {
+                  return <option key={n.id} value={n.id}>
                     {n.name}
                   </option>
-                ))}
+                })}
             </select>
             <span>{networkVoId}</span>
           </div>
@@ -460,42 +404,30 @@ const ClusterModal = ({
               disabled={cpuOptions.length === 0}
             >
             <option value="">선택</option>
-              {cpuOptions.map((option) => (
-                <option key={option} value={option}>
+              {cpuOptions.map((option) => {
+                return <option key={option} value={option}>
                   {option}
                 </option>
-              ))}
+              })}
             </select>
           </div>
           
           <div className="network_form_group">
             <label htmlFor="biosType">칩셋/펌웨어 유형</label>
-            <select
-              id="biosType"
-              value={biosType}
-              onChange={(e) => setBiosType(e.target.value)}
-              disabled={cpuArc === 'PPC64' || cpuArc === 'S390X'}
-            >
-              <option value="CLUSTER_DEFAULT">자동 감지</option>
-              <option value="I440FX_SEA_BIOS">BIOS의 I440FX 칩셋</option>
-              <option value="Q35_OVMF">UEFI의 Q35 칩셋</option>
-              <option value="Q35_SEA_BIOS">BIOS의 Q35 칩셋</option>
-              <option value="Q35_SECURE_BOOT">UEFI SecureBoot의 Q35 칩셋</option>
-            </select>
+              <select
+                id="biosType"
+                value={biosType}
+                onChange={(e) => setBiosType(e.target.value)}
+                disabled={cpuArc === 'PPC64' || cpuArc === 'S390X'}
+              >
+                <option value="CLUSTER_DEFAULT">자동 감지</option>
+                <option key="Q35_OVMF" value="Q35_OVMF">UEFI의 Q35 칩셋</option>
+                <option key="I440FX_SEA_BIOS" value="I440FX_SEA_BIOS">BIOS의 I440FX 칩셋</option>              
+                <option key="Q35_SEA_BIOS" value="Q35_SEA_BIOS">BIOS의 Q35 칩셋</option>
+                <option key="Q35_SECURE_BOOT" value="Q35_SECURE_BOOT">UEFI SecureBoot의 Q35 칩셋</option>
+              </select>
+              <span>{biosType}</span>
           </div>
-
-          {/* <div className="network_checkbox_type2">
-            <input 
-              type="checkbox" 
-              value={''}
-              id="biosChange" 
-              name="biosChange" 
-              checked={isBiosChangeChecked}
-              onChange={(e) => setIsBiosChangeChecked(e.target.checked)}
-              disabled={!!biosType} // biosType이 선택된 경우 체크박스 비활성화
-            />
-            <label htmlFor="biosChange">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
-          </div> */}
 
           <div className='font-bold px-1.5 py-0.5'>
             <label htmlFor="errorHandling">복구 정책</label>

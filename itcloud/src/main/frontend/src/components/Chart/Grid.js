@@ -7,13 +7,15 @@ const Grid = ({ type, data = [] }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 데이터를 15개로 채움
     const filledData = [...data];
     while (filledData.length < 15) {
       filledData.push({ id: `placeholder-${filledData.length}`, cpuPercent: null, memoryPercent: null, name: '' });
     }
-    setGridData(filledData);
-  }, [data]);
+    if (JSON.stringify(filledData) !== JSON.stringify(gridData)) {
+      setGridData(filledData);
+    }
+  }, [data, gridData]);
+  
 
   const getBackgroundColor = (value) => {
     if (value === null || value === 0) return 'rgb(219 242 255)';
