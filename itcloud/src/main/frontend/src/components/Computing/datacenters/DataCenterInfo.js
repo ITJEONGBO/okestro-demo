@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../navigation/NavButton';
 import HeaderButton from '../../button/HeaderButton';
 import Footer from '../../footer/Footer';
-import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import '../css/DataCenter.css';
 import { useDataCenter } from '../../../api/RQHook';
 import Path from '../../Header/Path';

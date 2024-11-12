@@ -7,14 +7,17 @@ import {
   useAddHost,
   useEditHost,
   useHost, 
-  useAllClusters
+  useAllClusters,
+  useClustersFromDataCenter
 } from '../../api/RQHook';
 
 const HostModal = ({ 
   isOpen, 
   onRequestClose, 
   editMode = false, 
-  hId
+  hId, 
+  dataCenterId,
+  clusterId,
 }) => {
   const [id, setId] = useState('');
   const [clusterVoId, setClusterVoId] = useState('');
@@ -56,6 +59,16 @@ const HostModal = ({
     ...e,
     dataCenterName: e?.datacenterVo.name
   }));
+
+  // 데이터센터에서 호스트 생성시
+  // const {
+  //   data: dcClusters,
+  //   status: dcClustersStatus,
+  //   isLoading: isDcClustersLoading,
+  //   isError: isDcClustersError,
+  // } = useClustersFromDataCenter(dataCenterId, (e) => ({ 
+  //   ...e 
+  // }));
 
    // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
