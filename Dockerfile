@@ -1,5 +1,5 @@
 # ------------------------------
-# Stage 1: Build the application using Gradle
+# Stage 1: Build the application using Node
 FROM node:18.12.1-alpine AS build-fe
 WORKDIR /usr/src/app
 

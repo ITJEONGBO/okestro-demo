@@ -4,6 +4,7 @@ import '../css/Computing.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllDataCenters } from '../../../api/RQHook';
+import DataCenterActionButtons from '../../button/DataCenterActionButtons';
 
 const DataCenterModal = React.lazy(() => import('../../Modal/DataCenterModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -40,11 +41,12 @@ const DataCenters = () => {
 
   return (
     <>
-      <div className="header_right_btns">
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedDataCenter?.id && toggleModal('edit', true)} disabled={!selectedDataCenter?.id}>편집</button>
-        <button onClick={() => selectedDataCenter?.id && toggleModal('delete', true)} disabled={!selectedDataCenter?.id}>제거</button>
-      </div>
+       <DataCenterActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedDataCenter?.id && toggleModal('edit', true)}
+        onDelete={() => selectedDataCenter?.id && toggleModal('delete', true)}
+        isEditDisabled={!selectedDataCenter?.id}
+      />
       <span>id = {selectedDataCenter?.id || ''}</span>
 
       <TablesOuter

@@ -91,7 +91,7 @@ const ClusterModal = ({
         setCpuArc(cluster?.cpuArc);
         setCpuType(cluster?.cpuType);
         setErrorHandling(cluster?.errorHandling);
-      } else if (!editMode) { // 생성 시
+      } else if (!editMode && !isDatacentersLoading) { // 생성 시
         resetForm();
         if (datacenterId) {
           setDatacenterVoId(datacenterId);
@@ -104,14 +104,14 @@ const ClusterModal = ({
   
   // datacenterVoId가 설정되었을 때만 네트워크 목록을 가져오도록 제한
   useEffect(() => {
-    if (datacenterVoId) {  
+    if (!editMode && datacenterVoId && !isDatacentersLoading) {  // 데이터센터 로딩 완료 후에만 네트워크 로드
       refetchNetworks({ datacenterVoId }).then((res) => {
         if (res?.data && res.data.length > 0) {
           setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
         }
       });
     }
-  }, [datacenterVoId]);
+  }, [editMode, datacenterVoId, isDatacentersLoading]);
   
   
   const resetForm = () => {
@@ -372,14 +372,13 @@ const ClusterModal = ({
               id="network"
               value={networkVoId}
               onChange={(e) => setNetworkVoId(e.target.value)}
-              disabled={editMode || isNetworksLoading || !datacenterVoId}
+              disabled={editMode || isNetworksLoading || !datacenterVoId || isDatacentersLoading} // 로딩 중일 때 비활성화
             >
-              {networks &&
-                networks.map((n) => {
-                  return <option key={n.id} value={n.id}>
-                    {n.name}
-                  </option>
-                })}
+              {!isNetworksLoading && networks && networks.map((n) => (
+                <option key={n.id} value={n.id}>
+                  {n.name}
+                </option>
+              ))}
             </select>
             <span>{networkVoId}</span>
           </div>

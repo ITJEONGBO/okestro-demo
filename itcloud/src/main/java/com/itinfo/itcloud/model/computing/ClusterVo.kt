@@ -51,7 +51,7 @@ private val log = LoggerFactory.getLogger(ClusterVo::class.java)
  * @property virtService [Boolean] virt 서비스 활성화
  * @property networkProvider [Boolean] 네트워크 공급자 여부 (clusters/id/externalnetworkproviders 에 포함되는지)
  * @property datacenterVo [IdentifiedVo]
- * @property networkVo [IdentifiedVo] // 관리네트워크
+ * @property networkVo [NetworkVo] // 관리네트워크
  * @property hostSize [SizeVo]
  * @property vmSize [SizeVo]
  *
@@ -176,6 +176,10 @@ fun List<Cluster>.toClustersMenu(conn: Connection): List<ClusterVo> =
 
 
 fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
+	val network: Network =
+		conn.findAllNetworksFromCluster(this@toClusterInfo.id()).getOrDefault(listOf())
+			.first { it.display() }
+
 	return ClusterVo.builder {
 		id { this@toClusterInfo.id() }
 		name { this@toClusterInfo.name() }
@@ -192,6 +196,7 @@ fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
 		migrationPolicy { this@toClusterInfo.migration().autoConverge() }
 		errorHandling { this@toClusterInfo.errorHandling().onError().value() }
 		bandwidth { this@toClusterInfo.migration().bandwidth().assignmentMethod() }
+		networkVo { network.toNetworkIdName() }
 		version { this@toClusterInfo.version().major().toString() + "." + this@toClusterInfo.version().minor() }
 		datacenterVo { if(this@toClusterInfo.dataCenterPresent()) conn.findDataCenter(this@toClusterInfo.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() else null }
 		vmSize { this@toClusterInfo.findVmCntFromCluster(conn) }

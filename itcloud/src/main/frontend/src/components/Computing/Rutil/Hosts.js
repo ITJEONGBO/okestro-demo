@@ -6,6 +6,7 @@ import TableInfo from '../../table/TableInfo';
 import { useAllHosts } from '../../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faMinus, faPlus, faPlay } from '@fortawesome/free-solid-svg-icons';
+import HostActionButtons from '../../button/HostActionButtons';
 
 const HostModal = React.lazy(() => import('../../Modal/HostModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -55,11 +56,12 @@ const Hosts = () => {
 
   return (
     <>
-      <div className="header_right_btns">
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedHost?.id && toggleModal('edit', true)} disabled={!selectedHost?.id}>편집</button>
-        <button onClick={() => selectedHost?.id && toggleModal('delete', true)} disabled={!selectedHost?.id}>제거</button>
-      </div>
+      <HostActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedHost?.id && toggleModal('edit', true)}
+        onDelete={() => selectedHost?.id && toggleModal('delete', true)}
+        isEditDisabled={!selectedHost?.id}
+      />
       <span>id = {selectedHost?.id || ''}</span>
 
       <TablesOuter

@@ -1,4 +1,12 @@
 /* Table.css */
+
+th {
+  height: 29.61px;
+}
+td {
+  height: 26.342px;
+}
+
 .pagination {
 
   margin-bottom: 10px; /* 테이블과의 간격 설정 */
