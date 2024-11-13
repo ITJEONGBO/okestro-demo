@@ -61,6 +61,7 @@ const Hosts = () => {
         onCreate={() => toggleModal('create', true)}
         onEdit={() => selectedHost?.id && toggleModal('edit', true)}
         onDelete={() => selectedHost?.id && toggleModal('delete', true)}
+        onManage={() => selectedHost?.id && toggleModal('manage', true)}
         isEditDisabled={!selectedHost?.id}
       />
       <span>id = {selectedHost?.id || ''}</span>

@@ -310,10 +310,7 @@ export const useEventsFromDataCenter = (dataCenterId, mapPredicate) => useQuery(
     console.log(`eventsFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findAllEventsFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  },
-  enabled: !!dataCenterId, // dataCenterId가 있을 때만 쿼리 실행
-  staleTime: 0,
-  cacheTime: 0,
+  }
 });
 
 /**

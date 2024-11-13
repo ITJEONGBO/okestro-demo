@@ -1,6 +1,15 @@
 import React from 'react';
 
-const DomainActionButtons = ({ onCreate, onEdit, onDelete, isEditDisabled }) => {
+const DomainActionButtons = ({ 
+  onCreate, 
+  onEdit, 
+  onDelete, 
+  onSeparate,
+  onActive,
+  onMaintenance,
+  disk,
+  isEditDisabled 
+}) => {
   return (
     <div className="header_right_btns">
       {onCreate && 
@@ -11,6 +20,18 @@ const DomainActionButtons = ({ onCreate, onEdit, onDelete, isEditDisabled }) => 
       )}
       {onDelete && (
         <button onClick={onDelete} disabled={isEditDisabled}>제거</button>
+      )}
+      {onSeparate && (
+        <button onClick={onSeparate} disabled={isEditDisabled}>분리</button>
+      )}
+      {onActive && (
+        <button onClick={onActive} disabled={isEditDisabled}>활성</button>
+      )}
+      {onMaintenance && (
+        <button onClick={onMaintenance} disabled={isEditDisabled}>유지보수</button>
+      )}
+      {disk && (
+        <button >디스크</button>
       )}
     </div>
   );

@@ -13,7 +13,7 @@ import Host from './components/Computing/Host';
 import HostDetail from './components/Computing/HostDetail';
 import StorageDomainDetail from './components/Storage/StorageDomainDetail';
 import StorageDiskDetail from './components/Storage/StorageDiskDetail';
-import DataCenter from './components/Computing/DataCenter';
+// import DataCenter from './components/Computing/DataCenter';
 import VmTemplateChart from './components/Computing/VmTemplateChart';
 import NetworkDetail from './components/Network/NetworkDetail';
 import STOMP from './Socket'
@@ -103,21 +103,11 @@ const App = () => {
               <Route path="/computing/rutil-manager" element={<RutilManager />} />
               <Route path="/computing/rutil-manager/:section" element={<RutilManager />} />
 
-              <Route path="/computing/datacenters" element={<DataCenters />} />
               <Route path="/computing/datacenters/:id/:section" element={<DataCenterInfo />} />
 
-               {/*네트워크쪽 데이터센터*/}
-              <Route path="/networks/datacenters/:id" element={<DataCenter />} />
-              <Route path="/networks/datacenters/:id/:section" element={<DataCenter />} />
-               {/*스토리지쪽 데이터센터*/}
-               <Route path="/storages/datacenters/:id" element={<DataCenter />} />
-              <Route path="/storages/datacenters/:id/:section" element={<DataCenter />} />
-                            
-              <Route path="/computing/clusters" element={<Clusters />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} />
               <Route path="/computing/clusters/:id/:section" element={<ClusterName />} />  
               
-              <Route path="/computing/host" element={<Host />} />
               <Route path="/computing/hosts/:id" element={<HostDetail />}/>
               <Route path="/computing/hosts/:id/:section" element={<HostDetail />}/>
 
@@ -125,9 +115,11 @@ const App = () => {
               <Route path="/computing/vms/:id" element={<VmDetail />} />
               <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
               
-              {/* <Route path="/computing/templates" element={<Templates />} /> */}
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
 
+              <Route path="/networks/datacenters/:id/:section" element={<DataCenterInfo />} />
+              <Route path="/storages/datacenters/:id/:section" element={<DataCenterInfo />} />
+                            
 
               <Route path="/networks" element={<Network />} />
               <Route path="/networks/:id" element={<NetworkDetail />} /> 
@@ -136,9 +128,7 @@ const App = () => {
               <Route path="/storages/domains" element={<AllDomain />} />
               <Route path="/storages/domains/:id" element={<StorageDomainDetail />} /> 
               <Route path="/storages/domains/:id/:section" element={<StorageDomainDetail />} /> 
-              {/* <Route path="/storage-domainpart" element={<DomainParts />} /> */}
-
-              <Route path="/storages/disks" element={<AllDisk />} />
+              
               <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />
               <Route path="/storages/disks/:id/:section" element={<StorageDiskDetail />} />
 
@@ -148,11 +138,21 @@ const App = () => {
               <Route path="/error" element={<Error />} />
  
               {/*임시(삭제예정) */}
-              <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
-              <Route path="/example" element={<Example />} />
-              <Route path="/storages/disks/domain" element={<StorageDomainDetail />} />
-              <Route path="/computing/clusters/detail" element={<ClusterName />} /> 
-              
+              {/* <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} /> */}
+              {/* <Route path="/example" element={<Example />} /> */}
+              {/* <Route path="/storages/disks/domain" element={<StorageDomainDetail />} /> */}
+              {/* <Route path="/computing/clusters/detail" element={<ClusterName />} />  */}
+            
+            
+              {/* <Route path="/computing/datacenters" element={<DataCenters />} /> */}
+              {/* <Route path="/networks/datacenters/:id" element={<DataCenterInfo />} /> */}
+              {/* <Route path="/storages/datacenters/:id" element={<DataCenterInfo />} /> */}
+              {/* <Route path="/computing/clusters" element={<Clusters />} /> */}
+              {/* <Route path="/computing/host" element={<Host />} /> */}
+              {/* <Route path="/computing/templates" element={<Templates />} /> */}
+              {/* <Route path="/storage-domainpart" element={<DomainParts />} /> */}
+              {/* <Route path="/storages/disks" element={<AllDisk />} /> */}
+
             </Routes>
           </MainOuter>
           </>

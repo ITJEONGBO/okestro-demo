@@ -12,6 +12,7 @@ import DataCenterHosts from './DataCenterHosts';
 import DataCenterVms from './DataCenterVms';
 import DataCenterDomains from './DataCenterDomains';
 import DataCenterNetworks from './DataCenterNetwork';
+import DataCenterEvents from './DataCenterEvents';
 
 const DataCenterModal = React.lazy(() => import('../../Modal/DataCenterModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -65,7 +66,7 @@ const DataCenterInfo = () => {
     vms: DataCenterVms,
     storageDomains: DataCenterDomains,
     networks: DataCenterNetworks,
-    // networks, events 컴포넌트를 추가
+    events: DataCenterEvents
   };
 
   const renderSectionContent = () => {

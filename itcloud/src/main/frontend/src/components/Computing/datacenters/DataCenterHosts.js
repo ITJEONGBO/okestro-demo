@@ -5,6 +5,7 @@ import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useHostsFromDataCenter } from '../../../api/RQHook';
 import renderStatusIcon from '../renderStatusIcon';
+import HostActionButtons from '../../button/HostActionButtons';
 
 const HostModal = React.lazy(() => import('../../Modal/HostModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -40,14 +41,13 @@ const DataCenterHosts = ({datacenterId}) => {
 
   return (
     <>
-      <div className="header_right_btns">
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedHost?.id && toggleModal('edit', true)} disabled={!selectedHost?.id}>편집</button>
-        <button onClick={() => selectedHost?.id && toggleModal('delete', true)} disabled={!selectedHost?.id}>제거</button>
-        <button onClick={() => selectedHost?.id && toggleModal('manage', true)} disabled={!selectedHost?.id}>관리</button>
-        <button onClick={() => selectedHost?.id && toggleModal('manage', true)} disabled={!selectedHost?.id}>설치</button>
-        <button onClick={() => selectedHost?.id && toggleModal('manage', true)} disabled={!selectedHost?.id}>호스트 네트워크 복사</button>
-      </div>
+      <HostActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedHost?.id && toggleModal('edit', true)}
+        onDelete={() => selectedHost?.id && toggleModal('delete', true)}
+        onManage={() => selectedHost?.id && toggleModal('manage', true)}
+        isEditDisabled={!selectedHost?.id}
+      />
 
       <span>id = {selectedHost?.id || ''}</span>
       <TablesOuter

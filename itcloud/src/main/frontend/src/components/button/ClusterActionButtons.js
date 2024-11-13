@@ -1,6 +1,11 @@
 import React from 'react';
 
-const ClusterActionButtons = ({ onCreate, onEdit, onDelete, isEditDisabled }) => {
+const ClusterActionButtons = ({ 
+  onCreate, 
+  onEdit, 
+  onDelete, 
+  isEditDisabled 
+}) => {
   return (
     <div className="header_right_btns">
       {onCreate && 

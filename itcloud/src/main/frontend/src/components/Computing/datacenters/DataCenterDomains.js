@@ -6,6 +6,7 @@ import TableInfo from '../../table/TableInfo';
 import { useDomainsFromDataCenter } from '../../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import DomainActionButtons from '../../button/DomainActionButtons';
 
 const StorageDomainModal = React.lazy(() => import('../../Modal/StorageDomainModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -49,13 +50,16 @@ const DataCenterDomains = ({datacenterId}) => {
 
   return (
     <>
-      <div className="header_right_btns">
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedDomain?.id && toggleModal('separate', true)} disabled={!selectedDomain?.id}>분리</button>
-        <button onClick={() => selectedDomain?.id && toggleModal('active', true)} disabled={!selectedDomain?.id}>활성</button>
-        <button onClick={() => selectedDomain?.id && toggleModal('maintain', true)} disabled={!selectedDomain?.id}>유지보수</button>
-        <button >디스크</button>
-      </div>
+      <DomainActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedDomain?.id && toggleModal('edit', true)}
+        onDelete={() => selectedDomain?.id && toggleModal('delete', true)}
+        onSeparate={() => selectedDomain?.id && toggleModal('separate', true)}
+        onActive={() => selectedDomain?.id && toggleModal('active', true)}
+        onMaintenance={() => selectedDomain?.id && toggleModal('maintenance', true)}
+        disk
+        isEditDisabled={!selectedDomain?.id}
+      />
 
       <span>id = {selectedDomain?.id || ''}</span>
       <TablesOuter

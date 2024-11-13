@@ -4,6 +4,7 @@ import '../css/DataCenter.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useNetworksFromDataCenter } from '../../../api/RQHook';
+import NetworkActionButtons from '../../button/NetworkActionButtons';
 
 const NetworkModal = React.lazy(() => import('../../Modal/NetworkModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -32,11 +33,12 @@ const DataCenterNetworks = ({datacenterId}) => {
 
   return (
     <>
-      <div className="header_right_btns">
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedNetwork?.id && toggleModal('edit', true)} disabled={!selectedNetwork?.id}>편집</button>
-        <button onClick={() => selectedNetwork?.id && toggleModal('delete', true)} disabled={!selectedNetwork?.id}>제거</button>
-      </div>
+      <NetworkActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedNetwork?.id && toggleModal('edit', true)}
+        onDelete={() => selectedNetwork?.id && toggleModal('delete', true)}
+        isEditDisabled={!selectedNetwork?.id}
+      />
 
       <span>id = {selectedNetwork?.id || ''}</span>
       <TablesOuter

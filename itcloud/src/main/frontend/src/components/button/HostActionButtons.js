@@ -7,7 +7,7 @@ const HostActionButtons = ({
   onEdit,
   onDelete,
   onManage,
-  onInstall,
+  isEditDisabled
 }) => {
 
   // 토글 방식으로 열고 닫기(관리)
@@ -51,14 +51,20 @@ const HostActionButtons = ({
 
   return (
     <div className="header_right_btns">
-      <button onClick={onCreate}>새로 만들기</button>
-      <button onClick={onEdit}>편집</button>
-      <button onClick={onDelete}>삭제</button>
-
+      {onCreate && 
+        <button onClick={onCreate}>새로 만들기</button>
+      }
+      {onEdit && (
+        <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
+      )}
+      {onDelete && (
+        <button onClick={onDelete} disabled={isEditDisabled}>삭제</button>
+      )}
+      {onManage && (
+        <button onClick={onManage} disabled={isEditDisabled}>관리</button>
+      )}
 
       <div className="manage_container">
-      
-
         <button id="manage_btn" onClick={handleManageClick} className="btn">
           관리 <FontAwesomeIcon icon={faChevronDown} style={{ marginLeft: '3px' }} />
         </button>

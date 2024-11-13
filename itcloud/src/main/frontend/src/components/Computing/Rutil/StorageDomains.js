@@ -32,7 +32,7 @@ const StorageDomains = () => {
   }));
 
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
-  const [selectedStorageDomain, setSelectedStorageDomain] = useState(null);
+  const [selectedDomain, setSelectedDomain] = useState(null);
 
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
@@ -55,11 +55,14 @@ const StorageDomains = () => {
       {/* 도메인 가져오기와 생성은 같은 창, 관리가 편집 */}
       <DomainActionButtons
         onCreate={() => toggleModal('create', true)}
-        onEdit={() => selectedStorageDomain?.id && toggleModal('edit', true)}
-        onDelete={() => selectedStorageDomain?.id && toggleModal('delete', true)}
-        isEditDisabled={!selectedStorageDomain?.id}
+        onEdit={() => selectedDomain?.id && toggleModal('edit', true)}
+        onDelete={() => selectedDomain?.id && toggleModal('delete', true)}
+        onSeparate={() => selectedDomain?.id && toggleModal('separate', true)}
+        onActive={() => selectedDomain?.id && toggleModal('active', true)}
+        onMaintenance={() => selectedDomain?.id && toggleModal('maintenance', true)}
+        isEditDisabled={!selectedDomain?.id}
       />
-      <span>id = {selectedStorageDomain?.id || ''}</span>
+      <span>id = {selectedDomain?.id || ''}</span>
 
       <TablesOuter
         columns={TableInfo.STORAGE_DOMAINS}
@@ -68,28 +71,28 @@ const StorageDomains = () => {
           status: renderStatusIcon(domain.status),
         }))}
         shouldHighlight1stCol={true}
-        onRowClick={(row) => setSelectedStorageDomain(row)}
+        onRowClick={(row) => setSelectedDomain(row)}
         clickableColumnIndex={[2]} // "이름" 열의 인덱스 설정
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
 
       {/* 모달 컴포넌트를 사용할 때만 로딩 */}
       <Suspense>
-        {(modals.create || (modals.edit && selectedStorageDomain)) && (
+        {(modals.create || (modals.edit && selectedDomain)) && (
           <StorageDomainModal
             isOpen={modals.create || modals.edit}
             onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
             editMode={modals.edit}
-            domainId={selectedStorageDomain?.id || null}
+            domainId={selectedDomain?.id || null}
           />
         )}
-        {modals.delete && selectedStorageDomain && (
+        {modals.delete && selectedDomain && (
           <DeleteModal
             isOpen={modals.delete}
             type='StorageDomain'
             onRequestClose={() => toggleModal('delete', false)}
             contentLabel={'스토리지 도메인'}
-            data={selectedStorageDomain}
+            data={selectedDomain}
           />
         )}
        </Suspense>

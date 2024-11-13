@@ -75,7 +75,6 @@ const Event = () => {
       />
       <div className="content_outer">
         <div className="empty_nav_outer">
-            
             <PagingTableOuter
               columns={TableColumnsInfo.EVENTS}
               data={events}

@@ -4,6 +4,7 @@ import '../css/DataCenter.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useClustersFromDataCenter } from '../../../api/RQHook';
+import ClusterActionButtons from '../../button/ClusterActionButtons';
 
 const ClusterModal = React.lazy(() => import('../../Modal/ClusterModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -32,11 +33,12 @@ const DataCenterClusters = ({datacenterId}) => {
 
   return (
     <>
-      <div className="header_right_btns">
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedCluster?.id && toggleModal('edit', true)} disabled={!selectedCluster?.id}>편집</button>
-        <button onClick={() => selectedCluster?.id && toggleModal('delete', true)} disabled={!selectedCluster?.id}>제거</button>
-      </div>
+      <ClusterActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedCluster?.id && toggleModal('edit', true)}
+        onDelete={() => selectedCluster?.id && toggleModal('delete', true)}
+        isEditDisabled={!selectedCluster?.id}
+      />
 
       <span>id = {selectedCluster?.id || ''}</span>
       <TablesOuter
