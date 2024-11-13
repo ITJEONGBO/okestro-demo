@@ -208,7 +208,8 @@ fun NetworkVo.toNetworkBuilder(): NetworkBuilder = NetworkBuilder()
 	.portIsolation(this@toNetworkBuilder.portIsolation)
 	.mtu(this@toNetworkBuilder.mtu)  // 제한수가 있음
 	.vlan(if(this@toNetworkBuilder.vlan != 0) VlanBuilder().id(this@toNetworkBuilder.vlan) else null)
-	.usages(if(this@toNetworkBuilder.usage.vm) NetworkUsage.VM else null )
+	.usages(NetworkUsage.VM)
+//	.usages(if(this@toNetworkBuilder.usage.vm) NetworkUsage.VM else null )
 	.externalProvider(
 		if(this@toNetworkBuilder.openStackNetworkVo.id.isNotEmpty())
 			OpenStackNetworkProviderBuilder().id(this@toNetworkBuilder.openStackNetworkVo.id)
