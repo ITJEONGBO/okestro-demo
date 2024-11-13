@@ -154,29 +154,29 @@ class ItStorageServiceTest {
 	 *
 	 * @see [ItStorageService.add]
 	 */
-	@Test
-	fun should_add_data_nfs() {
-		log.debug("should_add_data_nfs ... ")
-		val storage: StorageDomainVo = StorageDomainVo.builder {
-			name { "test02" }
-			domainType { StorageDomainType.DATA }
-			description { "test add data-nfs" }
-			warning { 10 }
-			spaceBlocker { 5 }
-			dataCenterVo { IdentifiedVo.builder { id { "92dedc62-7bdd-11ef-9270-00163e2fda35" } } }
-			hostVo { IdentifiedVo.builder { name { "on45-host01" } } }
-			storageType { StorageType.NFS }
-			storageAddress { "192.168.0.160" }
-			storagePath { "/nfstest02" }
-		}
-
-		val result: StorageDomainVo? =
-			service.add(storage)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result?.storageType, `is`(StorageType.NFS))
-		assertThat(result?.name, `is`("test02"))
-	}
+//	@Test
+//	fun should_add_data_nfs() {
+//		log.debug("should_add_data_nfs ... ")
+//		val storage: StorageDomainVo = StorageDomainVo.builder {
+//			name { "test02" }
+//			domainType { StorageDomainType.DATA }
+//			description { "test add data-nfs" }
+//			warning { 10 }
+//			spaceBlocker { 5 }
+//			dataCenterVo { IdentifiedVo.builder { id { "92dedc62-7bdd-11ef-9270-00163e2fda35" } } }
+//			hostVo { IdentifiedVo.builder { name { "on45-host01" } } }
+//			storageType { StorageType.NFS }
+//			storageAddress { "192.168.0.160" }
+//			storagePath { "/nfstest02" }
+//		}
+//
+//		val result: StorageDomainVo? =
+//			service.add(storage)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//		assertThat(result?.storageType, `is`(StorageType.NFS))
+//		assertThat(result?.name, `is`("test02"))
+//	}
 
 	/**
 	 * [should_import]

@@ -4,6 +4,7 @@ import '../css/Computing.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllVnicProfiles } from '../../../api/RQHook';
+import VnicProfileActionButtons from '../../button/VnicProfileActionButtons';
 
 // const VnicProfileModal = React.lazy(() => import('../../Modal/VnicProfileModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -38,11 +39,12 @@ const VnicProfiles = () => {
 
   return (
     <>
-      <div className="header_right_btns">
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedVnicProfile?.id && toggleModal('edit', true)} disabled={!selectedVnicProfile?.id}>편집</button>
-        <button onClick={() => selectedVnicProfile?.id && toggleModal('delete', true)} disabled={!selectedVnicProfile?.id}>제거</button>
-      </div>
+      <VnicProfileActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedVnicProfile?.id && toggleModal('edit', true)}
+        onDelete={() => selectedVnicProfile?.id && toggleModal('delete', true)}
+        isEditDisabled={!selectedVnicProfile?.id}
+      />
       <span>id = {selectedVnicProfile?.id || ''}</span>
 
       <TablesOuter

@@ -5,6 +5,7 @@ import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllVMs } from '../../../api/RQHook';
 import renderStatusIcon from '../renderStatusIcon';
+import VmActionButtons from '../../button/VmActionButtons';
 
 const VmModal = React.lazy(() => import('../../Modal/VmModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -51,12 +52,20 @@ const Vms = () => {
 
   return (
     <>
-      <div className="header_right_btns">
+      <VmActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedVm?.id && toggleModal('edit', true)}
+        onDelete={() => selectedVm?.id && toggleModal('delete', true)}
+        onConsole={() => selectedVm?.id && toggleModal('console', true)} // disabled={!selectedVm?.id || selectedVm?.status === 'DOWN'}
+        isEditDisabled={!selectedVm?.id}
+        // status={}
+      />
+      {/* <div className="header_right_btns">
         <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
         <button onClick={() => selectedVm?.id && toggleModal('edit', true)} disabled={!selectedVm?.id}>편집</button>
         <button onClick={() => selectedVm?.id && toggleModal('delete', true)} disabled={!selectedVm?.id}>제거</button>
         <button onClick={() => selectedVm?.id && toggleModal('console', true)} disabled={!selectedVm?.id || selectedVm?.status === 'DOWN'}>콘솔</button>
-      </div>
+      </div> */}
       <span>id = {selectedVm?.id || ''}</span>
 
       <TablesOuter

@@ -4,6 +4,7 @@ import '../css/Computing.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllTemplates } from '../../../api/RQHook';
+import TemplateActionButtons from '../../button/TemplateActionButtons';
 
 // const TemplateModal = React.lazy(() => import('../../Modal/TemplateModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -39,11 +40,11 @@ const Templates = () => {
 
   return (
     <>
-      <div className="header_right_btns">
-        {/* <button onClick={() => toggleModal('create', true)}>새로 만들기</button> */}
-        <button onClick={() => selectedTemplate?.id && toggleModal('edit', true)} disabled={!selectedTemplate?.id}>편집</button>
-        <button onClick={() => selectedTemplate?.id && toggleModal('delete', true)} disabled={!selectedTemplate?.id}>제거</button>
-      </div>
+      <TemplateActionButtons
+        onEdit={() => selectedTemplate?.id && toggleModal('edit', true)}
+        onDelete={() => selectedTemplate?.id && toggleModal('delete', true)}
+        isEditDisabled={!selectedTemplate?.id}
+      />
       <span>id = {selectedTemplate?.id || ''}</span>
 
       <TablesOuter

@@ -6,6 +6,7 @@ import TableInfo from '../../table/TableInfo';
 import { useAllStorageDomains } from '../../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import DomainActionButtons from '../../button/DomainActionButtons';
 
 const StorageDomainModal = React.lazy(() => import('../../Modal/StorageDomainModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -50,13 +51,14 @@ const StorageDomains = () => {
 
 
   return (
-    <>
-      <div className="header_right_btns">
-        {/* 도메인 가져오기와 생성은 같은 창, 관리가 편집 */}
-        <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
-        <button onClick={() => selectedStorageDomain?.id && toggleModal('edit', true)} disabled={!selectedStorageDomain?.id}>편집</button>
-        <button onClick={() => selectedStorageDomain?.id && toggleModal('delete', true)} disabled={!selectedStorageDomain?.id}>제거</button>
-      </div>
+    <>      
+      {/* 도메인 가져오기와 생성은 같은 창, 관리가 편집 */}
+      <DomainActionButtons
+        onCreate={() => toggleModal('create', true)}
+        onEdit={() => selectedStorageDomain?.id && toggleModal('edit', true)}
+        onDelete={() => selectedStorageDomain?.id && toggleModal('delete', true)}
+        isEditDisabled={!selectedStorageDomain?.id}
+      />
       <span>id = {selectedStorageDomain?.id || ''}</span>
 
       <TablesOuter

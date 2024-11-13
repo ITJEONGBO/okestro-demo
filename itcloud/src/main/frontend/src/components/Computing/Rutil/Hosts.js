@@ -26,6 +26,7 @@ const Hosts = () => {
       status: e?.status,
       cluster: e?.clusterVo.name,
       dataCenter: e?.dataCenterVo.name,
+      spmStatus: e?.spmStatus === 'SPM' ? 'SPM' : '',
       vmCnt: e?.vmSizeVo.allCnt,
       memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
       cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
