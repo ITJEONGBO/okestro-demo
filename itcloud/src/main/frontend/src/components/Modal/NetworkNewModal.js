@@ -11,23 +11,24 @@ const NetworkNewModal = ({
     networkId // 네트워크 ID를 받아서 편집 모드에서 사용
   }) => {
     const [id, setId] = useState('');
-    const [datacenterVoId, setDatacenterVoId] = useState('');  
+    const [datacenterVoId, setDatacenterVoId] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [comment, setComment] = useState('');
-    const [valnTagging, setValnTagging] = useState(false);
-    const [vmNetwork, setVmNetwork] = useState(true);
-    const [photoSeparation, setPhotoSeparation] = useState(false);
-    const [mtu, setMtu] = useState('default');
-    const [dnsSettings, setDnsSettings] = useState(false);
-    const [dnsServer, setDnsServer] = useState('');
+    const [portIsolation,setPortIsolation] = useState('');
+    const [mtu, setMtu] = useState('');
+    const [vlan, setVlan] = useState('');
+    const [usageVm, setUsageVm] = useState(false);
+    const [vmNetwork, setVmNetwork] = useState('');
 
     const { mutate: addNetwork } = useAddNetwork();
     const { mutate: editNetwork } = useEditNetwork();
+    
   
     //  네트워크 데이터
     const { 
         data: network, 
+        refetch: refetchNetworks,
         isLoading, 
         isError 
     } = useNetworkById(networkId);
@@ -46,62 +47,79 @@ const NetworkNewModal = ({
       ...e,
     }));
   
-
-
-
-    // 모달이 열릴 때 기존 데이터를 상태에 설정
+    
     useEffect(() => {
-        if (editMode && network) {
-          console.log('Setting edit mode state with network:', network); // 디버깅 로그
-          setId(network.id);
-          setDatacenterVoId(network?.datacenterVo?.id || '');
-          setName(network.name);
-          setDescription(network.description);
-          setComment(network.comment);
-          setValnTagging(network.valnTagging);
-          setVmNetwork(network.vmNetwork);
-          setPhotoSeparation(network.photoSeparation);
-          setMtu(network.mtu);
-          setDnsSettings(network.dnsSettings);
-          setDnsServer(network.dnsServer);
-        } else {
-          console.log('Resetting form for create mode');
-          resetForm();
-          if (networkId) {
-            setDatacenterVoId(networkId);
-          } else if (datacenters && datacenters.length > 0) {
-            setDatacenterVoId(datacenters[0].id);
-          }
-        }
-      
-    }, [isOpen, editMode, network, datacenters,networkId]);
-  
-    const resetForm = () => {
-      setName('');
-      setDescription('');
-      setComment('');
-      setValnTagging('');
-      setVmNetwork('');
-      setPhotoSeparation('');
-      setMtu('');
-      setDnsSettings('');
-      setDnsServer('');
-    };
-  
-    const handleFormSubmit = () => {
-      
-      const dataToSubmit = {
-        name,
-        description,
-        comment,
-        datacenterVoId,
-        valnTagging: valnTagging || false,  // Boolean 기본값 설정
-        vmNetwork: vmNetwork || true,       // Boolean 기본값 설정
-        mtu: mtu || 1500,                   // MTU 기본값 설정
-        dnsSettings: dnsSettings || false,
-        dnsServer: dnsServer || 'DAFDF',
+      if (editMode && network) {
+        setId(network.id);
+        setDatacenterVoId(network.datacenterVo?.id || '');
+        setName(network.name);
+        setDescription(network.description);
+        setComment(network.comment);
+        setPortIsolation(network.portIsolation);
+        setVlan(network.vlan);
+        setVmNetwork(network.vmNetwork);
+        setUsageVm(network.usage?.vm || false);
+        setMtu(network.mtu);
+      } else {
+        resetForm();
+        setDatacenterVoId(networkId || datacenters?.[0]?.id || '');
+      }
+    }, [isOpen, editMode, network, datacenters, networkId]);
+    
+    
+      const resetForm = () => {
+        setId('');
+        setName('');
+        setDescription('');
+        setComment('');
+        setVmNetwork('');
+        setMtu('1500');
+        setUsageVm(false);
+        setVlan('0')
       };
+
+
+
+      const handleFormSubmit = () => {
+        const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
+        if (!selectedDataCenter) {
+          alert("데이터 센터를 선택해주세요.");
+          return;
+        }
+    
+        if(name === ''){
+          alert("이름을 입력해주세요.");
+          return;
+        }
+        const dataToSubmit = {
+          datacenterVo: {
+            id: selectedDataCenter.id,
+            name: selectedDataCenter.name,
+          },
+          name,
+          description,
+          comment,
+          portIsolation: Boolean(portIsolation), // 빈 문자열을 false로 처리
+          mtu: mtu ? parseInt(mtu, 10) : 0, // mtu가 빈 값이면 1500 설정
+          vlan: vlan ? parseInt(vlan, 10) : null, // 빈 문자열을 null로 설정
+          usage: {
+            defaultRoute: false,
+            display: false,
+            gluster: false,
+            management: false,
+            migration: false,
+            vm: true // 기본값을 false로 설정하여 빈 값 방지
+          },
+          vmNetwork:  true
+        };
+        
+    
       console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
+  // 편집 모드에서 관리 네트워크 수정 제한 로직 추가
+  if (editMode && network.usage?.management) {
+    alert('관리 네트워크는 수정할 수 없습니다.');
+    return;
+  }
 
   if (editMode) {
     dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
@@ -207,14 +225,29 @@ const NetworkNewModal = ({
                 </div>
               </div>
 
-              {/* <div className="network_second_contents">
-                <div className="network_checkbox_type1">
-                  <div className="checkbox_group">
-                    <input type="checkbox" id="valn_tagging" name="valn_tagging" />
-                    <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
-                  </div>
-                  <input type="text" id="valn_tagging_input" disabled />
-                </div>
+              <div className="network_second_contents">
+              <div className="network_checkbox_type1">
+  <div className="checkbox_group">
+    <input
+      type="checkbox"
+      id="valn_tagging"
+      name="valn_tagging"
+      checked={vlan !== ''}
+      onChange={(e) => setVlan(e.target.checked ? '' : '')} // 체크 시 공백으로 설정, 비활성화 시 공백 유지
+    />
+    <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
+  </div>
+  <input
+    type="text"
+    id="valn_tagging_input"
+    disabled={vlan === ''}
+    value={vlan}
+    onChange={(e) => setVlan(e.target.value)}
+  />
+</div>
+
+
+
                 <div className="network_checkbox_type2">
                   <input type="checkbox" id="vm_network" name="vm_network" checked />
                   <label htmlFor="vm_network">가상 머신 네트워크</label>
@@ -223,19 +256,45 @@ const NetworkNewModal = ({
                   <input type="checkbox" id="photo_separation" name="photo_separation" />
                   <label htmlFor="photo_separation">포토 분리</label>
                 </div>
+
                 <div className="network_radio_group">
-                  <div style={{ marginTop: '0.2rem' }}>MTU</div>
-                  <div>
-                    <div className="radio_option">
-                      <input type="radio" id="default_mtu" name="mtu" value="default" checked />
-                      <label htmlFor="default_mtu">기본값 (1500)</label>
-                    </div>
-                    <div className="radio_option">
-                      <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
-                      <label htmlFor="user_defined_mtu">사용자 정의</label>
-                    </div>
-                  </div>
-                </div>
+  <div style={{ marginTop: '0.2rem' }}>MTU</div>
+  <div>
+    <div className="radio_option">
+      <input
+        type="radio"
+        id="default_mtu"
+        name="mtu"
+        value="default"
+        checked={mtu === '1500'}
+        onChange={() => setMtu('1500')} // 기본값 설정
+      />
+      <label htmlFor="default_mtu">기본값 (1500)</label>
+    </div>
+    <div className="radio_option">
+      <input
+        type="radio"
+        id="user_defined_mtu"
+        name="mtu"
+        value="user_defined"
+        checked={mtu !== '1500'} // 사용자 정의가 선택되었을 때 체크
+        onChange={() => setMtu('')} // 사용자 정의 시 빈 값으로 설정
+      />
+      <label htmlFor="user_defined_mtu">사용자 정의</label>
+    </div>
+    <input
+      type="text"
+      id="mtu_input"
+      value={mtu}
+      onChange={(e) => setMtu(e.target.value)}
+      disabled={mtu === '1500'} // 사용자 정의가 선택된 경우에만 활성화
+    />
+  </div>
+</div>
+
+
+
+                
                 <div className="network_checkbox_type2">
                   <input type="checkbox" id="dns_settings" name="dns_settings" />
                   <label htmlFor="dns_settings">DNS 설정</label>
@@ -290,7 +349,7 @@ const NetworkNewModal = ({
       </tbody>
     </table>
   </div>
-</div> */}
+</div>
             </form>
           )}
         </div>

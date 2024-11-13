@@ -1699,7 +1699,6 @@ const ApiManager = {
    * @returns {Promise<Object>}
    */
   addNetwork: async (networkData) => {
-    console.log("네트워크 생성 넘어온데이터확인:", networkData); // 데이터 확인
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.ADD_NETWORK(),
@@ -1707,6 +1706,9 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.ADD_NETWORK
     });
   },
+
+
+
   /**
    * @name ApiManager.editNetwork
    * @description 네트워크 편집
