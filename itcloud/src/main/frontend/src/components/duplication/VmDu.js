@@ -5,7 +5,7 @@ import TableOuter from '../table/TableOuter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronCircleRight, faEllipsisV, faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import VncViewer from '../Vnc/VncViewer';
+import VncViewer from '../Computing/Vnc/VncViewer';
 import { createRoot } from 'react-dom/client';
 import TemplateDu from './TemplateDu';
 import VmModal from '../Modal/VmModal';

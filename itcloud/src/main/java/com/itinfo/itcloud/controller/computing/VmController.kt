@@ -561,17 +561,12 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.CREATED)
 	fun console(
 		@PathVariable vmId: String? = null,
-		// @RequestBody console: ConsoleVo? = null,
 	): ResponseEntity<ConsoleVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-//		if (console == null)
-//			throw ErrorPattern.CONSOLE_VO_INVALID.toException()
 		log.info("/computing/vms/{}/console ... 가상머신 콘솔", vmId)
 		return ResponseEntity.ok(iVmOp.console(vmId))
 	}
-
-
 	//endregion
 
 
