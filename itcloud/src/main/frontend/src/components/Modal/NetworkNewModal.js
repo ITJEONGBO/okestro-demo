@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAddNetwork, useAllDataCenters, useDataCenter, useEditNetwork, useNetworkById } from '../../api/RQHook';
+import { Tooltip } from 'react-tooltip';
 
 const NetworkNewModal = ({ 
     isOpen, 
@@ -58,7 +59,7 @@ const NetworkNewModal = ({
         setPortIsolation(network.portIsolation);
         setVlan(network.vlan);
         setVmNetwork(network.vmNetwork);
-        setUsageVm(network.usage?.vm || false);
+        setUsageVm(network.usage?.vm || true);
         setMtu(network.mtu);
       } else {
         resetForm();
@@ -74,7 +75,7 @@ const NetworkNewModal = ({
         setComment('');
         setVmNetwork('');
         setMtu('1500');
-        setUsageVm(false);
+        setUsageVm(true);
         setVlan('0')
       };
 
@@ -100,7 +101,7 @@ const NetworkNewModal = ({
           description,
           comment,
           portIsolation: Boolean(portIsolation), // 빈 문자열을 false로 처리
-          mtu: mtu ? parseInt(mtu, 10) : 0, // mtu가 빈 값이면 1500 설정
+          mtu: mtu ? parseInt(mtu, 10) : 1500, // mtu가 빈 값이면 1500 설정
           vlan: vlan ? parseInt(vlan, 10) : null, // 빈 문자열을 null로 설정
           usage: {
             defaultRoute: false,
@@ -108,7 +109,7 @@ const NetworkNewModal = ({
             gluster: false,
             management: false,
             migration: false,
-            vm: true // 기본값을 false로 설정하여 빈 값 방지
+            vm: true 
           },
           vmNetwork:  true
         };
@@ -172,6 +173,7 @@ const NetworkNewModal = ({
           </button>
         </div>
 
+
         <div className="flex">
           {/* 일반 */}
           {selectedTab === 'network_new_common_btn' && (
@@ -196,8 +198,16 @@ const NetworkNewModal = ({
                 <div className="network_form_group">
                   <div className="checkbox_group">
                     <label htmlFor="name">이름</label>
-                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth />
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                      data-tooltip-id="network-name-tooltip"
+                    />
+                    <Tooltip id="network-name-tooltip" className="icon_tooltip" place="top" effect="solid">
+                      네트워크 이름에 공백이 있거나 15자를 초과하는 경우에는 호스트에서 UUID로 대체합니다.
+                    </Tooltip>
                   </div>
+
                   <input
                     type="text"
                     id="name"
@@ -232,65 +242,79 @@ const NetworkNewModal = ({
       type="checkbox"
       id="valn_tagging"
       name="valn_tagging"
-      checked={vlan !== ''}
-      onChange={(e) => setVlan(e.target.checked ? '' : '')} // 체크 시 공백으로 설정, 비활성화 시 공백 유지
+      checked={vlan !== ''} // vlan이 빈 문자열이 아니면 체크
+      onChange={(e) => setVlan(e.target.checked ? '0' : '')} // 체크되면 '0'으로 초기화, 해제 시 빈 문자열
     />
     <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
   </div>
   <input
     type="text"
     id="valn_tagging_input"
-    disabled={vlan === ''}
+    disabled={vlan === ''} // VLAN 태깅 활성화가 체크되었을 때만 활성화
     value={vlan}
-    onChange={(e) => setVlan(e.target.value)}
+    onChange={(e) => setVlan(e.target.value)} // VLAN 입력 값 변경 시 setVlan 호출
   />
 </div>
 
 
 
+
+
                 <div className="network_checkbox_type2">
-                  <input type="checkbox" id="vm_network" name="vm_network" checked />
+                  <input
+                    type="checkbox"
+                    id="vm_network"
+                    name="vm_network"
+                    checked={usageVm} // Controlled by usageVm state
+                    onChange={(e) => setUsageVm(e.target.checked)}
+                  />
                   <label htmlFor="vm_network">가상 머신 네트워크</label>
                 </div>
                 <div className="network_checkbox_type2">
-                  <input type="checkbox" id="photo_separation" name="photo_separation" />
+                  <input
+                    type="checkbox"
+                    id="photo_separation"
+                    name="photo_separation"
+                    checked={portIsolation} // Controlled by portIsolation state
+                    onChange={(e) => setPortIsolation(e.target.checked)}
+                  />
                   <label htmlFor="photo_separation">포토 분리</label>
                 </div>
 
                 <div className="network_radio_group">
-  <div style={{ marginTop: '0.2rem' }}>MTU</div>
-  <div>
-    <div className="radio_option">
-      <input
-        type="radio"
-        id="default_mtu"
-        name="mtu"
-        value="default"
-        checked={mtu === '1500'}
-        onChange={() => setMtu('1500')} // 기본값 설정
-      />
-      <label htmlFor="default_mtu">기본값 (1500)</label>
-    </div>
-    <div className="radio_option">
-      <input
-        type="radio"
-        id="user_defined_mtu"
-        name="mtu"
-        value="user_defined"
-        checked={mtu !== '1500'} // 사용자 정의가 선택되었을 때 체크
-        onChange={() => setMtu('')} // 사용자 정의 시 빈 값으로 설정
-      />
-      <label htmlFor="user_defined_mtu">사용자 정의</label>
-    </div>
-    <input
-      type="text"
-      id="mtu_input"
-      value={mtu}
-      onChange={(e) => setMtu(e.target.value)}
-      disabled={mtu === '1500'} // 사용자 정의가 선택된 경우에만 활성화
-    />
-  </div>
-</div>
+                  <div style={{ marginTop: '0.2rem' }}>MTU</div>
+                  <div>
+                    <div className="radio_option">
+                      <input
+                        type="radio"
+                        id="default_mtu"
+                        name="mtu"
+                        value="default"
+                        checked={mtu === '1500'}
+                        onChange={() => setMtu('1500')} // 기본값 설정
+                      />
+                      <label htmlFor="default_mtu">기본값 (1500)</label>
+                    </div>
+                    <div className="radio_option">
+                      <input
+                        type="radio"
+                        id="user_defined_mtu"
+                        name="mtu"
+                        value="user_defined"
+                        checked={mtu !== '1500'} // 사용자 정의가 선택되었을 때 체크
+                        onChange={() => setMtu('')} // 사용자 정의 시 빈 값으로 설정
+                      />
+                      <label htmlFor="user_defined_mtu">사용자 정의</label>
+                    </div>
+                    <input
+                      type="text"
+                      id="mtu_input"
+                      value={mtu}
+                      onChange={(e) => setMtu(e.target.value)}
+                      disabled={mtu === '1500'} // 사용자 정의가 선택된 경우에만 활성화
+                    />
+                  </div>
+                </div>
 
 
 
@@ -310,46 +334,46 @@ const NetworkNewModal = ({
               </div>
 
               <div id="network_new_cluster_form" style={{ display: editMode ? 'none' : 'block' }}>
-  <span>클러스터에서 네트워크를 연결/분리</span>
-  <div>
-    <table className="network_new_cluster_table">
-      <thead>
-        <tr>
-          <th>이름</th>
-          <th>
-            <div className="checkbox_group">
-              <input type="checkbox" id="connect_all" />
-              <label htmlFor="connect_all"> 모두 연결</label>
-            </div>
-          </th>
-          <th>
-            <div className="checkbox_group">
-              <input type="checkbox" id="require_all" />
-              <label htmlFor="require_all"> 모두 필요</label>
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Default</td>
-          <td className="checkbox-group">
-            <div className="checkbox_group">
-              <input type="checkbox" id="connect_default" />
-              <label htmlFor="connect_default"> 연결</label>
-            </div>
-          </td>
-          <td className="checkbox-group">
-            <div className="checkbox_group">
-              <input type="checkbox" id="require_default" />
-              <label htmlFor="require_default"> 필수</label>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+                <span>클러스터에서 네트워크를 연결/분리</span>
+                <div>
+                  <table className="network_new_cluster_table">
+                    <thead>
+                      <tr>
+                        <th>이름</th>
+                        <th>
+                          <div className="checkbox_group">
+                            <input type="checkbox" id="connect_all" />
+                            <label htmlFor="connect_all"> 모두 연결</label>
+                          </div>
+                        </th>
+                        <th>
+                          <div className="checkbox_group">
+                            <input type="checkbox" id="require_all" />
+                            <label htmlFor="require_all"> 모두 필요</label>
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Default</td>
+                        <td className="checkbox-group">
+                          <div className="checkbox_group">
+                            <input type="checkbox" id="connect_default" />
+                            <label htmlFor="connect_default"> 연결</label>
+                          </div>
+                        </td>
+                        <td className="checkbox-group">
+                          <div className="checkbox_group">
+                            <input type="checkbox" id="require_default" />
+                            <label htmlFor="require_default"> 필수</label>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </form>
           )}
         </div>

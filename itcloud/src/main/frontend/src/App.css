@@ -47,7 +47,7 @@ button{
     cursor: not-allowed;    
 } */
 .icon_tooltip {
-    max-width: 9vw !important;
+    max-width: 12vw !important;
     text-align: center;
   }
 .Overlay {
@@ -385,7 +385,7 @@ button{
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
 .network_new_popup.edit-mode {
-    height: 70%;
+    height: 73%;
 }
 .network_new_nav{
     justify-content: space-between;

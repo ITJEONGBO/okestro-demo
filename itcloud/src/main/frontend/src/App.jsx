@@ -128,7 +128,8 @@ const App = () => {
               <Route path="/storages/domains" element={<AllDomain />} />
               <Route path="/storages/domains/:id" element={<StorageDomainDetail />} /> 
               <Route path="/storages/domains/:id/:section" element={<StorageDomainDetail />} /> 
-              
+        
+              <Route path="/storages/disks" element={<AllDisk />} />
               <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />
               <Route path="/storages/disks/:id/:section" element={<StorageDiskDetail />} />
 
@@ -136,6 +137,7 @@ const App = () => {
               <Route path="/settings" element={<Setting />} />
               <Route path="/settings/:section" element={<Setting />} />
               <Route path="/error" element={<Error />} />
+
  
               {/*임시(삭제예정) */}
               {/* <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} /> */}
@@ -151,7 +153,7 @@ const App = () => {
               {/* <Route path="/computing/host" element={<Host />} /> */}
               {/* <Route path="/computing/templates" element={<Templates />} /> */}
               {/* <Route path="/storage-domainpart" element={<DomainParts />} /> */}
-              {/* <Route path="/storages/disks" element={<AllDisk />} /> */}
+   
 
             </Routes>
           </MainOuter>

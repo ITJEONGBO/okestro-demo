@@ -2,63 +2,99 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { useAddVnicProfile, useAllDataCenters, useEditVnicProfile, useAllNetworks } from '../../api/RQHook'; // 네트워크 훅 임포트
+import { useAddVnicProfile, useAllDataCenters, useEditVnicProfile, useAllNetworks, useAllVnicProfilesFromNetwork } from '../../api/RQHook'; // 네트워크 훅 임포트
 
 const VnicProfileModal = ({ 
   isOpen, 
   onRequestClose,
   editMode = false,
   vnicProfile,
-  networkId 
+  networkId ,
 }) => {
-  const [datacenterVoId, setDatacenterVoId] = useState(vnicProfile?.dataCenterId || '');  
-  const [name, setName] = useState(vnicProfile?.name || '');
-  const [description, setDescription] = useState(vnicProfile?.description || '');
+  const [id, setId] = useState('');
+  const [datacenterVoName, setDatacenterVoName] = useState(''); // 데이터 센터 이름
+  const [networkVoName, setNetworkVoName] = useState('');           // 네트워크 이름
+  const [datacenterVoId, setDatacenterVoId] = useState('');  
+  const [networkVoId, sentNetworkVoId] = useState('');  
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [passthrough, setPassthrough] = useState(vnicProfile?.passThrough !== 'DISABLED');
   const [portMirroring, setPortMirroring] = useState(vnicProfile?.portMirroring === true);
-  const [allowAllUsers, setAllowAllUsers] = useState(true);
-  const [networkName, setNetworkName] = useState(vnicProfile?.network || ''); // 네트워크 이름 초기화
+  const [migration, setMigration]  = useState('');
   const [networkFilter, setNetworkFilter] = useState(vnicProfile?.networkFilterVo?.name || '');
+
 
   const { mutate: addVnicProfile } = useAddVnicProfile();
   const { mutate: editVnicProfile } = useEditVnicProfile();
-  const { data: datacenters } = useAllDataCenters((e) => ({ ...e }));
-  const { data: networks } = useAllNetworks((n) => ({ id: n.id, name: n.name , networkFilter: n.networkFilterVo?.name })); // 네트워크 데이터 가져오기
 
+
+  const { 
+    data: vnics 
+  } = useAllVnicProfilesFromNetwork(networkId);
+
+  const { 
+    data: datacenters 
+  } = useAllDataCenters((e) => ({ ...e }));
+  const { 
+    data: networks 
+  } = useAllNetworks((n) => ({ id: n.id, name: n.name , networkFilter: n.networkFilterVo?.name })); // 네트워크 데이터 가져오기
+
+  
+  // 초기값 설정
   useEffect(() => {
-    if (editMode && vnicProfile) {
+    if (isOpen && editMode && vnicProfile) {
+
+  
+      setId(vnicProfile.id || '');
       setName(vnicProfile.name || '');
+      setDatacenterVoName(vnicProfile.dataCenterVo || '');  // 데이터 센터 이름 설정
+      setDatacenterVoId(vnicProfile.dataCenterVo || '');
+      setNetworkVoName(vnicProfile.network || '');
+      sentNetworkVoId(vnicProfile.network || '');
       setDescription(vnicProfile.description || '');
       setPassthrough(vnicProfile.passThrough !== 'DISABLED');
       setPortMirroring(vnicProfile.portMirroring === true);
-      setAllowAllUsers(true);
-      setNetworkName(vnicProfile.network || '');
+      setMigration(vnicProfile.migration || '');
       setNetworkFilter(vnicProfile.networkFilterVo?.name || '');
-    } else {
+      
+    } else if (isOpen && !editMode && vnics && vnics.length > 0) {
+      const defaultVnic = vnics[0];
+      setDatacenterVoName(defaultVnic.dataCenterVo || '');
+      setNetworkVoName(defaultVnic.network || '');
+      resetForm();
+    }else if (vnics && vnics.length > 0) {
+      // 생성 모드일 때는 vnics의 첫 번째 항목으로 기본값 설정
+      const defaultVnic = vnics[0];
+      setDatacenterVoName(defaultVnic.dataCenterVo?.name || '');
+      setNetworkVoName(defaultVnic.network?.name || '');
       resetForm();
     }
-  }, [editMode, vnicProfile, networks]);
+  }, [isOpen, editMode, vnicProfile, networkId,vnics]);
 
   const resetForm = () => {
     setName('');
     setDescription('');
     setPassthrough(false);
     setPortMirroring(false);
-    setAllowAllUsers(true);
+    setMigration(false);
     setNetworkFilter('');
+
   };
 
   const handleFormSubmit = () => {
+
     const newProfile = {
       name,
+      networkVo: { 
+        id: networkVoId,
+        name: networkVoName 
+      },
       description,
-      passthrough,
-      portMirroring,
-      allowAllUsers,
-      networkFilter,
+      migration,
+ 
     };
 
-    if (editMode && vnicProfile) {
+    if (isOpen &&editMode && vnicProfile) {
       editVnicProfile({ 
         dataCenterId: vnicProfile.id, 
         dataCenterData: newProfile 
@@ -106,32 +142,17 @@ const VnicProfileModal = ({
             {/* 데이터 센터 */}
             <div className="vnic_new_box">
               <label htmlFor="data_center">데이터 센터</label>
-              <select
-                id="data_center"
-                value={datacenterVoId}
-                onChange={(e) => setDatacenterVoId(e.target.value)}
-                disabled
-              >
-                {datacenters &&
-                  datacenters.map((dc) => (
-                    <option key={dc.id} value={dc.id}>
-                      {dc.name}
-                    </option>
-                  ))}
+              <select id="data_center" value={datacenterVoName} disabled>
+                <option value={datacenterVoName}>{datacenterVoName}</option>
               </select>
             </div>
             {/* 네트워크 */}
             <div className="vnic_new_box">
-              <label htmlFor="network">네트워크</label>
-              <select id="network" value={networkName} disabled>
-                {networks &&
-                  networks.map((network) => (
-                    <option key={network.id} value={network.name}>
-                      {network.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
+            <label htmlFor="network">네트워크</label>
+            <select id="network" value={networkVoName} disabled>
+              <option value={networkVoName}>{networkVoName}</option>
+            </select>
+          </div>
             {/* 이름 */}
             <div className="vnic_new_box">
               <span>이름</span>
@@ -190,7 +211,7 @@ const VnicProfileModal = ({
               <label htmlFor="port_mirroring">포트 미러링</label>
             </div>
             {/* 모든 사용자 허용 - 편집 모드가 아닌 경우에만 표시 */}
-            {!editMode && (
+            {/* {!editMode && (
               <div className="vnic_new_checkbox">
                 <input 
                   type="checkbox" 
@@ -200,7 +221,7 @@ const VnicProfileModal = ({
                 />
                 <label htmlFor="allow_all_users">모든 사용자가 이 프로파일을 사용하도록 허용</label>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
