@@ -6,6 +6,7 @@ import TableInfo from '../../table/TableInfo';
 import { useAllVMs } from '../../../api/RQHook';
 import renderStatusIcon from '../renderStatusIcon';
 import VmActionButtons from '../../button/VmActionButtons';
+// import Vnc from '../Vnc/Vnc';
 
 const VmModal = React.lazy(() => import('../../Modal/VmModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -40,15 +41,19 @@ const Vms = () => {
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
 
-    if (type === 'console' && isOpen && selectedVm?.id && selectedVm?.status !== 'DOWN') {
-      navigate(`/computing/vms/${selectedVm.id}/console`);
-      // window.open(navigate(`/computing/vms/${selectedVm.id}/console`), '_blank', 'noopener,noreferrer');
-    }
+    // if (type === 'console' && isOpen && selectedVm?.id && selectedVm?.status !== 'DOWN') {
+    //   navigate(`/computing/vms/${selectedVm.id}/console`);
+    //   // window.open(navigate(`/computing/vms/${selectedVm.id}/console`), '_blank', 'noopener,noreferrer');
+    // }
   };
 
   const handleNameClick = (id) => {
       navigate(`/computing/vms/${id}`);
   };
+
+  // const openHtmlPage = () => {
+  //   window.open('/NoVNC.html', '_blank'); // HTML 파일 경로와 옵션 설정
+  // };
 
   return (
     <>
@@ -60,6 +65,8 @@ const Vms = () => {
         isEditDisabled={!selectedVm?.id}
         // status={}
       />
+      {/* <button onClick={openHtmlPage}>콘솔</button> */}
+
       {/* <div className="header_right_btns">
         <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
         <button onClick={() => selectedVm?.id && toggleModal('edit', true)} disabled={!selectedVm?.id}>편집</button>
@@ -100,8 +107,8 @@ const Vms = () => {
           />
         )}
 
-        {/* {modals.console && selectedVm && (
-          <VncViewerPage data={selectedVm}/>
+        {/* {modals.console && selectedVm && (   
+
         )} */}
 
       </Suspense>

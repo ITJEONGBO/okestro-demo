@@ -10,6 +10,7 @@ import HostActionButtons from '../../button/HostActionButtons';
 
 const HostModal = React.lazy(() => import('../../Modal/HostModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
+const HostActionModal = React.lazy(() => import('../../Modal/HostActionModal'))
 
 const Hosts = () => {
   const {
@@ -35,7 +36,7 @@ const Hosts = () => {
   });
 
   const navigate = useNavigate();
-  const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+  const [modals, setModals] = useState({ create: false, edit: false, delete: false, deactivate: false });
   const [selectedHost, setSelectedHost] = useState(null);
 
   const toggleModal = (type, isOpen) => {
@@ -61,7 +62,8 @@ const Hosts = () => {
         onCreate={() => toggleModal('create', true)}
         onEdit={() => selectedHost?.id && toggleModal('edit', true)}
         onDelete={() => selectedHost?.id && toggleModal('delete', true)}
-        onManage={() => selectedHost?.id && toggleModal('manage', true)}
+        // onManage={() => selectedHost?.id && toggleModal('manage', true)}
+        onDeactivate={() => selectedHost?.id && toggleModal('deactivate', true)}
         isEditDisabled={!selectedHost?.id}
       />
       <span>id = {selectedHost?.id || ''}</span>
@@ -97,6 +99,17 @@ const Hosts = () => {
             data={selectedHost}
           />
         )}
+        {modals.deactivate && selectedHost && (
+          <HostActionModal
+            isOpen={modals.deactivate}
+            action={'deactivate'}
+            onRequestClose={() => toggleModal('deactivate', false)}
+            contentLabel={'유지보수'}
+            data={selectedHost}
+          />
+        )}
+        
+
       </Suspense>
     </>
   );

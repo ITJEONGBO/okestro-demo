@@ -735,6 +735,46 @@ export const useDeleteHost = () => {
     },
   });
 };
+
+/**
+ * @name useDeactivateHost
+ * @description 호스트 유지보수 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeactivateHost = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (hostId) => await ApiManager.deactivateHost(hostId),
+    onSuccess: () => {
+      console.log(`useDeactivateHost ... `);
+      // queryClient.invalidateQueries('allHosts');
+    },
+    onError: (error) => {
+      console.error('Error deactivate host:', error);
+    },  
+  });
+};
+
+/**
+ * @name useActivateHost
+ * @description 호스트 활성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useActivateHost = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (hostId) => await ApiManager.activateHost(hostId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allHosts');
+    },
+    onError: (error) => {
+      console.error('Error deactivate host:', error);
+    },  
+  });
+};
+
 //endregion: Host
 
 //region: VM ----------------가상머신---------------------

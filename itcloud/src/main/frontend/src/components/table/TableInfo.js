@@ -204,7 +204,7 @@ const TableInfo = {
     { header: '도메인 유형', accessor: 'domainType' },
     { header: '스토리지 유형', accessor: 'storageType' },
     { header: '포맷', accessor: 'format' },
-    { header: '데이터 센터간 상태', accessor: 'dataCenterStatus' },
+    { header: '데이터 센터간 상태', accessor: 'status' },
     { header: '전체 공간', accessor: 'diskSize' },
     { header: '여유 공간', accessor: 'availableSize' },
     { header: '사용된 공간', accessor: 'usedSize' },
