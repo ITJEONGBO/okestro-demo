@@ -39,7 +39,8 @@ const NetworkVnicprofile = ({network}) => {
           id: vnicProfile?.id ?? '없음',
           dataCenterId: vnicProfile?.dataCenterVo?.id ?? '', 
           name: vnicProfile?.name ?? '없음',
-          network: vnicProfile?.networkVo?.name ?? '',  // 네트워크 이름
+          networkId: vnicProfile?.networkVo?.id ?? '',  // 네트워크 이름
+          networkName: vnicProfile?.networkVo?.name ?? '',  // 네트워크 이름
           dataCenterVo: vnicProfile?.dataCenterVo?.name ?? '',  // 데이터 센터
           compatVersion: vnicProfile?.compatVersion ?? '없음',  // 호환 버전
           qosName: vnicProfile?.qosName ?? '',  // QoS 이름
@@ -99,6 +100,7 @@ const NetworkVnicprofile = ({network}) => {
                   editMode={modals.edit}
                   vnicProfile={selectedVnicProfiles}
                   networkId={network?.id} // 네트워크 이름 전달
+           
               />
           )}
           {modals.delete && selectedVnicProfiles && (

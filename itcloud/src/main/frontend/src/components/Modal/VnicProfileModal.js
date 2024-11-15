@@ -5,6 +5,8 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useAddVnicProfile, useAllDataCenters, useEditVnicProfile, useAllNetworks, useAllVnicProfilesFromNetwork } from '../../api/RQHook'; // 네트워크 훅 임포트
 
 const VnicProfileModal = ({ 
+
+  // 편집기능은 되지만 테이블 행이제일첫번째로 올라감
   isOpen, 
   onRequestClose,
   editMode = false,
@@ -21,7 +23,7 @@ const VnicProfileModal = ({
   const [passthrough, setPassthrough] = useState(vnicProfile?.passThrough !== 'DISABLED');
   const [portMirroring, setPortMirroring] = useState(vnicProfile?.portMirroring === true);
   const [migration, setMigration]  = useState('');
-  const [networkFilter, setNetworkFilter] = useState(vnicProfile?.networkFilterVo?.name || '');
+  const [networkFilter, setNetworkFilter] = useState('');
 
 
   const { mutate: addVnicProfile } = useAddVnicProfile();
@@ -31,45 +33,35 @@ const VnicProfileModal = ({
   const { 
     data: vnics 
   } = useAllVnicProfilesFromNetwork(networkId);
-
-  const { 
-    data: datacenters 
-  } = useAllDataCenters((e) => ({ ...e }));
-  const { 
-    data: networks 
-  } = useAllNetworks((n) => ({ id: n.id, name: n.name , networkFilter: n.networkFilterVo?.name })); // 네트워크 데이터 가져오기
-
+  
   
   // 초기값 설정
   useEffect(() => {
-    if (isOpen && editMode && vnicProfile) {
-
-  
-      setId(vnicProfile.id || '');
-      setName(vnicProfile.name || '');
-      setDatacenterVoName(vnicProfile.dataCenterVo || '');  // 데이터 센터 이름 설정
-      setDatacenterVoId(vnicProfile.dataCenterVo || '');
-      setNetworkVoName(vnicProfile.network || '');
-      sentNetworkVoId(vnicProfile.network || '');
-      setDescription(vnicProfile.description || '');
-      setPassthrough(vnicProfile.passThrough !== 'DISABLED');
-      setPortMirroring(vnicProfile.portMirroring === true);
-      setMigration(vnicProfile.migration || '');
-      setNetworkFilter(vnicProfile.networkFilterVo?.name || '');
-      
-    } else if (isOpen && !editMode && vnics && vnics.length > 0) {
-      const defaultVnic = vnics[0];
-      setDatacenterVoName(defaultVnic.dataCenterVo || '');
-      setNetworkVoName(defaultVnic.network || '');
-      resetForm();
-    }else if (vnics && vnics.length > 0) {
-      // 생성 모드일 때는 vnics의 첫 번째 항목으로 기본값 설정
-      const defaultVnic = vnics[0];
-      setDatacenterVoName(defaultVnic.dataCenterVo?.name || '');
-      setNetworkVoName(defaultVnic.network?.name || '');
-      resetForm();
+    if (isOpen) {
+      if (editMode && vnicProfile) {
+        // 편집 모드
+        setId(vnicProfile.id || '');
+        setName(vnicProfile.name || '');
+        setDatacenterVoName(vnicProfile.dataCenterVo || '');
+        setDatacenterVoId(vnicProfile.dataCenterVo || '');
+        setNetworkVoName(vnicProfile.networkName || '');
+        sentNetworkVoId(vnicProfile.networkId || '');
+        setDescription(vnicProfile.description || '');
+        setPassthrough(vnicProfile.passThrough !== 'DISABLED');
+        setPortMirroring(vnicProfile.portMirroring === true);
+        setMigration(vnicProfile.migration || '');
+        setNetworkFilter(vnicProfile.networkFilterVo?.name || '');
+      } else if (!editMode && vnics && vnics.length > 0) {
+        // 새로 만들기 모드
+        const defaultVnic = vnics[0];
+        setDatacenterVoName(defaultVnic.dataCenterVo || '');
+        setNetworkVoName(defaultVnic.networkName || '');
+        sentNetworkVoId(defaultVnic.networkId || '');
+        resetForm();
+      }
     }
-  }, [isOpen, editMode, vnicProfile, networkId,vnics]);
+  }, [isOpen, editMode, vnicProfile, networkId, vnics]);
+  
 
   const resetForm = () => {
     setName('');
@@ -77,27 +69,26 @@ const VnicProfileModal = ({
     setPassthrough(false);
     setPortMirroring(false);
     setMigration(false);
-    setNetworkFilter('');
-
   };
 
   const handleFormSubmit = () => {
-
-    const newProfile = {
+    const dataToSubmit = {
       name,
       networkVo: { 
         id: networkVoId,
-        name: networkVoName 
+        name: networkVoName
       },
       description,
-      migration,
+      migration : false,
  
     };
+    console.log('Datadddddddddddddddd:', dataToSubmit); 
 
     if (isOpen &&editMode && vnicProfile) {
+      dataToSubmit.id = id;
       editVnicProfile({ 
         dataCenterId: vnicProfile.id, 
-        dataCenterData: newProfile 
+        dataCenterData: dataToSubmit 
       }, {
         onSuccess: () => {
           alert('vNIC 프로파일이 성공적으로 편집되었습니다.');
@@ -108,7 +99,7 @@ const VnicProfileModal = ({
         }
       });
     } else {
-      addVnicProfile(newProfile, {
+      addVnicProfile(dataToSubmit, {
         onSuccess: () => {
           alert('vNIC 프로파일이 성공적으로 추가되었습니다.');
           onRequestClose();
@@ -117,7 +108,7 @@ const VnicProfileModal = ({
           console.error('vNIC 프로파일 추가 중 오류 발생:', error);
         }
       });
-    }
+    } 
   };
 
   return (
@@ -148,11 +139,24 @@ const VnicProfileModal = ({
             </div>
             {/* 네트워크 */}
             <div className="vnic_new_box">
-            <label htmlFor="network">네트워크</label>
-            <select id="network" value={networkVoName} disabled>
-              <option value={networkVoName}>{networkVoName}</option>
-            </select>
-          </div>
+                <label htmlFor="network">네트워크</label>
+                <select
+                    id="network"
+                    value={networkVoId || ''} // networkVoId 값이 없을 경우 빈 문자열로 처리
+                    onChange={(e) => sentNetworkVoId(e.target.value)} // state 업데이트 함수 호출
+                    disabled // 항상 비활성화 상태 유지
+                  >
+                    <option value="" disabled>
+                      네트워크 선택
+                    </option>
+                    {vnics?.map((vnic) => (
+                      <option value={vnic.networkId}>
+                        {vnic.networkName || '이름 없음'}
+                      </option>
+                    ))}
+                  </select>
+              </div>
+
             {/* 이름 */}
             <div className="vnic_new_box">
               <span>이름</span>

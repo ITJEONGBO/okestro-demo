@@ -204,7 +204,7 @@ const TableColumnsInfo = {
   ],
   VNIC_PROFILES: [
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '네트워크', accessor: 'network', clickable: false },
+    { header: '네트워크', accessor: 'networkName', clickable: false },
     { header: '데이터 센터', accessor: 'dataCenterVo', clickable: false },
     { header: '호환 버전', accessor: 'compatVersion', clickable: false },
     { header: 'QoS 이름', accessor: 'qosName', clickable: false },
