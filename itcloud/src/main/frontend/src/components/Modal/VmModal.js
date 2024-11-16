@@ -6,8 +6,6 @@ import { Tooltip } from 'react-tooltip';
 import { 
   useAddVm, 
   useAllClusters, 
-  useAllDataCenters, 
-  useAllVMs, 
   useEditVm, 
   useVmById 
 } from '../../api/RQHook';
@@ -16,9 +14,11 @@ const VmModal = ({
   isOpen, 
   onRequestClose, 
   editMode = false,
+  vmdata,
   vmId,
 }) => {
   const [id, setId] = useState('');
+  const [clusterVoName, setClusterVoName] = useState(''); // 데이터 센터 이름
   const [clusterVoId, setClusterVoId] = useState('');  
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
@@ -30,13 +30,14 @@ const VmModal = ({
   // 가상머신 데이터 가져오기
   const { 
     data: vm, 
-    status: vmStatus,
-    isRefetching: isVmRefetching,
-    refetch: refetchVm, 
-    isError: isVmError, 
-    error: vmError, 
-    isLoading: isVmLoading,
   } = useVmById(vmId);
+
+  // vm 데이터 변경 시 콘솔에 출력
+useEffect(() => {
+  if (vm) {
+    console.log('가져온 가상머신 데이터:', vm);
+  }
+}, [vm]);
 
   // 클러스터 가져오기
   const {
@@ -57,6 +58,22 @@ const VmModal = ({
       setClusterVoId(clusters[0].id);
     }
   }, [editMode, clusters]);
+
+  // 초기값 설정
+  useEffect(() => {
+    if (isOpen) {
+      if (editMode && vmdata) {
+        // 편집 모드
+        setId(vmdata.id || '');
+        setName(vmdata.name || '');
+        setClusterVoName(vmdata.cluster || '');
+        setClusterVoId(vmdata.dataCenterVo || '');
+     
+        setDescription(vmdata.description || '');
+
+      }
+    }
+  }, [isOpen, editMode,vmId]);
 
   const resetForm = () => {
     setId('');

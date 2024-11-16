@@ -220,6 +220,7 @@ const VmDu = ({
                   onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
                   editMode={modals.edit}
                   vmdata={selectedVms}  // 선택된 VM 데이터만 전달
+                  vmId={selectedVms?.id}
                 />
               )}
            
