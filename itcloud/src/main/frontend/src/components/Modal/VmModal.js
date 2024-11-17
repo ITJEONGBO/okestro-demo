@@ -6,6 +6,7 @@ import { Tooltip } from 'react-tooltip';
 import { 
   useAddVm, 
   useAllClusters, 
+  useAllTemplates, 
   useEditVm, 
   useVmById 
 } from '../../api/RQHook';
@@ -18,11 +19,13 @@ const VmModal = ({
   vmId,
 }) => {
   const [id, setId] = useState('');
-  const [clusterVoName, setClusterVoName] = useState(''); // 데이터 센터 이름
+  const [clusterVoName, setClusterVoName] = useState(''); // 클러스터이름
   const [clusterVoId, setClusterVoId] = useState('');  
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [description, setDescription] = useState('');
+  const [templateId, setTemplateId] = useState('');
+
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -42,22 +45,55 @@ useEffect(() => {
   // 클러스터 가져오기
   const {
     data: clusters,
-    status: datacentersStatus,
-    isRefetching: isDatacentersRefetching,
-    refetch: refetchDatacenters,
-    isError: isDatacentersError,
-    error: datacentersError,
-    isLoading: isDatacentersLoading
   } = useAllClusters((e) => ({
     ...e,
   }));
-
+  // 템플릿 가져오기
+  const {
+    data: templates,
+  } = useAllTemplates((e) => ({
+    ...e,
+  }));
   useEffect(() => {
     // editMode가 아닐 때만 첫 번째 데이터센터 ID를 기본값으로 설정
     if (!editMode && clusters && clusters.length > 0) {
       setClusterVoId(clusters[0].id);
     }
   }, [editMode, clusters]);
+useEffect(() => {
+  if (editMode && vmdata?.templateId) {
+    setTemplateId(vmdata.templateId); // 편집 모드: 기존 템플릿 ID
+  } else if (!editMode && templates && templates.length > 0) {
+    setTemplateId(templates[0].id); // 생성 모드: 첫 번째 템플릿 ID 설정
+  }
+}, [editMode, vmdata, templates]);
+
+
+    // 운영 시스템 및 칩셋 데이터 가져오기
+    const [osOptions, setOsOptions] = useState([]);
+    const [chipsetOptions, setChipsetOptions] = useState([]);
+    const [selectedOs, setSelectedOs] = useState('');
+    const [selectedChipset, setSelectedChipset] = useState('');
+    useEffect(() => {
+    const osList = ['Linux', 'Windows', 'MacOS'];
+    setOsOptions(osList);
+
+    // 초기 칩셋 옵션 설정
+    setChipsetOptions([]);
+    }, []);
+
+    useEffect(() => {
+    // 운영 시스템 선택에 따라 칩셋 옵션 업데이트
+    const chipsetMap = {
+        Linux: ['Q35_OVMF', 'Q35_SEA_BIOS', 'Q35_SECURE_BOOT'],
+        Windows: ['I440FX_SEA_BIOS', 'Q35_SEA_BIOS', 'Q35_SECURE_BOOT'],
+        MacOS: ['Q35_OVMF', 'Q35_SECURE_BOOT'],
+    };
+    setChipsetOptions(chipsetMap[selectedOs] || []);
+    setSelectedChipset(''); // OS 변경 시 칩셋 초기화
+    }, [selectedOs]);
+
+
 
   // 초기값 설정
   useEffect(() => {
@@ -196,13 +232,6 @@ return (
                   >
                   고가용성
                   </div>
-                  {/* <div
-                  id="res_alloc_tab"
-                  className={selectedModalTab === 'res_alloc' ? 'active-tab' : 'inactive-tab'}
-                  onClick={() => setSelectedModalTab('res_alloc')}
-                  >
-                  리소스 할당
-                  </div> */}
                   <div
                   id="boot_option_tab"
                   className={selectedModalTab === 'boot_outer' ? 'active-tab' : 'inactive-tab'}
@@ -237,28 +266,68 @@ return (
                               <div className='datacenter_span'>데이터센터 Default</div>
                           </div>
 
-                          <div className='disabled'>
-                              <label htmlFor="template" style={{ color: 'gray' }}>템플릿</label>
-                              <select id="template" disabled>
-                                  <option value="test02">test02</option>
-                              </select>
-                          </div>
                           <div>
-                              <label htmlFor="os">운영 시스템</label>
-                              <select id="os">
-                                  <option value="linux">Linux</option>
-                              </select>
-                          </div>
-                          <div>
-                              <label htmlFor="firmware">칩셋/펌웨어 유형</label>
-                              <select id="firmware">
-                                  <option value="bios">BIOS의 Q35 칩셋</option>
-                              </select>
-                          </div>
+  <label htmlFor="template" style={{ color: 'gray' }}>템플릿</label>
+  <select
+    id="template"
+    value={templateId} // 선택된 템플릿 ID와 동기화
+    onChange={(e) => setTemplateId(e.target.value)} // 상태 업데이트
+    disabled={editMode} // 편집 모드일 경우 비활성화
+  >
+    {editMode && vmdata?.templateName ? (
+      // 편집 모드에서는 고정된 템플릿만 표시
+      <option value={vmdata.templateId}>{vmdata.templateName}</option>
+    ) : (
+      // 생성 모드에서는 템플릿 목록을 표시
+      templates &&
+      templates.map((template) => (
+        <option key={template.id} value={template.id}>
+          {template.name} {/* 템플릿 이름 표시 */}
+        </option>
+      ))
+    )}
+  </select>
+</div>
+                        <div className="network_form_group">
+                        <label htmlFor="os">운영 시스템</label>
+                        <select
+                            id="os"
+                            value={selectedOs}
+                            onChange={(e) => setSelectedOs(e.target.value)}
+                        >
+                            <option value="">운영 시스템 선택</option>
+                            {osOptions.map((os) => (
+                            <option key={os} value={os}>
+                                {os}
+                            </option>
+                            ))}
+                        </select>
+                        </div>
+
+                        <div className="network_form_group">
+                        <label htmlFor="chipset">칩셋/펌웨어 유형</label>
+                        <select
+                            id="chipset"
+                            value={selectedChipset}
+                            onChange={(e) => setSelectedChipset(e.target.value)}
+                            disabled={chipsetOptions.length === 0} // 칩셋 옵션이 없을 때 비활성화
+                        >
+                            <option value="">칩셋 선택</option>
+                            {chipsetOptions.map((chipset) => (
+                            <option key={chipset} value={chipset}>
+                                {chipset}
+                            </option>
+                            ))}
+                        </select>
+                        </div>
+
                           <div style={{ marginBottom: '2%' }}>
                               <label htmlFor="optimization">최적화 옵션</label>
                               <select id="optimization">
-                                  <option value="server">서버</option>
+                                <option value="server">서버</option>
+                                <option value="desktop">데스크탑</option>
+                                <option value="high-performance">고성능</option>
+
                               </select>
                           </div>
               </div>
@@ -294,20 +363,47 @@ return (
                               />
                           </div>
                       </div>
-                      <div className='px-1 font-bold'>인스턴스 이미지</div>
-                      <div className="edit_third_content" style={{ borderBottom: '1px solid gray', marginBottom:'0.2rem' }}>
-                          <div>
-                              <span>adfdsfadsf</span>
-                          </div>
-                          <div>
-                          <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
-                              <button onClick={() => setIsCreatePopupOpen(true)}>생성</button>
-                              <div className='flex'>
-                                  <button>+</button>
-                                  <button>-</button>
-                              </div>
-                          </div>
-                      </div>
+                      <div className="px-1 font-bold">인스턴스 이미지</div>
+                        <div
+                        className="edit_third_content"
+                        style={{ borderBottom: "1px solid gray", marginBottom: "0.2rem" }}
+                        >
+                        {editMode ? (
+                            // 편집 모드일 때
+                            <div className='vm_plus_btn_outer'>
+                       
+                            <div className='vm_plus_btn'>
+                                <div >#</div>
+                                <div className='flex'>
+                                    <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
+                                    편집
+                                    </button>
+                                    <div className="flex">
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        ) : (
+                            // 생성 모드일 때
+                            <div className='vm_plus_btn_outer'>
+                           
+                            <div className='vm_plus_btn'>
+                                    <div style={{color:'white'}}>.</div>
+                                    <div className='flex'>
+                                        <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+                                        <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
+                                        <div className="flex">
+                                            <button>+</button>
+                                            <button>-</button>
+                                        </div>
+                                    </div>
+                            </div>
+                            </div>
+                        )}
+                        </div>
+
                       
                       <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
                           

@@ -170,18 +170,18 @@ const VmDu = ({
             <button onClick={() => toggleModal('create', true)}>새로만들기</button>
             {/* <button onClick={() => handleOpenPopup('vm_edit')}>편집</button> */}
             <button onClick={() => selectedVms?.id && toggleModal('edit', true)} disabled={!selectedVms?.id}>편집</button>
-            <button className="disabled">실행</button>
+            <button className="disabled" disabled={!selectedVms?.id}>실행</button>
             <button className={Vmdata.status === 'UP' ? '' : 'disabled'} disabled={Vmdata.status !== 'UP'}>
               일시중지
             </button>
-            <button className="disabled">종료</button>
-            <button className="disabled">재부팅</button>
+            <button className="disabled" disabled={!selectedVms?.id}>종료</button>
+            <button className="disabled" disabled={!selectedVms?.id}>재부팅</button>
             {showTemplateButton && (
               <button onClick={handleTemplateButtonClick}>템플릿</button>
             )}
             <button onClick={handleButtonClick}>콘솔</button>
-            <button onClick={() => handleOpenPopup('snapshot')}>스냅샷 생성</button>
-            <button onClick={() => handleOpenPopup('migration')}>마이그레이션</button>
+            <button onClick={() => handleOpenPopup('snapshot')} disabled={!selectedVms?.id}>스냅샷 생성</button>
+            <button onClick={() => handleOpenPopup('migration')} disabled={!selectedVms?.id}>마이그레이션</button>
             <button className="content_header_popup_btn" onClick={togglePopup}>
               <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
               {isPopupOpen && (
@@ -887,7 +887,9 @@ const VmDu = ({
                             <div style={{ marginBottom: '2%' }}>
                                 <label htmlFor="optimization">최적화 옵션</label>
                                 <select id="optimization">
-                                    <option value="server">서버</option>
+                                  <option value="server">서버</option>
+                                  <option value="desktop">데스크탑</option>
+                                  <option value="high-performance">고성능</option>
                                 </select>
                             </div>
                 </div>

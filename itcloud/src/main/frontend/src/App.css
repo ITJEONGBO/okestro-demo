@@ -2821,6 +2821,13 @@ display: flex; /* Flexbox 설정 추가 */
     right: 1.5rem;
     top: 1.2rem;
 }
+.vm_plus_btn_outer{
+    width:100%
+}
+.vm_plus_btn{
+    display: flex;
+    justify-content: space-between;
+}
 /*반응형*/
 @media (max-width:1390px) {
 
