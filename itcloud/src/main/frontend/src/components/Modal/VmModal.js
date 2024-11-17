@@ -26,6 +26,9 @@ const VmModal = ({
   const [description, setDescription] = useState('');
   const [templateId, setTemplateId] = useState('');
 
+  const [MaxMemory, setMaxMemory] = useState('');
+  const [allocatedMemory, setAllocatedMemory] = useState('');
+  const [totalVirtualCPU, setTotalVirtualCPU] = useState('');
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -104,9 +107,11 @@ useEffect(() => {
         setName(vmdata.name || '');
         setClusterVoName(vmdata.cluster || '');
         setClusterVoId(vmdata.dataCenterVo || '');
-     
         setDescription(vmdata.description || '');
 
+        setMaxMemory(vmdata.description || '');
+        setAllocatedMemory(vmdata.description || '');
+        setTotalVirtualCPU(vmdata.description || '');
       }
     }
   }, [isOpen, editMode,vmId]);

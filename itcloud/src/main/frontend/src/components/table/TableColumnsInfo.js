@@ -380,8 +380,8 @@ const TableColumnsInfo = {
     { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: '설명', accessor: 'description', clickable: false }
   ],
-  VMS_FROM_HOST: [
-    { header: '', accessor: 'icon', clickable: false },
+  VMS_FROM_HOST : [
+    { header: '', accessor: 'icon', clickable: false, width: '3vw' }, // 첫 번째 컬럼에 width 추가
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipv4', clickable: false },
@@ -392,6 +392,7 @@ const TableColumnsInfo = {
     { header: '상태', accessor: 'statusDetail', clickable: false },
     { header: '업타임', accessor: 'upTime', clickable: false },
   ],
+  
   VMS_FROM_DISK: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
