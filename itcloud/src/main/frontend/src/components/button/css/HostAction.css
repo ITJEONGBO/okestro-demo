@@ -1,0 +1,39 @@
+.header_right_btns {
+  display: flex;
+  gap: 10px;
+}
+
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.manage-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; /* 관리 버튼 바로 아래 */
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 100; /* 테이블 위로 올라오도록 z-index 설정 */
+  padding: 10px;
+}
+
+.dropdown-item {
+display: block;
+width: 100%;
+padding: 5px 10px;
+background: none;
+border: none;
+text-align: left;
+}

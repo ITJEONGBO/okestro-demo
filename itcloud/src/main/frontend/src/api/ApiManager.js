@@ -363,7 +363,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_DATA_CENTER(dataCenterId),  // ID를 URL에 포함
-      data: dataCenterId
+      // data: dataCenterId
     });
   },
   //endregion: DataCenter
@@ -706,6 +706,7 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.DELETE_HOST
     });
   },
+
   /**
    * @name ApiManager.activateHost
    * @description 호스트 활성
@@ -720,6 +721,20 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.ACTIVATE_HOST
     });
   },
+
+  // findCpuProfilesFromCluster: async (clusterId) => makeAPICall({
+  //   method: "GET", 
+  //   url: ENDPOINTS.FIND_CPU_PROFILES_FROM_CLUSTER(clusterId), 
+  //   // defaultValues: DEFAULT_VALUES.FIND_CPU_PROFILES_FROM_CLUSTER
+  // }),
+  // deleteCluster: async (clusterId) => {
+  //   return makeAPICall({
+  //     method: "DELETE",
+  //     url: ENDPOINTS.DELETE_CLUSTER(clusterId),  // ID를 URL에 포함
+  //     data: clusterId
+  //   });
+  // },
+  
   /**
    * @name ApiManager.deactivateHost
    * @description 호스트 유지보수
@@ -730,10 +745,10 @@ const ApiManager = {
   deactivateHost: async (hostId) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.DEACTIVATE_HOST(hostId),  // ID를 URL에 포함
-      // defaultValues: DEFAULT_VALUES.DEACTIVATE_HOST
+      url: ENDPOINTS.DEACTIVATE_HOST(hostId)
     });
   },
+
   /**
    * @name ApiManager.restartHost
    * @description 호스트 재시작

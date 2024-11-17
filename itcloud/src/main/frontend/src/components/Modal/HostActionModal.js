@@ -6,7 +6,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   useHost,
   useDeactivateHost,
-  useActivateHost
+  useActivateHost, 
+  
 } from '../../api/RQHook';
 
 const HostActionModal = ({ 
@@ -45,12 +46,47 @@ const HostActionModal = ({
     }
 
     if (action === 'deactivate') {
-      console.log('deactivate Host');
-      handleAction(deactivateHost);
+      console.log(`Calling deactivate API for host ID: ${id}`);
+      deactivateHost(id, {
+        onSuccess: () => {
+          console.log('Deactivate successful');
+          onRequestClose();
+        },
+        onError: (error) => {
+          console.error('Deactivate failed:', error);
+        },
+      });
     } else if (action === 'activate') {
-      console.log('Deleting Host');
-      handleAction(activateHost);
+      console.log('활성화 API 호출');
+      activateHost(id, {
+        onSuccess: () => {
+          alert(`${name} 활성화 성공!`);
+          onRequestClose(); // 모달 닫기
+        },
+        onError: (error) => {
+          alert('활성화 실패:', error.message);
+        },
+      });
     }
+    // } else if (action === 'restart') {
+    //   console.log('restart Host');
+    //   handleAction(restartHost);
+    // } else if (action === 'stop') {
+    //   console.log('stop Host');
+    //   handleAction(stopHost);
+    // } else if (action === 'reinstall') {
+    //   console.log('reinstall Host');
+    //   handleAction(reinstallHost);
+    // } else if (action === 'register') {
+    //   console.log('register Host');
+    //   handleAction(registerHost);
+    // } else if (action === 'haon') {
+    //   console.log('haon Host');
+    //   handleAction(haonHost);
+    // } else if (action === 'haoff') {
+    //   console.log('haoff Host');
+    //   handleAction(haoffHost);
+    // }
   };
 
   const handleAction = (actionFn) => {
@@ -62,19 +98,13 @@ const HostActionModal = ({
       onSuccess: () => {
         onRequestClose(); // 삭제 성공 시 모달 닫기
         
-        // if (action === 'Datacenter') {
-        //   // Datacenter 삭제 후 특정 경로로 이동
-        //   navigate('/computing/rutil-manager/datacenters');
-        // } else {
-        //   // 다른 타입일 경우 기본 동작 수행
-        //   const currentPath = location.pathname;
-        //   if (currentPath.includes(id)) {
-        //     const newPath = currentPath.replace(`/${id}`, '');
-        //     navigate(newPath);
-        //   } else {
-        //     window.location.reload();
-        //   }
-        // }
+        const currentPath = location.pathname;
+        if (currentPath.includes(id)) {
+          const newPath = currentPath.replace(`/${id}`, '');
+          navigate(newPath);
+        } else {
+          window.location.reload();
+        }        
       },
       onError: (error) => {
         console.error(`${contentLabel} ${name} 액션 오류:`, error);
@@ -103,7 +133,7 @@ const HostActionModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {name} 를(을) {contentLabel}하시겠습니까? </span>
+            <span> {data.name} 를(을) {contentLabel}하시겠습니까? </span>
           </div>
         </div>
 

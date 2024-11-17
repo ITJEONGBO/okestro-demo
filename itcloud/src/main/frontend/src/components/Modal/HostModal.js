@@ -98,9 +98,9 @@ const HostModal = ({
     setComment('');
     setHostIp('');
     setSshPort('22');
-    setUserName('');
+    // setUserName('root');// 수정필요
     setUserPassword('');
-    setVgpu('');
+    setVgpu('consolidated');
     // setHostEngine('');
   };
 
@@ -247,12 +247,12 @@ const HostModal = ({
           <div><label>인증</label></div>
           <div>
             <label htmlFor="userName">사용자 이름</label>
-            <input
+            {/* <input
               type="text"
               id="userName"
               value={userName}
               disabled
-            />
+            /> */}
           </div>
           <div>
             <label htmlFor="userPassword">암호</label>
@@ -277,8 +277,6 @@ const HostModal = ({
                 onChange={(e) => setVgpu(e.target.value)}
               />
               <label htmlFor="consolidated">통합</label>
-            {/* </div> */}
-            {/* <div> */}
               <input 
                 type="radio" 
                 id="vgpu" 
@@ -292,7 +290,7 @@ const HostModal = ({
             </div>
           </div>
 
-          {/* <div>
+          <div>
             <label htmlFor="hostEngine">호스트 엔진 배포 작업 선택</label>
             <select
               id="hostEngine"
@@ -302,7 +300,7 @@ const HostModal = ({
               <option value="false">없음</option>
               <option value="true">배포</option>
             </select>
-          </div> */}
+          </div>
         </div>
 
         <div className="edit_footer">

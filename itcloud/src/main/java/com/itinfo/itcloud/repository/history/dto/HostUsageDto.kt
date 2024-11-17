@@ -96,7 +96,13 @@ fun List<Host>.toHostUsageDto(conn: Connection, hostSamplesHistoryEntities: List
         .sumOf { it.values().firstOrNull()?.datum()?.toDouble() ?: 0.0 } / GB
 
     val totalCpuCore: Int =
-        hostAll.sumOf { it.cpu().topology().coresAsInteger() * it.cpu().topology().socketsAsInteger() * it.cpu().topology().threadsAsInteger() }
+        hostAll.sumOf {
+            if(it.cpu().topology().coresPresent())
+            it.cpu().topology().coresAsInteger() *
+                    it.cpu().topology().socketsAsInteger() *
+                    it.cpu().topology().threadsAsInteger()
+            else 0
+        }
 
     val commitCpuCore: Int =
         vmAll.sumOf {

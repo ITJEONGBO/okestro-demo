@@ -149,16 +149,15 @@ fun Connection.expectHostDeleted(hostId: String, timeout: Long = 60000L, interva
 
 fun Connection.deactivateHost(hostId: String): Result<Boolean> = runCatching {
 	val host: Host =
-		this.findHost(hostId)
-			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+		this.findHost(hostId).getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 
 	if (host.status() == HostStatus.MAINTENANCE) {
-		throw Error("deactivateHost 실패 ... ${hostId} 가 이미 유지관리 상태") // return 대신 throw
+		throw Error("deactivateHost 실패 ... $hostId 가 이미 유지관리 상태") // return 대신 throw
 	}
 	srvHost(host.id()).deactivate().send()
 
 	if (!this.expectHostStatus(host.id(), HostStatus.MAINTENANCE)) {
-		throw Error("expectHostStatus가 실패했습니다 ... ${hostId} 가 유지관리 상태가 아닙니다.")
+		throw Error("expectHostStatus가 실패했습니다 ... $hostId 가 유지관리 상태가 아닙니다.")
 	}
 	true
 }.onSuccess {

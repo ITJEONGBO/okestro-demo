@@ -73,7 +73,7 @@ const ENDPOINTS = {
   EDIT_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}`, 
   DELETE_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}`, 
   ACTIVATE_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/activate`, 
-  DEACTIVATE_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/deactivate`, 
+  DEACTIVATE_HOST: (hostId) => ` /api/v1/computing/hosts/${hostId}/deactivate`, 
   RESTART_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/restart`, 
   //endregion: Host
 
