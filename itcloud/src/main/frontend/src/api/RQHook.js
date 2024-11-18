@@ -1736,3 +1736,5 @@ export const useAllEvents = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+
+

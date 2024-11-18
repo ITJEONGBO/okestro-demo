@@ -23,12 +23,12 @@ const HostModal = ({
   const [clusterVoId, setClusterVoId] = useState('');
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
-  const [hostIp, setHostIp] = useState('');
+  const [address, setAddress] = useState('');
   const [sshPort, setSshPort] = useState('');
   // 설치 후 호스트 활성화
   // 설치 후 호스트 다시 시작
   const [userName, setUserName] = useState('');
-  const [userPassword, setUserPassword] = useState('');
+  const [sshPassWord, setSshPassWord] = useState('');
   const [vgpu, setVgpu] = useState('');
   const [hostEngine, setHostEngine] = useState('');
   
@@ -77,10 +77,10 @@ const HostModal = ({
       // setDataCenterName()
       setName(host?.name);
       setComment(host?.comment);
-      setHostIp(host?.address);
+      setAddress(host?.address);
       setSshPort(host?.sshPort);
       setUserName(host?.sshName);
-      setUserPassword(host?.sshPassWord);
+      setSshPassWord(host?.sshPassWord);
       setVgpu(host?.vgpu);
       // setHostEngine(host?.);
     } else {
@@ -95,10 +95,10 @@ const HostModal = ({
     setName('');
     setClusterVoId('');
     setComment('');
-    setHostIp('');
+    setAddress('');
     setSshPort('22');
     // setUserName('root');// 수정필요
-    setUserPassword('');
+    setSshPassWord('');
     setVgpu('consolidated');
     // setHostEngine('');
   };
@@ -115,15 +115,22 @@ const HostModal = ({
       return;
     }
 
+    if(!editMode && sshPassWord === ''){
+      alert("비밀번호를 입력해주세요.");
+      return;
+    }
+
     // 데이터 객체 생성
     const dataToSubmit = {
-      clusterVoId,
+      clusterVo: {
+        id: selectedCluster.id
+      },
       name,
       comment,
-      hostIp,
+      address,
       sshPort,
       // userName,
-      userPassword,
+      // sshPassWord,
       vgpu,
       // HostEngine,
     };
@@ -145,6 +152,7 @@ const HostModal = ({
         }
       });
     } else {
+      dataToSubmit.sshPassWord = sshPassWord;  // 생성 모드에서는 ssh 비밀번호 추가
       addHost(dataToSubmit, {
         onSuccess: () => {
           alert("Host 생성 완료")
@@ -213,12 +221,12 @@ const HostModal = ({
           </div>
           
           <div>
-            <label htmlFor="hostIp">호스트 이름/IP</label>
+            <label htmlFor="address">호스트 이름/IP</label>
             <input
               type="text"
-              id="hostIp"
-              value={hostIp}
-              onChange={(e) => setHostIp(e.target.value)}
+              id="address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               disabled={editMode}
             />
           </div>
@@ -234,6 +242,7 @@ const HostModal = ({
             />
           </div>
           <hr/>
+
           {/* <div>
             <input type="checkbox" id="" name="" />
             <label htmlFor="">설치 후 호스트를 활성화</label>
@@ -243,26 +252,30 @@ const HostModal = ({
             <label htmlFor="">설치 후 호스트를 다시 시작</label>
           </div> */}
 
-          <div><label>인증</label></div>
-          <div>
-            <label htmlFor="userName">사용자 이름</label>
-            {/* <input
-              type="text"
-              id="userName"
-              value={userName}
-              disabled
-            /> */}
-          </div>
-          <div>
-            <label htmlFor="userPassword">암호</label>
-            <input
-              type="password"
-              id="userPassword"
-              value={userPassword}
-              onChange={(e) => setUserPassword(e.target.value)}
-              disabled={editMode}
-            />
-          </div>
+          {!editMode && (
+            <>
+            <div><label>인증</label></div>
+            <div>
+              <label htmlFor="userName">사용자 이름</label>
+              {/* <input
+                type="text"
+                id="userName"
+                value={userName}
+                disabled
+              /> */}
+            </div>
+            
+            <div>            
+              <label htmlFor="sshPassWord">암호</label>
+              <input
+                type="password"
+                id="sshPassWord"
+                value={sshPassWord}
+                onChange={(e) => setSshPassWord(e.target.value)}
+              />
+            </div>
+            </>
+          )}
 
           <div>
             <div>vGPU 배치</div>

@@ -49,14 +49,22 @@ const Hosts = () => {
     navigate(`/computing/hosts/${id}`);
   };
 
-  // const renderStatusIcon = (status) => {
-  //   if (status === 'UP') {
-  //     return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-  //   } else if (status === 'DOWN') {
-  //     return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-  //   }
-  //   return status;
-  // };
+  const handleClusterClick = (id) => {
+    navigate(`/computing/clusters/${id}`);
+  };
+  
+  const handleDataCenterClick = (id) => {
+    navigate(`/computing/datacenters/${id}/clusters`);
+  };
+
+  const renderStatusIcon = (status) => {
+    if (status === 'UP') {
+      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+    } else if (status === 'DOWN') {
+      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+    }
+    return status;
+  };
 
 
   return (
@@ -82,7 +90,29 @@ const Hosts = () => {
         columns={TableInfo.HOSTS}
         data={hosts?.map((host)=> ({
           ...host,
-          // status: renderStatusIcon(host.status),
+          icon: renderStatusIcon(host.status),
+          cluster: (
+            <span
+              style={{ color: 'blue', cursor: 'pointer' }}
+              onClick={(e) => {
+                e.stopPropagation(); // 행 클릭 이벤트와 충돌 방지
+                handleClusterClick(host.clusterVo.id); // 클러스터 ID 사용
+              }}
+            >
+              {host.cluster}
+            </span>
+          ),
+          dataCenter: (
+            <span
+              style={{ color: 'blue', cursor: 'pointer',  }} //textDecoration: 'underline'
+              onClick={(e) => {
+                e.stopPropagation(); // 행 클릭 이벤트와 충돌 방지
+                handleDataCenterClick(host.dataCenterVo.id); // 데이터센터 ID 사용
+              }}
+            >
+              {host.cluster}
+            </span>
+          ),
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedHost(row)}

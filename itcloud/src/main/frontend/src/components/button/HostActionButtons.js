@@ -19,13 +19,19 @@ const HostActionButtons = ({
   status
 }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+  const [isDropDownOpen2, setIsDropDownOpen2] = useState(false);
 
   const toggleDropDown = () => {
     setIsDropDownOpen(!isDropDownOpen);
   };
+
+  const toggleDropDown2 = () => {
+    setIsDropDownOpen2(!isDropDownOpen2);
+  };
   
   const isUp = status === 'UP';
   const isMaintenance = status === 'MAINTENANCE';
+
   const handleClick = (label, action) => {
     console.log(`Button clicked: ${label}`);
     action?.();
@@ -46,9 +52,27 @@ const HostActionButtons = ({
 
   return (
     <div className="header_right_btns">
-      {onCreate && <button onClick={onCreate}>새로 만들기</button>}
-      {onEdit && <button onClick={onEdit} disabled={isEditDisabled}>편집</button>}
-      {onDelete && <button onClick={onDelete} disabled={isEditDisabled}>삭제</button>}
+      {onCreate && 
+        <button onClick={onCreate}>
+          새로 만들기
+        </button>
+      }
+      {onEdit && 
+        <button 
+          onClick={onEdit} 
+          disabled={isEditDisabled || !isUp}
+        >
+          편집
+        </button>
+      }
+      {onDelete && 
+        <button 
+          onClick={onDelete} 
+          disabled={isEditDisabled || isUp || !isMaintenance }
+        >
+          삭제
+        </button>
+      }
 
       {/* 관리 버튼 */}
       <div className="dropdown-container">
@@ -59,6 +83,27 @@ const HostActionButtons = ({
         {isDropDownOpen && (
           <div className="dropdown-menu">
             {manageActions.map(({ onClick, label, disabled }, index) => (
+              <button
+                key={index}
+                onClick={() => handleClick(label, onClick)}
+                disabled={disabled}
+                className="dropdown-item"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="dropdown-container">
+        <button onClick={toggleDropDown2} className="manage-button">
+          :
+          <FontAwesomeIcon icon={isDropDownOpen2 ? faChevronUp : faChevronDown} />
+        </button>
+        {isDropDownOpen2 && (
+          <div className="dropdown-menu">
+            {settingActions.map(({ onClick, label, disabled }, index) => (
               <button
                 key={index}
                 onClick={() => handleClick(label, onClick)}

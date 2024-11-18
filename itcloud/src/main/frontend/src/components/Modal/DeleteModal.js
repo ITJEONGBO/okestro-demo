@@ -89,6 +89,12 @@ const DeleteModal = ({
         if (type === 'Datacenter') {
           // Datacenter 삭제 후 특정 경로로 이동
           navigate('/computing/rutil-manager/datacenters');
+        } else if (type === 'Cluster') {
+          // Datacenter 삭제 후 특정 경로로 이동
+          navigate('/computing/rutil-manager/clusters');
+        } else if (type === 'Host') {
+          // Datacenter 삭제 후 특정 경로로 이동
+          navigate('/computing/rutil-manager/hosts');
         } else {
           // 다른 타입일 경우 기본 동작 수행
           const currentPath = location.pathname;

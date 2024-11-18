@@ -57,7 +57,7 @@ const TableInfo = {
   ],
 
   HOSTS: [
-    { header: '상태', accessor: 'status', clickable: false },
+    { header: '', accessor: 'icon', clickable: false },
     // { header: '', accessor: 'warn', clickable: false },
     // { header: '', accessor: 'spm', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
@@ -66,6 +66,7 @@ const TableInfo = {
     { header: '클러스터', accessor: 'cluster', clickable: true },
     { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
     { header: '가상 머신 개수', accessor: 'vmCnt', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
     { header: '메모리', accessor: 'memoryUsage', clickable: false },
     { header: 'CPU', accessor: 'cpuUsage', clickable: false },
     { header: '네트워크', accessor: 'networkUsage', clickable: false },

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.util.*
 
 interface ItGraphService {
@@ -230,9 +231,11 @@ class GraphServiceImpl(
 		val hostSampleHistoryEntity: HostSamplesHistoryEntity =
 			hostSamplesHistoryRepository.findFirstByHostIdOrderByHistoryDatetimeDesc(UUID.fromString(hostId))
 		val usageDto = hostSampleHistoryEntity.getUsage()
-		val hostInterfaceSamplesHistoryEntity: HostInterfaceSamplesHistoryEntity =
+		val hostInterfaceSamplesHistoryEntity: Optional<HostInterfaceSamplesHistoryEntity> =
 			hostInterfaceSampleHistoryRepository.findFirstByHostInterfaceIdOrderByHistoryDatetimeDesc(UUID.fromString(hostNicId))
-		val networkRate = hostInterfaceSamplesHistoryEntity.receiveRatePercent.toInt()
+		val networkRate = hostInterfaceSamplesHistoryEntity
+			.map { it.receiveRatePercent.toInt() } // Optional에서 값이 있으면 처리
+			.orElse(0) // 값이 없으면 기본값으로 0 사용
 		usageDto.networkPercent = networkRate
 		return usageDto
 	}

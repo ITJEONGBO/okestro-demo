@@ -65,27 +65,35 @@ class HostConfigurationEntity(
 
 	val hostType: Int = -1,
 	val fqdnOrIp: String = "",
-	val memorySizeMb: Int = -1,
-	val swapSizeMb: Int = -1,
+
+	@Column(nullable = true)
+	val memorySizeMb: Int? = null,
+	@Column(nullable = true)
+	val swapSizeMb: Int? = null,
 	val cpuModel: String = "",
-	val numberOfCores: Int = -1,
+	@Column(nullable = true)
+	val numberOfCores: Int? = null,
 	val hostOs: String = "",
 	val kernelVersion: String = "",
 	val kvmVersion: String = "",
 	val vdsmVersion: String = "",
-	val vdsmPort: Int = -1,
+	@Column(nullable = true)
+	val vdsmPort: Int? = null,
 	val clusterConfigurationVersion: Int = -1,
 	val createDate: LocalDateTime = LocalDateTime.MIN,
 	val updateDate: LocalDateTime = LocalDateTime.MIN,
 	val deleteDate: LocalDateTime = LocalDateTime.MIN,
-	val numberOfSockets: Int = -1,
+	@Column(nullable = true)
+	val numberOfSockets: Int? = null,
 	val cpuSpeedMh: BigDecimal = BigDecimal.ZERO,
-	val threadsPerCore: Int = -1,
+	@Column(nullable = true)
+	val threadsPerCore: Int? = null,
 	val hardwareManufacturer: String = "",
 	val hardwareProductName: String = "",
 	val hardwareVersion: String = "",
 	val hardwareSerialNumber: String = "",
-	val numberOfThreads: Int = -1,
+	@Column(nullable = true)
+	val numberOfThreads: Int? = null,
 ): Serializable {
 	override fun toString(): String = gson.toJson(this)
 

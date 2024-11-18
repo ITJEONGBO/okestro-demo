@@ -73,7 +73,7 @@ fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false): Result<
 	val hostAdded: Host? =
 		srvHosts().add().deployHostedEngine(deployHostedEngine).host(host).send().host()
 
-	hostAdded?.let { this.expectHostStatus(it.id(), HostStatus.UP) }
+//	hostAdded?.let { this.expectHostStatus(it.id(), HostStatus.UP) }
 	hostAdded ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 }.onSuccess {
 	Term.HOST.logSuccess("생성")
