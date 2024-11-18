@@ -1,6 +1,6 @@
 .header_right_btns {
   display: flex;
-  gap: 10px;
+  /* gap: 10px; */
 }
 
 .dropdown-container {

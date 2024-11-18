@@ -1193,7 +1193,10 @@ export const useAllHostsFromNetwork = (networkId, mapPredicate) => useQuery({
     console.log(`useAllHostsFromNetwork ... ${networkId}`);
     const res = await ApiManager.findAllHostsFromNetwork(networkId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!networkId, 
+  staleTime: 0,
+  cacheTime: 0,
 })
 // 가상머신 목록
 /**

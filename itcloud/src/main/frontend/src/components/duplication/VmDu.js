@@ -34,7 +34,7 @@ const VmDu = ({
     } else if (colIndex === 6) {
       navigate(`/computing/clusters/${row.clusterId}`);
     } else if (colIndex === 7) {
-      navigate(`/computing/datacenters/${row.dataCenterId}`);
+      navigate(`/computing/datacenters/${row.dataCenterId}/clusters`);
     }
   };
 

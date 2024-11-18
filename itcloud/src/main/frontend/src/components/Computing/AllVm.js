@@ -64,9 +64,13 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
     return {
       ...e,
       status: e?.status,
-      host: e?.hostVo?.name, 
-      cluster: e?.clusterVo?.name,        
-      dataCenter: e?.dataCenterVo?.name,
+      host: e?.hostVo?.name,
+hostId: e?.hostVo?.id,
+cluster: e?.clusterVo?.name,
+clusterId: e?.clusterVo?.id,
+dataCenter: e?.dataCenterVo?.name,
+dataCenterId: e?.dataCenterVo?.id,
+
       memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
       cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
       networkUsage: e?.usageDto.networkPercent === null ? '' : e?.usageDto.networkPercent + '%',
