@@ -11,6 +11,8 @@ import {
   useEditVm, 
   useVmById 
 } from '../../api/RQHook';
+import VmConnectionPlusModal from './VmConnectionPlusModal';
+import VmCreatePlusModal from './VmCreatePlusModal';
 
 const VmModal = ({ 
   isOpen, 
@@ -829,6 +831,15 @@ return (
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
         <button onClick={onRequestClose}>취소</button>
       </div>
+
+      <VmConnectionPlusModal
+        isOpen={isConnectionPopupOpen}
+        onRequestClose={() => setIsConnectionPopupOpen(false)}
+      />
+      <VmCreatePlusModal
+        isOpen={isCreatePopupOpen}
+        onRequestClose={() => setIsCreatePopupOpen(false)}
+      />
     </div>
   </Modal>
 );

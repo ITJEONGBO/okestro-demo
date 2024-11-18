@@ -20,12 +20,13 @@
 
 .dropdown-menu {
   position: absolute;
-  top: 100%; /* 관리 버튼 바로 아래 */
-  left: 0;
+  top: 103%;
+  /* left: 0; */
+  right: 12%;
   background: white;
   border: 1px solid #ddd;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 100; /* 테이블 위로 올라오도록 z-index 설정 */
+  z-index: 100;
   padding: 10px;
 }
 

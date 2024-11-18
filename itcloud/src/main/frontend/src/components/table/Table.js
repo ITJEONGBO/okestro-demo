@@ -5,57 +5,59 @@ import './Table.css';
 const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumnIndex = [], onContextMenuItems = false }) => {
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [tooltips, setTooltips] = useState({});
-  const [sortedData, setSortedData] = useState(data); // 초기 데이터 유지
+  const [sortedData, setSortedData] = useState(data);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const tableRef = useRef(null); 
+  const tableRef = useRef(null);
   const [contextRowIndex, setContextRowIndex] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
 
-  // 데이터 변경 시 sortedData 초기화
-  useEffect(() => {
-    setSortedData(data);
-  }, [data]);
-
-  // 정렬 함수
-  const handleSort = (column) => {
-    if (column.isIcon) return; // 아이콘 열은 정렬 기능 제외
-
-    const { accessor } = column;
-    const direction = sortConfig.key === accessor && sortConfig.direction === 'asc' ? 'desc' : 'asc';
-    setSortConfig({ key: accessor, direction });
-
+  const sortData = (data, key, direction) => {
     const sorted = [...data].sort((a, b) => {
-      const aValue = a[accessor];
-      const bValue = b[accessor];
-      
-      // 빈 값은 항상 리스트의 끝으로 이동
-      if (aValue === null || aValue === undefined || aValue === "") return 1;
-      if (bValue === null || bValue === undefined || bValue === "") return -1;
+      const aValue = a[key];
+      const bValue = b[key];
+
+      if (aValue === null || aValue === undefined || aValue === '') return 1;
+      if (bValue === null || bValue === undefined || bValue === '') return -1;
 
       if (aValue < bValue) return direction === 'asc' ? -1 : 1;
       if (aValue > bValue) return direction === 'asc' ? 1 : -1;
       return 0;
     });
-
     setSortedData(sorted);
   };
 
-  // 테이블 외부 클릭 시 선택된 행 초기화, 단 메뉴 박스,모달,headerbutton 제외
+  const handleSort = (column) => {
+    if (column.isIcon) return;
+
+    const { accessor } = column;
+    const direction = sortConfig.key === accessor && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+    setSortConfig({ key: accessor, direction });
+    sortData(sortedData, accessor, direction);
+  };
+
+  useEffect(() => {
+    if (sortConfig.key) {
+      sortData(data, sortConfig.key, sortConfig.direction);
+    } else {
+      setSortedData(data);
+    }
+  }, [data]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        tableRef.current && 
-        !tableRef.current.contains(event.target) && 
+        tableRef.current &&
+        !tableRef.current.contains(event.target) &&
         (!menuRef.current || !menuRef.current.contains(event.target)) &&
         !event.target.closest('.header_right_btns button') &&
-        !event.target.closest('.Overlay') 
+        !event.target.closest('.Overlay')
       ) {
         setSelectedRowIndex(null);
         setContextRowIndex(null);
-        if (typeof onRowClick === 'function') onRowClick(null); // 열 선택 해제 시 onRowClick에 null 전달
+        if (typeof onRowClick === 'function') onRowClick(null);
       }
     };
-  
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -67,12 +69,12 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
     if (element.scrollWidth > element.clientWidth) {
       setTooltips((prevTooltips) => ({
         ...prevTooltips,
-        [`${rowIndex}-${colIndex}`]: content
+        [`${rowIndex}-${colIndex}`]: content,
       }));
     } else {
       setTooltips((prevTooltips) => ({
         ...prevTooltips,
-        [`${rowIndex}-${colIndex}`]: null
+        [`${rowIndex}-${colIndex}`]: null,
       }));
     }
   };
@@ -82,7 +84,7 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
     const handleClickOutsideMenu = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setContextMenu(null);
-        setContextRowIndex(null); // 우클릭된 행의 배경색 초기화
+        setContextRowIndex(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutsideMenu);
@@ -103,7 +105,7 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
       });
     }
     setContextRowIndex(rowIndex);
-    setSelectedRowIndex(null);   
+    setSelectedRowIndex(null);
   };
 
   return (
@@ -113,13 +115,13 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
           <thead>
             <tr>
               {columns.map((column, index) => (
-                <th 
-                  key={index} 
+                <th
+                  key={index}
                   onClick={() => handleSort(column)}
-                  style={{ 
+                  style={{
                     cursor: column.isIcon ? 'default' : 'pointer',
-                    width: column.isEmpty || column.isIcon? '20px' : 'auto'
-                   }}
+                    width: column.width || 'auto',
+                  }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     {column.header}
@@ -161,13 +163,10 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
                         textOverflow: 'ellipsis',
                         textAlign: column.isIcon ? 'center' : 'left',
                         verticalAlign: 'middle',
+                        width: column.width || 'auto',
                         cursor: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
                         color: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit',
                         fontWeight: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
-                        width: column.isIcon ? '5%' : 'auto',
-                        minWidth: column.isIcon ? '30px' : 'auto',
-                        maxWidth: column.isIcon ? '30px' : 'auto',
-                        padding: column.isIcon ? '0' : 'auto',
                       }}
                       onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])}
                       onClick={(e) => {
@@ -214,14 +213,14 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
             backgroundColor: 'white',
             border: '1px solid #eaeaea',
             zIndex: '3',
-            borderRadius:'1px'
+            borderRadius: '1px',
           }}
         >
           {contextMenu.menuItems.map((item, index) => (
             <div key={index}>{item}</div>
-          ))} 
+          ))}
         </div>
-      )}  
+      )}
       {data && data.map((row, rowIndex) =>
         columns.map((column, colIndex) => (
           tooltips[`${rowIndex}-${colIndex}`] && (
