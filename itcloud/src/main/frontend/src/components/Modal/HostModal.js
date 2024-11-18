@@ -21,7 +21,6 @@ const HostModal = ({
 }) => {
   const [id, setId] = useState('');
   const [clusterVoId, setClusterVoId] = useState('');
-  const [dataCenterName, setDataCenterName] = useState('');
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [hostIp, setHostIp] = useState('');

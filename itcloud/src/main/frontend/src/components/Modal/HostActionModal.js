@@ -4,10 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  useHost,
   useDeactivateHost,
-  useActivateHost, 
-  
+  useActivateHost
 } from '../../api/RQHook';
 
 const HostActionModal = ({ 
@@ -15,18 +13,17 @@ const HostActionModal = ({
     action,
     onRequestClose, 
     contentLabel,
-    data,
-    hostId // 외부에서 전달된 prop TODO 바꿔야함
+    data
 }) => {
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
-
   const { mutate: deactivateHost } = useDeactivateHost();
   const { mutate: activateHost } = useActivateHost();
-  
+
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  
   useEffect(() => {
     if (data) {
       setId(data.id || '');
@@ -35,10 +32,6 @@ const HostActionModal = ({
     }
   }, [data]);
 
-  useEffect(() => {
-    console.log('HostActionModal data:', data, id);
-  }, [data, id]);
-
   const handleFormSubmit = () => {
     if (!id) {
       console.error('ID가 없습니다.');
@@ -46,35 +39,20 @@ const HostActionModal = ({
     }
 
     if (action === 'deactivate') {
-      console.log(`Calling deactivate API for host ID: ${id}`);
-      deactivateHost(id, {
-        onSuccess: () => {
-          console.log('Deactivate successful');
-          onRequestClose();
-        },
-        onError: (error) => {
-          console.error('Deactivate failed:', error);
-        },
-      });
+      console.log('deactivate ' + id)
+      handleAction(deactivateHost)
     } else if (action === 'activate') {
-      console.log('활성화 API 호출');
-      activateHost(id, {
-        onSuccess: () => {
-          alert(`${name} 활성화 성공!`);
-          onRequestClose(); // 모달 닫기
-        },
-        onError: (error) => {
-          alert('활성화 실패:', error.message);
-        },
-      });
-    }
-    // } else if (action === 'restart') {
+      console.log('activate ' + {id})
+      handleAction(activateHost)
+    } 
+    // else if (action === 'restart') {
     //   console.log('restart Host');
     //   handleAction(restartHost);
     // } else if (action === 'stop') {
     //   console.log('stop Host');
     //   handleAction(stopHost);
-    // } else if (action === 'reinstall') {
+    // } 
+    // else if (action === 'reinstall') {
     //   console.log('reinstall Host');
     //   handleAction(reinstallHost);
     // } else if (action === 'register') {
@@ -90,10 +68,6 @@ const HostActionModal = ({
   };
 
   const handleAction = (actionFn) => {
-    if (!id) {
-      console.error("Host ID is required for this action.");
-      return;
-    }
     actionFn(id, {
       onSuccess: () => {
         onRequestClose(); // 삭제 성공 시 모달 닫기

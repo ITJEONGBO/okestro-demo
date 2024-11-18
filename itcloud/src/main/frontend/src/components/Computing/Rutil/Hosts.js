@@ -36,19 +36,6 @@ const Hosts = () => {
   });
 
   const navigate = useNavigate();
-  const [modals, setModals] = useState({ 
-    create: false, 
-    edit: false, 
-    delete: false, 
-    deactivate: false , 
-    activate: false, 
-    restart: false, 
-    stop: false, 
-    reinstall: false, 
-    register: false, 
-    haon: false, 
-    haoff: false
-  });
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
   const [action, setAction] = useState(null); // 현재 동작
   const [selectedHost, setSelectedHost] = useState(null);
@@ -58,8 +45,8 @@ const Hosts = () => {
     setIsModalOpen(true); // 모달 열기
   };
 
-  const toggleModal = (type, isOpen) => {
-    setModals((prev) => ({ ...prev, [type]: isOpen }));
+  const handleNameClick = (id) => {
+    navigate(`/computing/hosts/${id}`);
   };
 
   // const renderStatusIcon = (status) => {
@@ -71,9 +58,6 @@ const Hosts = () => {
   //   return status;
   // };
 
-  const handleNameClick = (id) => {
-    navigate(`/computing/hosts/${id}`);
-  };
 
   return (
     <>
@@ -142,7 +126,6 @@ const Hosts = () => {
                   : ''
                 }
                 data={selectedHost}
-                hId={selectedHost?.id || null}
               />
             )}
           </>

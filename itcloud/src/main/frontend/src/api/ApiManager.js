@@ -17,13 +17,15 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 // const makeAPICall = async ({method = "GET", url, data, defaultValues}) => {
 const makeAPICall = async ({method = "GET", url, data}) => {
   try {
-    const res = (data == null || data == undefined) ? await axios.get(url) : await axios({
-      method: method,
-      url: url,
-      headers: { 
-        // TODO: access_token으로 모든 API 처리하기
-      },
-      data: method === "GET" || method === "DELETE" ? null : data,
+    const res = 
+      (data == null || data == undefined) ? await axios.get(url) 
+      : await axios({
+        method: method,
+        url: url,
+        headers: { 
+          // TODO: access_token으로 모든 API 처리하기
+        },
+        data: method === "GET" || method === "DELETE" ? null : data,
     }); 
     res.headers.get(`access_token`) && localStorage.setItem('token', res.headers.get(`access_token`)) // 로그인이 처음으로 성공했을 때 진행
     return res.data?.body
@@ -718,23 +720,9 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.ACTIVATE_HOST(hostId),  // ID를 URL에 포함
-      // defaultValues: DEFAULT_VALUES.ACTIVATE_HOST
+      data: hostId
     });
   },
-
-  // findCpuProfilesFromCluster: async (clusterId) => makeAPICall({
-  //   method: "GET", 
-  //   url: ENDPOINTS.FIND_CPU_PROFILES_FROM_CLUSTER(clusterId), 
-  //   // defaultValues: DEFAULT_VALUES.FIND_CPU_PROFILES_FROM_CLUSTER
-  // }),
-  // deleteCluster: async (clusterId) => {
-  //   return makeAPICall({
-  //     method: "DELETE",
-  //     url: ENDPOINTS.DELETE_CLUSTER(clusterId),  // ID를 URL에 포함
-  //     data: clusterId
-  //   });
-  // },
-  
   /**
    * @name ApiManager.deactivateHost
    * @description 호스트 유지보수
@@ -745,10 +733,10 @@ const ApiManager = {
   deactivateHost: async (hostId) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.DEACTIVATE_HOST(hostId)
+      url: ENDPOINTS.DEACTIVATE_HOST(hostId), 
+      data: hostId
     });
   },
-
   /**
    * @name ApiManager.restartHost
    * @description 호스트 재시작
@@ -760,9 +748,25 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.RESTART_HOST(hostId),  // ID를 URL에 포함
-      // defaultValues: DEFAULT_VALUES.RESTART_HOST
+      data: hostId
     });
   },
+  /**
+   * @name ApiManager.StopHost
+   * @description 호스트 중지
+   * 
+   * @param {String} hostId - 호스트 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  StopHost: async (hostId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.StopHost(hostId),  // ID를 URL에 포함
+      data: hostId
+    });
+  },
+
+
   //endregion: Host
 
 

@@ -23,11 +23,7 @@ const HostActionButtons = ({
   const toggleDropDown = () => {
     setIsDropDownOpen(!isDropDownOpen);
   };
-
-  const closeDropDown = () => {
-    setIsDropDownOpen(false);
-  };
-
+  
   const isUp = status === 'UP';
   const isMaintenance = status === 'MAINTENANCE';
   const handleClick = (label, action) => {
@@ -42,6 +38,8 @@ const HostActionButtons = ({
     { onClick: onStop, label: '중지', disabled: isEditDisabled || isUp },
     { onClick: onReInstall, label: '다시 설치', disabled: isEditDisabled || isUp },
     { onClick: onRegister, label: '인증서 등록', disabled: isEditDisabled || isUp },
+  ];
+  const settingActions = [
     { onClick: onHaOn, label: '글로벌 HA 유지 관리를 활성화', disabled: isEditDisabled || !isUp },
     { onClick: onHaOff, label: '글로벌 HA 유지 관리를 비활성화', disabled: isEditDisabled || !isUp },
   ];

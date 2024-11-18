@@ -607,7 +607,7 @@ export const useHost = (hostId) => useQuery({
  * @name useVmFromHost
  * @description 호스트 내 가상머신 목록조회 useQuery훅
  * 
- * @param {string} clusterId 클러스터ID
+ * @param {string} hostId
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
