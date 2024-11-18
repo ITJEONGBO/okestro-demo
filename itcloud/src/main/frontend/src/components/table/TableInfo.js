@@ -524,7 +524,7 @@ const TableInfo = {
     { header: '시간', accessor: 'time', clickable: false },
     { header: '메세지', accessor: 'description', clickable: false },
     { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
-    { header: '소스', accessor: 'source', clickable: false },
+    // { header: '소스', accessor: 'source', clickable: false },
     { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
   ],
 

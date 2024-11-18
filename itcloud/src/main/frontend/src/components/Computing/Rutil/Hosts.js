@@ -1,16 +1,10 @@
 import React, { useEffect, useState, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
-import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllHosts } from '../../../api/RQHook';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown, faMinus, faPlus, faPlay } from '@fortawesome/free-solid-svg-icons';
 import HostActionButtons from '../../button/HostActionButtons';
-
-const HostModal = React.lazy(() => import('../../Modal/HostModal'))
-const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
-const HostActionModal = React.lazy(() => import('../../Modal/HostActionModal'))
+import HostTable from '../../table/HostTable';
+import HostModals from '../../Modal/HostModals';
 
 const Hosts = () => {
   const {
@@ -35,7 +29,6 @@ const Hosts = () => {
     }
   });
 
-  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
   const [action, setAction] = useState(null); // 현재 동작
   const [selectedHost, setSelectedHost] = useState(null);
@@ -44,28 +37,6 @@ const Hosts = () => {
     setAction(actionType); // 동작 설정
     setIsModalOpen(true); // 모달 열기
   };
-
-  const handleNameClick = (id) => {
-    navigate(`/computing/hosts/${id}`);
-  };
-
-  const handleClusterClick = (id) => {
-    navigate(`/computing/clusters/${id}`);
-  };
-  
-  const handleDataCenterClick = (id) => {
-    navigate(`/computing/datacenters/${id}/clusters`);
-  };
-
-  const renderStatusIcon = (status) => {
-    if (status === 'UP') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    } else if (status === 'DOWN') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-    }
-    return status;
-  };
-
 
   return (
     <>
@@ -86,42 +57,47 @@ const Hosts = () => {
       />
       <span>id = {selectedHost?.id || ''}</span>
 
-      <TablesOuter
+      <HostTable
+        columns={TableInfo.HOSTS}
+        hosts={hosts || []}
+        selectedHost={selectedHost}
+        setSelectedHost={setSelectedHost}
+      />
+
+      {/* 모달 컴포넌트를 사용할 때만 로딩 */}
+      <HostModals
+        isModalOpen={isModalOpen}
+        action={action}
+        onRequestClose={() => setIsModalOpen(false)}
+        selectedHost={selectedHost}
+      />
+
+
+
+      
+      {/* TODO 중복 불편함 코드 수정 필요 */}
+      {/* <TablesOuter
         columns={TableInfo.HOSTS}
         data={hosts?.map((host)=> ({
           ...host,
           icon: renderStatusIcon(host.status),
           cluster: (
-            <span
-              style={{ color: 'blue', cursor: 'pointer' }}
-              onClick={(e) => {
-                e.stopPropagation(); // 행 클릭 이벤트와 충돌 방지
-                handleClusterClick(host.clusterVo.id); // 클러스터 ID 사용
-              }}
-            >
+            <TableRowClick type="cluster" id={host.clusterVo.id}>
               {host.cluster}
-            </span>
-          ),
+            </TableRowClick>
+          ),          
           dataCenter: (
-            <span
-              style={{ color: 'blue', cursor: 'pointer',  }} //textDecoration: 'underline'
-              onClick={(e) => {
-                e.stopPropagation(); // 행 클릭 이벤트와 충돌 방지
-                handleDataCenterClick(host.dataCenterVo.id); // 데이터센터 ID 사용
-              }}
-            >
-              {host.cluster}
-            </span>
+            <TableRowClick type="datacenter" id={host.dataCenterVo.id}>
+              {host.dataCenter}
+            </TableRowClick>
           ),
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedHost(row)}
         clickableColumnIndex={[1]} // "이름" 열의 인덱스 설정
         onClickableColumnClick={(row) => handleNameClick(row.id)}
-      />
-
-      {/* 모달 컴포넌트를 사용할 때만 로딩 */}
-      <Suspense>
+      /> */}
+      {/* <Suspense>
         {isModalOpen && action && (
           <>
             {action === 'create' || action === 'edit' ? (
@@ -160,7 +136,7 @@ const Hosts = () => {
             )}
           </>
         )}
-      </Suspense>
+      </Suspense> */}
     </>
   );
 };

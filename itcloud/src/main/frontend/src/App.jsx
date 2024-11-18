@@ -2,19 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter  as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Dashboard from './components/Dashboard';
-import Example from './components/Example';
 import Header from './components/Header/Header';
 import MainOuter from './components/MainOuter';
 import AllDomain from './components/Storage/AllDomain';
 import Network from './components/Network/Network';
 import Setting from './components/Setting/Setting';
-import ClusterName from './components/Computing/ClusterName';
-import Host from './components/Computing/Host';
 import HostDetail from './components/Computing/HostDetail';
 import StorageDomainDetail from './components/Storage/StorageDomainDetail';
 import StorageDiskDetail from './components/Storage/StorageDiskDetail';
-// import DataCenter from './components/Computing/DataCenter';
-import VmTemplateChart from './components/Computing/VmTemplateChart';
 import NetworkDetail from './components/Network/NetworkDetail';
 import STOMP from './Socket'
 import { Toaster, toast } from 'react-hot-toast';
@@ -26,10 +21,8 @@ import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
-import DataCenters from './components/Computing/Rutil/DataCenters';
-import Clusters from './components/Computing/Rutil/Clusters'
-import DataCenterInfo from './components/Computing/datacenters/DataCenterInfo';
-
+import DataCenterInfo from './components/Computing/datacenterjs/DataCenterInfo';
+import ClusterInfo from './components/Computing/clusterjs/ClusterInfo';
 
 
 const App = () => {
@@ -105,8 +98,9 @@ const App = () => {
 
               <Route path="/computing/datacenters/:id/:section" element={<DataCenterInfo />} />
 
-              <Route path="/computing/clusters/:id" element={<ClusterName />} />
-              <Route path="/computing/clusters/:id/:section" element={<ClusterName />} />  
+              {/* <Route path="/computing/clusters/:id" element={<ClusterName />} /> */}
+              <Route path="/computing/clusters/:id" element={<ClusterInfo />} />
+              <Route path="/computing/clusters/:id/:section" element={<ClusterInfo />} />  
               
               <Route path="/computing/hosts/:id" element={<HostDetail />}/>
               <Route path="/computing/hosts/:id/:section" element={<HostDetail />}/>

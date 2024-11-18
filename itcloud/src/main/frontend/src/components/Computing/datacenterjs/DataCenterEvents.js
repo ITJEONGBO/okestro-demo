@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../css/DataCenter.css';
 import { useEventsFromDataCenter } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';

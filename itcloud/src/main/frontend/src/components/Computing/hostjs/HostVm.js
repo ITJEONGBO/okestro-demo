@@ -1,9 +1,6 @@
 import {useHostFromCluster, useVMFromCluster, useVmFromHost} from "../../../api/RQHook";
 import HostDu from "../../duplication/HostDu";
 import React, { useState } from 'react';
-import TableColumnsInfo from "../../table/TableColumnsInfo";
-import TableOuter from "../../table/TableOuter";
-import { useNavigate } from 'react-router-dom';
 import VmDu from "../../duplication/VmDu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
@@ -16,13 +13,14 @@ const HostVm = ({ host }) => {
    // 가상머신 
    const { 
     data: vms, 
-    status: hostsStatus, 
+    status: vmsStatus, 
     isLoading: isHostsLoading, 
     isError: isHostsError 
   } = useVmFromHost(host?.id, toTableItemPredicateHosts);
   function toTableItemPredicateHosts(host) {
     return {
       icon: <FontAwesomeIcon icon={faUniversity} fixedWidth />,
+      status: host?.status,
       name: host?.name ?? 'Unknown', 
       cluster: host?.clusterVo?.name ?? 'Default', 
       ipv4: host?.ipv4 ?? 'Unknown',
