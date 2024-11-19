@@ -21,24 +21,30 @@ const VmModal = ({
   vmdata,
   vmId,
 }) => {
+
+  // 일반
   const [id, setId] = useState('');
   const [clusterVoName, setClusterVoName] = useState(''); // 클러스터이름
   const [clusterVoId, setClusterVoId] = useState('');  
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [description, setDescription] = useState('');
-
-
   const [stateless, setStateless] = useState(false); // 무상태
   const [startPaused, setStartPaused] = useState(false); // 일시중지상태로시작
   const [deleteProtected, setDeleteProtected] = useState(false); //삭제보호
-
   const [templateId, setTemplateId] = useState('');
   const [templateName, setTemplateName] = useState('');
 
-  const [maxMemory, setMaxMemory] = useState('');
-  const [allocatedMemory, setAllocatedMemory] = useState('');
-  const [totalVirtualCPU, setTotalVirtualCPU] = useState('');
+  //시스템
+  const [memorySize, setMemorySize] = useState(''); // 메모리 크기
+  const [maxMemory, setMaxMemory] = useState(''); //최대메모리
+  const [allocatedMemory, setAllocatedMemory] = useState(''); //실제 메모리
+
+
+  const [cpuTopologyCnt, setCpuTopologyCnt] = useState(''); //총cpu
+  const [cpuTopologyCore, setCpuTopologyCore] = useState(''); // 가상 소켓 당 코어
+  const [cpuTopologySocket, setCpuTopologySocket] = useState(''); // 가상소켓
+  const [cpuTopologyThread, setCpuTopologyThread] = useState(''); //코어당 스레드
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -66,6 +72,12 @@ useEffect(() => {
   } = useAllClusters((e) => ({
     ...e,
   }));
+  useEffect(() => {
+    if (clusters) {
+      console.log('가져온 모든 클러스터목록:', clusters);
+    }
+  }, [clusters]);
+
 
   // 템플릿 가져오기
   const {
@@ -184,13 +196,6 @@ const handleOptimizeOption = (e) => {
 
 
 
-  // 운영시스템
-
-
-
-
-
-
 // 초기값 설정
 useEffect(() => {
     if (isOpen) {
@@ -202,7 +207,6 @@ useEffect(() => {
         setClusterVoName(vm?.clusterVo?.name || '');
         setClusterVoId(vm?.clusterVo?.id || '');
         setDescription(vm?.description || '');
-  
         // osOptions와 chipsetOptions는 이미 상태에 기본값이 설정되어 있으므로 재사용
         setSelectedOs(osOptions.includes(vm?.osSystem) ? vm.osSystem : 'Linux'); // 유효한 값인지 확인 후 기본값 설정
         setSelectedChipset(
@@ -210,22 +214,30 @@ useEffect(() => {
             ? vm.chipsetFirmwareType 
             : 'BIOS의 Q35 칩셋'
         ); // 유효한 값인지 확인 후 기본값 설정
-  
         setSelectedOptimizeOption(optimizeOption.includes(vm?.optimizeOption) ? vm.optimizeOption : '서버');
         setComment(vm?.comment || '');
         setStateless(vm?.stateless || false);
         setStartPaused(vm?.startPaused || false);
         setDeleteProtected(vm?.deleteProtected || false);
 
+        // 시스템
         setMaxMemory(vm?.memoryMax);
         setAllocatedMemory(vm?.memoryActual);
-        setTotalVirtualCPU(vm?.memorySize);
+        setMemorySize(vm?.memorySize);
+        setCpuTopologyCnt(vm?.cpuTopologyCnt);
+        setCpuTopologyCore(vm?.cpuTopologyCore);
+        setCpuTopologySocket(vm?.cpuTopologySocket);
+        setCpuTopologyThread(vm?.cpuTopologyThread);
+
+        //초기실행
+
 
       } else if (!editMode) {
         resetForm();    
         setMaxMemory(4096 * 1024); // 기본 최대 메모리 (KB 단위)
         setAllocatedMemory(1024 * 1024); // 기본 할당 메모리 (KB 단위)
-        setTotalVirtualCPU(1024 * 1024); // 기본 메모리 크기 (KB 단위)
+        setMemorySize(1024 * 1024); // 기본 메모리 크기 (KB 단위)
+        
       }
     }
   }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption]);
@@ -278,8 +290,13 @@ useEffect(() => {
       optimizeOption: selectedOptimizeOption, // 선택된 최적화 옵션
       stateless,  //boolean
       startPaused,   //boolean
-      deleteProtected  //boolean
-      // datacenterVoId
+      deleteProtected, //boolean
+      // 시스템데이터
+      cpuTopologyCore, // int
+      cpuTopologySocket,
+      cpuTopologyThread
+      //초기실행 데이터
+
     };
     console.log('가상머신 생성데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
@@ -402,7 +419,7 @@ return (
           {/* 탭 내용 */}
           <div className="vm_edit_select_tab">
             <div className="edit_first_content">
-                        <div className='mb-1'>
+                        <div>
                               <label htmlFor="cluster">클러스터</label>
                               <select 
                                   id="cluster_location" 
@@ -420,57 +437,57 @@ return (
                                       ))
                                   )}
                               </select>
-                              <div className='datacenter_span'>데이터센터 Default</div>
+                             
                           </div>
 
                           <div>
-  <label htmlFor="template" style={{ color: 'gray' }}>템플릿</label>
-  <select
-    id="template"
-    value={templateId} // 선택된 템플릿 ID와 동기화
-    onChange={(e) => setTemplateId(e.target.value)} // 상태 업데이트
-    disabled={editMode} // 편집 모드일 경우 비활성화
-  >
-    {editMode && vmdata?.templateName ? (
-      // 편집 모드에서는 고정된 템플릿만 표시
-      <option value={vmdata.templateId}>{vmdata.templateName}</option>
-    ) : (
-      // 생성 모드에서는 템플릿 목록을 표시
-      templates &&
-      templates.map((template) => (
-        <option key={template.id} value={template.id}>
-          {template.name} {/* 템플릿 이름 표시 */}
-        </option>
-      ))
-    )}
-  </select>
-</div>
+                            <label htmlFor="template" style={{ color: 'gray' }}>템플릿</label>
+                            <select
+                              id="template"
+                              value={templateId} // 선택된 템플릿 ID와 동기화
+                              onChange={(e) => setTemplateId(e.target.value)} // 상태 업데이트
+                              disabled={editMode} // 편집 모드일 경우 비활성화
+                            >
+                              {editMode && vmdata?.templateName ? (
+                                // 편집 모드에서는 고정된 템플릿만 표시
+                                <option value={vmdata.templateId}>{vmdata.templateName}</option>
+                              ) : (
+                                // 생성 모드에서는 템플릿 목록을 표시
+                                templates &&
+                                templates.map((template) => (
+                                  <option key={template.id} value={template.id}>
+                                    {template.name} {/* 템플릿 이름 표시 */}
+                                  </option>
+                                ))
+                              )}
+                            </select>
+                          </div>
 
-<div className="network_form_group">
-  <label htmlFor="os">운영 시스템</label>
-  <select id="os" value={selectedOs} onChange={handleOsChange}>
-    <option value="">운영 시스템 선택</option>
-    {osOptions.map((os) => (
-      <option key={os} value={os}>
-        {os}
-      </option>
-    ))}
-  </select>
-  <span>선택된 운영 시스템: {selectedOs}</span>
-</div>
+                          <div className="network_form_group">
+                            <label htmlFor="os">운영 시스템</label>
+                            <select id="os" value={selectedOs} onChange={handleOsChange}>
+                              <option value="">운영 시스템 선택</option>
+                              {osOptions.map((os) => (
+                                <option key={os} value={os}>
+                                  {os}
+                                </option>
+                              ))}
+                            </select>
+                            <span>선택된 운영 시스템: {selectedOs}</span>
+                          </div>
 
-<div className="network_form_group">
-  <label htmlFor="chipset">칩셋/펌웨어 유형</label>
-  <select id="chipset" value={selectedChipset} onChange={handleChipsetChange}>
-    <option value="">칩셋 선택</option>
-    {chipsetOptions.map((chipset) => (
-      <option key={chipset} value={chipset}>
-        {chipset}
-      </option>
-    ))}
-  </select>
-  <span>선택된 칩셋: {selectedChipset}</span>
-</div>
+                          <div className="network_form_group">
+                            <label htmlFor="chipset">칩셋/펌웨어 유형</label>
+                            <select id="chipset" value={selectedChipset} onChange={handleChipsetChange}>
+                              <option value="">칩셋 선택</option>
+                              {chipsetOptions.map((chipset) => (
+                                <option key={chipset} value={chipset}>
+                                  {chipset}
+                                </option>
+                              ))}
+                            </select>
+                            <span>선택된 칩셋: {selectedChipset}</span>
+                          </div>
 
                         <div style={{ marginBottom: '2%' }}>
                             <label htmlFor="optimization">최적화 옵션</label>
@@ -581,79 +598,155 @@ return (
               <>
                 
                   <div className="edit_second_content">
-                  <div>
-    <label htmlFor="memory_size">메모리 크기</label>
-    <input
-      type="text"
-      id="memory_size"
-      value={formatMemory(totalVirtualCPU)} // 메모리 크기
-      readOnly
-    />
-  </div>
-  <div>
-    <div>
-      <label htmlFor="max_memory">최대 메모리</label>
-      <FontAwesomeIcon
-        icon={faInfoCircle}
-        style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-        data-tooltip-id="max-memory-tooltip"
-      />
-      <Tooltip
-        id="max-memory-tooltip"
-        className="icon_tooltip"
-        place="top"
-        effect="solid"
-      >
-        메모리 핫 플러그를 실행할 수 있는 가상 머신 메모리 상한
-      </Tooltip>
-    </div>
-    <input
-      type="text"
-      id="max_memory"
-      value={formatMemory(maxMemory)} // 최대 메모리
-      readOnly
-    />
-  </div>
+                    <div>
+                      <label htmlFor="memory_size">메모리 크기</label>
+                      <input
+                        type="text"
+                        id="memory_size"
+                        value={formatMemory(memorySize)} // 메모리 크기
+                        readOnly
+                      />
+                    </div>
+                    <div>
+                      <div>
+                        <label htmlFor="max_memory">최대 메모리</label>
+                        <FontAwesomeIcon
+                          icon={faInfoCircle}
+                          style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                          data-tooltip-id="max-memory-tooltip"
+                        />
+                        <Tooltip
+                          id="max-memory-tooltip"
+                          className="icon_tooltip"
+                          place="top"
+                          effect="solid"
+                        >
+                          메모리 핫 플러그를 실행할 수 있는 가상 머신 메모리 상한
+                        </Tooltip>
+                      </div>
+                      <input
+                        type="text"
+                        id="max_memory"
+                        value={formatMemory(maxMemory)} // 최대 메모리
+                        readOnly
+                      />
+                    </div>
 
-  <div>
-    <div>
-      <label htmlFor="actual_memory">할당할 실제 메모리</label>
-      <FontAwesomeIcon
-        icon={faInfoCircle}
-        style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-        data-tooltip-id="actual-memory-tooltip"
-      />
-      <Tooltip
-        id="actual-memory-tooltip"
-        className="icon_tooltip"
-        place="top"
-        effect="solid"
-      >
-        ballooning 기능 사용 여부에 관계없이 가상 머신에 확보된 메모리 양입니다.
-      </Tooltip>
-    </div>
-    <input
-      type="text"
-      id="actual_memory"
-      value={formatMemory(allocatedMemory)} // 실제 메모리
-      readOnly
-    />
-  </div>
+                    <div>
+                      <div>
+                        <label htmlFor="actual_memory">할당할 실제 메모리</label>
+                        <FontAwesomeIcon
+                          icon={faInfoCircle}
+                          style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                          data-tooltip-id="actual-memory-tooltip"
+                        />
+                        <Tooltip
+                          id="actual-memory-tooltip"
+                          className="icon_tooltip"
+                          place="top"
+                          effect="solid"
+                        >
+                          ballooning 기능 사용 여부에 관계없이 가상 머신에 확보된 메모리 양입니다.
+                        </Tooltip>
+                      </div>
+                      <input
+                        type="text"
+                        id="actual_memory"
+                        value={formatMemory(allocatedMemory)} // 실제 메모리
+                        readOnly
+                      />
+                    </div>
 
-                          <div>
-                              <div>
-                                  <label htmlFor="total_cpu">총 가상 CPU</label>
-                                  <FontAwesomeIcon
-                                      icon={faInfoCircle}
-                                      style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-                                      data-tooltip-id="total-cpu-tooltip"
-                                      />
-                                      <Tooltip id="total-cpu-tooltip" className="icon_tooltip" place="top" effect="solid">
-                                      소켓 수를 변경하여 CPU를 핫애드합니다. CPU 핫애드가 올바르게 지원되는지 확인하려면 게스트 운영 체제 관련 문서를 참조하십시오.
-                                      </Tooltip>
-                              </div>
-                              <input type="text" id="total_cpu" value="1" readOnly />
-                          </div>
+                    <div>
+                        <div>
+                            <label htmlFor="total_cpu">총 가상 CPU</label>
+                            <FontAwesomeIcon
+                                icon={faInfoCircle}
+                                style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                                data-tooltip-id="total-cpu-tooltip"
+                                />
+                                <Tooltip id="total-cpu-tooltip" className="icon_tooltip" place="top" effect="solid">
+                                소켓 수를 변경하여 CPU를 핫애드합니다. CPU 핫애드가 올바르게 지원되는지 확인하려면 게스트 운영 체제 관련 문서를 참조하십시오.
+                                </Tooltip>
+                        </div>
+                        <input type="text" id="total_cpu" value={(cpuTopologyCnt)}  readOnly />
+                    </div>
+                    <div className='network_form_group'>
+  <label htmlFor="virtual_socket">가상 소켓</label>
+  <select
+    id="virtual_socket"
+    value={cpuTopologySocket} // 현재 상태 값
+    onChange={(e) => setCpuTopologySocket(e.target.value)} // 상태 업데이트
+  >
+    {editMode ? (
+      // 편집 모드일 때 vm 값만 옵션으로 표시
+      <option value={vm?.cpuTopologySocket || ''}>
+        {vm?.cpuTopologySocket || '옵션 없음'}
+      </option>
+    ) : (
+      // 생성 모드일 때 기본 옵션 목록 표시
+      <>
+        <option value="">가상 소켓 선택</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+      </>
+    )}
+  </select>
+</div>
+
+<div className='network_form_group'>
+  <label htmlFor="core_per_socket">가상 소켓 당 코어</label>
+  <select
+    id="core_per_socket"
+    value={cpuTopologyCore} // 현재 상태 값
+    onChange={(e) => setCpuTopologyCore(e.target.value)} // 상태 업데이트
+  >
+    {editMode ? (
+      // 편집 모드일 때 vm 값만 옵션으로 표시
+      <option value={vm?.cpuTopologyCore || ''}>
+        {vm?.cpuTopologyCore || '옵션 없음'}
+      </option>
+    ) : (
+      // 생성 모드일 때 기본 옵션 목록 표시
+      <>
+        <option value="">코어 수 선택</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+      </>
+    )}
+  </select>
+</div>
+
+<div className='network_form_group'>
+  <label htmlFor="thread_per_core">코어당 스레드</label>
+  <select
+    id="thread_per_core"
+    value={cpuTopologyThread} // 현재 상태 값
+    onChange={(e) => setCpuTopologyThread(e.target.value)} // 상태 업데이트
+  >
+    {editMode ? (
+      // 편집 모드일 때 vm 값만 옵션으로 표시
+      <option value={vm?.cpuTopologyThread || ''}>
+        {vm?.cpuTopologyThread || '옵션 없음'}
+      </option>
+    ) : (
+      // 생성 모드일 때 기본 옵션 목록 표시
+      <>
+        <option value="">스레드 수 선택</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+      </>
+    )}
+  </select>
+</div>
+
+
                           
                   </div>
               </>

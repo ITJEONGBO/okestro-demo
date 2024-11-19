@@ -808,8 +808,7 @@ export const useVmById = (vmId) => useQuery({
     const res = await ApiManager.findVM(vmId);
     return res ?? {};
   },
-  staleTime: 0,
-  cacheTime: 0,
+
 });
 
 
@@ -828,8 +827,7 @@ export const useVm = (vmId) => useQuery({
     const res = await ApiManager.findVM(vmId);
     return res ?? {};
   },
-  staleTime: 0,
-  cacheTime: 0,
+
 });
 
 
