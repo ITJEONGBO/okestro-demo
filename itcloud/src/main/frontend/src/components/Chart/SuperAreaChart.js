@@ -1,32 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import AreaChart from './AreaChart';
 
-const SuperAreaChart = ({vmPer}) => {
+const SuperAreaChart = ({ vmPer }) => {
   const [series, setSeries] = useState([]);
   const [datetimes, setDatetimes] = useState([]);
 
+  // 날짜 변환 함수
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`; // 시간순으로 출력 (11:01, 11:02 등)
+  };
+
   useEffect(() => {
     if (vmPer) {
-      const transformedSeries = vmPer.map(item => ({
-        name: item.name,
-        data: item.dataList,
-      }));
-      
-      console.log(vmPer[2].name)
-      console.log(transformedSeries)
-      setSeries(transformedSeries);
-      setDatetimes(vmPer[0].time);
+      // 데이터를 시간순으로 정렬
+      const sortedData = vmPer.map(item => {
+        // time과 dataList를 묶어 정렬
+        const combined = item.time.map((time, index) => ({
+          time,
+          value: item.dataList[index],
+        })).sort((a, b) => new Date(a.time) - new Date(b.time)); // 시간순 정렬
+
+        return {
+          name: item.name,
+          data: combined.map(({ time, value }) => ({
+            x: formatDate(time),
+            y: value,
+          })),
+        };
+      });
+
+      const sortedTimes = vmPer[0].time
+        .map(formatDate)
+        .sort((a, b) => new Date(a) - new Date(b)); // 시간순 정렬
+
+      setSeries(sortedData);
+      setDatetimes(sortedTimes);
     }
   }, [vmPer]);
 
   return (
     <AreaChart 
-      series={series.reverse()}
-      datetimes={datetimes.reverse()}
+      series={series}
+      datetimes={datetimes}
     />
   );
 };
 
+export default SuperAreaChart;
 
 
 // const SuperAreaChart = ({ type, vmUsage = [] }) => {
@@ -90,5 +115,3 @@ const SuperAreaChart = ({vmPer}) => {
 // }
 
 
-
-export default SuperAreaChart;
