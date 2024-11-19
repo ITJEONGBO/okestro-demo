@@ -64,7 +64,7 @@ fun Connection.findAllVmsFromHost(hostId: String, searchQuery: String = ""): Res
 }
 
 
-fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false): Result<Host?> = runCatching {
+fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false, name: String, password: String): Result<Host?> = runCatching {
 	if(this.findAllHosts()
 			.getOrDefault(listOf())
 			.nameDuplicateHost(host.name())) {
@@ -73,7 +73,12 @@ fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false): Result<
 	val hostAdded: Host? =
 		srvHosts().add().deployHostedEngine(deployHostedEngine).host(host).send().host()
 
-//	hostAdded?.let { this.expectHostStatus(it.id(), HostStatus.UP) }
+	hostAdded?.let { this.expectHostStatus(it.id(), HostStatus.UP) }
+
+	val address: InetAddress = InetAddress.getByName(host.address())
+	if (address.makeUserHostViaSSH(host.rootPassword(), 22, name, password).isFailure)
+			return Result.failure(Error("계정생성 실패"))
+
 	hostAdded ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 }.onSuccess {
 	Term.HOST.logSuccess("생성")
@@ -207,15 +212,12 @@ fun Connection.refreshHost(hostId: String): Result<Boolean> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.restartHost(hostId: String, hostPw: String): Result<Boolean> = runCatching {
-	val host: Host =
-		this.findHost(hostId)
-			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
-	if(hostPw.isEmpty()){
-		throw ErrorPattern.HOST_NOT_FOUND.toError()
-	}
+fun Connection.restartHost(hostId: String, hostName: String, hostPw: String): Result<Boolean> = runCatching {
+	val host: Host = this.findHost(hostId).getOrNull()
+			?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+
 	val address: InetAddress = InetAddress.getByName(host.address())
-	if (address.rebootHostViaSSH("root", hostPw, 22).isFailure)
+	if (address.rebootHostViaSSH(hostName, hostPw, 22).isFailure)
 		return Result.failure(Error("SSH를 통한 호스트 재부팅 실패"))
 
 	if (!this.expectHostStatus(hostId, HostStatus.UP)) {
@@ -230,14 +232,61 @@ fun Connection.restartHost(hostId: String, hostPw: String): Result<Boolean> = ru
 }
 
 /**
+ * [makeUserHostViaSSH]
+ * host 생성할때 같이 실행되며 재시작만을 위한 계정생성
+ * @param password [String] root 비밀번호
+ * @param port [Int]  포트번호
+ * @param userName [String] 재시작 계정 아이디 (application.properties, host.rutil.id)
+ * @param userPw [String] 재시작 계정 비밀번호 (application.properties, host.rutil.password)
+ *
+ */
+fun InetAddress.makeUserHostViaSSH(password: String, port: Int, userName: String, userPw: String): Result<Boolean> = runCatching {
+	log.debug("ssh 시작 + 계정생성")
+	// SSH 세션 생성 및 연결
+	val session: com.jcraft.jsch.Session = JSch().getSession("root", hostAddress, port)
+	session.setPassword(password)
+	session.setConfig("StrictHostKeyChecking", "no") // 호스트 키 확인을 건너뛰기 위해 설정
+	session.connect()
+
+	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
+	channel.setCommand("adduser $userName")
+	channel.setCommand("passwd $userName")
+	Thread.sleep(100)
+	channel.setCommand(userPw)
+	Thread.sleep(100)
+	channel.setCommand(userPw)
+	channel.connect()
+
+	// 명령 실행 완료 대기
+	while (!channel.isClosed) {
+		Thread.sleep(100)
+	}
+
+	channel.disconnect()
+	session.disconnect()
+	val exitStatus = channel.exitStatus
+	log.debug("makeUserHostViaSSH")
+	return Result.success(exitStatus == 0)
+}.onSuccess {
+
+}.onFailure {
+	log.error(it.localizedMessage)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
+/**
  * [InetAddress.rebootHostViaSSH]
  * host SSH 관리 - 재시작 부분
+ * @param hostName [String] 생성한 계정
+ * @param hostPw [String] 생성한 계정
+ * @param port [Int]
  */
-fun InetAddress.rebootHostViaSSH(username: String, password: String, port: Int): Result<Boolean> = runCatching {
+fun InetAddress.rebootHostViaSSH(hostName: String, hostPw: String, port: Int): Result<Boolean> = runCatching {
 	log.debug("ssh 시작")
 	// SSH 세션 생성 및 연결
-	val session: com.jcraft.jsch.Session = JSch().getSession(username, hostAddress, port)
-	session.setPassword(password)
+	val session: com.jcraft.jsch.Session = JSch().getSession(hostName, hostAddress, port)
+	session.setPassword(hostPw)
 	session.setConfig("StrictHostKeyChecking", "no") // 호스트 키 확인을 건너뛰기 위해 설정
 	session.connect()
 

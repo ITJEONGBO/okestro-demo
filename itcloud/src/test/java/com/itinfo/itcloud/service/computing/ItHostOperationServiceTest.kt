@@ -21,12 +21,12 @@ class ItHostOperationServiceTest {
     @Autowired private lateinit var service: ItHostOperationService
 
     private lateinit var host01: String // host01
-    private lateinit var host02: String // host02.ititinfo.local
+    private lateinit var host05: String
 
     @BeforeEach
     fun setup() {
         host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
-        host02 = "0d7ba24e-452f-47fe-a006-f4702aa9b37f"
+        host05 = "70457998-0298-4e25-92ac-c74446bd19e9"
     }
 
     /**
@@ -40,7 +40,7 @@ class ItHostOperationServiceTest {
     fun should_deactivate() {
         log.debug("should_deactivate ...")
         val result: Boolean =
-            service.deactivate(host02)
+            service.deactivate(host05)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -57,14 +57,13 @@ class ItHostOperationServiceTest {
     fun should_activate() {
         log.debug("should_activate ...")
         val result: Boolean =
-            service.activate(host02)
+            service.activate(host05)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
     }
 
     /**
-     * [should_refresh]
      * [ItHostOperationService.refresh]에 대한 단위테스트
      * 기능 새로고침
      *
@@ -74,7 +73,7 @@ class ItHostOperationServiceTest {
 //    fun should_refresh() {
 //        log.debug("should_refresh ...")
 //        val result: Boolean =
-//            service.refresh(host02)
+//            service.refresh(host05)
 //
 //        assertThat(result, `is`(not(nullValue())))
 //        assertThat(result, `is`(true))
@@ -92,7 +91,7 @@ class ItHostOperationServiceTest {
     fun should_restart() {
         log.debug("should_restart ...")
         val result: Boolean =
-            service.restart(host02)
+            service.restart(host05)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))

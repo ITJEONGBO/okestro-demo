@@ -62,7 +62,7 @@ const ClusterInfo = () => {
     hosts: ClusterHosts,
     vms: ClusterVms,
     // storageDomains: DataCenterDomains,
-    // networks: DataCenterNetworks,
+    // networks: ClusterNetworks,
     events: ClusterEvents
   };
 

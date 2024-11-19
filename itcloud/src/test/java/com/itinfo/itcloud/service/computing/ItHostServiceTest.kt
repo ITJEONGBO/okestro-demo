@@ -31,7 +31,7 @@ class ItHostServiceTest {
 	private lateinit var clusterId: String // Default
 	private lateinit var networkId: String // ovirtmgmt(dc: Default)
 	private lateinit var host01: String // host01
-	private lateinit var host02: String // host02.ititinfo.local
+	private lateinit var host05: String // host02.ititinfo.local
 
 	@BeforeEach
 	fun setup() {
@@ -39,7 +39,7 @@ class ItHostServiceTest {
 		clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
 		networkId = "00000000-0000-0000-0000-000000000009"
 		host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
-		host02 = "0d7ba24e-452f-47fe-a006-f4702aa9b37f"
+		host05 = "70457998-0298-4e25-92ac-c74446bd19e9"
 	}
 
 	/**
@@ -137,6 +137,16 @@ class ItHostServiceTest {
 //		assertThat(removeResult, `is`(not(nullValue())))
 //		assertThat(removeResult, `is`(true))
 	}
+
+	@Test
+	fun should_remove_Host() {
+		log.debug("should_remove_Host ...")
+		val removeResult = service.remove(host05)
+
+		assertThat(removeResult, `is`(not(nullValue())))
+		assertThat(removeResult, `is`(true))
+	}
+
 
 	/**
 	 * [should_findAllVmsFromHost]

@@ -775,6 +775,25 @@ export const useActivateHost = () => {
   });
 };
 
+/**
+ * @name useRestartHost
+ * @description 호스트 재시작 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useRestartHost = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (hostId) => await ApiManager.restartHost(hostId),
+    onSuccess: () => {
+      console.log(`useRestartHost ... `);
+      queryClient.invalidateQueries('allHosts');
+    },
+    onError: (error) => {
+      console.error('Error restart host:', error);
+    },  
+  });
+};
 //endregion: Host
 
 //region: VM ----------------가상머신---------------------

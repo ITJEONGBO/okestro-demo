@@ -79,7 +79,6 @@ const HostModal = ({
       setComment(host?.comment);
       setAddress(host?.address);
       setSshPort(host?.sshPort);
-      setUserName(host?.sshName);
       setSshPassWord(host?.sshPassWord);
       setVgpu(host?.vgpu);
       // setHostEngine(host?.);
@@ -97,7 +96,6 @@ const HostModal = ({
     setComment('');
     setAddress('');
     setSshPort('22');
-    // setUserName('root');// 수정필요
     setSshPassWord('');
     setVgpu('consolidated');
     // setHostEngine('');
@@ -129,8 +127,7 @@ const HostModal = ({
       comment,
       address,
       sshPort,
-      // userName,
-      // sshPassWord,
+      sshPassWord,
       vgpu,
       // HostEngine,
     };
@@ -257,12 +254,12 @@ const HostModal = ({
             <div><label>인증</label></div>
             <div>
               <label htmlFor="userName">사용자 이름</label>
-              {/* <input
+              <input
                 type="text"
                 id="userName"
-                value={userName}
+                value="root"
                 disabled
-              /> */}
+              />
             </div>
             
             <div>            

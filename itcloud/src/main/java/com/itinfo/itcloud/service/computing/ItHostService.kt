@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.auth.RutilProperties
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.NetworkVo
@@ -154,6 +155,7 @@ class HostServiceImpl(
 	@Autowired private lateinit var vmSamplesHistoryRepository: VmSamplesHistoryRepository
 	@Autowired private lateinit var vmInterfaceSamplesHistoryRepository: VmInterfaceSamplesHistoryRepository
 	@Autowired private lateinit var itGraphService: ItGraphService
+	@Autowired private lateinit var rutil: RutilProperties
 
 	@Throws(Error::class)
 	override fun findAll(): List<HostVo> {
@@ -187,7 +189,9 @@ class HostServiceImpl(
 		val res: Host? =
 			conn.addHost(
 				hostVo.toAddHostBuilder(),
-				hostVo.hostedEngine
+				hostVo.hostedEngine,
+				rutil.id,
+				rutil.password
 			).getOrNull()
 		return res?.toHostVo(conn)
 	}

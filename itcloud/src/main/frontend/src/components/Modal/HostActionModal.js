@@ -5,7 +5,8 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   useDeactivateHost,
-  useActivateHost
+  useActivateHost, 
+  useRestartHost
 } from '../../api/RQHook';
 
 const HostActionModal = ({ 
@@ -17,6 +18,7 @@ const HostActionModal = ({
 }) => {
   const { mutate: deactivateHost } = useDeactivateHost();
   const { mutate: activateHost } = useActivateHost();
+  const { mutate: restartHost } = useRestartHost();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,9 +47,10 @@ const HostActionModal = ({
       console.log('activate ' + {id})
       handleAction(activateHost)
     } 
-    // else if (action === 'restart') {
-    //   console.log('restart Host');
-    //   handleAction(restartHost);
+    else if (action === 'restart') {
+      console.log('restart Host');
+      handleAction(restartHost);
+    }
     // } else if (action === 'stop') {
     //   console.log('stop Host');
     //   handleAction(stopHost);

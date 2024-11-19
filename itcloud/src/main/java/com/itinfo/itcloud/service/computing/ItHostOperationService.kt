@@ -1,10 +1,12 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.model.auth.RutilProperties
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Error
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.net.UnknownHostException
 
@@ -84,6 +86,8 @@ class HostOperationServiceImpl(
 
 ): BaseService(), ItHostOperationService {
 
+    @Autowired private lateinit var rutil: RutilProperties
+
     @Throws(Error::class)
     override fun deactivate(hostId: String): Boolean {
         log.info("deactivate ... hostId: {}", hostId)
@@ -103,11 +107,12 @@ class HostOperationServiceImpl(
     @Throws(UnknownHostException::class, Error::class)
     override fun restart(hostId: String): Boolean {
         log.info("reStart ... hostId: {}", hostId)
-        // TODO Host 이름, PW 문제 => application.properties 에 저장해서 불러오는 방식
-//        val userName = ""
-        val hostPw = "adminRoot!@#"
+        // TODO host root 로그인이 아닌 새호스트 계정을 생성하고 이를 application.properties에 저장해서 보여주는 방식
+        val name = rutil.id
+        val password = rutil.password
+        log.info("Host ID: {}, Password: {}", name, password)
         val res: Result<Boolean> =
-            conn.restartHost(hostId, hostPw)
+            conn.restartHost(hostId, name, password)
         return res.isSuccess
     }
 

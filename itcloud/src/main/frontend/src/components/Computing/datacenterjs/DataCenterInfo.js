@@ -11,7 +11,7 @@ import DataCenterClusters from './DataCenterClusters';
 import DataCenterHosts from './DataCenterHosts';
 import DataCenterVms from './DataCenterVms';
 import DataCenterDomains from './DataCenterDomains';
-import DataCenterNetworks from './DataCenterNetwork';
+import DataCenterNetworks from './DataCenterNetworks';
 import DataCenterEvents from './DataCenterEvents';
 
 const DataCenterModal = React.lazy(() => import('../../Modal/DataCenterModal'));

@@ -12,7 +12,7 @@ import { Suspense } from "react";
 import NetworkNewModal from "../../Modal/NetworkNewModal";
 import DeleteModal from "../../Modal/DeleteModal";
 
-const ClusterNetwrok = ({ cluster }) => {
+const ClusterNetworks = ({ cluster }) => {
     const navigate = useNavigate();
     const [activePopup, setActivePopup] = useState(null);
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
@@ -397,4 +397,4 @@ shouldCloseOnOverlayClick={false}
     );
   };
   
-  export default ClusterNetwrok;
+  export default ClusterNetworks;
