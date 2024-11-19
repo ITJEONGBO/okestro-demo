@@ -17,6 +17,7 @@ import Footer from './footer/Footer';
 import { useAllEvents } from '../api/RQHook';
 import PagingTable from './table/PagingTable';
 import PagingTableOuter from './table/PagingTableOuter';
+import TableInfo from './table/TableInfo';
 
 Modal.setAppElement('#root');
 
@@ -76,7 +77,7 @@ const Event = () => {
       <div className="content_outer">
         <div className="empty_nav_outer">
             <PagingTableOuter
-              columns={TableColumnsInfo.EVENTS}
+              columns={TableInfo.EVENTS}
               data={events}
               showSearchBox={false}
               onRowClick={(row, column) => {
