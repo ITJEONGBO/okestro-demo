@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../css/DataCenter.css';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
-import { 
-  useVMsFromDataCenter 
-} from '../../../api/RQHook';
+import { useVMsFromDataCenter } from '../../../api/RQHook';
 import renderStatusIcon from '../renderStatusIcon';
 
 const VmModal = React.lazy(() => import('../../Modal/VmModal'));

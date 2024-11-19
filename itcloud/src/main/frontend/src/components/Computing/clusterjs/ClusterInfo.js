@@ -60,7 +60,7 @@ const ClusterInfo = () => {
   const sectionComponents = {
     general: ClusterGenerals,
     hosts: ClusterHosts,
-    // vms: ClusterVms,
+    vms: ClusterVms,
     // storageDomains: DataCenterDomains,
     // networks: DataCenterNetworks,
     events: ClusterEvents
