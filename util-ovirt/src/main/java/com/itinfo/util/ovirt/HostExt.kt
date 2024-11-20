@@ -70,22 +70,32 @@ fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false, name: St
 			.nameDuplicateHost(host.name())) {
 		return FailureType.DUPLICATE.toResult(Term.HOST.desc)
 	}
-	val hostAdded: Host? =
-		srvHosts().add().deployHostedEngine(deployHostedEngine).host(host).send().host()
-
-	hostAdded?.let { this.expectHostStatus(it.id(), HostStatus.UP) }
 
 	val address: InetAddress = InetAddress.getByName(host.address())
-	if (address.makeUserHostViaSSH(host.rootPassword(), 22, name, password).isFailure)
-			return Result.failure(Error("계정생성 실패"))
+	log.info("Resolved address: {}", address)
+	if (address.makeUserHostViaSSH(host.rootPassword(), 22, name, password).isFailure) {
+		log.info("계정생성 실패")
+		return Result.failure(Error("계정생성 실패"))
+	}
+	log.info("배포작업: {}", deployHostedEngine)
+	val hostAdded: Host =
+		srvHosts().add().deployHostedEngine(deployHostedEngine).host(host).send().host()
 
-	hostAdded ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+	// 상태 up 될때까지 기다리기
+	this.expectHostStatus(hostAdded.id(), HostStatus.UP)
+
+	log.info("Host 생성 끝")
+	hostAdded
 }.onSuccess {
 	Term.HOST.logSuccess("생성")
 }.onFailure {
+	log.error("호스트 생성 실패")
 	Term.HOST.logFail("생성", it)
+	log.error("왜냐고")
 	throw if (it is Error) it.toItCloudException() else it
 }
+
+
 
 fun Connection.updateHost(host: Host): Result<Host?> = runCatching {
 	if(this.findAllHosts()
@@ -231,6 +241,8 @@ fun Connection.restartHost(hostId: String, hostName: String, hostPw: String): Re
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+
+
 /**
  * [makeUserHostViaSSH]
  * host 생성할때 같이 실행되며 재시작만을 위한 계정생성
@@ -241,36 +253,32 @@ fun Connection.restartHost(hostId: String, hostName: String, hostPw: String): Re
  *
  */
 fun InetAddress.makeUserHostViaSSH(password: String, port: Int, userName: String, userPw: String): Result<Boolean> = runCatching {
-	log.debug("ssh 시작 + 계정생성")
-	// SSH 세션 생성 및 연결
-	val session: com.jcraft.jsch.Session = JSch().getSession("root", hostAddress, port)
+	log.info("SSH 시작 + 계정 생성 및 sudo 권한 부여")
+	val session: com.jcraft.jsch.Session = JSch().getSession("root", this.hostAddress, port)
 	session.setPassword(password)
-	session.setConfig("StrictHostKeyChecking", "no") // 호스트 키 확인을 건너뛰기 위해 설정
+	session.setConfig("StrictHostKeyChecking", "no")
 	session.connect()
 
 	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
-	channel.setCommand("adduser $userName")
-	channel.setCommand("passwd $userName")
-	Thread.sleep(100)
-	channel.setCommand(userPw)
-	Thread.sleep(100)
-	channel.setCommand(userPw)
+
+	// 1. 사용자 계정 생성
+	channel.setCommand("useradd $userName && echo \"$userPw\" | /usr/bin/passwd --stdin $userName 1>&-")
+	Thread.sleep(300)
 	channel.connect()
 
-	// 명령 실행 완료 대기
-	while (!channel.isClosed) {
-		Thread.sleep(100)
-	}
-
+	channel.setCommand("echo \"$userName ALL=(ALL) NOPASSWD: /usr/sbin/reboot\" | tee -a /etc/sudoers")
+	channel.connect()
+	Thread.sleep(300)
 	channel.disconnect()
-	session.disconnect()
-	val exitStatus = channel.exitStatus
-	log.debug("makeUserHostViaSSH")
-	return Result.success(exitStatus == 0)
-}.onSuccess {
 
+	session.disconnect()
+
+	log.info("계정 생성 및 sudo 권한 부여 성공: {}", userName)
+	true
+}.onSuccess {
+	log.info("계정 생성 성공 여부: $it")
 }.onFailure {
-	log.error(it.localizedMessage)
+	log.error(it.localizedMessage, it)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
