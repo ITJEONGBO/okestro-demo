@@ -186,8 +186,7 @@ export const useDataCenter = (dataCenterId) => useQuery({
     const res = await ApiManager.findDataCenter(dataCenterId);  // dataCenterId에 따라 API 호출
     return res ?? {};  // 데이터를 반환, 없는 경우 빈 객체 반환
   },
-  staleTime: 0, 
-  cacheTime: 0, 
+
 });
 
 /**
@@ -208,8 +207,7 @@ export const useClustersFromDataCenter = (dataCenterId, mapPredicate) => useQuer
     const res = await ApiManager.findAllClustersFromDataCenter(dataCenterId); 
     return res?.map(mapPredicate) ?? []; // 데이터 가공
   },
-  staleTime: 0, 
-  cacheTime: 0,
+
   enabled: !!dataCenterId, // dataCenterId가 있을 때만 쿼리를 실행
 });
 
@@ -869,8 +867,6 @@ export const useDisksFromVM = (vmId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
   enabled: !!vmId, 
-  staleTime: 0,
-  cacheTime: 0,
 });
 
 /**
@@ -892,8 +888,6 @@ export const useSnapshotFromVM = (vmId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
   enabled: !!vmId, 
-  staleTime: 0,
-  cacheTime: 0,
 });
 
 /**

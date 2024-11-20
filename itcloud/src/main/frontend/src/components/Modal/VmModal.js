@@ -39,12 +39,19 @@ const VmModal = ({
   const [memorySize, setMemorySize] = useState(''); // 메모리 크기
   const [maxMemory, setMaxMemory] = useState(''); //최대메모리
   const [allocatedMemory, setAllocatedMemory] = useState(''); //실제 메모리
+  const [cpuTopologyCnt, setCpuTopologyCnt] = useState(1); //총cpu
+  const [cpuTopologyCore, setCpuTopologyCore] = useState(1); // 가상 소켓 당 코어
+  const [cpuTopologySocket, setCpuTopologySocket] = useState(1); // 가상소켓
+  const [cpuTopologyThread, setCpuTopologyThread] = useState(1); //코어당 스레드
 
+  // 초기실행
+  const [cloudInit, setCloudInit] = useState(false); // Cloud-lnit
+  const [script, setScript] = useState(''); // 스크립트
 
-  const [cpuTopologyCnt, setCpuTopologyCnt] = useState(''); //총cpu
-  const [cpuTopologyCore, setCpuTopologyCore] = useState(''); // 가상 소켓 당 코어
-  const [cpuTopologySocket, setCpuTopologySocket] = useState(''); // 가상소켓
-  const [cpuTopologyThread, setCpuTopologyThread] = useState(''); //코어당 스레드
+  // 호스트
+  const [hostInCluster, setHostInCluster] = useState(''); 
+  const [hostVoId, setHostVoId] = useState(''); 
+
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -151,29 +158,35 @@ const [osOptions, setOsOptions] = useState([
 ]); 
 // 칩셋 옵션
 const [chipsetOptions, setChipsetOptions] = useState([
-    'BIOS의 I440FX 칩셋',
-    'BIOS의 Q35 칩셋',
-    'UEFI의 Q35 칩셋',
-    'UEFI SecureBoot의 Q35 칩셋'
+    'CLUSTER_DEFAULT',
+    'I440FX_SEA_BIOS',
+    'Q35_OVMF',
+    'Q35_SEA_BIOS',
+    'Q35_SECURE_BOOT'
+
+    // 'BIOS의 I440FX 칩셋', 
+    // 'BIOS의 Q35 칩셋',
+    // 'UEFI의 Q35 칩셋',
+    // 'UEFI SecureBoot의 Q35 칩셋'
 ]); 
 // 최적화옵션
 const [optimizeOption, setOptimizeOption] = useState([
-    '데스크탑',
-    '서버',
-    '고성능'
+    'DESKTOP',
+    'HIGH_PERFORMANCE',
+    'SERVER'
 ]); 
 
 
 // 선택된 값 상태
 const [selectedOs, setSelectedOs] = useState('Linux'); // 운영 시스템 선택
 const [selectedChipset, setSelectedChipset] = useState('Q35_OVMF'); // 칩셋 선택
-const [selectedOptimizeOption, setSelectedOptimizeOption] = useState('서버'); // 칩셋 선택
+const [selectedOptimizeOption, setSelectedOptimizeOption] = useState('SERVER'); // 칩셋 선택
 
 useEffect(() => {
   // 초기 상태 설정 (필요하면 기본값 설정 가능)
   setSelectedOs('Linux'); // 초기 운영 시스템
   setSelectedChipset('Q35_OVMF'); // 초기 칩셋
-  setSelectedChipset('서버'); // 초기 칩셋
+  setSelectedChipset('SERVER'); // 초기 칩셋
 }, []);
 
 // 운영 시스템 변경 핸들러
@@ -212,7 +225,7 @@ useEffect(() => {
         setSelectedChipset(
           chipsetOptions.includes(vm?.chipsetFirmwareType) 
             ? vm.chipsetFirmwareType 
-            : 'BIOS의 Q35 칩셋'
+            : 'Q35_SEA_BIOS'
         ); // 유효한 값인지 확인 후 기본값 설정
         setSelectedOptimizeOption(optimizeOption.includes(vm?.optimizeOption) ? vm.optimizeOption : '서버');
         setComment(vm?.comment || '');
@@ -224,20 +237,22 @@ useEffect(() => {
         setMaxMemory(vm?.memoryMax);
         setAllocatedMemory(vm?.memoryActual);
         setMemorySize(vm?.memorySize);
-        setCpuTopologyCnt(vm?.cpuTopologyCnt);
-        setCpuTopologyCore(vm?.cpuTopologyCore);
-        setCpuTopologySocket(vm?.cpuTopologySocket);
-        setCpuTopologyThread(vm?.cpuTopologyThread);
-
+        setCpuTopologyCnt(vm?.cpuTopologyCnt || 1);
+        setCpuTopologyCore(vm?.cpuTopologyCore || 1);
+        setCpuTopologySocket(vm?.cpuTopologySocket || 1);
+        setCpuTopologyThread(vm?.cpuTopologyThread || 1);
+    
         //초기실행
-
+        setCloudInit(vm?.cloudInit);
+        setScript(vm?.setScript);
 
       } else if (!editMode) {
         resetForm();    
+        setClusterVoId(vmId || clusters?.[0]?.id || '');
         setMaxMemory(4096 * 1024); // 기본 최대 메모리 (KB 단위)
         setAllocatedMemory(1024 * 1024); // 기본 할당 메모리 (KB 단위)
         setMemorySize(1024 * 1024); // 기본 메모리 크기 (KB 단위)
-        
+        setCpuTopologyCnt(1);
       }
     }
   }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption]);
@@ -257,7 +272,14 @@ useEffect(() => {
     setStartPaused(false); // 기본값 설정
     setDeleteProtected(false); // 기본값 설정
     setSelectedOs('Linux'); // 기본값
-    setSelectedChipset('BIOS의 Q35 칩셋'); // 기본값
+    setSelectedChipset('Q35_SEA_BIOS'); // 기본값
+    setCpuTopologyCnt(1);
+    setCpuTopologyCore(1);
+    setCpuTopologySocket(1);
+    setCpuTopologyThread(1);
+    setCloudInit(false);
+    setScript('');
+
   };
 
   const handleFormSubmit = () => {
@@ -286,17 +308,26 @@ useEffect(() => {
       description,
       comment,
       osOptions:selectedOs,
-      chipsetFirmwareType: selectedChipset, // 선택된 칩셋
+      chipsetFirmwareType:selectedChipset,// 선택된 칩셋
       optimizeOption: selectedOptimizeOption, // 선택된 최적화 옵션
       stateless,  //boolean
       startPaused,   //boolean
       deleteProtected, //boolean
-      // 시스템데이터
-      cpuTopologyCore, // int
-      cpuTopologySocket,
-      cpuTopologyThread
-      //초기실행 데이터
+      //시스템데이터
+      memorySize,
+      maxMemory,
+      allocatedMemory,
+      cpuTopologyCnt, // 총가상 cpu
+      cpuTopologyCore, // 가상 소켓 당 코어
+      cpuTopologySocket, // 가상소켓
+      cpuTopologyThread, // 코어당 스레드
+    
+      // 초기 실행 데이터 (예: cloud-init 관련)
+      cloudInit,
+      script,
 
+      //초기실행 데이터
+ 
     };
     console.log('가상머신 생성데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
@@ -425,11 +456,13 @@ return (
                                   id="cluster_location" 
                                   value={clusterVoId} 
                                   onChange={(e) => setClusterVoId(e.target.value)} 
-                                  disabled={editMode} // 편집 모드일 경우 비활성화
+                                  
                                   >
                                   {editMode && vm?.clusterName ? (
                                       // 편집 모드에서는 고정된 클러스터만 표시
+                                      clusters && clusters.map((cluster) => (
                                       <option value={vm.clusterName}>{vm.clusterName}</option>
+                                    ))
                                   ) : (
                                       // editMode가 아닐 경우 클러스터 목록 표시
                                       clusters && clusters.map((cluster) => (
@@ -658,19 +691,32 @@ return (
                     </div>
 
                     <div>
-                        <div>
-                            <label htmlFor="total_cpu">총 가상 CPU</label>
-                            <FontAwesomeIcon
-                                icon={faInfoCircle}
-                                style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-                                data-tooltip-id="total-cpu-tooltip"
-                                />
-                                <Tooltip id="total-cpu-tooltip" className="icon_tooltip" place="top" effect="solid">
-                                소켓 수를 변경하여 CPU를 핫애드합니다. CPU 핫애드가 올바르게 지원되는지 확인하려면 게스트 운영 체제 관련 문서를 참조하십시오.
-                                </Tooltip>
-                        </div>
-                        <input type="text" id="total_cpu" value={(cpuTopologyCnt)}  readOnly />
-                    </div>
+  <div>
+    <label htmlFor="total_cpu">총 가상 CPU</label>
+    <FontAwesomeIcon
+      icon={faInfoCircle}
+      style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+      data-tooltip-id="total-cpu-tooltip"
+    />
+    <Tooltip
+      id="total-cpu-tooltip"
+      className="icon_tooltip"
+      place="top"
+      effect="solid"
+    >
+      소켓 수를 변경하여 CPU를 핫애드합니다. CPU 핫애드가 올바르게 지원되는지
+      확인하려면 게스트 운영 체제 관련 문서를 참조하십시오.
+    </Tooltip>
+  </div>
+  <input
+    type="text"
+    id="total_cpu"
+    value={cpuTopologyCnt}
+    onChange={(e) => setCpuTopologyCnt(Number(e.target.value))}
+    min="1"
+  />
+</div>
+
                     <div className='network_form_group'>
   <label htmlFor="virtual_socket">가상 소켓</label>
   <select
@@ -688,63 +734,57 @@ return (
       <>
         <option value="">가상 소켓 선택</option>
         <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="4">4</option>
-        <option value="8">8</option>
       </>
     )}
   </select>
-</div>
+                    </div>
 
-<div className='network_form_group'>
-  <label htmlFor="core_per_socket">가상 소켓 당 코어</label>
-  <select
-    id="core_per_socket"
-    value={cpuTopologyCore} // 현재 상태 값
-    onChange={(e) => setCpuTopologyCore(e.target.value)} // 상태 업데이트
-  >
-    {editMode ? (
-      // 편집 모드일 때 vm 값만 옵션으로 표시
-      <option value={vm?.cpuTopologyCore || ''}>
-        {vm?.cpuTopologyCore || '옵션 없음'}
-      </option>
-    ) : (
-      // 생성 모드일 때 기본 옵션 목록 표시
-      <>
-        <option value="">코어 수 선택</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="4">4</option>
-        <option value="8">8</option>
-      </>
-    )}
-  </select>
-</div>
+                    <div className='network_form_group'>
+                      <label htmlFor="core_per_socket">가상 소켓 당 코어</label>
+                      <select
+                        id="core_per_socket"
+                        value={cpuTopologyCore} // 현재 상태 값
+                        onChange={(e) => setCpuTopologyCore(e.target.value)} // 상태 업데이트
+                      >
+                        {editMode ? (
+                          // 편집 모드일 때 vm 값만 옵션으로 표시
+                          <option value={vm?.cpuTopologyCore || ''}>
+                            {vm?.cpuTopologyCore || '옵션 없음'}
+                          </option>
+                        ) : (
+                          // 생성 모드일 때 기본 옵션 목록 표시
+                          <>
+                            <option value="">코어 수 선택</option>
+                            <option value="1">1</option>
+                          
+                          </>
+                        )}
+                      </select>
+                    </div>
 
-<div className='network_form_group'>
-  <label htmlFor="thread_per_core">코어당 스레드</label>
-  <select
-    id="thread_per_core"
-    value={cpuTopologyThread} // 현재 상태 값
-    onChange={(e) => setCpuTopologyThread(e.target.value)} // 상태 업데이트
-  >
-    {editMode ? (
-      // 편집 모드일 때 vm 값만 옵션으로 표시
-      <option value={vm?.cpuTopologyThread || ''}>
-        {vm?.cpuTopologyThread || '옵션 없음'}
-      </option>
-    ) : (
-      // 생성 모드일 때 기본 옵션 목록 표시
-      <>
-        <option value="">스레드 수 선택</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="4">4</option>
-        <option value="8">8</option>
-      </>
-    )}
-  </select>
-</div>
+                    <div className='network_form_group'>
+                      <label htmlFor="thread_per_core">코어당 스레드</label>
+                      <select
+                        id="thread_per_core"
+                        value={cpuTopologyThread} // 현재 상태 값
+                        onChange={(e) => setCpuTopologyThread(e.target.value)} // 상태 업데이트
+                      >
+                        {editMode ? (
+                          // 편집 모드일 때 vm 값만 옵션으로 표시
+                          <option value={vm?.cpuTopologyThread || ''}>
+                            {vm?.cpuTopologyThread || '옵션 없음'}
+                          </option>
+                        ) : (
+                          // 생성 모드일 때 기본 옵션 목록 표시
+                          <>
+                            <option value="">스레드 수 선택</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                
+                          </>
+                        )}
+                      </select>
+                    </div>
 
 
                           
@@ -752,24 +792,56 @@ return (
               </>
               }
               {selectedModalTab === 'beginning' && 
-              <>
+                <>
+
                 <div className='p-1.5'>
                   <div className='checkbox_group mb-1.5'>
-                      <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
-                      <label htmlFor="enableBootMenu">Cloud-lnit</label>
+                    <input 
+                      type="checkbox" 
+                      id="enableBootMenu" 
+                      name="enableBootMenu" 
+                      checked={cloudInit} // cloudInit 상태를 checked 속성에 바인딩
+                      onChange={(e) => {
+                        setCloudInit(e.target.checked); // 상태 업데이트
+                        if (!e.target.checked) {
+                          setDomainHiddenBoxVisible(false); // 체크 해제 시 숨김 처리
+                        }
+                      }}
+                    />
+                    <label htmlFor="enableBootMenu">Cloud-lnit</label>
                   </div>
 
-                  <div>
-                    <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox}fixedWidth/>
-                    <span>사용자 지정 스크립트</span>
-                    <div className='mt-0.5' id="domain_hidden_box2" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
-                      <textarea name="content" cols="40" rows="8" >DVD</textarea>
-
+                  {cloudInit && ( // Cloud-init이 체크된 경우에만 표시
+                    <div>
+                      <FontAwesomeIcon 
+                        icon={faChevronCircleRight} 
+                        id="domain_hidden_box_btn2" 
+                        onClick={toggleDomainHiddenBox} 
+                        fixedWidth 
+                      />
+                      <span>사용자 지정 스크립트</span>
+                      <div 
+                        className='mt-0.5' 
+                        id="domain_hidden_box2" 
+                        style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }} // 상태에 따라 표시 여부 제어
+                      >
+                        <textarea 
+                          name="content" 
+                          cols="40" 
+                          rows="8" 
+                          placeholder="여기에 스크립트를 입력하세요"
+                          value={script} // script 상태와 바인딩
+                          onChange={(e) => setScript(e.target.value)} // 상태 업데이트
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              </>
+
+
+                </>
               }
+
               {selectedModalTab === 'host' && 
               <>
             

@@ -15,12 +15,16 @@ const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumn
     const sorted = [...data].sort((a, b) => {
       const aValue = a[key];
       const bValue = b[key];
-
+  
       if (aValue === null || aValue === undefined || aValue === '') return 1;
       if (bValue === null || bValue === undefined || bValue === '') return -1;
-
-      if (aValue < bValue) return direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+  
+      // 문자열 비교 시 대소문자 무시
+      const aLower = typeof aValue === 'string' ? aValue.toLowerCase() : aValue;
+      const bLower = typeof bValue === 'string' ? bValue.toLowerCase() : bValue;
+  
+      if (aLower < bLower) return direction === 'asc' ? -1 : 1;
+      if (aLower > bLower) return direction === 'asc' ? 1 : -1;
       return 0;
     });
     setSortedData(sorted);

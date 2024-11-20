@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { useAddNetwork, useAllDataCenters, useDataCenter, useEditNetwork, useNetworkById } from '../../api/RQHook';
+import { useAddNetwork, useAllClusters, useAllDataCenters, useDataCenter, useEditNetwork, useNetworkById } from '../../api/RQHook';
 import { Tooltip } from 'react-tooltip';
 
 const NetworkNewModal = ({ 
@@ -21,6 +21,8 @@ const NetworkNewModal = ({
     const [vlan, setVlan] = useState('');
     const [usageVm, setUsageVm] = useState(false);
     const [vmNetwork, setVmNetwork] = useState('');
+    const [clsuterVoId, setClusterVoId] = useState('');
+    const [clsuterVoName, setClusterVoName] = useState('');
 
     const { mutate: addNetwork } = useAddNetwork();
     const { mutate: editNetwork } = useEditNetwork();
@@ -34,7 +36,27 @@ const NetworkNewModal = ({
         isError 
     } = useNetworkById(networkId);
 
+    // 클러스터 가져오기
+    const {
+        data: clusters,
+      } = useAllClusters((e) => ({
+        ...e,
+    }));
+    const [clusterConnections, setClusterConnections] = useState([]);
 
+    useEffect(() => {
+      if (clusters) {
+        setClusterConnections(
+          clusters.map((cluster) => ({
+            ...cluster,
+            isConnected: true, // 처음엔 모두 연결 상태로 설정
+            isRequired: true, // 처음엔 모두 필수 상태로 설정되지 않음
+          }))
+        );
+      }
+    }, [clusters]);
+
+    
     // 데이터센터 가져오기
     const {
       data: datacenters,
@@ -61,6 +83,8 @@ const NetworkNewModal = ({
         setVmNetwork(network.vmNetwork);
         setUsageVm(network.usage?.vm || true);
         setMtu(network.mtu);
+        setClusterVoId(network?.clusterVo?.id || '');
+        setClusterVoName(network?.clusterVo?.name || '');
       } else {
         resetForm();
         setDatacenterVoId(networkId || datacenters?.[0]?.id || '');
@@ -79,8 +103,13 @@ const NetworkNewModal = ({
         setVlan('0')
       };
 
-
-
+      // 클러스터 연결 정보를 데이터에 추가
+      const clusterConnectionData = clusterConnections.map((cluster) => ({
+        id: cluster.id,
+        name: cluster.name,
+        isConnected: cluster.isConnected,
+        isRequired: cluster.isRequired,
+      }));
       const handleFormSubmit = () => {
         const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
         if (!selectedDataCenter) {
@@ -102,7 +131,7 @@ const NetworkNewModal = ({
           comment,
           portIsolation: Boolean(portIsolation), // 빈 문자열을 false로 처리
           mtu: mtu ? parseInt(mtu, 10) : 1500, // mtu가 빈 값이면 1500 설정
-          vlan: vlan ? parseInt(vlan, 10) : null, // 빈 문자열을 null로 설정
+          vlan: vlan ? parseInt(vlan, 10) : 0, // 빈 문자열을 null로 설정
           usage: {
             defaultRoute: false,
             display: false,
@@ -111,7 +140,8 @@ const NetworkNewModal = ({
             migration: false,
             vm: true 
           },
-          vmNetwork:  true
+          vmNetwork:  true,
+          clusterConnections: clusterConnectionData, 
         };
         
     
@@ -236,29 +266,25 @@ const NetworkNewModal = ({
               </div>
 
               <div className="network_second_contents">
-              <div className="network_checkbox_type1">
-  <div className="checkbox_group">
+                <div className="network_checkbox_type1">
+    <div className="checkbox_group">
+      <input
+        type="checkbox"
+        id="valn_tagging"
+        name="valn_tagging"
+        checked={vlan !== ''} // vlan이 빈 문자열이 아니면 체크
+        onChange={(e) => setVlan(e.target.checked ? '0' : '')} // 체크되면 '0'으로 초기화, 해제 시 빈 문자열
+      />
+      <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
+    </div>
     <input
-      type="checkbox"
-      id="valn_tagging"
-      name="valn_tagging"
-      checked={vlan !== ''} // vlan이 빈 문자열이 아니면 체크
-      onChange={(e) => setVlan(e.target.checked ? '0' : '')} // 체크되면 '0'으로 초기화, 해제 시 빈 문자열
+      type="text"
+      id="valn_tagging_input"
+      disabled={vlan === ''} // VLAN 태깅 활성화가 체크되었을 때만 활성화
+      value={vlan}
+      onChange={(e) => setVlan(e.target.value)} // VLAN 입력 값 변경 시 setVlan 호출
     />
-    <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
-  </div>
-  <input
-    type="text"
-    id="valn_tagging_input"
-    disabled={vlan === ''} // VLAN 태깅 활성화가 체크되었을 때만 활성화
-    value={vlan}
-    onChange={(e) => setVlan(e.target.value)} // VLAN 입력 값 변경 시 setVlan 호출
-  />
-</div>
-
-
-
-
+                </div>
 
                 <div className="network_checkbox_type2">
                   <input
@@ -316,9 +342,6 @@ const NetworkNewModal = ({
                   </div>
                 </div>
 
-
-
-                
                 <div className="network_checkbox_type2">
                   <input type="checkbox" id="dns_settings" name="dns_settings" />
                   <label htmlFor="dns_settings">DNS 설정</label>
@@ -334,46 +357,104 @@ const NetworkNewModal = ({
               </div>
 
               <div id="network_new_cluster_form" style={{ display: editMode ? 'none' : 'block' }}>
-                <span>클러스터에서 네트워크를 연결/분리</span>
-                <div>
-                  <table className="network_new_cluster_table">
-                    <thead>
-                      <tr>
-                        <th>이름</th>
-                        <th>
-                          <div className="checkbox_group">
-                            <input type="checkbox" id="connect_all" />
-                            <label htmlFor="connect_all"> 모두 연결</label>
-                          </div>
-                        </th>
-                        <th>
-                          <div className="checkbox_group">
-                            <input type="checkbox" id="require_all" />
-                            <label htmlFor="require_all"> 모두 필요</label>
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Default</td>
-                        <td className="checkbox-group">
-                          <div className="checkbox_group">
-                            <input type="checkbox" id="connect_default" />
-                            <label htmlFor="connect_default"> 연결</label>
-                          </div>
-                        </td>
-                        <td className="checkbox-group">
-                          <div className="checkbox_group">
-                            <input type="checkbox" id="require_default" />
-                            <label htmlFor="require_default"> 필수</label>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+  <span>클러스터에서 네트워크를 연결/분리</span>
+  <div>
+    <table className="network_new_cluster_table">
+      <thead>
+        <tr>
+          <th>이름</th>
+          <th>
+            <div className="checkbox_group">
+              <input
+                type="checkbox"
+                id="connect_all"
+                checked={clusterConnections.every((cluster) => cluster.isConnected)} // 모든 클러스터가 연결 상태일 경우 체크
+                onChange={(e) => {
+                  const isChecked = e.target.checked;
+                  setClusterConnections((prevState) =>
+                    prevState.map((cluster) => ({
+                      ...cluster,
+                      isConnected: isChecked,
+                    }))
+                  );
+                }}
+              />
+              <label htmlFor="connect_all"> 모두 연결</label>
+            </div>
+          </th>
+          <th>
+            <div className="checkbox_group">
+              <input
+                type="checkbox"
+                id="require_all"
+                checked={clusterConnections.every((cluster) => cluster.isRequired)} // 모든 클러스터가 필수 상태일 경우 체크
+                onChange={(e) => {
+                  const isChecked = e.target.checked;
+                  setClusterConnections((prevState) =>
+                    prevState.map((cluster) => ({
+                      ...cluster,
+                      isRequired: isChecked,
+                    }))
+                  );
+                }}
+              />
+              <label htmlFor="require_all"> 모두 필요</label>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {clusterConnections.map((cluster, index) => (
+          <tr key={cluster.id}>
+            <td>{cluster.name}</td>
+            <td className="checkbox-group">
+              <div className="checkbox_group">
+                <input
+                  type="checkbox"
+                  id={`connect_${cluster.id}`}
+                  checked={cluster.isConnected} // 연결 상태
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setClusterConnections((prevState) =>
+                      prevState.map((c, i) =>
+                        i === index
+                          ? { ...c, isConnected: isChecked }
+                          : c
+                      )
+                    );
+                  }}
+                />
+                <label htmlFor={`connect_${cluster.id}`}> 연결</label>
               </div>
+            </td>
+            <td className="checkbox-group">
+              <div className="checkbox_group">
+                <input
+                  type="checkbox"
+                  id={`require_${cluster.id}`}
+                  checked={cluster.isRequired} // 필수 상태
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setClusterConnections((prevState) =>
+                      prevState.map((c, i) =>
+                        i === index
+                          ? { ...c, isRequired: isChecked }
+                          : c
+                      )
+                    );
+                  }}
+                />
+                <label htmlFor={`require_${cluster.id}`}> 필수</label>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
             </form>
           )}
         </div>

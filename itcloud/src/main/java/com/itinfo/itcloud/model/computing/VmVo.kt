@@ -498,28 +498,46 @@ fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder, conn: Connection): VmBuilder {
 	// 시스템-일반 하드웨어 클럭의 시간 오프셋
 	vmBuilder.timeZone(TimeZoneBuilder().name(this@toVmSystemBuilder.timeOffset))
 
+  // 사용자 정의 값
+    vmBuilder
+        .memory(this@toVmSystemBuilder.memorySize * convertMb)
+        .memoryPolicy(
+            MemoryPolicyBuilder()
+                .max(this@toVmSystemBuilder.memoryMax * convertMb)
+                .guaranteed(this@toVmSystemBuilder.memoryActual * convertMb)
+                .ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
+        )
+        .cpu(
+            CpuBuilder().topology(
+                CpuTopologyBuilder()
+                    .cores(this@toVmSystemBuilder.cpuTopologyCore)
+                    .sockets(this@toVmSystemBuilder.cpuTopologySocket)
+                    .threads(this@toVmSystemBuilder.cpuTopologyThread)
+            )
+        )
+
 	// 인스턴스 타입이 "none"이 아니라면
-	if (this@toVmSystemBuilder.instanceType != "none") {
-		val instance: InstanceType? = conn.findAllInstanceTypes("name=${this@toVmSystemBuilder.instanceType}").getOrNull()?.first()
-		vmBuilder.instanceType(instance)
-	} else if(this@toVmSystemBuilder.instanceType == "none") {    // 사용자 정의 값
-		vmBuilder
-			.memory(this@toVmSystemBuilder.memorySize * convertMb)
-			.memoryPolicy(
-				MemoryPolicyBuilder()
-					.max(this@toVmSystemBuilder.memoryMax * convertMb)
-					.guaranteed(this@toVmSystemBuilder.memoryActual * convertMb)
-					.ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
-			)
-			.cpu(
-				CpuBuilder().topology(
-					CpuTopologyBuilder()
-						.cores(this@toVmSystemBuilder.cpuTopologyCore)
-						.sockets(this@toVmSystemBuilder.cpuTopologySocket)
-						.threads(this@toVmSystemBuilder.cpuTopologyThread)
-				)
-			)
-	}
+//	if (this@toVmSystemBuilder.instanceType != "none") {
+//		val instance: InstanceType? = conn.findAllInstanceTypes("name=${this@toVmSystemBuilder.instanceType}").getOrNull()?.first()
+//		vmBuilder.instanceType(instance)
+//	} else if(this@toVmSystemBuilder.instanceType == "none") {    // 사용자 정의 값
+//		vmBuilder
+//			.memory(this@toVmSystemBuilder.memorySize * convertMb)
+//			.memoryPolicy(
+//				MemoryPolicyBuilder()
+//					.max(this@toVmSystemBuilder.memoryMax * convertMb)
+//					.guaranteed(this@toVmSystemBuilder.memoryActual * convertMb)
+//					.ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
+//			)
+//			.cpu(
+//				CpuBuilder().topology(
+//					CpuTopologyBuilder()
+//						.cores(this@toVmSystemBuilder.cpuTopologyCore)
+//						.sockets(this@toVmSystemBuilder.cpuTopologySocket)
+//						.threads(this@toVmSystemBuilder.cpuTopologyThread)
+//				)
+//			)
+//	}
 	return vmBuilder
 }
 
