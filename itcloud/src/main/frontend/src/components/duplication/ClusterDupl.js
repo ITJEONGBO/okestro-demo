@@ -37,7 +37,7 @@ const ClusterDupl = ({
     />
 
     {/* 모달 컴포넌트를 사용할 때만 로딩 */}
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense>
       {(modals.create || (modals.edit && selectedCluster)) && (
         <ClusterModal
           isOpen={modals.create || modals.edit}

@@ -74,7 +74,6 @@ const HostModal = ({
     if (editMode && host) {
       setId(host?.id);
       setClusterVoId(host?.clusterVo?.id || '')
-      // setDataCenterName()
       setName(host?.name);
       setComment(host?.comment);
       setAddress(host?.address);
@@ -190,7 +189,7 @@ const HostModal = ({
             >
               {clusters &&
                 clusters.map((c) => (
-                  <option value={c.id}>{c.name} (데이터센터: {c.dataCenterName}) </option>
+                  <option value={c.id}>{c.name} </option>
                 ))}
             </select>
             <span>{clusterVoId}</span>

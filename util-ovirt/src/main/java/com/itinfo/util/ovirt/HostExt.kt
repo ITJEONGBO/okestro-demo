@@ -269,8 +269,12 @@ fun InetAddress.makeUserHostViaSSH(password: String, port: Int, userName: String
 	channel.setCommand("echo \"$userName ALL=(ALL) NOPASSWD: /usr/sbin/reboot\" | tee -a /etc/sudoers")
 	channel.connect()
 	Thread.sleep(300)
-	channel.disconnect()
 
+	channel.setCommand("echo \"PasswordAuthentication yes\" | tee -a /etc/ssh/sshd_config")
+	Thread.sleep(300)
+	channel.connect()
+
+	channel.disconnect()
 	session.disconnect()
 
 	log.info("계정 생성 및 sudo 권한 부여 성공: {}", userName)
@@ -291,34 +295,79 @@ fun InetAddress.makeUserHostViaSSH(password: String, port: Int, userName: String
  * @param port [Int]
  */
 fun InetAddress.rebootHostViaSSH(hostName: String, hostPw: String, port: Int): Result<Boolean> = runCatching {
-	log.debug("ssh 시작")
-	// SSH 세션 생성 및 연결
-	val session: com.jcraft.jsch.Session = JSch().getSession(hostName, hostAddress, port)
-	session.setPassword(hostPw)
-	session.setConfig("StrictHostKeyChecking", "no") // 호스트 키 확인을 건너뛰기 위해 설정
-	session.connect()
+	log.info("SSH 시작: hostName={}, hostAddress={}, port={}", hostName, this.hostAddress, port)
 
-	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
-	channel.setCommand("sudo reboot") // 재부팅 명령 실행
+	val session: com.jcraft.jsch.Session = JSch().getSession(hostName, this.hostAddress, port)
+	session.setPassword(hostPw)
+	session.setConfig("StrictHostKeyChecking", "no")
+//	session.setConfig("PreferredAuthentications", "password")
+	log.info("---------------------3")
+	session.connect()
+	log.info("---------------------4")
+
+	val channel: ChannelExec = session.openChannel("exec") as ChannelExec
+	log.info("---------------------5")
+	channel.setCommand("sudo reboot")
+	log.info("---------------------6")
+	channel.setCommand(hostPw)
+	log.info("---------------------7")
 	channel.connect()
 
-	// 명령 실행 완료 대기
-	while (!channel.isClosed) {
+	val startTime = System.currentTimeMillis()
+	while (!channel.isClosed && System.currentTimeMillis() - startTime < 30000) {
 		Thread.sleep(100)
 	}
 
+	val exitStatus = channel.exitStatus
 	channel.disconnect()
 	session.disconnect()
-	val exitStatus = channel.exitStatus
-	log.debug("rebootHostViaSSH")
-	return Result.success(exitStatus == 0)
-}.onSuccess {
 
+	if (exitStatus != 0) {
+		throw Error("명령 실행 실패: exitStatus=$exitStatus")
+	}
+
+	log.info("재부팅 명령 성공")
+	true
+}.onSuccess {
+	log.info("SSH 재부팅 성공 여부: {}", it)
 }.onFailure {
-	log.error(it.localizedMessage)
+	log.error("SSH 재부팅 실패: {}", it.localizedMessage)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+
+//fun InetAddress.rebootHostViaSSH(hostName: String, hostPw: String, port: Int): Result<Boolean> = runCatching {
+//	log.info("ssh 시작")
+//	log.info("hostName: {}, hostAddress: {}, post: {}, {}", hostName, this@rebootHostViaSSH.hostAddress, port, hostPw)
+//
+//	val session: com.jcraft.jsch.Session = JSch().getSession(hostName, this.hostAddress, port)
+//	session.setPassword(hostPw)
+//	session.setConfig("StrictHostKeyChecking", "no") // 호스트 키 확인을 건너뛰기 위해 설정
+//	session.connect()
+//
+//	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
+//	Thread.sleep(300)
+//	channel.setCommand("sudo reboot") // 재부팅 명령 실행
+//	channel.setCommand(hostPw) // 재부팅 명령 실행
+//	channel.connect()
+//
+//	// 명령 실행 완료 대기
+//	while (!channel.isClosed) {
+//		Thread.sleep(100)
+//	}
+//
+//	channel.disconnect()
+//	session.disconnect()
+//	val exitStatus = channel.exitStatus
+//	log.info("rebootHostViaSSH")
+//	return Result.success(exitStatus == 0)
+//}.onSuccess {
+//	log.info("재부팅 성공")
+//}.onFailure {
+//	log.error(it.localizedMessage)
+//	throw if (it is Error) it.toItCloudException() else it
+//}
+//
 fun Connection.enrollCertificate(hostId: String): Result<Boolean> = runCatching {
 	if(this.findHost(hostId).isFailure){
 		throw ErrorPattern.HOST_NOT_FOUND.toError()

@@ -1,17 +1,11 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
-import TablesOuter from '../../table/TablesOuter';
-import TableInfo from '../../table/TableInfo';
 import { useAllClusters } from '../../../api/RQHook';
-import ClusterActionButtons from '../../button/ClusterActionButtons';
-
-const ClusterModal = React.lazy(() => import('../../Modal/ClusterModal'));
-const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
+import TableInfo from '../../table/TableInfo';
+import ClusterDupl from '../../duplication/ClusterDupl';
 
 const Clusters = () => {
-  const navigate = useNavigate();
-  
   const { 
     data: clusters, 
     status: clustersStatus,
@@ -28,9 +22,10 @@ const Clusters = () => {
     }
   });
 
+  const navigate = useNavigate();
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
   const [selectedCluster, setSelectedCluster] = useState(null);
-
+  
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
   };
@@ -39,46 +34,20 @@ const Clusters = () => {
       navigate(`/computing/clusters/${id}`);
   };
 
-
   return (
     <>
-      <ClusterActionButtons
+      <ClusterDupl
+        clusters={clusters}
+        columns={TableInfo.CLUSTERS}
+        onRowClick={setSelectedCluster}
         onCreate={() => toggleModal('create', true)}
         onEdit={() => selectedCluster?.id && toggleModal('edit', true)}
         onDelete={() => selectedCluster?.id && toggleModal('delete', true)}
-        isEditDisabled={!selectedCluster?.id}
+        selectedCluster={selectedCluster}
+        toggleModal={toggleModal}
+        modals={modals}
+        handleNameClick={handleNameClick}
       />
-      <span>id = {selectedCluster?.id || ''}</span>
-
-      <TablesOuter
-        columns={TableInfo.CLUSTERS} 
-        data={clusters} 
-        shouldHighlight1stCol={true}
-        onRowClick={(row) => setSelectedCluster(row)}
-        clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정
-        onClickableColumnClick={(row) => handleNameClick(row.id)}
-      />
-
-      {/* 모달 컴포넌트를 사용할 때만 로딩 */}
-      <Suspense>
-        {(modals.create || (modals.edit && selectedCluster)) && (
-          <ClusterModal 
-            isOpen={modals.create || modals.edit}
-            onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
-            editMode={modals.edit}
-            cId={selectedCluster?.id || null}
-          />
-        )}
-        {modals.delete && selectedCluster && (
-          <DeleteModal
-            isOpen={modals.delete}
-            type={'Cluster'}
-            onRequestClose={() => toggleModal('delete', false)}
-            contentLabel={'클러스터'}
-            data={selectedCluster}
-          />
-        )}
-      </Suspense>
     </>
   );
 };
