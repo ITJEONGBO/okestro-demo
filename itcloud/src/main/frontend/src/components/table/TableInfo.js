@@ -97,11 +97,12 @@ const TableInfo = {
   ],
 
   VMS: [
-    { header: '상태', accessor: 'status', clickable: false, width: '10%' },
+    { header: '', accessor: 'icon', clickable: false, width: '10%' },
     { header: '이름', accessor: 'name', clickable: true, width: '20%' },
     { header: '코멘트', accessor: 'comment', clickable: false, width: '20%' },
     { header: 'IP주소', accessor: 'ipv4', clickable: false, width: '20%' },
     { header: 'FQDN', accessor: 'fqdn', clickable: false, width: '20%' },
+    { header: '상태', accessor: 'status', clickable: false, width: '10%' },
     { header: '호스트', accessor: 'host', clickable: true, width: '25%' },
     { header: '클러스터', accessor: 'cluster', clickable: true, width: '20%' },
     { header: '데이터센터', accessor: 'dataCenter', clickable: true, width: '20%' },

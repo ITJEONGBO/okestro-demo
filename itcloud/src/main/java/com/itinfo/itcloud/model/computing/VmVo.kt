@@ -390,9 +390,9 @@ fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
         name { this@toVmVoInfo.name() }
         description { this@toVmVoInfo.description() }
         osSystem { this@toVmVoInfo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
-        chipsetFirmwareType { this@toVmVoInfo.bios().type().findBios() }
+        chipsetFirmwareType { this@toVmVoInfo.bios().type().toString() }
         priority { this@toVmVoInfo.highAvailability().priorityAsInteger() }
-        optimizeOption { this@toVmVoInfo.type().findVmType() }
+        optimizeOption { this@toVmVoInfo.type().toString() }
         memorySize { this@toVmVoInfo.memory() }
         memoryActual { this@toVmVoInfo.memoryPolicy().guaranteed() }
         cpuTopologyCore { this@toVmVoInfo.cpu().topology().coresAsInteger() }
@@ -572,6 +572,7 @@ fun VmVo.toVmHostBuilder(vmBuilder: VmBuilder): VmBuilder {
 	vmBuilder
 		.placementPolicy(placementBuilder.affinity(VmAffinity.valueOf(this@toVmHostBuilder.migrationMode)))
         // 정책은 찾을 수가 없음, parallel Migrations 안보임, 암호화
+
 		.migration(MigrationOptionsBuilder().encrypted(this@toVmHostBuilder.migrationEncrypt).build())
 	return vmBuilder
 }
@@ -902,8 +903,8 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         description { this@toVmVo.description() }
         comment { this@toVmVo.comment() }
         osSystem { this@toVmVo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
-        chipsetFirmwareType { this@toVmVo.bios().type().findBios() }
-        optimizeOption { this@toVmVo.type().findVmType() } //
+        chipsetFirmwareType { this@toVmVo.bios().type().toString() }
+        optimizeOption { this@toVmVo.type().toString() } //
         stateless { this@toVmVo.stateless() }
         startPaused { this@toVmVo.startPaused() }
         deleteProtected { this@toVmVo.deleteProtected() }

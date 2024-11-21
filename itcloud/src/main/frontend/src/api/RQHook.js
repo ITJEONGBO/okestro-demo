@@ -1037,8 +1037,158 @@ export const useEditVm = () => {
     },
   });
 };
+/**
+ * @name useDeleteVm
+ * @description 가상머신 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteVm = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({ 
+    mutationFn: async (vmId) => await ApiManager.deleteVM(vmId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error deleting vm:', error);
+    },
+  });
+};
 
-
+/**
+ * @name useStartVM
+ * @description 가상머신 실행 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useStartVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.startVM(vmId),
+    onSuccess: () => {
+      console.log(`useStartVM ... `);
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error start vm:', error);
+    },  
+  });
+};
+/**
+ * @name usePauseVM
+ * @description 가상머신 일시정지 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const usePauseVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.pauseVM(vmId),
+    onSuccess: () => {
+      console.log(`usePauseVM ... `);
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error pause vm:', error);
+    },  
+  });
+};
+/**
+ * @name usePowerOffVM
+ * @description 가상머신 전원끔 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const usePowerOffVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.powerOffVM(vmId),
+    onSuccess: () => {
+      console.log(`usePowerOffVM ... `);
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error powerOff vm:', error);
+    },  
+  });
+};
+/**
+ * @name useShutdownVM
+ * @description 가상머신 종료 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useShutdownVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.shutdownVM(vmId),
+    onSuccess: () => {
+      console.log(`useShutdownVM ... `);
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error shutdown vm:', error);
+    },  
+  });
+};
+/**
+ * @name useRebootVM
+ * @description 가상머신 재부팅 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useRebootVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.rebootVM(vmId),
+    onSuccess: () => {
+      console.log(`useRebootVM ... `);
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error reboot vm:', error);
+    },  
+  });
+};
+/**
+ * @name useResetVM
+ * @description 가상머신 재설정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useResetVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.resetVM(vmId),
+    onSuccess: () => {
+      console.log(`useResetVM ... `);
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error reset vm:', error);
+    },  
+  });
+};
+/**
+ * @name useExportVM
+ * @description 가상머신 내보내기 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useExportVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.exportVM(vmId),
+    onSuccess: () => {
+      console.log(`useExportVM ... `);
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error export vm:', error);
+    },  
+  });
+};
 
 
 //endregion: VM

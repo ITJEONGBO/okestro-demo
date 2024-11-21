@@ -8,6 +8,8 @@ import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.net.InetAddress
 
 
@@ -53,9 +55,9 @@ fun Connection.findAllVmsFromHost(hostId: String, searchQuery: String = ""): Res
 		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 	}
 	if (searchQuery.isNotEmpty())
-		this.srvVms().list().search(searchQuery).send().vms().filter { it.host().id() == hostId }
+		this.srvVms().list().search(searchQuery).send().vms().filter { it.host()?.id() == hostId }
 	else
-		this.srvVms().list().send().vms().filter { it.host().id() == hostId }
+		this.srvVms().list().send().vms().filter { it.host()?.id() == hostId }
 }.onSuccess {
 	Term.HOST.logSuccess("vms 조회", hostId)
 }.onFailure {
@@ -259,20 +261,21 @@ fun InetAddress.makeUserHostViaSSH(password: String, port: Int, userName: String
 	session.setConfig("StrictHostKeyChecking", "no")
 	session.connect()
 
+
 	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
 
 	// 1. 사용자 계정 생성
-	channel.setCommand("useradd $userName && echo \"$userPw\" | /usr/bin/passwd --stdin $userName 1>&-")
-	Thread.sleep(300)
-	channel.connect()
-
-	channel.setCommand("echo \"$userName ALL=(ALL) NOPASSWD: /usr/sbin/reboot\" | tee -a /etc/sudoers")
+	channel.setCommand("useradd $userName && echo \"$userPw\" | /usr/bin/passwd --stdin $userName")
 	channel.connect()
 	Thread.sleep(300)
 
-	channel.setCommand("echo \"PasswordAuthentication yes\" | tee -a /etc/ssh/sshd_config")
-	Thread.sleep(300)
+	channel.setCommand("echo \"$userName ALL=(ALL)   NOPASSWD: /usr/sbin/reboot\" | tee -a /etc/sudoers")
 	channel.connect()
+	Thread.sleep(300)
+
+//	channel.setCommand("sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config")
+//	channel.connect()
+//	Thread.sleep(300)
 
 	channel.disconnect()
 	session.disconnect()
@@ -307,10 +310,8 @@ fun InetAddress.rebootHostViaSSH(hostName: String, hostPw: String, port: Int): R
 
 	val channel: ChannelExec = session.openChannel("exec") as ChannelExec
 	log.info("---------------------5")
-	channel.setCommand("sudo reboot")
+	channel.setCommand("echo $hostPw | sudo -S reboot")
 	log.info("---------------------6")
-	channel.setCommand(hostPw)
-	log.info("---------------------7")
 	channel.connect()
 
 	val startTime = System.currentTimeMillis()
@@ -367,7 +368,7 @@ fun InetAddress.rebootHostViaSSH(hostName: String, hostPw: String, port: Int): R
 //	log.error(it.localizedMessage)
 //	throw if (it is Error) it.toItCloudException() else it
 //}
-//
+
 fun Connection.enrollCertificate(hostId: String): Result<Boolean> = runCatching {
 	if(this.findHost(hostId).isFailure){
 		throw ErrorPattern.HOST_NOT_FOUND.toError()

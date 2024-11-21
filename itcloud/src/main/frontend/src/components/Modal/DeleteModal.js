@@ -7,7 +7,7 @@ import {
   useDeleteDataCenter,
   useDeleteCluster,
   useDeleteHost,
-  // useDeleteVm,
+  useDeleteVm,
   // useDeleteTemplate,
   // useDeleteStorageDomain,
   // useDeleteDisk,
@@ -30,6 +30,7 @@ const DeleteModal = ({
   const { mutate: deleteDataCenter } = useDeleteDataCenter();
   const { mutate: deleteCluster } = useDeleteCluster();
   const { mutate: deleteHost } = useDeleteHost();
+  const { mutate: deleteVm } = useDeleteVm();
   const { mutate: deleteNetwork } = useDeleteNetwork();
   const { mutate: deleteVnicProfile } = useDeleteVnicProfile();
   const { mutate: deleteDomain } = useDeleteDomain();
@@ -64,6 +65,9 @@ const DeleteModal = ({
     } else if (type === 'Host') {
       console.log('Deleting Host');
       handleDelete(deleteHost);
+    } else if (type === 'Vm') {
+      console.log('Deleting Vm');
+      handleDelete(deleteVm);
     } else if (type === 'Network') {
       console.log('Deleting Network');
       handleDelete(deleteNetwork);
@@ -95,6 +99,9 @@ const DeleteModal = ({
         } else if (type === 'Host') {
           // Datacenter 삭제 후 특정 경로로 이동
           navigate('/computing/rutil-manager/hosts');
+        } else if (type === 'Vm') {
+          // Datacenter 삭제 후 특정 경로로 이동
+          navigate('/computing/rutil-manager/vms');
         } else {
           // 다른 타입일 경우 기본 동작 수행
           const currentPath = location.pathname;

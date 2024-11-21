@@ -47,16 +47,16 @@ class HostSamplesHistoryEntity(
 	val hostId: UUID? = null,
 
 	val historyDatetime: LocalDateTime = LocalDateTime.MIN,
-	val memoryUsagePercent: Int = 0,
-	val cpuUsagePercent: Int = 0,
+	val memoryUsagePercent: Int? = null,
+	val cpuUsagePercent: Int? = null,
 
-	val ksmCpuPercent: Int = 0,
+	val ksmCpuPercent: Int? = null,
 	val activeVms: Int? = null,
 	val totalVms: Int? = null,
-	val totalVmsVcpus: Int = 0,
+	val totalVmsVcpus: Int? = null,
 	val cpuLoad: Int = 0,
-	val systemCpuUsagePercent: Int = 0,
-	val userCpuUsagePercent: Int = 0,
+	val systemCpuUsagePercent: Int? = null,
+	val userCpuUsagePercent: Int? = null,
 	val hostStatus: Int = 0,
 	val swapUsedMb: Int = 0,
 	val hostConfigurationVersion: Int = 0,
@@ -100,8 +100,8 @@ class HostSamplesHistoryEntity(
 fun HostSamplesHistoryEntity.totalCpuMemory(): HostUsageDto {
 	return HostUsageDto.builder {
 		historyDatetime { historyDatetime }
-		totalCpuUsagePercent { cpuUsagePercent.toDouble() }
-		totalMemoryUsagePercent { memoryUsagePercent.toDouble() }
+		totalCpuUsagePercent { cpuUsagePercent?.toDouble() }
+		totalMemoryUsagePercent { memoryUsagePercent?.toDouble() }
 	}
 }
 
@@ -116,8 +116,8 @@ fun HostSamplesHistoryEntity.totalUsage(): HostUsageDto {
 	return HostUsageDto.builder {
 		hostId { hostId.toString() }
 		historyDatetime { historyDatetime }
-		totalCpuUsagePercent { cpuUsagePercent.toDouble() }
-		totalMemoryUsagePercent { memoryUsagePercent.toDouble() }
+		totalCpuUsagePercent { cpuUsagePercent?.toDouble() }
+		totalMemoryUsagePercent { memoryUsagePercent?.toDouble() }
 	}
 }
 

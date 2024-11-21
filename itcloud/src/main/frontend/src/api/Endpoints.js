@@ -118,18 +118,18 @@ const ENDPOINTS = {
   ADD_VM: () => `/api/v1/computing/vms`,
   EDIT_VM: (vmId) => `/api/v1/computing/vms/${vmId}`, 
   DELETE_VM: (vmId) => `/api/v1/computing/vms/${vmId}`, 
+  
   START_VM: (vmId) => `/api/v1/computing/vms/${vmId}/start`, 
   PAUSE_VM: (vmId) => `/api/v1/computing/vms/${vmId}/pause`, 
-  ACTIVATE_VM: (vmId) => `/api/v1/computing/vms/${vmId}/activate`, 
-  DEACTIVATE_VM: (vmId) => `/api/v1/computing/vms/${vmId}/deactivate`, 
-  REBOOT_VM: (vmId) => `/api/v1/computing/vms/${vmId}/reboot`, 
   POWER_OFF_VM: (vmId) => `/api/v1/computing/vms/${vmId}/powerOff`, 
   SHUT_DOWN_VM: (vmId) => `/api/v1/computing/vms/${vmId}/shutdown`, 
+  REBOOT_VM: (vmId) => `/api/v1/computing/vms/${vmId}/reboot`, 
   RESET_VM: (vmId) => `/api/v1/computing/vms/${vmId}/reset`, 
   EXPORT_VM: (vmId) => `/api/v1/computing/vms/${vmId}/export`, 
-  MIGRATE_HOST_LIST_VM: (vmId, hostId) => `/api/v1/computing/vms/${vmId}/migrateHosts`, 
-  MIGRATE_VM: (vmId, hostId) => `/api/v1/computing/vms/${vmId}/migrate/${hostId}`, 
   CONSOLE_VM: (vmId) => `/api/v1/computing/vms/${vmId}/console`, 
+  MIGRATE_HOST_LIST_VM: (vmId) => `/api/v1/computing/vms/${vmId}/migrateHosts`, 
+  MIGRATE_VM: (vmId, hostId) => `/api/v1/computing/vms/${vmId}/migrate/${hostId}`, 
+  
   //endregion: Vm
 
   //region: Template

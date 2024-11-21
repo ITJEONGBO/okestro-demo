@@ -72,8 +72,8 @@ fun HostSamplesHistoryEntity.toHostUsageDto(): HostUsageDto {
     return HostUsageDto.builder {
         hostId { "${this@toHostUsageDto.hostId}" }
         historyDatetime { this@toHostUsageDto.historyDatetime }
-        totalCpuUsagePercent { this@toHostUsageDto.cpuUsagePercent.toDouble() }
-        totalMemoryUsagePercent { this@toHostUsageDto.memoryUsagePercent.toDouble() }
+        totalCpuUsagePercent { this@toHostUsageDto.cpuUsagePercent?.toDouble() }
+        totalMemoryUsagePercent { this@toHostUsageDto.memoryUsagePercent?.toDouble() }
     }
 }
 
@@ -144,8 +144,8 @@ fun List<HostSamplesHistoryEntity>.toTotalCpuMemoryUsages(conn: Connection, host
         HostUsageDto.builder {
             hostName { hostName }
             historyDatetime { it.historyDatetime }
-            totalCpuUsagePercent { it.cpuUsagePercent.toDouble() }
-            totalMemoryUsagePercent { it.memoryUsagePercent.toDouble() }
+            totalCpuUsagePercent { it.cpuUsagePercent?.toDouble() }
+            totalMemoryUsagePercent { it.memoryUsagePercent?.toDouble() }
         }
     }
 }

@@ -27,7 +27,6 @@ const HostModal = ({
   const [sshPort, setSshPort] = useState('');
   // 설치 후 호스트 활성화
   // 설치 후 호스트 다시 시작
-  const [userName, setUserName] = useState('');
   const [sshPassWord, setSshPassWord] = useState('');
   const [vgpu, setVgpu] = useState('');
   const [hostEngine, setHostEngine] = useState('');
@@ -80,7 +79,7 @@ const HostModal = ({
       setSshPort(host?.sshPort);
       setSshPassWord(host?.sshPassWord);
       setVgpu(host?.vgpu);
-      // setHostEngine(host?.);
+      setHostEngine(host?.hostEngine);
     } else {
       resetForm();
       if (clusters && clusters.length > 0) {
@@ -97,7 +96,7 @@ const HostModal = ({
     setSshPort('22');
     setSshPassWord('');
     setVgpu('consolidated');
-    // setHostEngine('');
+    setHostEngine(false);
   };
 
   const handleFormSubmit = () => {
@@ -128,7 +127,6 @@ const HostModal = ({
       sshPort,
       sshPassWord,
       vgpu,
-      // HostEngine,
     };
   
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
@@ -149,6 +147,7 @@ const HostModal = ({
       });
     } else {
       dataToSubmit.sshPassWord = sshPassWord;  // 생성 모드에서는 ssh 비밀번호 추가
+      dataToSubmit.hostEngine = hostEngine;
       addHost(dataToSubmit, {
         onSuccess: () => {
           alert("Host 생성 완료")

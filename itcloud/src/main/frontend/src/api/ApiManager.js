@@ -1274,6 +1274,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_VM(vmId),
+      data: vmId
       // defaultValues: DEFAULT_VALUES.DELETE_VM
     });
   },
@@ -1289,6 +1290,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.START_VM(vmId),  // ID를 URL에 포함
+      data: vmId
       // defaultValues: DEFAULT_VALUES.START_VM
     });
   },
@@ -1303,35 +1305,8 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.PAUSE_VM(vmId),  // ID를 URL에 포함
+      data: vmId
       // defaultValues: DEFAULT_VALUES.PAUSE_VM
-    });
-  },
-  /**
-   * @name ApiManager.activateVM
-   * @description 가상머신 활성
-   * 
-   * @param {String} vmId
-   * @returns {Promise<Object>} 
-   */
-  activateVM: async (vmId) => {
-    return makeAPICall({
-      method: "POST",
-      url: ENDPOINTS.ACTIVATE_VM(vmId),  // ID를 URL에 포함
-      // defaultValues: DEFAULT_VALUES.ACTIVATE_VM
-    });
-  },
-  /**
-   * @name ApiManager.deactivateVM
-   * @description 가상머신 비활성
-   * 
-   * @param {String} vmId
-   * @returns {Promise<Object>} 
-   */
-  deactivateVM: async (vmId) => {
-    return makeAPICall({
-      method: "POST",
-      url: ENDPOINTS.DEACTIVATE_VM(vmId),  // ID를 URL에 포함
-      // defaultValues: DEFAULT_VALUES.DEACTIVATE_VM
     });
   },
   /**
@@ -1345,6 +1320,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.REBOOT_VM(vmId),  // ID를 URL에 포함
+      data: vmId
       // defaultValues: DEFAULT_VALUES.REBOOT_VM
     });
   },
@@ -1359,6 +1335,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.POWER_OFF_VM(vmId),  // ID를 URL에 포함
+      data: vmId
       // defaultValues: DEFAULT_VALUES.POWER_OFF_VM
     });
   },
@@ -1373,6 +1350,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.SHUT_DOWN_VM(vmId),  // ID를 URL에 포함
+      data: vmId
       // defaultValues: DEFAULT_VALUES.SHUT_DOWN_VM
     });
   },
@@ -1386,7 +1364,8 @@ const ApiManager = {
   resetVM: async (vmId) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.RESET_VM(vmId),  // ID를 URL에 포함
+      url: ENDPOINTS.RESET_VM(vmId),  // ID를 URL에 포함.
+      data: vmId
       // defaultValues: DEFAULT_VALUES.RESET_VM
     });
   },
@@ -1401,6 +1380,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.EXPORT_VM(vmId),  // ID를 URL에 포함
+      data: vmId
       // defaultValues: DEFAULT_VALUES.EXPORT_VM
     });
   },
@@ -1415,6 +1395,7 @@ const ApiManager = {
     return makeAPICall({
       method: "GET",
       url: ENDPOINTS.MIGRATE_HOST_LIST_VM(vmId),  // ID를 URL에 포함
+      data: vmId
       // defaultValues: DEFAULT_VALUES.MIGRATE_HOST_LIST_VM
     });
   },
@@ -1430,6 +1411,7 @@ const ApiManager = {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.MIGRATE_VM(vmId, hostId),  // ID를 URL에 포함
+      data: vmId
       // defaultValues: DEFAULT_VALUES.MIGRATE_VM
     });
   },
