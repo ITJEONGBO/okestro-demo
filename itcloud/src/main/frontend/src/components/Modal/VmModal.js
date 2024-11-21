@@ -58,7 +58,7 @@ const VmModal = ({
   
   // 고가용성
   const [ha, setHa] = useState(false); // 고가용성(체크박스)
-
+  const [priority, setPriority] = useState(1); // 초기값
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -205,11 +205,12 @@ const [migrationPolicyOptions, setMigrationPolicyOptions] = useState([
   { value: 'very_large_vms', label: 'Very large VMs' },
 ]);
 // 고가용성
-const [priority, setPriority] = useState([
+const priorityOptions = [
   { value: 1, label: '낮음' },
   { value: 50, label: '중간' },
   { value: 100, label: '높음' },
-]); 
+];
+
 
 // 선택된 값 상태
 const [selectedOs, setSelectedOs] = useState('Linux'); // 운영 시스템 선택
@@ -987,21 +988,29 @@ return (
               <>
               
                 <div id="ha_mode_second_content">
-                          <div className="checkbox_group">
-                              <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
-                              <label className="check_label" htmlFor="ha_mode_box">
-                                  고가용성
-                              </label>
-                          </div>
-                          <div>
-                              <div>
-                                  <span>가상 머신 임대 대상 스토리지 도메인</span>
-                                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                              </div>
-                              <select id="no_lease" disabled>
-                                  <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
-                              </select>
-                          </div>
+                  <div className="checkbox_group">
+                      <input
+                        className="check_input"
+                        type="checkbox"
+                        id="ha_mode_box"
+                        checked={ha} // ha 상태와 체크박스 동기화
+                        onChange={(e) => setHa(e.target.checked)} // 체크 변경 시 ha 상태 업데이트
+                      />
+                      <label className="check_label" htmlFor="ha_mode_box">
+                        고가용성
+                      </label>
+                    </div>
+
+                    <div>
+  <div>
+    <span>가상 머신 임대 대상 스토리지 도메인</span>
+    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }} fixedWidth />
+  </div>
+  <select id="no_lease" disabled={!ha}> {/* ha가 false면 disabled */}
+    <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
+  </select>
+</div>
+
                           <div>
                               <div>
                                   <span>재개 동작</span>
@@ -1015,14 +1024,14 @@ return (
                               <span>실행/마이그레이션 큐에서 우선순위 : </span>
                               <div>
   <span>우선 순위</span>
-  <select 
-    id="priority" 
-    value={priority} // 선택된 값과 동기화
-    onChange={(e) => setPriority(parseInt(e.target.value, 10))} // 값 변경 핸들러
+  <select
+    id="priority"
+    value={priority} // 선택된 값
+    onChange={(e) => setPriority(parseInt(e.target.value, 10))} // 값 업데이트
   >
-    {priority.map((option) => (
+    {priorityOptions.map((option) => (
       <option key={option.value} value={option.value}>
-        {option.label} {/* 드롭다운에 표시될 텍스트 */}
+        {option.label}
       </option>
     ))}
   </select>
