@@ -102,7 +102,6 @@ const App = () => {
 
               <Route path="/computing/datacenters/:id/:section" element={<DataCenterInfo />} />
 
-              {/* <Route path="/computing/clusters/:id" element={<ClusterName />} /> */}
               <Route path="/computing/clusters/:id" element={<ClusterInfo />} />
               <Route path="/computing/clusters/:id/:section" element={<ClusterInfo />} />  
               
@@ -116,8 +115,8 @@ const App = () => {
               <Route path="/computing/vms/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
 
-              <Route path="/networks/datacenters/:id/:section" element={<DataCenterInfo />} />
-              <Route path="/storages/datacenters/:id/:section" element={<DataCenterInfo />} />
+              <Route path="/networks/datacenters/:id/clusters" element={<DataCenterInfo />} />
+              <Route path="/storages/datacenters/:id/clusters" element={<DataCenterInfo />} />
                             
 
               <Route path="/networks" element={<Network />} />

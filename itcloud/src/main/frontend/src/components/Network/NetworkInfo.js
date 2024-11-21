@@ -1,33 +1,28 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
-import NavButton from '../../navigation/NavButton';
-import HeaderButton from '../../button/HeaderButton';
-import Footer from '../../footer/Footer';
-import '../css/Host.css';
-import { useHost } from '../../../api/RQHook';
-import Path from '../../Header/Path';
-import HostGenerals from './HostGenerals';
-import HostVms from './HostVms'
-import HostNics from './HostNics'
-import HostDevices from './HostDevices';
-import HostEvents from './HostEvents'
+import { faFileEdit } from '@fortawesome/free-solid-svg-icons';
+import NavButton from '../navigation/NavButton';
+import HeaderButton from '../button/HeaderButton';
+import Footer from '../footer/Footer';
+import './css/Network.css';
+import { useNetwork } from '../../api/RQHook';
+import Path from '../Header/Path';
+import NetworkGenerals from './NetworkGenerals';
 
-const HostModal = React.lazy(() => import('../../Modal/HostModal'))
-const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
-const HostActionModal = React.lazy(() => import('../../Modal/HostActionModal'))
+const NetworkModal = React.lazy(() => import('../Modal/NetworkModal'));
+const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
 
-const HostInfo = () => {
-  const { id: hostId, section } = useParams();
+const NetworkInfo = () => {
+  const { id: networkId, section } = useParams();
   const {
-    data: host,
-    status: hostStatus,
-    isRefetching: isHostRefetching,
-    refetch: hostRefetch,
-    isError: isHostError,
-    error: hostError,
-    isLoading: isHostLoading,
-  } = useHost(hostId, (e) => ({
+    data: network,
+    status: networkStatus,
+    isRefetching: isNetworkRefetching,
+    refetch: networkRefetch,
+    isError: isNetworkError,
+    error: networkError,
+    isLoading: isNetworkLoading,
+  } = useNetwork(networkId, (e) => ({
     ...e,
   }));
 
@@ -37,10 +32,11 @@ const HostInfo = () => {
 
   const sections = [
     { id: 'general', label: '일반' },
+    { id: 'vnicProfiles', label: 'vNic 프로파일' },
+    { id: 'clusters', label: '클러스터' },
+    { id: 'hosts', label: '호스트' },
     { id: 'vms', label: '가상머신' },
-    { id: 'nics', label: '네트워크 인터페이스' },
-    { id: 'devices', label: '호스트 장치' },
-    { id: 'events', label: '이벤트' },
+    { id: 'templates', label: '템플릿' },
   ];
 
   useEffect(() => {
@@ -52,24 +48,25 @@ const HostInfo = () => {
   }, [section]);
 
   const handleTabClick = (tab) => {
-    const path = tab === 'general' ? `/computing/hosts/${hostId}` : `/computing/hosts/${hostId}/${tab}`;
+    const path = tab === 'general' ? `/networks/${networkId}` : `/networks/${networkId}/${tab}`;
     navigate(path);
     setActiveTab(tab);
   };
 
-  const pathData = [host?.name, sections.find((section) => section.id === activeTab)?.label];
+  const pathData = [network?.name, sections.find((section) => section.id === activeTab)?.label];
 
   const sectionComponents = {
-    general: HostGenerals,
-    vms: HostVms,
-    nics: HostNics,
-    devices: HostDevices,
-    events: HostEvents
+    general: NetworkGenerals,
+    // vnicProfiles: NetworkVnicprofiles,
+    // clusters: NetworkClusters,
+    // hosts: NetworkHosts,
+    // vms: NetworkVms,
+    // templates: NetworksTemplates
   };
 
   const renderSectionContent = () => {
     const SectionComponent = sectionComponents[activeTab];
-    return SectionComponent ? <SectionComponent hostId={hostId} /> : null;
+    return SectionComponent ? <SectionComponent nId={networkId} /> : null;
   };
 
   const toggleModal = (type, isOpen) => {
@@ -82,7 +79,7 @@ const HostInfo = () => {
   const sectionHeaderButtons = [
     {
       id: 'edit_btn',
-      label: '호스트 편집',
+      label: '편집',
       onClick: () => toggleModal('edit', true),
     },
     {
@@ -95,8 +92,8 @@ const HostInfo = () => {
   return (
     <div id="section">
       <HeaderButton
-        titleIcon={faUser}
-        title={host?.name}
+        titleIcon={faFileEdit}
+        title={network?.name}
         buttons={sectionHeaderButtons}
       />
       <div className="content_outer">
@@ -113,11 +110,11 @@ const HostInfo = () => {
 
       {modals.edit && (
         <Suspense fallback={<div>Loading...</div>}>
-          <HostModal
+          <NetworkModal
             isOpen={modals.edit}
             onRequestClose={() => toggleModal('edit', false)}
             editMode={modals.edit}
-            hId={hostId}
+            nId={networkId}
           />
         </Suspense>
       )}
@@ -126,10 +123,10 @@ const HostInfo = () => {
         <Suspense fallback={<div>Loading...</div>}>
           <DeleteModal
             isOpen={modals.delete}
-            type='Host'
+            type='Network'
             onRequestClose={() => toggleModal('delete', false)}
-            contentLabel={'호스트'}
-            data={host}
+            contentLabel={'네트워크'}
+            data={network}
           />
         </Suspense>
       )}
@@ -139,4 +136,4 @@ const HostInfo = () => {
   );
 };
 
-export default HostInfo;
+export default NetworkInfo;

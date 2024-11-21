@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsAltH, faBan, faCaretDown, faCheck, faCircle, faDesktop, faExclamationTriangle, faFan, faInfoCircle, faNetworkWired, faPencilAlt, faTag, faTimes, faUniversity, faWrench } from "@fortawesome/free-solid-svg-icons";
 
-
+// TODO: 
 const HostNics = ({ hostId }) => {
 
   // 네트워크인터페이스 박스열고닫기

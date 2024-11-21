@@ -1,10 +1,12 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamation, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { useHost } from "../../../api/RQHook";
 
 const HostGenerals = ({ hostId }) => {
   const { data: host } = useHost(hostId);
   console.log("host structure: ", host);
+
+  function formatBytesToMB(bytes) {
+    return (bytes / (1024 * 1024)).toFixed(0);
+  }
 
   return (
     <div className="host_content_outer">
@@ -51,11 +53,19 @@ const HostGenerals = ({ hostId }) => {
                 </tr>
                 <tr>
                   <th>물리적 메모리:</th>
-                  <td>{host?.memoryTotal} MB 합계, {host?.memoryUsed} MB 사용됨, {host?.memoryFree} MB 사용가능</td>
+                  <td>
+                    {host?.memoryTotal && `${formatBytesToMB(host.memoryTotal)} MB`} 합계, 
+                    {host?.memoryUsed && `${formatBytesToMB(host.memoryUsed)} MB`} 사용됨, 
+                    {host?.memoryFree && `${formatBytesToMB(host.memoryFree)} MB`} 사용가능
+                  </td>
                 </tr>
                 <tr>
                   <th>Swap 크기:</th>
-                  <td>{host?.swapTotal} MB 합계, {host?.swapUsed} MB 사용됨, {host?.swapFree} MB 사용가능</td>
+                  <td>
+                    {host?.swapTotal && `${formatBytesToMB(host.swapTotal)} MB`} 합계, 
+                    {host?.swapUsed && `${formatBytesToMB(host.swapUsed)} MB`} 사용됨, 
+                    {host?.swapFree && `${formatBytesToMB(host.swapFree)} MB`} 사용가능
+                  </td>
                 </tr>
                 <tr>
                   <th>공유 메모리:</th>
@@ -67,7 +77,7 @@ const HostGenerals = ({ hostId }) => {
                 </tr>
                 <tr>
                   <th>새로운 가상 머신의 스케줄링을 위한 최대 여유 메모리:</th>
-                  <td>{host?.memoryMax} MB</td>
+                  <td>{host?.memoryMax && `${formatBytesToMB(host.memoryMax)} MB`}</td>
                 </tr>
                 <tr>
                   <th>메모리 페이지 공유:</th>

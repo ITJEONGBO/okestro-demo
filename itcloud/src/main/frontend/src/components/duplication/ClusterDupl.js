@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TablesOuter from '../table/TablesOuter';
 import ClusterActionButtons from '../button/ClusterActionButtons';
 
@@ -15,9 +16,15 @@ const ClusterDupl = ({
   selectedCluster,
   toggleModal,
   modals,
-  handleNameClick,
   datacenterId = null,
-}) => (
+}) => {
+  const navigate = useNavigate();
+
+  const handleNameClick = (id) => {
+    navigate(`/computing/clusters/${id}`);
+  };
+
+  return (
   <>
     <ClusterActionButtons
       onCreate={onCreate}
@@ -58,6 +65,7 @@ const ClusterDupl = ({
       )}
     </Suspense>
   </>
-);
+  );
+};
 
 export default ClusterDupl;

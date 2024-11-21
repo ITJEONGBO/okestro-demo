@@ -9,7 +9,7 @@ const HostDevices = ({ hostId }) => {
     status: hostDevicesStatus,  
     isLoading: isHostDevicesLoading,  
     isError: isHostDevicesError       
-  } = useHostdeviceFromHost(hostId);
+  } = useHostdeviceFromHost(hostId, (e) => ({ ...e }));
 
   return (
       <>
