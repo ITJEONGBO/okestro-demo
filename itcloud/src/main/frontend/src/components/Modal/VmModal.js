@@ -47,11 +47,14 @@ const VmModal = ({
   // 초기실행
   const [cloudInit, setCloudInit] = useState(false); // Cloud-lnit
   const [script, setScript] = useState(''); // 스크립트
-
+                                                              
   // 호스트
+  const [isSpecificHostSelected, setIsSpecificHostSelected] = useState(false); // 클러스터 호스트 라디오버튼클릭
   const [hostInCluster, setHostInCluster] = useState(''); 
   const [hostVoId, setHostVoId] = useState(''); 
-
+  const [migrationMode, setMigrationMode] = useState('');  // 마이그레이션 모드
+  const [migrationPolicy, setMigrationPolicy] = useState('');  // 마이그레이션 정책
+  
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -107,6 +110,10 @@ useEffect(() => {
   }
 }, [editMode, vmdata, templates]);
 
+  // 특정 호스트 라디오 버튼 클릭 핸들러
+  const handleSpecificHostSelection = (e) => {
+    setIsSpecificHostSelected(e.target.checked); // 상태 업데이트
+  };
 
 
 // 운영 시스템 및 칩셋 옵션 상태
@@ -158,17 +165,13 @@ const [osOptions, setOsOptions] = useState([
 ]); 
 // 칩셋 옵션
 const [chipsetOptions, setChipsetOptions] = useState([
-    'CLUSTER_DEFAULT',
-    'I440FX_SEA_BIOS',
-    'Q35_OVMF',
-    'Q35_SEA_BIOS',
-    'Q35_SECURE_BOOT'
-
-    // 'BIOS의 I440FX 칩셋', 
-    // 'BIOS의 Q35 칩셋',
-    // 'UEFI의 Q35 칩셋',
-    // 'UEFI SecureBoot의 Q35 칩셋'
+  { value: 'CLUSTER_DEFAULT', label: '클러스터 기본값' },
+  { value: 'I440FX_SEA_BIOS', label: 'BIOS의 I440FX 칩셋' },
+  { value: 'Q35_OVMF', label: 'UEFI의 Q35 칩셋' },
+  { value: 'Q35_SEA_BIOS', label: 'BIOS의 Q35 칩셋' },
+  { value: 'Q35_SECURE_BOOT', label: 'UEFI SecureBoot의 Q35 칩셋' },
 ]); 
+
 // 최적화옵션
 const [optimizeOption, setOptimizeOption] = useState([
     'DESKTOP',
@@ -176,6 +179,19 @@ const [optimizeOption, setOptimizeOption] = useState([
     'SERVER'
 ]); 
 
+// 마이그레이션 모드
+const [migrationModeOptions, setMigrationModeOptions] = useState([
+  { value: 'migratable', label: '수동 및 자동 마이그레이션 허용' },
+  { value: 'user_migratable', label: '수동 마이그레이션만 허용' },
+  { value: 'pinned', label: '마이그레이션 불가' },
+]);
+  // 마이그레이션 정책
+const [migrationPolicyOptions, setMigrationPolicyOptions] = useState([
+  { value: 'minimal_downtime', label: 'Minimal downtime' },
+  { value: 'post_copy', label: 'Post-copy migration' },
+  { value: 'suspend_workload', label: 'Suspend workload if needed' },
+  { value: 'very_large_vms', label: 'Very large VMs' },
+]);
 
 // 선택된 값 상태
 const [selectedOs, setSelectedOs] = useState('Linux'); // 운영 시스템 선택
@@ -227,7 +243,7 @@ useEffect(() => {
             ? vm.chipsetFirmwareType 
             : 'Q35_SEA_BIOS'
         ); // 유효한 값인지 확인 후 기본값 설정
-        setSelectedOptimizeOption(optimizeOption.includes(vm?.optimizeOption) ? vm.optimizeOption : '서버');
+        setSelectedOptimizeOption(optimizeOption.includes(vm?.optimizeOption) ? vm.optimizeOption : 'SERVER');
         setComment(vm?.comment || '');
         setStateless(vm?.stateless || false);
         setStartPaused(vm?.startPaused || false);
@@ -246,6 +262,11 @@ useEffect(() => {
         setCloudInit(vm?.cloudInit);
         setScript(vm?.setScript);
 
+        // 호스트
+        // 마이그레이션 모드와 정책 기본값 설정
+        setMigrationMode(vm?.migrationMode || migrationModeOptions[0].value);
+        setMigrationPolicy(vm?.migrationPolicy || migrationPolicyOptions[0].value);
+
       } else if (!editMode) {
         resetForm();    
         setClusterVoId(vmId || clusters?.[0]?.id || '');
@@ -253,6 +274,9 @@ useEffect(() => {
         setAllocatedMemory(1024 * 1024); // 기본 할당 메모리 (KB 단위)
         setMemorySize(1024 * 1024); // 기본 메모리 크기 (KB 단위)
         setCpuTopologyCnt(1);
+        // 마이그레이션 모드와 정책 기본값 설정
+        setMigrationMode(vm?.migrationMode || migrationModeOptions[0].value);
+        setMigrationPolicy(vm?.migrationPolicy || migrationPolicyOptions[0].value);
       }
     }
   }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption]);
@@ -323,11 +347,13 @@ useEffect(() => {
       cpuTopologyThread, // 코어당 스레드
     
       // 초기 실행 데이터 (예: cloud-init 관련)
-      cloudInit,
+      cloudInit, 
       script,
 
-      //초기실행 데이터
- 
+      //호스트
+      migrationMode, // string 마이그레이션모드
+      migrationPolicy // 마이그레이션 정책
+      
     };
     console.log('가상머신 생성데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
@@ -510,17 +536,21 @@ return (
                           </div>
 
                           <div className="network_form_group">
-                            <label htmlFor="chipset">칩셋/펌웨어 유형</label>
-                            <select id="chipset" value={selectedChipset} onChange={handleChipsetChange}>
-                              <option value="">칩셋 선택</option>
-                              {chipsetOptions.map((chipset) => (
-                                <option key={chipset} value={chipset}>
-                                  {chipset}
-                                </option>
-                              ))}
-                            </select>
-                            <span>선택된 칩셋: {selectedChipset}</span>
-                          </div>
+                              <label htmlFor="chipset">칩셋/펌웨어 유형</label>
+                              <select 
+                                id="chipset" 
+                                value={selectedChipset} 
+                                onChange={(e) => setSelectedChipset(e.target.value)}
+                              >
+                          
+                                {chipsetOptions.map((chipset) => (
+                                  <option key={chipset.value} value={chipset.value}>
+                                    {chipset.label} {/* 화면에 표시될 한글 */}
+                                  </option>
+                                ))}
+                              </select>
+                              <span>선택된 칩셋: {selectedChipset}</span>
+                            </div>
 
                         <div style={{ marginBottom: '2%' }}>
                             <label htmlFor="optimization">최적화 옵션</label>
@@ -845,51 +875,83 @@ return (
               {selectedModalTab === 'host' && 
               <>
             
-                <div id="host_second_content">
-                          <div style={{ fontWeight: 600 }}>실행 호스트:</div>
-                          <div className="form_checks">
-                              <div>
-                                  <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked />
-                                  <label className="form-check-label" htmlFor="flexRadioDefault1">
-                                      클러스터 내의 호스트
-                                  </label>
-                              </div>
-                              <div>
-                                  <div>
-                                      <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
-                                      <label className="form-check-label" htmlFor="flexRadioDefault2">
-                                          특정 호스트
-                                      </label>
-                                  </div>
-                                  <div>
-                                      <select id="specific_host_select" disabled>
-                                          <option value="host02.ititinfo.com">host02.ititinfo.com</option>
-                                      </select>
-                                  </div>
-                              </div>
-                          </div>
-                          
+            <div id="host_second_content">
+              <div style={{ fontWeight: 600 }}>실행 호스트:</div>
+                <div className="form_checks">
+                  <div>
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="hostSelection"
+                      id="flexRadioDefault1"
+                      checked={!isSpecificHostSelected}
+                      onChange={() => setIsSpecificHostSelected(false)} // 기본 클러스터 선택
+                    />
+                    <label className="form-check-label" htmlFor="flexRadioDefault1">
+                      클러스터 내의 호스트
+                    </label>
+                  </div>
+                  <div>
+                    <div>
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="hostSelection"
+                        id="flexRadioDefault2"
+                        checked={isSpecificHostSelected}
+                        onChange={handleSpecificHostSelection} // 특정 호스트 선택
+                      />
+                      <label className="form-check-label" htmlFor="flexRadioDefault2">
+                        특정 호스트
+                      </label>
+                    </div>
+                    <div>
+                      <select
+                        id="specific_host_select"
+                        disabled={!isSpecificHostSelected} // 특정 호스트 선택 여부에 따라 활성화
+                      >
+                        <option value="host02.ititinfo.com">host02.ititinfo.com</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
+            </div>
                 <div id="host_third_content">
-                          <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
-                          <div>
-                              <div>
-                                  <span>마이그레이션 모드</span>
-                                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                              </div>
-                              <select id="migration_mode">
-                                  <option value="수동 및 자동 마이그레이션 허용">수동 및 자동 마이그레이션 허용</option>
-                              </select>
-                          </div>
-                          <div>
-                              <div>
-                                  <span>마이그레이션 정책</span>
-                                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                              </div>
-                              <select id="migration_policy">
-                                  <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
-                              </select>
-                          </div>
+                <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
+  
+  {/* 마이그레이션 모드 */}
+  <div>
+    <label htmlFor="migration_mode">마이그레이션 모드</label>
+    <select
+      id="migration_mode"
+      value={migrationMode}
+      onChange={(e) => setMigrationMode(e.target.value)}
+    >
+
+      {migrationModeOptions.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* 마이그레이션 정책 */}
+  <div>
+    <label htmlFor="migration_policy">마이그레이션 정책</label>
+    <select
+      id="migration_policy"
+      value={migrationPolicy}
+      onChange={(e) => setMigrationPolicy(e.target.value)}
+    >
+ 
+      {migrationPolicyOptions.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
                           
                           <div>
                               <div>

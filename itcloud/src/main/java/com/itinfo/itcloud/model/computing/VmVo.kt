@@ -97,7 +97,7 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * @property hostVos List<[HostVo]> 클러스터 내의 호스트 false -> 특정 호스트 선택 (호스트는 여러개 존재한다)
  * @property migrationMode [String] 마이그레이션 모드(placement_policy<affinity>) VmAffinity (MIGRATABLE, USER_MIGRATABLE, PINNED)
  * @property migrationPolicy [String] 마이그레이션 정책  migration_downtime
- * @property migrationEncrypt [InheritableBoolean] 마이그레이션 암호화 사용
+ * @property migrationEncrypt [InheritableBoolean] 마이그레이션 암호화 사용     FALSE("false"),INHERIT("inherit"), TRUE("true");
  * @property parallelMigration [String] Parallel Migrations
 // * @property numOfVmMigrations [String] Number of VM Migration Connections
  *
