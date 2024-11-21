@@ -3,13 +3,13 @@ import TableInfo from "../../table/TableInfo";
 import { useVmFromHost } from "../../../api/RQHook";
 import VmDupl from '../../duplication/VmDupl';
 
-const HostVm = ({ host }) => {
+const HostVms = ({ hostId }) => {
    const { 
     data: vms, 
     status: vmsStatus, 
     isLoading: isHostsLoading, 
     isError: isHostsError 
-  } = useVmFromHost(host?.id, (e) => ({ 
+  } = useVmFromHost(hostId, (e) => ({ 
       ...e,
       status: e?.status,
       host: e?.hostVo?.name, 
@@ -30,4 +30,4 @@ const HostVm = ({ host }) => {
   );
 };
   
-export default HostVm;
+export default HostVms;

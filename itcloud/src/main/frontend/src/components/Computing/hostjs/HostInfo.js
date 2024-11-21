@@ -1,32 +1,32 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { faEarthAmericas } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../navigation/NavButton';
 import HeaderButton from '../../button/HeaderButton';
 import Footer from '../../footer/Footer';
-import '../css/Cluster.css';
-import { useCluster } from '../../../api/RQHook';
+import '../css/Host.css';
+import { useHost } from '../../../api/RQHook';
 import Path from '../../Header/Path';
-import ClusterGenerals from './ClusterGenerals';
-import ClusterHosts from './ClusterHosts';
-import ClusterVms from './ClusterVms';
-import ClusterNetworks from './ClusterNetworks';
-import ClusterEvents from './ClusterEvents';
+import HostGenerals from './HostGenerals';
+import HostVms from './HostVms'
+import HostNics from './HostNics'
+import HostDevices from './HostDevices';
+import HostEvents from './HostEvents'
 
-const ClusterModal = React.lazy(() => import('../../Modal/ClusterModal'));
+const HostModal = React.lazy(() => import('../../Modal/HostModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
-const ClusterInfo = () => {
-  const { id: clusterId, section } = useParams();
+const HostInfo = () => {
+  const { id: hostId, section } = useParams();
   const {
-    data: cluster,
-    status: clusterStatus,
-    isRefetching: isClusterRefetching,
-    refetch: clusterRefetch,
-    isError: isClusterError,
-    error: clusterError,
-    isLoading: isClusterLoading,
-  } = useCluster(clusterId, (e) => ({
+    data: host,
+    status: hostStatus,
+    isRefetching: isHostRefetching,
+    refetch: hostRefetch,
+    isError: isHostError,
+    error: hostError,
+    isLoading: isHostLoading,
+  } = useHost(hostId, (e) => ({
     ...e,
   }));
 
@@ -36,9 +36,9 @@ const ClusterInfo = () => {
 
   const sections = [
     { id: 'general', label: '일반' },
-    { id: 'hosts', label: '호스트' },
     { id: 'vms', label: '가상머신' },
-    { id: 'networks', label: '논리 네트워크' },
+    { id: 'nics', label: '네트워크 인터페이스' },
+    { id: 'devices', label: '호스트 장치' },
     { id: 'events', label: '이벤트' },
   ];
 
@@ -51,24 +51,24 @@ const ClusterInfo = () => {
   }, [section]);
 
   const handleTabClick = (tab) => {
-    const path = tab === 'general' ? `/computing/clusters/${clusterId}` : `/computing/clusters/${clusterId}/${tab}`;
+    const path = tab === 'general' ? `/computing/hosts/${hostId}` : `/computing/hosts/${hostId}/${tab}`;
     navigate(path);
     setActiveTab(tab);
   };
 
-  const pathData = [cluster?.name, sections.find((section) => section.id === activeTab)?.label];
+  const pathData = [host?.name, sections.find((section) => section.id === activeTab)?.label];
 
   const sectionComponents = {
-    general: ClusterGenerals,
-    hosts: ClusterHosts,
-    vms: ClusterVms,
-    networks: ClusterNetworks,
-    events: ClusterEvents
+    general: HostGenerals,
+    vms: HostVms,
+    nics: HostNics,
+    devices: HostDevices,
+    events: HostEvents
   };
 
   const renderSectionContent = () => {
     const SectionComponent = sectionComponents[activeTab];
-    return SectionComponent ? <SectionComponent cId={clusterId} /> : null;
+    return SectionComponent ? <SectionComponent hostId={hostId} /> : null;
   };
 
   const toggleModal = (type, isOpen) => {
@@ -81,7 +81,7 @@ const ClusterInfo = () => {
   const sectionHeaderButtons = [
     {
       id: 'edit_btn',
-      label: '클러스터 편집',
+      label: '호스트 편집',
       onClick: () => toggleModal('edit', true),
     },
     {
@@ -94,8 +94,8 @@ const ClusterInfo = () => {
   return (
     <div id="section">
       <HeaderButton
-        titleIcon={faEarthAmericas}
-        title={cluster?.name}
+        titleIcon={faUser}
+        title={host?.name}
         buttons={sectionHeaderButtons}
       />
       <div className="content_outer">
@@ -112,11 +112,11 @@ const ClusterInfo = () => {
 
       {modals.edit && (
         <Suspense fallback={<div>Loading...</div>}>
-          <ClusterModal
+          <HostModal
             isOpen={modals.edit}
             onRequestClose={() => toggleModal('edit', false)}
             editMode={modals.edit}
-            cId={clusterId}
+            hId={hostId}
           />
         </Suspense>
       )}
@@ -125,10 +125,10 @@ const ClusterInfo = () => {
         <Suspense fallback={<div>Loading...</div>}>
           <DeleteModal
             isOpen={modals.delete}
-            type='Cluster'
+            type='Host'
             onRequestClose={() => toggleModal('delete', false)}
-            contentLabel={'클러스터'}
-            data={cluster}
+            contentLabel={'호스트'}
+            data={host}
           />
         </Suspense>
       )}
@@ -138,4 +138,4 @@ const ClusterInfo = () => {
   );
 };
 
-export default ClusterInfo;
+export default HostInfo;

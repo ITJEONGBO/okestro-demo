@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import VmActionButtons from '../button/VmActionButtons';
 import VmTable from '../table/VmTable';
 import VmModals from '../Modal/VmModals';
@@ -12,10 +13,15 @@ const VmDupl = ({
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
   const [action, setAction] = useState(null); // 현재 동작
   const [selectedVm, setSelectedVm] = useState(null);
+  const navigate = useNavigate();
 
   const handleActionClick = (actionType) => {
-    setAction(actionType); // 동작 설정
-    setIsModalOpen(true); // 모달 열기
+    if (actionType === 'templates') {
+      navigate('/computing/vms/templates');
+    } else {
+      setAction(actionType); // 동작 설정
+      setIsModalOpen(true); // 모달 열기
+    }
   };
 
   return (

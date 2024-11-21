@@ -7,23 +7,26 @@ import MainOuter from './components/MainOuter';
 import AllDomain from './components/Storage/AllDomain';
 import Network from './components/Network/Network';
 import Setting from './components/Setting/Setting';
-import HostDetail from './components/Computing/HostDetail';
 import StorageDomainDetail from './components/Storage/StorageDomainDetail';
 import StorageDiskDetail from './components/Storage/StorageDiskDetail';
 import NetworkDetail from './components/Network/NetworkDetail';
 import STOMP from './Socket'
 import { Toaster, toast } from 'react-hot-toast';
 import './App.css';
+import Login from './page/Login';
 import TemplateDetail from './components/Computing/TemplateDetail';
 import AllVm from './components/Computing/AllVm';
 import AllDisk from './components/Storage/AllDisk';
-import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
+
+import RutilManager from './components/Computing/RutilManager';
 import DataCenterInfo from './components/Computing/datacenterjs/DataCenterInfo';
 import ClusterInfo from './components/Computing/clusterjs/ClusterInfo';
-import Login from './page/Login';
+import HostInfo from './components/Computing/hostjs/HostInfo';
+
+import Templates from './components/Computing/Rutil/Templates';
 
 
 const App = () => {
@@ -103,13 +106,14 @@ const App = () => {
               <Route path="/computing/clusters/:id" element={<ClusterInfo />} />
               <Route path="/computing/clusters/:id/:section" element={<ClusterInfo />} />  
               
-              <Route path="/computing/hosts/:id" element={<HostDetail />}/>
-              <Route path="/computing/hosts/:id/:section" element={<HostDetail />}/>
+              <Route path="/computing/hosts/:id" element={<HostInfo />}/>
+              <Route path="/computing/hosts/:id/:section" element={<HostInfo />}/>
 
               <Route path="/computing/vms" element={<AllVm />} />
               <Route path="/computing/vms/:id" element={<VmDetail />} />
               <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
               
+              <Route path="/computing/vms/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
 
               <Route path="/networks/datacenters/:id/:section" element={<DataCenterInfo />} />

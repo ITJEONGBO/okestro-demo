@@ -635,7 +635,7 @@ export const useHostdeviceFromHost = (hostId, mapPredicate) => useQuery({
   queryKey: ['HostdeviceFromHost', hostId], 
   queryFn: async () => {
     console.log(`useHostdeviceFromHost ... ${hostId}`);
-    const res = await ApiManager.findHostNicsFromHost(hostId); 
+    const res = await ApiManager.findHostdevicesFromHost(hostId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })

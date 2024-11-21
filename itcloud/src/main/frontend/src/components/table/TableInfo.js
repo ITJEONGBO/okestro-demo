@@ -90,10 +90,10 @@ const TableInfo = {
     { header: '벤더', accessor: 'vendorName', clickable: false },
     { header: '제품', accessor: 'productName', clickable: false },
     { header: '드라이버', accessor: 'driver', clickable: false },
-    { header: '현재 사용중', accessor: 'currentlyUsed', clickable: false },
-    { header: '가상 머신에 연결됨', accessor: 'connectedToVM', clickable: false },
-    { header: 'IOMMU 그룹', accessor: 'iommuGroup', clickable: false },
-    { header: 'Mdev 유형', accessor: 'mdevType', clickable: false },
+    // { header: '현재 사용중', accessor: 'currentlyUsed', clickable: false },
+    // { header: '가상 머신에 연결됨', accessor: 'connectedToVM', clickable: false },
+    // { header: 'IOMMU 그룹', accessor: 'iommuGroup', clickable: false },
+    // { header: 'Mdev 유형', accessor: 'mdevType', clickable: false },
   ],
 
   VMS: [

@@ -36,9 +36,9 @@ import PagingTableOuter from '../table/PagingTableOuter';
 import Path from '../Header/Path';
 import VmDu from '../duplication/VmDu';
 import EventDu from '../duplication/EventDu.js';
-import HostGeneral from './hostjs/HostGeneral.js';
+import HostGeneral from './hostjs/HostGenerals.js';
 import HostVm from './hostjs/HostVm.js';
-import HostNetwork from './hostjs/HostNetwork.js';
+import HostNics from './hostjs/HostNics.js';
 import HostDevice from './hostjs/HostDevice.js';
 import HostEvent from './hostjs/HostEvent.js';
 
@@ -398,7 +398,7 @@ const handleInstallClick = () => {
           case 'vms':
             return <HostVm host={host} />;
           case 'nics':
-            return <HostNetwork host={host} />;
+            return <HostNics host={host} />;
           case 'devices':
             return <HostDevice host={host} />;
           case 'events':

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsAltH, faBan, faCaretDown, faCheck, faCircle, faDesktop, faExclamationTriangle, faFan, faInfoCircle, faNetworkWired, faPencilAlt, faTag, faTimes, faUniversity, faWrench } from "@fortawesome/free-solid-svg-icons";
 
 
-const HostNetwork = ({ hostId }) => {
+const HostNics = ({ hostId }) => {
 
   // 네트워크인터페이스 박스열고닫기
   const [visibleBoxes, setVisibleBoxes] = useState([]);
@@ -376,4 +376,4 @@ const HostNetwork = ({ hostId }) => {
     );
   };
   
-  export default HostNetwork;
+  export default HostNics;
