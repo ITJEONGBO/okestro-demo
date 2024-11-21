@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import VmExportOVAModal from './VmExportOVAModal';
 
 const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
   const VmModal = React.lazy(() => import('../Modal/VmModal'));
@@ -24,6 +25,12 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
           contentLabel="가상머신"
           data={selectedVm}
         />
+      ) : action === 'exportova' ? (
+        <VmExportOVAModal
+          isOpen={isModalOpen}
+          onRequestClose={onRequestClose}
+          selectedVm={selectedVm}
+        />
       ) : (
         <VmActionModal
           isOpen={isModalOpen}
@@ -45,6 +52,7 @@ const getContentLabel = (action) => {
     case 'shutdown': return '종료';
     case 'reboot': return '재시작';
     case 'reset': return '재설정';
+    case 'exportova': return 'OVA로 내보내기';
 
     default: return '';
   }

@@ -9,6 +9,7 @@ import {
   useAllTemplates, 
   useAllVMs, 
   useEditVm, 
+  useHostFromCluster, 
   useVmById 
 } from '../../api/RQHook';
 import VmConnectionPlusModal from './VmConnectionPlusModal';
@@ -33,7 +34,6 @@ const VmModal = ({
   const [startPaused, setStartPaused] = useState(false); // 일시중지상태로시작
   const [deleteProtected, setDeleteProtected] = useState(false); //삭제보호
   const [templateId, setTemplateId] = useState('');
-  const [templateName, setTemplateName] = useState('');
 
   //시스템
   const [memorySize, setMemorySize] = useState(''); // 메모리 크기
@@ -54,7 +54,11 @@ const VmModal = ({
   const [hostVoId, setHostVoId] = useState(''); 
   const [migrationMode, setMigrationMode] = useState('');  // 마이그레이션 모드
   const [migrationPolicy, setMigrationPolicy] = useState('');  // 마이그레이션 정책
+  const [hostsFromCluster, setHostsFromCluster] = useState([]); // 호스트 목록
   
+  // 고가용성
+  const [ha, setHa] = useState(false); // 고가용성(체크박스)
+
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -88,6 +92,11 @@ useEffect(() => {
     }
   }, [clusters]);
 
+  // 클러스터 ID에대한 호스트목록
+  const { data: hostsData } = useHostFromCluster(clusterVoId, (e) => ({
+    id: e.id,
+    name: e.name,
+  }));
 
   // 템플릿 가져오기
   const {
@@ -114,55 +123,60 @@ useEffect(() => {
   const handleSpecificHostSelection = (e) => {
     setIsSpecificHostSelected(e.target.checked); // 상태 업데이트
   };
-
+  // useEffect로 hostsData를 상태로 업데이트
+  useEffect(() => {
+    if (hostsData) {
+      setHostsFromCluster(hostsData);
+    }
+  }, [hostsData]);
 
 // 운영 시스템 및 칩셋 옵션 상태
 const [osOptions, setOsOptions] = useState([
-    'Debian 7+',
-    'Debian 9+',
-    'FreeBSD 9.2',
-    'FreeBSD 9.2 x64',
-    'Linux',
-    'Other Linux(kernel 4.x)',
-    'Other OS',
-    'Red Hat Atomic 7.x x64',
-    'Red Hat Enterprise Linux 3.x',
-    'Red Hat Enterprise Linux 3.x x64',
-    'Red Hat Enterprise Linux 4.x',
-    'Red Hat Enterprise Linux 4.x x64',
-    'Red Hat Enterprise Linux 5.x',
-    'Red Hat Enterprise Linux 5.x x64',
-    'Red Hat Enterprise Linux 6.x',
-    'Red Hat Enterprise Linux 6.x x64', 
-    'Red Hat Enterprise Linux 7.x x64', 
-    'Red Hat Enterprise Linux 8.x x64', 
-    'Red Hat Enterprise Linux 9.x x64', 
-    'Red Hat Enterprise Linux CoreOS',
-    'SUSE Linux Enterprise Server 11+',
-    'Ubuntu Bionic Beaver LTS+',
-    'Ubuntu Precise Pangolin LTS',
-    'Ubuntu Quantal Quetzal',
-    'Ubuntu Raring Ringtail',
-    'Ubuntu Saucy Salamander', 
-    'Ubuntu Trusty Tahr LTS+',
-    'Windows 10',
-    'Windows 10 x64',
-    'Windows 11',
-    'Windows 2003',
-    'Windows 2003 x64',
-    'Windows 2008',
-    'Windows 2008 R2 x64',
-    'Windows 2012 x64',
-    'Windows 2012R2 x64',
-    'Windows 2016 x64',
-    'Windows 2019 x64',
-    'Windows 2022',
-    'Windows 7',
-    'Windows 7 x64',
-    'Windows 8',
-    'Windows 8 x64',
-    'Windows XP'
-]); 
+  { value: 'debian_7', label: 'Debian 7+' },
+  { value: 'debian_9', label: 'Debian 9+' },
+  { value: 'freebsd_9_2', label: 'FreeBSD 9.2' },
+  { value: 'freebsd_9_2_x64', label: 'FreeBSD 9.2 x64' },
+  { value: 'Linux', label: 'Linux' },
+  { value: 'other_linux_kernel_4', label: 'Other Linux(kernel 4.x)' },
+  { value: 'other_os', label: 'Other OS' },
+  { value: 'red_hat_atomic_7_x64', label: 'Red Hat Atomic 7.x x64' },
+  { value: 'red_hat_enterprise_linux_3', label: 'Red Hat Enterprise Linux 3.x' },
+  { value: 'red_hat_enterprise_linux_3_x64', label: 'Red Hat Enterprise Linux 3.x x64' },
+  { value: 'red_hat_enterprise_linux_4', label: 'Red Hat Enterprise Linux 4.x' },
+  { value: 'red_hat_enterprise_linux_4_x64', label: 'Red Hat Enterprise Linux 4.x x64' },
+  { value: 'red_hat_enterprise_linux_5', label: 'Red Hat Enterprise Linux 5.x' },
+  { value: 'red_hat_enterprise_linux_5_x64', label: 'Red Hat Enterprise Linux 5.x x64' },
+  { value: 'red_hat_enterprise_linux_6', label: 'Red Hat Enterprise Linux 6.x' },
+  { value: 'red_hat_enterprise_linux_6_x64', label: 'Red Hat Enterprise Linux 6.x x64' },
+  { value: 'red_hat_enterprise_linux_7_x64', label: 'Red Hat Enterprise Linux 7.x x64' },
+  { value: 'red_hat_enterprise_linux_8_x64', label: 'Red Hat Enterprise Linux 8.x x64' },
+  { value: 'red_hat_enterprise_linux_9_x64', label: 'Red Hat Enterprise Linux 9.x x64' },
+  { value: 'red_hat_enterprise_linux_coreos', label: 'Red Hat Enterprise Linux CoreOS' },
+  { value: 'suse_linux_enterprise_server_11', label: 'SUSE Linux Enterprise Server 11+' },
+  { value: 'ubuntu_bionic_beaver_lts', label: 'Ubuntu Bionic Beaver LTS+' },
+  { value: 'ubuntu_precise_pangolin_lts', label: 'Ubuntu Precise Pangolin LTS' },
+  { value: 'ubuntu_quantal_quetzal', label: 'Ubuntu Quantal Quetzal' },
+  { value: 'ubuntu_raring_ringtail', label: 'Ubuntu Raring Ringtail' },
+  { value: 'ubuntu_saucy_salamander', label: 'Ubuntu Saucy Salamander' },
+  { value: 'ubuntu_trusty_tahr_lts', label: 'Ubuntu Trusty Tahr LTS+' },
+  { value: 'windows_10', label: 'Windows 10' },
+  { value: 'windows_10_x64', label: 'Windows 10 x64' },
+  { value: 'windows_11', label: 'Windows 11' },
+  { value: 'windows_2003', label: 'Windows 2003' },
+  { value: 'windows_2003_x64', label: 'Windows 2003 x64' },
+  { value: 'windows_2008', label: 'Windows 2008' },
+  { value: 'windows_2008_r2_x64', label: 'Windows 2008 R2 x64' },
+  { value: 'windows_2012_x64', label: 'Windows 2012 x64' },
+  { value: 'windows_2012r2_x64', label: 'Windows 2012R2 x64' },
+  { value: 'windows_2016_x64', label: 'Windows 2016 x64' },
+  { value: 'windows_2019_x64', label: 'Windows 2019 x64' },
+  { value: 'windows_2022', label: 'Windows 2022' },
+  { value: 'windows_7', label: 'Windows 7' },
+  { value: 'windows_7_x64', label: 'Windows 7 x64' },
+  { value: 'windows_8', label: 'Windows 8' },
+  { value: 'windows_8_x64', label: 'Windows 8 x64' },
+  { value: 'windows_xp', label: 'Windows XP' },
+]);
 // 칩셋 옵션
 const [chipsetOptions, setChipsetOptions] = useState([
   { value: 'CLUSTER_DEFAULT', label: '클러스터 기본값' },
@@ -171,14 +185,12 @@ const [chipsetOptions, setChipsetOptions] = useState([
   { value: 'Q35_SEA_BIOS', label: 'BIOS의 Q35 칩셋' },
   { value: 'Q35_SECURE_BOOT', label: 'UEFI SecureBoot의 Q35 칩셋' },
 ]); 
-
 // 최적화옵션
 const [optimizeOption, setOptimizeOption] = useState([
-    'DESKTOP',
-    'HIGH_PERFORMANCE',
-    'SERVER'
-]); 
-
+  { value: 'DESKTOP', label: '데스크톱' },
+  { value: 'HIGH_PERFORMANCE', label: '고성능' },
+  { value: 'SERVER', label: '서버' }
+]);
 // 마이그레이션 모드
 const [migrationModeOptions, setMigrationModeOptions] = useState([
   { value: 'migratable', label: '수동 및 자동 마이그레이션 허용' },
@@ -192,6 +204,12 @@ const [migrationPolicyOptions, setMigrationPolicyOptions] = useState([
   { value: 'suspend_workload', label: 'Suspend workload if needed' },
   { value: 'very_large_vms', label: 'Very large VMs' },
 ]);
+// 고가용성
+const [priority, setPriority] = useState([
+  { value: 1, label: '낮음' },
+  { value: 50, label: '중간' },
+  { value: 100, label: '높음' },
+]); 
 
 // 선택된 값 상태
 const [selectedOs, setSelectedOs] = useState('Linux'); // 운영 시스템 선택
@@ -205,23 +223,6 @@ useEffect(() => {
   setSelectedChipset('SERVER'); // 초기 칩셋
 }, []);
 
-// 운영 시스템 변경 핸들러
-const handleOsChange = (e) => {
-  setSelectedOs(e.target.value);
-  console.log('운영 시스템 선택:', e.target.value);
-};
-
-// 칩셋 변경 핸들러
-const handleChipsetChange = (e) => {
-  setSelectedChipset(e.target.value);
-  console.log('칩셋 선택:', e.target.value);
-};
-// 최적화 옵션 변경 핸들러
-const handleOptimizeOption = (e) => {
-    setSelectedOptimizeOption(e.target.value);
-    console.log('최적화 옵션 선택:', e.target.value);
-  };
-  
 
 
 
@@ -236,14 +237,10 @@ useEffect(() => {
         setClusterVoName(vm?.clusterVo?.name || '');
         setClusterVoId(vm?.clusterVo?.id || '');
         setDescription(vm?.description || '');
-        // osOptions와 chipsetOptions는 이미 상태에 기본값이 설정되어 있으므로 재사용
-        setSelectedOs(osOptions.includes(vm?.osSystem) ? vm.osSystem : 'Linux'); // 유효한 값인지 확인 후 기본값 설정
-        setSelectedChipset(
-          chipsetOptions.includes(vm?.chipsetFirmwareType) 
-            ? vm.chipsetFirmwareType 
-            : 'Q35_SEA_BIOS'
-        ); // 유효한 값인지 확인 후 기본값 설정
-        setSelectedOptimizeOption(optimizeOption.includes(vm?.optimizeOption) ? vm.optimizeOption : 'SERVER');
+        setSelectedOs(vm?.osSystem || 'Linux'); // 운영 체제
+        setSelectedChipset(vm?.chipsetFirmwareType || 'Q35_OVMF'); // 칩셋
+        setSelectedOptimizeOption(vm?.optimizeOption || 'SERVER'); // 최적화 옵션
+
         setComment(vm?.comment || '');
         setStateless(vm?.stateless || false);
         setStartPaused(vm?.startPaused || false);
@@ -266,6 +263,10 @@ useEffect(() => {
         // 마이그레이션 모드와 정책 기본값 설정
         setMigrationMode(vm?.migrationMode || migrationModeOptions[0].value);
         setMigrationPolicy(vm?.migrationPolicy || migrationPolicyOptions[0].value);
+
+        // 고가용성
+        setHa(vm?.ha || false);
+        setPriority(vm?.priority || 1);
 
       } else if (!editMode) {
         resetForm();    
@@ -352,7 +353,11 @@ useEffect(() => {
 
       //호스트
       migrationMode, // string 마이그레이션모드
-      migrationPolicy // 마이그레이션 정책
+      migrationPolicy, // 마이그레이션 정책
+
+      // 고가용성
+      ha, // boolean
+      priority //int
       
     };
     console.log('가상머신 생성데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
@@ -524,15 +529,20 @@ return (
 
                           <div className="network_form_group">
                             <label htmlFor="os">운영 시스템</label>
-                            <select id="os" value={selectedOs} onChange={handleOsChange}>
-                              <option value="">운영 시스템 선택</option>
+                            <select
+                              id="os"
+                              value={selectedOs} // 선택된 값과 동기화
+                              onChange={(e) => setSelectedOs(e.target.value)} // 값 변경 핸들러
+                            >
                               {osOptions.map((os) => (
-                                <option key={os} value={os}>
-                                  {os}
+                                <option key={os.value} value={os.value}>
+                                  {os.label} {/* UI에 표시되는 값 */}
                                 </option>
                               ))}
                             </select>
-                            <span>선택된 운영 시스템: {selectedOs}</span>
+                            <span>
+                              선택된 운영 시스템: {osOptions.find((opt) => opt.value === selectedOs)?.label || ''}
+                            </span>
                           </div>
 
                           <div className="network_form_group">
@@ -552,274 +562,275 @@ return (
                               <span>선택된 칩셋: {selectedChipset}</span>
                             </div>
 
-                        <div style={{ marginBottom: '2%' }}>
-                            <label htmlFor="optimization">최적화 옵션</label>
-                            <select 
+                            <div style={{ marginBottom: '2%' }}>
+                              <label htmlFor="optimization">최적화 옵션</label>
+                              <select
                                 id="optimization"
                                 value={selectedOptimizeOption} // 선택된 값과 동기화
-                                onChange={handleOptimizeOption}
-                            >
-                                 {optimizeOption.map((option) => (
-                                    <option key={option} value={option}>
-                                        {option}
-                                    </option>
-                                    ))}
-                            </select>
-                            <span>선택된 칩셋: {selectedOptimizeOption}</span>
-                        </div>
+                                onChange={(e) => setSelectedOptimizeOption(e.target.value)} // 값 변경 핸들러
+                              >
+                                {optimizeOption.map((option) => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label} {/* UI에 표시되는 값 */}
+                                  </option>
+                                ))}
+                              </select>
+                              <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span>
+                            </div>
+
               </div>
               {selectedModalTab === 'common' && 
-              <>
-          
-                      <div className="edit_second_content mb-1">
-                          <div>
-                              <label htmlFor="name">이름ddd</label>
-                              <input
-                                  type="text"
-                                  id="name"
-                                  value={name}
-                                  onChange={(e) => setName(e.target.value)} 
-                              />
-                          </div>
-                          <div>
-                              <label htmlFor="description">설명</label>
-                              <input
-                              type="text"
-                              id="description"
-                              value={description}
-                              onChange={(e) => setDescription(e.target.value)} 
-                          />
-                          </div>
-                          <div>
-                              <label htmlFor="comment">코멘트</label>
-                              <input
-                                  type="text"
-                                  id="comment"
-                                  value={comment}
-                                  onChange={(e) => setComment(e.target.value)} 
-                              />
-                          </div>
-                      </div>
-                      <div className="px-1 font-bold">인스턴스 이미지</div>
-                        <div
-                        className="edit_third_content"
-                        style={{ borderBottom: "1px solid gray", marginBottom: "0.2rem" }}
-                        >
-                        {editMode ? (
-                            // 편집 모드일 때
-                            <div className='vm_plus_btn_outer'>
-                       
-                            <div className='vm_plus_btn'>
-                                <div >#</div>
-                                <div className='flex'>
-                                    <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
-                                    편집
-                                    </button>
-                                    <div className="flex">
-                                        <button>+</button>
-                                        <button>-</button>
-                                    </div>
-                                </div>
+                <>
+            
+                        <div className="edit_second_content mb-1">
+                            <div>
+                                <label htmlFor="name">이름ddd</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)} 
+                                />
                             </div>
+                            <div>
+                                <label htmlFor="description">설명</label>
+                                <input
+                                type="text"
+                                id="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)} 
+                            />
                             </div>
-                        ) : (
-                            // 생성 모드일 때
-                            <div className='vm_plus_btn_outer'>
-                           
-                            <div className='vm_plus_btn'>
-                                    <div style={{color:'white'}}>.</div>
-                                    <div className='flex'>
-                                        <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
-                                        <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
-                                        <div className="flex">
-                                            <button>+</button>
-                                            <button>-</button>
-                                        </div>
-                                    </div>
+                            <div>
+                                <label htmlFor="comment">코멘트</label>
+                                <input
+                                    type="text"
+                                    id="comment"
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)} 
+                                />
                             </div>
-                            </div>
-                        )}
                         </div>
+                        <div className="px-1 font-bold">인스턴스 이미지</div>
+                          <div
+                          className="edit_third_content"
+                          style={{ borderBottom: "1px solid gray", marginBottom: "0.2rem" }}
+                          >
+                          {editMode ? (
+                              // 편집 모드일 때
+                              <div className='vm_plus_btn_outer'>
+                        
+                              <div className='vm_plus_btn'>
+                                  <div >#</div>
+                                  <div className='flex'>
+                                      <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
+                                      편집
+                                      </button>
+                                      <div className="flex">
+                                          <button>+</button>
+                                          <button>-</button>
+                                      </div>
+                                  </div>
+                              </div>
+                              </div>
+                          ) : (
+                              // 생성 모드일 때
+                              <div className='vm_plus_btn_outer'>
+                            
+                              <div className='vm_plus_btn'>
+                                      <div style={{color:'white'}}>.</div>
+                                      <div className='flex'>
+                                          <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+                                          <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
+                                          <div className="flex">
+                                              <button>+</button>
+                                              <button>-</button>
+                                          </div>
+                                      </div>
+                              </div>
+                              </div>
+                          )}
+                          </div>
 
-                      
-                      <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
-                          
-                          <div className='edit_fourth_content_select flex'>
-                              <label htmlFor="network_adapter">nic1</label>
-                              <select id="network_adapter">
-                                  <option value="default">Default</option>
-                              </select>
-                          </div>
-                          <div className='flex'>
-                              <button>+</button>
-                              <button>-</button>
-                          </div>
-                      </div>
-              </>
+                        
+                        <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
+                            
+                            <div className='edit_fourth_content_select flex'>
+                                <label htmlFor="network_adapter">nic1</label>
+                                <select id="network_adapter">
+                                    <option value="default">Default</option>
+                                </select>
+                            </div>
+                            <div className='flex'>
+                                <button>+</button>
+                                <button>-</button>
+                            </div>
+                        </div>
+                </>
               }
               {selectedModalTab === 'system' && 
-              <>
-                
-                  <div className="edit_second_content">
-                    <div>
-                      <label htmlFor="memory_size">메모리 크기</label>
-                      <input
-                        type="text"
-                        id="memory_size"
-                        value={formatMemory(memorySize)} // 메모리 크기
-                        readOnly
-                      />
-                    </div>
-                    <div>
+                <>
+                  
+                    <div className="edit_second_content">
                       <div>
-                        <label htmlFor="max_memory">최대 메모리</label>
-                        <FontAwesomeIcon
-                          icon={faInfoCircle}
-                          style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-                          data-tooltip-id="max-memory-tooltip"
+                        <label htmlFor="memory_size">메모리 크기</label>
+                        <input
+                          type="text"
+                          id="memory_size"
+                          value={formatMemory(memorySize)} // 메모리 크기
+                          readOnly
                         />
-                        <Tooltip
-                          id="max-memory-tooltip"
-                          className="icon_tooltip"
-                          place="top"
-                          effect="solid"
-                        >
-                          메모리 핫 플러그를 실행할 수 있는 가상 머신 메모리 상한
-                        </Tooltip>
                       </div>
-                      <input
-                        type="text"
-                        id="max_memory"
-                        value={formatMemory(maxMemory)} // 최대 메모리
-                        readOnly
-                      />
-                    </div>
-
-                    <div>
                       <div>
-                        <label htmlFor="actual_memory">할당할 실제 메모리</label>
-                        <FontAwesomeIcon
-                          icon={faInfoCircle}
-                          style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-                          data-tooltip-id="actual-memory-tooltip"
+                        <div>
+                          <label htmlFor="max_memory">최대 메모리</label>
+                          <FontAwesomeIcon
+                            icon={faInfoCircle}
+                            style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                            data-tooltip-id="max-memory-tooltip"
+                          />
+                          <Tooltip
+                            id="max-memory-tooltip"
+                            className="icon_tooltip"
+                            place="top"
+                            effect="solid"
+                          >
+                            메모리 핫 플러그를 실행할 수 있는 가상 머신 메모리 상한
+                          </Tooltip>
+                        </div>
+                        <input
+                          type="text"
+                          id="max_memory"
+                          value={formatMemory(maxMemory)} // 최대 메모리
+                          readOnly
                         />
-                        <Tooltip
-                          id="actual-memory-tooltip"
-                          className="icon_tooltip"
-                          place="top"
-                          effect="solid"
-                        >
-                          ballooning 기능 사용 여부에 관계없이 가상 머신에 확보된 메모리 양입니다.
-                        </Tooltip>
                       </div>
-                      <input
-                        type="text"
-                        id="actual_memory"
-                        value={formatMemory(allocatedMemory)} // 실제 메모리
-                        readOnly
-                      />
-                    </div>
 
-                    <div>
-  <div>
-    <label htmlFor="total_cpu">총 가상 CPU</label>
-    <FontAwesomeIcon
-      icon={faInfoCircle}
-      style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-      data-tooltip-id="total-cpu-tooltip"
+                      <div>
+                        <div>
+                          <label htmlFor="actual_memory">할당할 실제 메모리</label>
+                          <FontAwesomeIcon
+                            icon={faInfoCircle}
+                            style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                            data-tooltip-id="actual-memory-tooltip"
+                          />
+                          <Tooltip
+                            id="actual-memory-tooltip"
+                            className="icon_tooltip"
+                            place="top"
+                            effect="solid"
+                          >
+                            ballooning 기능 사용 여부에 관계없이 가상 머신에 확보된 메모리 양입니다.
+                          </Tooltip>
+                        </div>
+                        <input
+                          type="text"
+                          id="actual_memory"
+                          value={formatMemory(allocatedMemory)} // 실제 메모리
+                          readOnly
+                        />
+                      </div>
+
+                      <div>
+    <div>
+      <label htmlFor="total_cpu">총 가상 CPU</label>
+      <FontAwesomeIcon
+        icon={faInfoCircle}
+        style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+        data-tooltip-id="total-cpu-tooltip"
+      />
+      <Tooltip
+        id="total-cpu-tooltip"
+        className="icon_tooltip"
+        place="top"
+        effect="solid"
+      >
+        소켓 수를 변경하여 CPU를 핫애드합니다. CPU 핫애드가 올바르게 지원되는지
+        확인하려면 게스트 운영 체제 관련 문서를 참조하십시오.
+      </Tooltip>
+    </div>
+    <input
+      type="text"
+      id="total_cpu"
+      value={cpuTopologyCnt}
+      onChange={(e) => setCpuTopologyCnt(Number(e.target.value))}
+      min="1"
     />
-    <Tooltip
-      id="total-cpu-tooltip"
-      className="icon_tooltip"
-      place="top"
-      effect="solid"
-    >
-      소켓 수를 변경하여 CPU를 핫애드합니다. CPU 핫애드가 올바르게 지원되는지
-      확인하려면 게스트 운영 체제 관련 문서를 참조하십시오.
-    </Tooltip>
   </div>
-  <input
-    type="text"
-    id="total_cpu"
-    value={cpuTopologyCnt}
-    onChange={(e) => setCpuTopologyCnt(Number(e.target.value))}
-    min="1"
-  />
-</div>
 
-                    <div className='network_form_group'>
-  <label htmlFor="virtual_socket">가상 소켓</label>
-  <select
-    id="virtual_socket"
-    value={cpuTopologySocket} // 현재 상태 값
-    onChange={(e) => setCpuTopologySocket(e.target.value)} // 상태 업데이트
-  >
-    {editMode ? (
-      // 편집 모드일 때 vm 값만 옵션으로 표시
-      <option value={vm?.cpuTopologySocket || ''}>
-        {vm?.cpuTopologySocket || '옵션 없음'}
-      </option>
-    ) : (
-      // 생성 모드일 때 기본 옵션 목록 표시
-      <>
-        <option value="">가상 소켓 선택</option>
-        <option value="1">1</option>
-      </>
-    )}
-  </select>
+                      <div className='network_form_group'>
+    <label htmlFor="virtual_socket">가상 소켓</label>
+    <select
+      id="virtual_socket"
+      value={cpuTopologySocket} // 현재 상태 값
+      onChange={(e) => setCpuTopologySocket(e.target.value)} // 상태 업데이트
+    >
+      {editMode ? (
+        // 편집 모드일 때 vm 값만 옵션으로 표시
+        <option value={vm?.cpuTopologySocket || ''}>
+          {vm?.cpuTopologySocket || '옵션 없음'}
+        </option>
+      ) : (
+        // 생성 모드일 때 기본 옵션 목록 표시
+        <>
+          <option value="">가상 소켓 선택</option>
+          <option value="1">1</option>
+        </>
+      )}
+    </select>
+                      </div>
+
+                      <div className='network_form_group'>
+                        <label htmlFor="core_per_socket">가상 소켓 당 코어</label>
+                        <select
+                          id="core_per_socket"
+                          value={cpuTopologyCore} // 현재 상태 값
+                          onChange={(e) => setCpuTopologyCore(e.target.value)} // 상태 업데이트
+                        >
+                          {editMode ? (
+                            // 편집 모드일 때 vm 값만 옵션으로 표시
+                            <option value={vm?.cpuTopologyCore || ''}>
+                              {vm?.cpuTopologyCore || '옵션 없음'}
+                            </option>
+                          ) : (
+                            // 생성 모드일 때 기본 옵션 목록 표시
+                            <>
+                              <option value="">코어 수 선택</option>
+                              <option value="1">1</option>
+                            
+                            </>
+                          )}
+                        </select>
+                      </div>
+
+                      <div className='network_form_group'>
+                        <label htmlFor="thread_per_core">코어당 스레드</label>
+                        <select
+                          id="thread_per_core"
+                          value={cpuTopologyThread} // 현재 상태 값
+                          onChange={(e) => setCpuTopologyThread(e.target.value)} // 상태 업데이트
+                        >
+                          {editMode ? (
+                            // 편집 모드일 때 vm 값만 옵션으로 표시
+                            <option value={vm?.cpuTopologyThread || ''}>
+                              {vm?.cpuTopologyThread || '옵션 없음'}
+                            </option>
+                          ) : (
+                            // 생성 모드일 때 기본 옵션 목록 표시
+                            <>
+                              <option value="">스레드 수 선택</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                  
+                            </>
+                          )}
+                        </select>
+                      </div>
+
+
+                            
                     </div>
-
-                    <div className='network_form_group'>
-                      <label htmlFor="core_per_socket">가상 소켓 당 코어</label>
-                      <select
-                        id="core_per_socket"
-                        value={cpuTopologyCore} // 현재 상태 값
-                        onChange={(e) => setCpuTopologyCore(e.target.value)} // 상태 업데이트
-                      >
-                        {editMode ? (
-                          // 편집 모드일 때 vm 값만 옵션으로 표시
-                          <option value={vm?.cpuTopologyCore || ''}>
-                            {vm?.cpuTopologyCore || '옵션 없음'}
-                          </option>
-                        ) : (
-                          // 생성 모드일 때 기본 옵션 목록 표시
-                          <>
-                            <option value="">코어 수 선택</option>
-                            <option value="1">1</option>
-                          
-                          </>
-                        )}
-                      </select>
-                    </div>
-
-                    <div className='network_form_group'>
-                      <label htmlFor="thread_per_core">코어당 스레드</label>
-                      <select
-                        id="thread_per_core"
-                        value={cpuTopologyThread} // 현재 상태 값
-                        onChange={(e) => setCpuTopologyThread(e.target.value)} // 상태 업데이트
-                      >
-                        {editMode ? (
-                          // 편집 모드일 때 vm 값만 옵션으로 표시
-                          <option value={vm?.cpuTopologyThread || ''}>
-                            {vm?.cpuTopologyThread || '옵션 없음'}
-                          </option>
-                        ) : (
-                          // 생성 모드일 때 기본 옵션 목록 표시
-                          <>
-                            <option value="">스레드 수 선택</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                
-                          </>
-                        )}
-                      </select>
-                    </div>
-
-
-                          
-                  </div>
-              </>
+                </>
               }
               {selectedModalTab === 'beginning' && 
                 <>
@@ -871,104 +882,106 @@ return (
 
                 </>
               }
-
               {selectedModalTab === 'host' && 
-              <>
-            
-            <div id="host_second_content">
-              <div style={{ fontWeight: 600 }}>실행 호스트:</div>
-                <div className="form_checks">
-                  <div>
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="hostSelection"
-                      id="flexRadioDefault1"
-                      checked={!isSpecificHostSelected}
-                      onChange={() => setIsSpecificHostSelected(false)} // 기본 클러스터 선택
-                    />
-                    <label className="form-check-label" htmlFor="flexRadioDefault1">
-                      클러스터 내의 호스트
-                    </label>
-                  </div>
-                  <div>
-                    <div>
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="hostSelection"
-                        id="flexRadioDefault2"
-                        checked={isSpecificHostSelected}
-                        onChange={handleSpecificHostSelection} // 특정 호스트 선택
-                      />
-                      <label className="form-check-label" htmlFor="flexRadioDefault2">
-                        특정 호스트
-                      </label>
+                <>
+                  <div id="host_second_content">
+                    <div style={{ fontWeight: 600 }}>실행 호스트:</div>
+                    <div className="form_checks">
+                      <div>
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="hostSelection"
+                          id="flexRadioDefault1"
+                          checked={!isSpecificHostSelected}
+                          onChange={() => setIsSpecificHostSelected(false)} // 기본 클러스터 선택
+                        />
+                        <label className="form-check-label" htmlFor="flexRadioDefault1">
+                          클러스터 내의 호스트
+                        </label>
+                      </div>
+                      <div>
+                        <div>
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="hostSelection"
+                            id="flexRadioDefault2"
+                            checked={isSpecificHostSelected}
+                            onChange={(e) => setIsSpecificHostSelected(true)} // 특정 호스트 선택
+                          />
+                          <label className="form-check-label" htmlFor="flexRadioDefault2">
+                            특정 호스트
+                          </label>
+                        </div>
+                        <div>
+                          <select
+                            id="specific_host_select"
+                            disabled={!isSpecificHostSelected} // 특정 호스트 선택 여부에 따라 활성화
+                          >
+                      
+                            {hostsFromCluster.map((host) => (
+                              <option key={host.id} value={host.id}>
+                                {host.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
                     </div>
+                  </div>
+
+                  <div id="host_third_content">
+                    <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
+                    {/* 마이그레이션 모드 */}
                     <div>
+                      <label htmlFor="migration_mode">마이그레이션 모드</label>
                       <select
-                        id="specific_host_select"
-                        disabled={!isSpecificHostSelected} // 특정 호스트 선택 여부에 따라 활성화
+                        id="migration_mode"
+                        value={migrationMode}
+                        onChange={(e) => setMigrationMode(e.target.value)}
                       >
-                        <option value="host02.ititinfo.com">host02.ititinfo.com</option>
+
+                        {migrationModeOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
                       </select>
                     </div>
+                    {/* 마이그레이션 정책 */}
+                    <div>
+                      <label htmlFor="migration_policy">마이그레이션 정책</label>
+                      <select
+                        id="migration_policy"
+                        value={migrationPolicy}
+                        onChange={(e) => setMigrationPolicy(e.target.value)}
+                      >
+                  
+                        {migrationPolicyOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                              
+                    <div>
+                        <div>
+                            <span>마이그레이션 병행</span>
+                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                        </div>
+                        <select id="parallel_migrations" readOnly>
+                            <option value="클러스터 기본값(Disabled)">클러스터 기본값(Disabled)</option>
+                        </select>
+                    </div>
+                    <div className='network_checkbox_type1 disabled'>
+                        <label htmlFor="memory_size">마이그레이션 병행 개수</label>
+                        <input type="text" id="memory_size" value="" readOnly disabled/>
+                    </div>
+                            
                   </div>
-                </div>
-            </div>
-                <div id="host_third_content">
-                <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
-  
-  {/* 마이그레이션 모드 */}
-  <div>
-    <label htmlFor="migration_mode">마이그레이션 모드</label>
-    <select
-      id="migration_mode"
-      value={migrationMode}
-      onChange={(e) => setMigrationMode(e.target.value)}
-    >
-
-      {migrationModeOptions.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  </div>
-
-  {/* 마이그레이션 정책 */}
-  <div>
-    <label htmlFor="migration_policy">마이그레이션 정책</label>
-    <select
-      id="migration_policy"
-      value={migrationPolicy}
-      onChange={(e) => setMigrationPolicy(e.target.value)}
-    >
- 
-      {migrationPolicyOptions.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  </div>
-                          
-                          <div>
-                              <div>
-                                  <span>마이그레이션 병행</span>
-                                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                              </div>
-                              <select id="parallel_migrations" readOnly>
-                                  <option value="클러스터 기본값(Disabled)">클러스터 기본값(Disabled)</option>
-                              </select>
-                          </div>
-                          <div className='network_checkbox_type1 disabled'>
-                              <label htmlFor="memory_size">마이그레이션 병행 개수</label>
-                              <input type="text" id="memory_size" value="" readOnly disabled/>
-                          </div>
-                          
-                </div>
-              </>
+                </>
               }
               {selectedModalTab === 'ha_mode' && 
               <>
@@ -1001,11 +1014,20 @@ return (
                           <div className="ha_mode_article">
                               <span>실행/마이그레이션 큐에서 우선순위 : </span>
                               <div>
-                                  <span>우선 순위</span>
-                                  <select id="priority">
-                                      <option value="낮음">낮음</option>
-                                  </select>
-                              </div>
+  <span>우선 순위</span>
+  <select 
+    id="priority" 
+    value={priority} // 선택된 값과 동기화
+    onChange={(e) => setPriority(parseInt(e.target.value, 10))} // 값 변경 핸들러
+  >
+    {priority.map((option) => (
+      <option key={option.value} value={option.value}>
+        {option.label} {/* 드롭다운에 표시될 텍스트 */}
+      </option>
+    ))}
+  </select>
+</div>
+
                           </div>
 
                           
