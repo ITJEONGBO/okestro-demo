@@ -51,8 +51,8 @@ class HostSamplesHistoryEntity(
 	val cpuUsagePercent: Int = 0,
 
 	val ksmCpuPercent: Int = 0,
-	val activeVms: Int = 0,
-	val totalVms: Int = 0,
+	val activeVms: Int? = null,
+	val totalVms: Int? = null,
 	val totalVmsVcpus: Int = 0,
 	val cpuLoad: Int = 0,
 	val systemCpuUsagePercent: Int = 0,

@@ -231,6 +231,7 @@ class OvirtUserServiceImpl(
 
 		// 비밀번호 검사
 		val res = password.validatePassword(user.password)
+		log.info("res: {}", res)
 		user.consecutiveFailures = if (res) 0 else user.consecutiveFailures+1
 		ovirtUsers.save(user)
 		if (!res) { // 로그인 실패 처리 기록

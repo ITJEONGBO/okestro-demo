@@ -23,6 +23,7 @@ import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
 import DataCenterInfo from './components/Computing/datacenterjs/DataCenterInfo';
 import ClusterInfo from './components/Computing/clusterjs/ClusterInfo';
+import Login from './page/Login';
 
 
 const App = () => {
@@ -87,7 +88,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        {/* {authenticated ? ( */}
+        {authenticated ? (
           <>
           <Header setAuthenticated={setAuthenticated} />
           <MainOuter>
@@ -152,11 +153,11 @@ const App = () => {
             </Routes>
           </MainOuter>
           </>
-          {/* ) :
+          ) :
           (<Routes>
             <Route path="/" element={<Login setAuthenticated={setAuthenticated} />} />
           </Routes>)
-        } */}
+        }
       </Router>
       <Toaster 
         position="top-center"

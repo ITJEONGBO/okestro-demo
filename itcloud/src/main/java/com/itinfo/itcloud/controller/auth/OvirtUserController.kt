@@ -87,6 +87,7 @@ class OvirtUserController: BaseController() {
 		@RequestBody(required=true) passwordPrompt: PasswordPrompt,
 	): ResponseEntity<Boolean> {
 		log.info("validate ... username: {}, password: {}", username, passwordPrompt.password)
+
 		if (username.isEmpty()) throw ErrorPattern.OVIRTUSER_ID_NOT_FOUND.toException()
 		if (passwordPrompt.password.isEmpty()) throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
 

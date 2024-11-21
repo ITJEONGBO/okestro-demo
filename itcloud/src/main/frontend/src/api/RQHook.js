@@ -4,7 +4,8 @@ import ApiManager from "./ApiManager";
 //region: User
 export const useAuthenticate = (username, password, _onSuccess, _onError) => useMutation({
   mutationFn: async () => {
-    const res = await ApiManager.authenticate(username, password)
+    const res = await ApiManager.authenticate(username, password);
+    console.log('Request sent to server:', { username, password });
     return res
   },
   onSuccess: _onSuccess,

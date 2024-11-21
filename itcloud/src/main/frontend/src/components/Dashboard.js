@@ -24,9 +24,9 @@ import Grid from './Chart/Grid';
 
 
 //region: RadialBarChart
-const CpuApexChart = memo(({ cpu }) => { return (<RadialBarChart percentage={cpu} />) });
-const MemoryApexChart = memo(({ memory }) => { return (<RadialBarChart percentage={memory} />) });
-const StorageApexChart = memo(({ storage }) => { return (<RadialBarChart percentage={storage} />) });
+const CpuApexChart = memo(({ cpu }) => { return (<RadialBarChart percentage={cpu || 0} />) });
+const MemoryApexChart = memo(({ memory }) => { return (<RadialBarChart percentage={memory || 0} />) });
+const StorageApexChart = memo(({ storage }) => { return (<RadialBarChart percentage={storage || 0} />) });
 //endregion: RadialBarChart
 
 //region: BarChart

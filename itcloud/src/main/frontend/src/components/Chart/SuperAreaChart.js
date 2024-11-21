@@ -12,21 +12,20 @@ const SuperAreaChart = ({ vmPer }) => {
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`; // 시간순으로 출력 (11:01, 11:02 등)
+    return `${hours}:${minutes}`;
   };
 
   useEffect(() => {
-    if (vmPer) {
+    if (vmPer?.length > 0) {
       // 데이터를 시간순으로 정렬
-      const sortedData = vmPer.map(item => {
-        // time과 dataList를 묶어 정렬
-        const combined = item.time.map((time, index) => ({
+      const sortedData = vmPer.map((item) => {
+        const combined = (item.time || []).map((time, index) => ({
           time,
-          value: item.dataList[index],
-        })).sort((a, b) => new Date(a.time) - new Date(b.time)); // 시간순 정렬
+          value: item.dataList?.[index] || 0, // 데이터가 없는 경우 기본값 0
+        })).sort((a, b) => new Date(a.time) - new Date(b.time));
 
         return {
-          name: item.name,
+          name: item.name || 'Unknown', // 이름이 없는 경우 기본값
           data: combined.map(({ time, value }) => ({
             x: formatDate(time),
             y: value,
@@ -34,12 +33,16 @@ const SuperAreaChart = ({ vmPer }) => {
         };
       });
 
-      const sortedTimes = vmPer[0].time
+      // time 데이터 정렬
+      const sortedTimes = (vmPer[0]?.time || [])
         .map(formatDate)
-        .sort((a, b) => new Date(a) - new Date(b)); // 시간순 정렬
+        .sort((a, b) => new Date(a) - new Date(b));
 
       setSeries(sortedData);
       setDatetimes(sortedTimes);
+    } else {
+      setSeries([]);
+      setDatetimes([]);
     }
   }, [vmPer]);
 

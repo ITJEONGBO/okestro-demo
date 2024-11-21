@@ -60,7 +60,7 @@ const ApiManager = {
   authenticate: async(username, password) => makeAPICall({
     method: "POST", 
     url: ENDPOINTS.FIND_USER(username), 
-    data: { password: password }
+    data: { password }
   }),
   //endregion: User
 
