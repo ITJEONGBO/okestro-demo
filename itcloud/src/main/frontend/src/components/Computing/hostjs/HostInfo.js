@@ -33,8 +33,22 @@ const HostInfo = () => {
 
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
-  const [modals, setModals] = useState({ edit: false, delete: false }); 
-
+  const [modals, setModals] = useState({
+    edit: false,
+    delete: false,
+  });
+  
+  const [modals2, setModals2] = useState({
+    deactivate: false,
+    activate: false,
+    restart: false,
+    stop: false,
+    reinstall: false,
+    register: false,
+    haon: false,
+    haoff: false,
+  }); 
+  
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'vms', label: '가상머신' },
@@ -79,18 +93,29 @@ const HostInfo = () => {
     });
   };
 
+  const toggleModal2 = (type, isOpen) => {
+    // setModals2(isOpen ? type : null);
+    setModals2((prev) => {
+      if (prev[type] === isOpen) return prev;
+      return { ...prev, [type]: isOpen };
+    });
+  };
+
   const sectionHeaderButtons = [
-    {
-      id: 'edit_btn',
-      label: '호스트 편집',
-      onClick: () => toggleModal('edit', true),
-    },
-    {
-      id: 'delete_btn',
-      label: '삭제',
-      onClick: () => toggleModal('delete', true),
-    },
+    { id: 'edit_btn', label: '호스트 편집', onClick: () => toggleModal('edit', true),},
+    { id: 'delete_btn', label: '삭제', onClick: () => toggleModal('delete', true), },
   ]
+
+  const popupItems = [
+    { id: 'deactivate_btn', label: '유지보수', onClick: () => toggleModal2('deactivate', true) },
+    { id: 'activate_btn', label: '활성', onClick: () => toggleModal2('activate', true) },
+    { id: 'restart_btn', label: '재시작', onClick: () => toggleModal2('restart', true) },
+    { id: 'stop_btn', label: '중지', onClick: () => toggleModal2('stop', true) },
+    { id: 'reinstall_btn', label: '다시 설치', onClick: () => toggleModal2('reinstall', true) },
+    { id: 'register_btn', label: '인증서 등록', onClick: () => toggleModal2('register', true) },
+    { id: 'haon_btn', label: '글로벌 HA 유지 활성화', onClick: () => toggleModal2('haon', true) },
+    { id: 'haoff_btn', label: '글로벌 HA 유지 비활성화', onClick: () => toggleModal2('haoff', true) },
+  ];
 
   return (
     <div id="section">
@@ -98,6 +123,7 @@ const HostInfo = () => {
         titleIcon={faUser}
         title={host?.name}
         buttons={sectionHeaderButtons}
+        popupItems={popupItems}
       />
       <div className="content_outer">
         <NavButton 
@@ -129,6 +155,18 @@ const HostInfo = () => {
             type='Host'
             onRequestClose={() => toggleModal('delete', false)}
             contentLabel={'호스트'}
+            data={host}
+          />
+        </Suspense>
+      )}
+
+      {modals2 && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <HostActionModal
+            isOpen={modals2}
+            action={modals2}
+            onRequestClose={() => toggleModal2(modals2, false)}
+            contentLabel={modals2}
             data={host}
           />
         </Suspense>

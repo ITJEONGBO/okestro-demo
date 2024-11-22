@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisV, faExchange } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../Input/IconButton';
 import './HeaderButton.css';
 
@@ -20,8 +20,7 @@ const HeaderButton = ({
       item.onClick(); // 클릭 시 각 항목의 onClick을 호출
     }
     console.log(`Clicked on ${item.label}`);
-    // 팝업 항목을 클릭해도 닫히지 않도록 아래 주석을 유지하거나 제거 가능
-    // setIsPopupBoxVisible(false);
+    setIsPopupBoxVisible(false); // 팝업 닫기
   };
 
   // 팝업 외부 클릭 시 닫히도록 처리

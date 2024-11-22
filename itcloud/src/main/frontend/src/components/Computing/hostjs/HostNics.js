@@ -6,9 +6,7 @@ import TableOuter from '../../table/TableOuter';
 import { useNetworkInterfaceFromHost } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';
 
-// TODO: 
 const HostNics = ({ hostId }) => {
-
   const { 
     data: nics = [] 
   } = useNetworkInterfaceFromHost(hostId, (e) => ({ 
@@ -55,8 +53,6 @@ const HostNics = ({ hostId }) => {
   }));
   
   
-  
-
   // 네트워크인터페이스 박스열고닫기
   const [visibleBoxes, setVisibleBoxes] = useState([]);
 
@@ -447,3 +443,4 @@ const HostNics = ({ hostId }) => {
   };
   
   export default HostNics;
+  

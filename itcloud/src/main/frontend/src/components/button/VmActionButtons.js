@@ -36,10 +36,10 @@ const VmActionButtons = ({
   };
 
   const manageActions = [
-    { onClick: onStart, label: '실행', disabled: isEditDisabled },
-    { onClick: onPause, label: '일시중지', disabled: isEditDisabled},
-    { onClick: onStop, label: '종료', disabled: isEditDisabled},
-    { onClick: onReboot, label: '재부팅', disabled: isEditDisabled},
+    { onClick: onStart, label: '실행', disabled: isEditDisabled || isUp },
+    { onClick: onPause, label: '일시중지', disabled: isEditDisabled || !isUp },
+    { onClick: onStop, label: '종료', disabled: isEditDisabled || !isUp },
+    { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || !isUp },
   ];
 
   const etcActions = [
@@ -72,6 +72,20 @@ const VmActionButtons = ({
         </button>
       ))}
 
+      {onConsole && (
+        <button onClick={onConsole} disabled={isEditDisabled}>콘솔</button>
+      )}
+
+      {templates && (
+        <button onClick={templates}>템플릿</button>
+      )}
+      {snapshots && (
+        <button onClick={snapshots} disabled={isEditDisabled}>스냅샷</button>
+      )}
+      {migration && (
+        <button onClick={migration}>마이그레이션</button>
+      )}
+
       <div className="dropdown-container">
         <button onClick={toggleDropDown} className="manage-button">
           관리
@@ -92,20 +106,6 @@ const VmActionButtons = ({
           </div>
         )}
       </div>
-
-      {onConsole && (
-        <button onClick={onConsole} disabled={isEditDisabled}>콘솔</button>
-      )}
-      {templates && (
-        <button onClick={templates}>템플릿</button>
-      )}
-      {snapshots && (
-        <button onClick={snapshots}>스냅샷</button>
-      )}
-      {migration && (
-        <button onClick={migration}>마이그레이션</button>
-      )}
-
 
     </div>
   );
