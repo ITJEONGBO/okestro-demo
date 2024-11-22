@@ -73,16 +73,14 @@ const HostInfo = () => {
 
   const pathData = [host?.name, sections.find((section) => section.id === activeTab)?.label];
 
-  const sectionComponents = {
-    general: HostGenerals,
-    vms: HostVms,
-    nics: HostNics,
-    devices: HostDevices,
-    events: HostEvents
-  };
-
   const renderSectionContent = () => {
-    const SectionComponent = sectionComponents[activeTab];
+    const SectionComponent = {
+      general: HostGenerals,
+      vms: HostVms,
+      nics: HostNics,
+      devices: HostDevices,
+      events: HostEvents,
+    }[activeTab];
     return SectionComponent ? <SectionComponent hostId={hostId} /> : null;
   };
 
@@ -94,11 +92,7 @@ const HostInfo = () => {
   };
 
   const toggleModal2 = (type, isOpen) => {
-    // setModals2(isOpen ? type : null);
-    setModals2((prev) => {
-      if (prev[type] === isOpen) return prev;
-      return { ...prev, [type]: isOpen };
-    });
+    setModals2((prev) => ({ ...prev, [type]: isOpen }));
   };
 
   const sectionHeaderButtons = [
@@ -116,6 +110,44 @@ const HostInfo = () => {
     { id: 'haon_btn', label: '글로벌 HA 유지 활성화', onClick: () => toggleModal2('haon', true) },
     { id: 'haoff_btn', label: '글로벌 HA 유지 비활성화', onClick: () => toggleModal2('haoff', true) },
   ];
+
+  const renderModals = () => (
+    <>
+      {modals.edit && (
+        <HostModal
+          isOpen={modals.edit}
+          onRequestClose={() => toggleModal('edit', false)}
+          editMode={modals.edit}
+          hId={hostId}
+        />
+      )}
+      {modals.delete && (
+        <DeleteModal
+          isOpen={modals.delete}
+          type="Host"
+          onRequestClose={() => toggleModal('delete', false)}
+          contentLabel="호스트"
+          data={host}
+        />
+      )}
+
+      {Object.keys(modals2).map((key) => {
+        const label = popupItems.find((item) => item.id === `${key}_btn`)?.label || key; // `label` 매칭
+          return (
+            modals2[key] && (
+              <HostActionModal
+                key={key}
+                isOpen={modals2[key]}
+                action={key}
+                onRequestClose={() => toggleModal2(key, false)}
+                contentLabel={label} // label 값 사용
+                data={host}
+              />
+            )
+          );
+      })}
+    </>
+  );
 
   return (
     <div id="section">
@@ -137,30 +169,9 @@ const HostInfo = () => {
         </div>
       </div>
 
-      {modals.edit && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <HostModal
-            isOpen={modals.edit}
-            onRequestClose={() => toggleModal('edit', false)}
-            editMode={modals.edit}
-            hId={hostId}
-          />
-        </Suspense>
-      )}
+      <Suspense fallback={<div>Loading...</div>}>{renderModals()}</Suspense>
 
-      {modals.delete && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <DeleteModal
-            isOpen={modals.delete}
-            type='Host'
-            onRequestClose={() => toggleModal('delete', false)}
-            contentLabel={'호스트'}
-            data={host}
-          />
-        </Suspense>
-      )}
-
-      {modals2 && (
+      {/* {modals2 && (
         <Suspense fallback={<div>Loading...</div>}>
           <HostActionModal
             isOpen={modals2}
@@ -170,7 +181,7 @@ const HostInfo = () => {
             data={host}
           />
         </Suspense>
-      )}
+      )} */}
 
       <Footer/>
     </div>

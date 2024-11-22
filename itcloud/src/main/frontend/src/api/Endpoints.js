@@ -177,7 +177,7 @@ const ENDPOINTS = {
   FIND_ALL_STORAGE_DOMAINS: () => `/api/v1/storages/domains`,
   FIND_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
   // FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/storages/${dataCenterId}/storageDomains`,
-
+  
   FIND_DATA_CENTERS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters`,
   ACTIVATE_FROM_DATACENTER: (storageDomainId, dataCenterId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters/${dataCenterId}/activate`,
   ATTACH_FROM_DATACENTER: (storageDomainId, dataCenterId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters/${dataCenterId}/attach`,
@@ -190,11 +190,15 @@ const ENDPOINTS = {
   FIND_TEMPLATES_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/templates`,
   FIND_EVENTS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/events`,
   
+  FIND_FIBRES_FROM_HOST: (hostId) => `/api/v1/storages/domains/fibres/${hostId}`,
+  FIND_ISCSIS_FROM_HOST: (hostId) => `/api/v1/storages/domains/iscsis/${hostId}`,
+  
   ADD_STORAGE_DOMAIN: () => `/api/v1/storages/domains`,
   EDIT_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
   DELETE_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
   DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destory`, 
   IMPORT_STORAGE_DOMAIN: () => `/api/v1/storages/domains/import`,
+
   //endregion: StorageDomain
 
   //region: Disk

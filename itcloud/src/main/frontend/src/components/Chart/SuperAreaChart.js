@@ -16,28 +16,28 @@ const SuperAreaChart = ({ vmPer }) => {
   };
 
   useEffect(() => {
-    if (vmPer?.length > 0) {
-      // 데이터를 시간순으로 정렬
-      const sortedData = vmPer.map((item) => {
-        const combined = (item.time || []).map((time, index) => ({
-          time,
-          value: item.dataList?.[index] || 0, // 데이터가 없는 경우 기본값 0
-        })).sort((a, b) => new Date(a.time) - new Date(b.time));
-
-        return {
-          name: item.name || 'Unknown', // 이름이 없는 경우 기본값
-          data: combined.map(({ time, value }) => ({
-            x: formatDate(time),
-            y: value,
-          })),
-        };
-      });
-
-      // time 데이터 정렬
-      const sortedTimes = (vmPer[0]?.time || [])
-        .map(formatDate)
-        .sort((a, b) => new Date(a) - new Date(b));
-
+    if (Array.isArray(vmPer) && vmPer.length > 0) {
+      const defaultItem = { name: 'Unknown', time: [], dataList: [] };
+      const sortedData = vmPer
+        .filter(item => item) // Remove null/undefined entries
+        .map(item => ({ ...defaultItem, ...item })) // Merge defaults with item
+        .map((item) => {
+          const combined = item.time.map((time, index) => ({
+            time,
+            value: item.dataList[index] || 0,
+          })).sort((a, b) => new Date(a.time) - new Date(b.time));
+  
+          return {
+            name: item.name,
+            data: combined.map(({ time, value }) => ({
+              x: formatDate(time),
+              y: value,
+            })),
+          };
+        });
+  
+      const sortedTimes = vmPer[0]?.time.map(formatDate).sort((a, b) => new Date(a) - new Date(b));
+  
       setSeries(sortedData);
       setDatetimes(sortedTimes);
     } else {
@@ -45,6 +45,7 @@ const SuperAreaChart = ({ vmPer }) => {
       setDatetimes([]);
     }
   }, [vmPer]);
+  
 
   return (
     <AreaChart 
@@ -116,5 +117,3 @@ export default SuperAreaChart;
 //     />
 //   );
 // }
-
-

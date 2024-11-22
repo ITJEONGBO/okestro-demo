@@ -74,7 +74,7 @@ const ClusterModal = ({
     data: networks,
     refetch: refetchNetworks,
     isLoading: isNetworksLoading
-  } = useNetworksFromDataCenter(datacenterVoId, (e) => ({
+  } = useNetworksFromDataCenter(datacenterVoId || 'default-datacenter-id', (e) => ({
     ...e,
   }));
 
@@ -101,18 +101,24 @@ const ClusterModal = ({
       }
     }
   }, [isOpen, editMode, cluster, datacenters, datacenterId]);
-  
-  // datacenterVoId가 설정되었을 때만 네트워크 목록을 가져오도록 제한
+
   useEffect(() => {
-    if (!editMode && datacenterVoId && !isDatacentersLoading) {  // 데이터센터 로딩 완료 후에만 네트워크 로드
+    if (!datacenterVoId && datacenters?.length > 0) {
+      setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
+    }
+  }, [datacenters]);
+
+  useEffect(() => {
+    if (!editMode && datacenterVoId) {
       refetchNetworks({ datacenterVoId }).then((res) => {
         if (res?.data && res.data.length > 0) {
-          setNetworkVoId(res.data[0].id); // 첫 번째 네트워크를 기본값으로 설정
+          setNetworkVoId(res.data[0].id); // 첫 번째 호스트를 기본값으로 설정
         }
+      }).catch((error) => {
+        console.error('Error fetching hosts:', error);
       });
     }
-  }, [editMode, datacenterVoId, isDatacentersLoading]);
-  
+  }, [editMode, datacenterVoId]);
   
   const resetForm = () => {
     setDatacenterVoId('');

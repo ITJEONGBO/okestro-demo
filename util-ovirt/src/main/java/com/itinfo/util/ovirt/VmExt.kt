@@ -13,13 +13,13 @@ fun Connection.srvVms(): VmsService =
 
 fun Connection.findAllVms(searchQuery: String = "", follow: String = ""): Result<List<Vm>> = runCatching {
 	if (searchQuery.isNotEmpty() && follow.isNotEmpty())
-		srvVms().list().allContent(true).search(searchQuery).follow(follow).caseSensitive(false).send().vms()
+		srvVms().list().allContent(true).search(searchQuery).follow(follow).caseSensitive(false).send().vms().filter { it.name() != "external-HostedEngineLocal" }
 	else if (searchQuery.isNotEmpty())
-		srvVms().list().allContent(true).search(searchQuery).caseSensitive(false).send().vms()
+		srvVms().list().allContent(true).search(searchQuery).caseSensitive(false).send().vms().filter { it.name() != "external-HostedEngineLocal" }
 	else if (follow.isNotEmpty())
-		srvVms().list().allContent(true).follow(follow).caseSensitive(false).send().vms()
+		srvVms().list().allContent(true).follow(follow).caseSensitive(false).send().vms().filter { it.name() != "external-HostedEngineLocal" }
 	else
-		srvVms().list().allContent(true).send().vms()
+		srvVms().list().allContent(true).send().vms().filter { it.name() != "external-HostedEngineLocal" }
 }.onSuccess {
 	Term.VM.logSuccess("목록조회")
 }.onFailure {

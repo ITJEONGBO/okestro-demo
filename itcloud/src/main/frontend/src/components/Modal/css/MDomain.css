@@ -1,0 +1,22 @@
+.iscsi_tab_buttons {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  
+  .iscsi_tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+  
+  .iscsi_tab.active {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+  }
+  
+  .iscsi_tab_content {
+    margin-top: 20px;
+  }
+  

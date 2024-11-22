@@ -1983,6 +1983,37 @@ const ApiManager = {
     // defaultValues: DEFAULT_VALUES.FIND_EVENT
   }),
 
+
+  /**
+   * @name ApiManager.findAllFibreFromHost
+   * @description fibre channel 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllFibreFromHost: async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_FIBRES_FROM_HOST(hostId),
+  }),
+  /**
+   * @name ApiManager.findAllIscsiFromHost
+   * @description iSCSI 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllIscsiFromHost: async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ISCSIS_FROM_HOST(hostId)
+  }),
+
+
+
+
   /**
    * @name ApiManager.addDomain
    * @description 새 스토리지도메인 생성
@@ -2028,6 +2059,9 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.DELETE_STORAGE_DOMAIN
     });
   },
+
+
+
   //endregion: Domain
 
 

@@ -75,13 +75,13 @@ const HostActionModal = ({
       onSuccess: () => {
         onRequestClose(); // 삭제 성공 시 모달 닫기
         
-        const currentPath = location.pathname;
-        if (currentPath.includes(id)) {
-          const newPath = currentPath.replace(`/${id}`, '');
-          navigate(newPath);
-        } else {
-          window.location.reload();
-        }        
+        // const currentPath = location.pathname;
+        // if (currentPath.includes(id)) {
+        //   const newPath = currentPath.replace(`/${id}`, '');
+        //   navigate(newPath);
+        // } else {
+        //   window.location.reload();
+        // }        
       },
       onError: (error) => {
         console.error(`${contentLabel} ${name} 액션 오류:`, error);
