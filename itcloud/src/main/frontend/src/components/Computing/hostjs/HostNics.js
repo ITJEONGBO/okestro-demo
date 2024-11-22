@@ -1,10 +1,61 @@
 import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowsAltH, faBan, faCaretDown, faCheck, faCircle, faDesktop, faExclamationTriangle, faFan, faInfoCircle, faNetworkWired, faPencilAlt, faTag, faTimes, faUniversity, faWrench } from "@fortawesome/free-solid-svg-icons";
+import { faArrowsAltH, faBan, faCaretDown, faCheck, faCircle, faDesktop, faExclamationTriangle, faFan, faInfoCircle, faNetworkWired, faPencilAlt, faPlay, faTag, faTimes, faUniversity, faWrench } from "@fortawesome/free-solid-svg-icons";
+import TableOuter from '../../table/TableOuter';
+import { useNetworkInterfaceFromHost } from '../../../api/RQHook';
+import TableInfo from '../../table/TableInfo';
 
 // TODO: 
 const HostNics = ({ hostId }) => {
+
+  const { 
+    data: nics = [] 
+  } = useNetworkInterfaceFromHost(hostId, (e) => ({ 
+    ...e,
+    id: e?.id,
+    name: e?.name,
+    bridged: e?.bridged,
+    ipv4: e?.ipv4 || '',
+    ipv6: e?.ipv6 || '',
+    macAddress: e?.macAddress,
+    mtu: e?.mtu,
+    status: e?.status,
+    icon: (() => {
+      if (e?.status === 'UP') {
+        return (
+          <FontAwesomeIcon 
+            icon={faPlay} 
+            fixedWidth 
+            style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} 
+          />
+        );
+      } else if (e?.status === 'DOWN') {
+        return (
+          <FontAwesomeIcon 
+            icon={faPlay} 
+            fixedWidth 
+            style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
+          />
+        );
+      }
+      return null;
+    })(),
+    speed: e?.speed ? Math.floor(e.speed / 1e6) : 0, // Mbps 단위 변환 후 숫자로만 반환
+    rxSpeed: e?.rxSpeed ? Math.floor(e.rxSpeed / 1e6) : 0, // Rx 속도 Mbps 숫자만 반환
+    txSpeed: e?.txSpeed ? Math.floor(e.txSpeed / 1e6) : 0, // Tx 속도 Mbps 숫자만 반환
+    rxTotalSpeed: e?.rxTotalSpeed ? Math.floor(e.rxTotalSpeed / 1e9) : 0, // 총 Rx 속도 GB 숫자만 반환
+    txTotalSpeed: e?.txTotalSpeed ? Math.floor(e.txTotalSpeed / 1e9) : 0, // 총 Tx 속도 GB 숫자만 반환
+    rxTotalError: e?.rxTotalError || 0, // Rx 에러
+    txTotalError: e?.txTotalError || 0, // Tx 에러
+    hostName: e?.hostVo?.name || '', // 호스트 이름
+    hostId: e?.hostVo?.id || '', // 호스트 ID
+    networkName: e?.networkVo?.name || '', // 네트워크 이름
+    networkId: e?.networkVo?.id || '' // 네트워크 ID
+  }));
+  
+  
+  
 
   // 네트워크인터페이스 박스열고닫기
   const [visibleBoxes, setVisibleBoxes] = useState([]);
@@ -21,22 +72,15 @@ const HostNics = ({ hostId }) => {
 
   // 모든 박스를 확장 또는 숨기기
   const toggleAllBoxes = () => {
-    if (visibleBoxes.length === networkInterfaceData.length) {
+    if (visibleBoxes.length === nics.length) {
       setVisibleBoxes([]); // 모두 닫기
     } else {
-      setVisibleBoxes(networkInterfaceData.map((_, index) => index)); // 모두 열기
+      setVisibleBoxes(nics.map((_, index) => index)); // 모두 열기
     }
   };
 
-  // 네트워크(임시데이터)
-  const networkInterfaceData = [
-[]
-  ];
-  const networkdata = [
- []
-  ];
-  console.log('networkInterfaceData:', networkInterfaceData);
-  console.log('networkdata:', networkdata);
+  console.log('networkInterfaceData:', nics);
+  console.log('networkdata:', nics);
   // 연필 추가모달
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   useEffect(() => {
@@ -76,14 +120,40 @@ const HostNics = ({ hostId }) => {
                     <div className="header_right_btns">
                       <button>VF 보기</button>
                       <button onClick={toggleAllBoxes}>
-                        {visibleBoxes.length === networkInterfaceData.length ? '모두 숨기기' : '모두 확장'}
+                        {visibleBoxes.length === nics.length ? '모두 숨기기' : '모두 확장'}
                       </button>
                       <button onClick={() => openPopup('host_network_set')}>호스트 네트워크 설정</button>
                       <button className="disabled">네트워크 설정 저장</button>
                       <button className="disabled">모든 네트워크 동기화</button>
                     </div>
               
-                    <div>테이블넣기(오류남)</div>
+                    {nics.map((data, index) => (
+                      <div className="host_network_boxs" key={index}>
+                        <div
+                          className="host_network_firstbox"
+                          onClick={() => toggleHiddenBox(index)} // 클릭 시 해당 박스만 열리거나 닫힘
+                        >
+                          <div className="section_table_outer">
+                            <TableOuter
+                              columns={TableInfo.HOST_NETWORK_INTERFACE}
+                              data={nics}
+                              onRowClick={() => console.log('Row clicked')}
+                            />
+                          </div>
+                        </div>
+                        {visibleBoxes.includes(index) && ( // 박스가 열려 있을 때만 보임
+                          <div className="host_network_hiddenbox">
+                            <div className="section_table_outer">
+                              <TableOuter
+                                columns={TableInfo.NETWORKS_FROM_HOST}
+                                data={nics}
+                                onRowClick={() => console.log('Row clicked')}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                     ))}
 
                 
 

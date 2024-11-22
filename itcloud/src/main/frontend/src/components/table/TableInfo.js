@@ -296,14 +296,25 @@ const TableInfo = {
 
 
 
-  NETWORKS_FROM_HOST: [
-    { header: '', accessor: 'icon' },
-    { header: '관리되지 않음', accessor: 'unmanaged' },
-    { header: 'VLAN', accessor: 'vlan' },
-    { header: '네트워크 이름', accessor: 'networkName', clickable: true },
-    { header: 'IPv4 주소', accessor: 'ipv4' },
-    { header: 'IPv6 주소', accessor: 'ipv6' }
-  ],
+NETWORKS_FROM_HOST: [
+  { header: '', accessor: 'icon', width: '5%' }, // 아이콘
+  { header: '관리되지 않음', accessor: 'bridged' }, // 브리지 상태
+  { header: 'VLAN', accessor: 'vlan' }, // VLAN 정보
+  { header: '네트워크 이름', accessor: 'networkName', clickable: true }, // 네트워크 이름
+  { header: 'IPv4 주소', accessor: 'ipv4' }, // IPv4 주소
+  { header: 'IPv6 주소', accessor: 'ipv6' } // IPv6 주소
+],
+HOST_NETWORK_INTERFACE: [
+  { header: '', accessor: 'icon', width: '5%' }, // 아이콘
+  { header: '이름', accessor: 'name' }, // 인터페이스 이름
+  { header: 'MAC', accessor: 'macAddress' }, // MAC 주소
+  { header: 'Rx 속도 (Mbps)', accessor: 'rxSpeed' }, // Rx 속도
+  { header: '총 Rx (바이트)', accessor: 'rxTotalSpeed' }, // 총 Rx
+  { header: 'Tx 속도 (Mbps)', accessor: 'txSpeed' }, // Tx 속도
+  { header: '총 Tx (바이트)', accessor: 'txTotalSpeed' }, // 총 Tx
+  { header: 'Mbps', accessor: 'speed' }, // 총 Mbps
+  { header: 'Pkts', accessor: 'pkts' } // 패킷 수
+],
   
   LUNS: [
     { header: '이름', accessor: 'name', clickable: true },

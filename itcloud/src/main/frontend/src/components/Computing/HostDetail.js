@@ -41,6 +41,7 @@ import HostVm from './hostjs/HostVm.js';
 import HostNics from './hostjs/HostNics.js';
 import HostDevice from './hostjs/HostDevice.js';
 import HostEvent from './hostjs/HostEvent.js';
+import HostNetwork from './hostjs/HostNetwork.js';
 
 
 
@@ -398,7 +399,7 @@ const handleInstallClick = () => {
           case 'vms':
             return <HostVm host={host} />;
           case 'nics':
-            return <HostNics host={host} />;
+            return <HostNetwork host={host} />;
           case 'devices':
             return <HostDevice host={host} />;
           case 'events':

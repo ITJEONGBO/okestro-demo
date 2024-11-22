@@ -620,6 +620,27 @@ export const useVmFromHost = (hostId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
+
+/**
+ * @name useVmFromHost
+ * @description 호스트 내 네트워크인터페이스 목록조회 useQuery훅
+ * 
+ * @param {string} hostId
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findVmsFromHost
+ */
+export const useNetworkInterfaceFromHost = (hostId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['NetworkInterfaceFromHost', hostId], 
+  queryFn: async () => {
+    console.log(`useNetworkInterfaceFromHost ... ${hostId}`);
+    const res = await ApiManager.findHostNicsFromHost(hostId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+
 /**
  * @name useHostdeviceFromHost
  * @description 호스트 내 호스트장치 목록조회 useQuery훅

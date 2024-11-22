@@ -2,6 +2,8 @@ import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsAltH, faBan, faCaretDown, faCheck, faCircle, faDesktop, faExclamationTriangle, faFan, faInfoCircle, faNetworkWired, faPencilAlt, faTag, faTimes, faUniversity, faWrench } from "@fortawesome/free-solid-svg-icons";
+import { Table } from 'storybook/internal/components';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 
 
 const HostNetwork = ({ hostId }) => {
@@ -73,17 +75,45 @@ const HostNetwork = ({ hostId }) => {
     return (
        
           <>
-                    <div className="header_right_btns">
-                      <button>VF 보기</button>
-                      <button onClick={toggleAllBoxes}>
-                        {visibleBoxes.length === networkInterfaceData.length ? '모두 숨기기' : '모두 확장'}
-                      </button>
-                      <button onClick={() => openPopup('host_network_set')}>호스트 네트워크 설정</button>
-                      <button className="disabled">네트워크 설정 저장</button>
-                      <button className="disabled">모든 네트워크 동기화</button>
-                    </div>
-              
-                    <div>테이블넣기(오류남)</div>
+   <div className="host_btn_outer">
+      <div className="header_right_btns">
+        <button>VF 보기</button>
+        <button onClick={toggleAllBoxes}>
+          {visibleBoxes.length === networkInterfaceData.length ? '모두 숨기기' : '모두 확장'}
+        </button>
+        <button onClick={() => console.log('호스트 네트워크 설정')}>호스트 네트워크 설정</button>
+        <button className="disabled">네트워크 설정 저장</button>
+        <button className="disabled">모든 네트워크 동기화</button>
+      </div>
+
+      {networkInterfaceData.map((data, index) => (
+        <div className="host_network_boxs" key={index}>
+          <div
+            className="host_network_firstbox"
+            onClick={() => toggleHiddenBox(index)} // 클릭 시 해당 박스만 열리거나 닫힘
+          >
+            <div className="section_table_outer">
+              <Table
+                columns={TableColumnsInfo.HOST_NETWORK_INTERFACE}
+                data={networkInterfaceData}
+                onRowClick={() => console.log('Row clicked')}
+              />
+            </div>
+          </div>
+          {visibleBoxes.includes(index) && ( // 박스가 열려 있을 때만 보임
+            <div className="host_network_hiddenbox">
+              <div className="section_table_outer">
+                <Table
+                  columns={TableColumnsInfo.NETWORKS_FROM_HOST}
+                  data={networkdata}
+                  onRowClick={() => console.log('Row clicked')}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
 
                 
 
