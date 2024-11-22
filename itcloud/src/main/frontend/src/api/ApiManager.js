@@ -1226,7 +1226,7 @@ const ApiManager = {
    * 
    * @returns 
    **/
-  findNicFromVM : async () => makeAPICall({
+  findNicFromVMClusterId : async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_NICS_FROM_CLUSTER(), 
     defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_CLUSTER

@@ -55,21 +55,16 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
    const { 
     data: vms, 
     status: vmsStatus,
-    isRefetching: isVmsRefetching,
-    refetch: refetchVms, 
-    isError: isVmsError, 
-    error: vmsError, 
-    isLoading: isVmsLoading,
   } = useAllVMs((e) => {
     return {
       ...e,
       status: e?.status,
       host: e?.hostVo?.name,
-hostId: e?.hostVo?.id,
-cluster: e?.clusterVo?.name,
-clusterId: e?.clusterVo?.id,
-dataCenter: e?.dataCenterVo?.name,
-dataCenterId: e?.dataCenterVo?.id,
+      hostId: e?.hostVo?.id,
+      cluster: e?.clusterVo?.name,
+      clusterId: e?.clusterVo?.id,
+      dataCenter: e?.dataCenterVo?.name,
+      dataCenterId: e?.dataCenterVo?.id,
 
       memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
       cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
@@ -140,7 +135,7 @@ dataCenterId: e?.dataCenterVo?.id,
           </div>
         </div> */}
         
-        {vmsStatus === 'success' && vms && (
+        { vms && (
     <VmDu 
         columns={TableInfo.VMS} 
         Vmdata={vms.map((vm) => ({

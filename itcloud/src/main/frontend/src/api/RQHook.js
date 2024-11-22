@@ -999,6 +999,30 @@ export const useAllEventFromVM = (vmId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })
+/**
+ * @name useAllnicFromVM
+ * @description  가상머신 생성창-nic목록 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findNicFromVMClusterId
+ */
+export const useAllnicFromVM = (clusterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllnicFromVM', clusterId], 
+  queryFn: async () => {
+    console.log(`useAllnicFromVM아아아아 ... ${clusterId}`);
+    const res = await ApiManager.findNicFromVMClusterId(clusterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  },
+  enabled: !!clusterId, 
+  staleTime: 0,
+  cacheTime: 0,
+})
+
+
 
 /**
  * @name useVmConsole

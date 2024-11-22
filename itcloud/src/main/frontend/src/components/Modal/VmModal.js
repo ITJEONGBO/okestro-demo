@@ -6,6 +6,7 @@ import { Tooltip } from 'react-tooltip';
 import { 
   useAddVm, 
   useAllClusters, 
+  useAllnicFromVM, 
   useAllTemplates, 
   useAllVMs, 
   useEditVm, 
@@ -26,7 +27,7 @@ const VmModal = ({
   // 일반
   const [id, setId] = useState('');
   const [clusterVoName, setClusterVoName] = useState(''); // 클러스터이름
-  const [clusterVoId, setClusterVoId] = useState('');  
+  const [clusterVoId, setClusterVoId] = useState();  
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   const [description, setDescription] = useState('');
@@ -59,6 +60,11 @@ const VmModal = ({
   // 고가용성
   const [ha, setHa] = useState(false); // 고가용성(체크박스)
   const [priority, setPriority] = useState(1); // 초기값
+
+  // 부트옵션
+  const [firstDevice, setFirstDevice] = useState(1); // 첫번째 장치
+  const [secDevice, setSecDevice] = useState(1); // 두번째 장치
+  const [bootingMenu, setBootingMenu] = useState(false); // 부팅메뉴 활성화
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -97,6 +103,24 @@ useEffect(() => {
     id: e.id,
     name: e.name,
   }));
+
+// NIC 목록 가져오기( 오류! 콘솔에 clusterVoId 이건 찍히는데 list목록이 비어있음)
+const { data: nicList, refetch: fetchNICs } = useAllnicFromVM(clusterVoId, (e) => ({
+  id: e.id,
+  name: e.name,
+}));
+// NIC 목록 출력
+useEffect(() => {
+  if (nicList) {
+    console.log("Fetched NIC List:", nicList);
+  } else {
+    console.log("NIC List is empty or undefined.");
+  }
+}, [nicList]);
+
+
+
+
 
   // 템플릿 가져오기
   const {
@@ -210,7 +234,18 @@ const priorityOptions = [
   { value: 50, label: '중간' },
   { value: 100, label: '높음' },
 ];
-
+// 부트옵션(첫번째 장치)
+const firstDeviceOptions = [
+  { value: 'ha', label: '하드 디스크' },
+  { value: 'cdrom', label: 'CD-ROM' },
+  { value: 'network', label: '네트워크(PXE)' },
+];
+// 부트옵션(두번째 장치)
+const secDeviceOptions = [
+  { value: '', label: '없음' },
+  { value: 'ha', label: '하드 디스크'  },
+  { value: 'cdrom', label: 'CD-ROM' },
+];
 
 // 선택된 값 상태
 const [selectedOs, setSelectedOs] = useState('Linux'); // 운영 시스템 선택
@@ -269,6 +304,11 @@ useEffect(() => {
         setHa(vm?.ha || false);
         setPriority(vm?.priority || 1);
 
+        // 부트옵션
+        setFirstDevice(vm?.firstDevice || firstDeviceOptions[0].value);
+        setSecDevice(vm?.secDevice || secDeviceOptions[0].value);
+        setBootingMenu(vm?.bootingMenu || false);
+
       } else if (!editMode) {
         resetForm();    
         setClusterVoId(vmId || clusters?.[0]?.id || '');
@@ -279,6 +319,7 @@ useEffect(() => {
         // 마이그레이션 모드와 정책 기본값 설정
         setMigrationMode(vm?.migrationMode || migrationModeOptions[0].value);
         setMigrationPolicy(vm?.migrationPolicy || migrationPolicyOptions[0].value);
+        
       }
     }
   }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption]);
@@ -358,8 +399,15 @@ useEffect(() => {
 
       // 고가용성
       ha, // boolean
-      priority //int
+      priority, //int
       
+      // 부트옵션
+      firstDevice, //string
+      secDevice,  // string
+      // connVo, //vo
+      bootingMenu // boolean
+
+
     };
     console.log('가상머신 생성데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
@@ -502,7 +550,11 @@ return (
                                       ))
                                   )}
                               </select>
-                             
+                              <span>
+                                {/* 선택된 클러스터 표시 */}
+                                선택된 클러스터:{" "}
+                                {clusters.find((cluster) => cluster.id === clusterVoId)?.name || "선택되지 않음"}
+                              </span>
                           </div>
 
                           <div>
@@ -1002,42 +1054,41 @@ return (
                     </div>
 
                     <div>
-  <div>
-    <span>가상 머신 임대 대상 스토리지 도메인</span>
-    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }} fixedWidth />
-  </div>
-  <select id="no_lease" disabled={!ha}> {/* ha가 false면 disabled */}
-    <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
-  </select>
-</div>
+                        <div>
+                          <span>가상 머신 임대 대상 스토리지 도메인</span>
+                          <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }} fixedWidth />
+                        </div>
+                        <select id="no_lease" disabled={!ha}> {/* ha가 false면 disabled */}
+                          <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
+                        </select>
+                      </div>
 
+                      <div>
                           <div>
-                              <div>
-                                  <span>재개 동작</span>
-                                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                              </div>
-                              <select id="force_shutdown">
-                                  <option value="강제 종료">강제 종료</option>
+                              <span>재개 동작</span>
+                              <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                          </div>
+                          <select id="force_shutdown">
+                              <option value="강제 종료">강제 종료</option>
+                          </select>
+                      </div>
+                      <div className="ha_mode_article">
+                          <span>실행/마이그레이션 큐에서 우선순위 : </span>
+                          <div>
+                              <span>우선 순위</span>
+                              <select
+                                id="priority"
+                                value={priority} // 선택된 값
+                                onChange={(e) => setPriority(parseInt(e.target.value, 10))} // 값 업데이트
+                              >
+                                {priorityOptions.map((option) => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label}
+                                  </option>
+                                ))}
                               </select>
-                          </div>
-                          <div className="ha_mode_article">
-                              <span>실행/마이그레이션 큐에서 우선순위 : </span>
-                              <div>
-  <span>우선 순위</span>
-  <select
-    id="priority"
-    value={priority} // 선택된 값
-    onChange={(e) => setPriority(parseInt(e.target.value, 10))} // 값 업데이트
-  >
-    {priorityOptions.map((option) => (
-      <option key={option.value} value={option.value}>
-        {option.label}
-      </option>
-    ))}
-  </select>
-</div>
-
-                          </div>
+                            </div>
+                      </div>
 
                           
                       </div>
@@ -1045,42 +1096,68 @@ return (
               }
 
               {selectedModalTab === 'boot_outer' && 
-              <>  
-                <div className='boot_outer_content'>
-                  <div className="cpu_res">
-                              <span style={{ fontWeight: 600 }}>부트순서:</span>
-                              <div className='cpu_res_box'>
-                                  <span>첫 번째 장치</span>
-                                  <select id="watchdog_action">
-                                      <option value="없음">하드디스크</option>
-                                  </select>
-                              </div>
-                              <div className='cpu_res_box'>
-                                  <span>두 번째 장치</span>
-                                  <select id="watchdog_action">
-                                      <option value="없음">Default</option>
-                                  </select>
-                              </div>
+            <>  
+            <div className='boot_outer_content'>
+              <div className="cpu_res">
+                <span style={{ fontWeight: 600 }}>부트순서:</span>
+                <div className='cpu_res_box'>
+                  <span>첫 번째 장치</span>
+                  <select
+                    id="first_boot_device"
+                    value={firstDevice} // 선택된 값
+                    onChange={(e) => setFirstDevice(e.target.value)} // 값 업데이트
+                  >
+                    {firstDeviceOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className='cpu_res_box'>
+                  <span>두 번째 장치</span>
+                  <select
+                    id="second_boot_device"
+                    value={secDevice} // 선택된 값
+                    onChange={(e) => setSecDevice(e.target.value)} // 값 업데이트
+                  >
+                    {secDeviceOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div id="boot_checkboxs">
+                <div>
+                  <div className='checkbox_group'>
+                    <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
+                    <label htmlFor="connectCdDvd">CD/DVD 연결</label>
                   </div>
-                  <div id="boot_checkboxs">
-                      <div>
-                          <div className='checkbox_group'>
-                              <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
-                              <label htmlFor="connectCdDvd">CD/DVD 연결</label>
-                          </div>
-                          <div className='text_icon_box'>
-                              <input type="text" disabled />
-                              <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                          </div>
-                      </div>
-
-                      <div className='checkbox_group mb-1.5'>
-                          <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
-                          <label htmlFor="enableBootMenu">부팅 메뉴를 활성화</label>
-                      </div>
+                  <div className='text_icon_box'>
+                    <input type="text" disabled />
+                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }} fixedWidth /> 
                   </div>
                 </div>
-              </>
+          
+                <div className='checkbox_group mb-1.5'>
+                  <input
+                      className="check_input"
+                      type="checkbox"
+                      id="enableBootMenu"
+                      checked={bootingMenu} // bootingMenu 상태와 동기화
+                      onChange={(e) => setBootingMenu(e.target.checked)} // 상태 업데이트
+                    />
+                  <label className="check_label" htmlFor="enableBootMenu">
+                    부팅 메뉴를 활성화
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </>
+          
               }
           </div>
           </div>
