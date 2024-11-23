@@ -350,27 +350,27 @@ useEffect(() => {
   };
 
   const handleFormSubmit = () => {
-    const selectedCluster = clusters.find((c) => c.id === clusterVoId);
-    if (!selectedCluster) {
-        alert("클러스터를 선택해주세요.");
-        return;
-      }
-    // 선택된 템플릿 찾기
-    const selectedTemplate = templates.find((t) => t.id === templateId);
-    if (!selectedTemplate) {
-        alert("네트워크를 선택해주세요.");
-        return;
-      }
+    // const selectedCluster = clusters.find((c) => c.id === clusterVoId);
+    // if (!selectedCluster) {
+    //     alert("클러스터를 선택해주세요.");
+    //     return;
+    //   }
+    // // 선택된 템플릿 찾기
+    // const selectedTemplate = templates.find((t) => t.id === templateId);
+    // if (!selectedTemplate) {
+    //     alert("네트워크를 선택해주세요.");
+    //     return;
+    //   }
   
     const dataToSubmit = {
-      clusterVo:{
-        id: selectedCluster.id,
-        name: selectedCluster.name,
-      },
-      tempatlateVo:{
-        id: selectedTemplate.id,
-        name: selectedTemplate.name
-      },
+      // clusterVo:{
+      //   id: selectedCluster.id,
+      //   name: selectedCluster.name,
+      // },
+      // tempatlateVo:{
+      //   id: selectedTemplate.id,
+      //   name: selectedTemplate.name
+      // },
       name,
       description,
       comment,
@@ -553,7 +553,7 @@ return (
                               <span>
                                 {/* 선택된 클러스터 표시 */}
                                 선택된 클러스터:{" "}
-                                {clusters.find((cluster) => cluster.id === clusterVoId)?.name || "선택되지 않음"}
+                                {/* {clusters.find((cluster) => cluster.id === clusterVoId)?.name || "선택되지 않음"} */}
                               </span>
                           </div>
 
@@ -594,7 +594,7 @@ return (
                               ))}
                             </select>
                             <span>
-                              선택된 운영 시스템: {osOptions.find((opt) => opt.value === selectedOs)?.label || ''}
+                              {/* 선택된 운영 시스템: {osOptions.find((opt) => opt.value === selectedOs)?.label || ''} */}
                             </span>
                           </div>
 
@@ -628,7 +628,7 @@ return (
                                   </option>
                                 ))}
                               </select>
-                              <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span>
+                              {/* <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span> */}
                             </div>
 
               </div>
