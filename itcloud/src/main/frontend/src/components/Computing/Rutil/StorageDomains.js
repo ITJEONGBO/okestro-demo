@@ -1,19 +1,10 @@
-import React, { useEffect, useState, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import '../css/Computing.css';
-import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllStorageDomains } from '../../../api/RQHook';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
-import DomainActionButtons from '../../button/DomainActionButtons';
-
-const StorageDomainModal = React.lazy(() => import('../../Modal/StorageDomainModal'));
-const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
+import DomainDupl from '../../duplication/DomainDupl';
 
 const StorageDomains = () => {
-  const navigate = useNavigate();
-
   const {
     data: storageDomains,
     status: storageDomainsStatus,
@@ -22,37 +13,24 @@ const StorageDomains = () => {
     isError: isStorageDomainsError,
     error: storageDomainsError,
     isLoading: isStorageDomainsLoading
-  } = useAllStorageDomains((e) => ({
-    ...e,
-    // domainTypeMaster: e?domainTypeMaster == true ? "마스터":"",
-    hostedEngine: e?.hostedEngine ? 'O' : 'X',
-    diskSize: e?.diskSize/(Math.pow(1024, 3))+" GB",
-    availableSize: e?.availableSize/(Math.pow(1024, 3))+" GB",
-    usedSize: e?.usedSize/(Math.pow(1024, 3))+" GB",
-  }));
-
-  const [modals, setModals] = useState({ create: false, edit: false, delete: false });
-  const [selectedDomain, setSelectedDomain] = useState(null);
-
-  const toggleModal = (type, isOpen) => {
-    setModals((prev) => ({ ...prev, [type]: isOpen }));
-  };
-
-  const renderStatusIcon = (status) => {
-    if (status === 'ACTIVE') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    }
-    return status;
-  };
-
-  const handleNameClick = (id) => {
-    navigate(`/storages/domains/${id}`);
-  };
-
+  } = useAllStorageDomains((e) => ({...e,}));
 
   return (
-    <>      
+    <>    
+      <DomainDupl
+        domains={storageDomains || []}
+        columns={TableInfo.STORAGE_DOMAINS}
+        type={'domain'}
+      />
+    </>
+  );
+};
+
+export default StorageDomains;
+
+
       {/* 도메인 가져오기와 생성은 같은 창, 관리가 편집 */}
+{/*       
       <DomainActionButtons
         onCreate={() => toggleModal('create', true)}
         onEdit={() => selectedDomain?.id && toggleModal('edit', true)}
@@ -68,7 +46,8 @@ const StorageDomains = () => {
         columns={TableInfo.STORAGE_DOMAINS}
         data={storageDomains?.map((domain)=> ({
           ...domain,
-          status: renderStatusIcon(domain.status),
+          icon: renderStatusIcon(domain.status),
+          status: domain.status,
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedDomain(row)}
@@ -76,7 +55,6 @@ const StorageDomains = () => {
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
 
-      {/* 모달 컴포넌트를 사용할 때만 로딩 */}
       <Suspense>
         {(modals.create || (modals.edit && selectedDomain)) && (
           <StorageDomainModal
@@ -95,9 +73,4 @@ const StorageDomains = () => {
             data={selectedDomain}
           />
         )}
-       </Suspense>
-    </>
-  );
-};
-
-export default StorageDomains;
+       </Suspense> */}

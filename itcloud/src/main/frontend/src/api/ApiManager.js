@@ -2060,6 +2060,21 @@ const ApiManager = {
     });
   },
 
+  /**
+   * @name ApiManager.activateDomain
+   * @description 스토리지 도메인 활성
+   * 
+   * @param {String} domainId - 도메인 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  activateDomain: async (domainId, dataCenterId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ACTIVATE_FROM_DATACENTER(domainId, dataCenterId), 
+      data: domainId
+    });
+  },
+
 
 
   //endregion: Domain

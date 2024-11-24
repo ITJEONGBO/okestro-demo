@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter  as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Dashboard from './components/Dashboard';
+import STOMP from './Socket'
+import { Toaster, toast } from 'react-hot-toast';
+import './App.css';
 import Header from './components/Header/Header';
 import MainOuter from './components/MainOuter';
+import Dashboard from './components/Dashboard';
+import Error from './components/Error';
+
+import Login from './page/Login';
 import AllDomain from './components/Storage/AllDomain';
 import Network from './components/Network/Network';
 import Setting from './components/Setting/Setting';
 import StorageDomainDetail from './components/Storage/StorageDomainDetail';
 import StorageDiskDetail from './components/Storage/StorageDiskDetail';
 import NetworkDetail from './components/Network/NetworkDetail';
-import STOMP from './Socket'
-import { Toaster, toast } from 'react-hot-toast';
-import './App.css';
-import Login from './page/Login';
 import TemplateDetail from './components/Computing/TemplateDetail';
 import AllVm from './components/Computing/AllVm';
 import AllDisk from './components/Storage/AllDisk';
 import Event from './components/Event';
-import Error from './components/Error';
 import VmDetail from './components/Computing/VmDetail';
 
 import RutilManager from './components/Computing/RutilManager';
@@ -27,6 +28,7 @@ import ClusterInfo from './components/Computing/clusterjs/ClusterInfo';
 import HostInfo from './components/Computing/hostjs/HostInfo';
 
 import Templates from './components/Computing/Rutil/Templates';
+import DomainInfo from './components/Storage/domainjs/DomainInfo';
 
 
 const App = () => {
@@ -124,8 +126,8 @@ const App = () => {
               <Route path="/networks/:id/:section" element={<NetworkDetail />} /> 
 
               <Route path="/storages/domains" element={<AllDomain />} />
-              <Route path="/storages/domains/:id" element={<StorageDomainDetail />} /> 
-              <Route path="/storages/domains/:id/:section" element={<StorageDomainDetail />} /> 
+              <Route path="/storages/domains/:id" element={<DomainInfo />} /> 
+              <Route path="/storages/domains/:id/:section" element={<DomainInfo />} /> 
         
               <Route path="/storages/disks" element={<AllDisk />} />
               <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />

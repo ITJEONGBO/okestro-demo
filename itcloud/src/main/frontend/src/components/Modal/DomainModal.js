@@ -14,7 +14,7 @@ import {
   useDataCenter
 } from '../../api/RQHook';
 
-const StorageDomainsModal = ({
+const DomainModal = ({
   isOpen,
   onRequestClose,
   editMode = false,
@@ -592,4 +592,4 @@ const StorageDomainsModal = ({
   );
 };
 
-export default StorageDomainsModal;
+export default DomainModal;

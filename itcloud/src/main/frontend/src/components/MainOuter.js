@@ -549,7 +549,7 @@ const toggleDataCenter = (dataCenterId) => {
                       }}
                       onClick={() => {
                           setSelectedDiv(dataCenter.id);
-                          navigate(`/networks/datacenters/${dataCenter.id}`);
+                          navigate(`/networks/datacenters/${dataCenter.id}/clusters`);
                       }}
                   >
                       {hasNetworks && (
@@ -633,7 +633,7 @@ const toggleDataCenter = (dataCenterId) => {
                       }}
                       onClick={() => {
                           setSelectedDiv(dataCenter.id);
-                          navigate(`/storages/datacenters/${dataCenter.id}`);
+                          navigate(`/storages/datacenters/${dataCenter.id}/clusters`);
                       }}
                   >
                       {hasDomains && (

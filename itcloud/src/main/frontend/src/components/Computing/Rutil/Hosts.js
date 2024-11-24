@@ -13,19 +13,7 @@ const Hosts = () => {
       isError: isHostsError,
       error: hostsError,
       isLoading: isHostsLoading
-  } = useAllHosts((e) => {
-    return {
-      ...e,
-      status: e?.status,
-      cluster: e?.clusterVo.name,
-      dataCenter: e?.dataCenterVo.name,
-      spmStatus: e?.spmStatus === 'NONE' ? '보통' : e?.spmStatus,
-      vmCnt: e?.vmSizeVo.allCnt,
-      memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
-      cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
-      networkUsage: e?.usageDto.networkPercent === null ? '' : e?.usageDto.networkPercent + '%',
-    }
-  });
+  } = useAllHosts((e) => ({ ...e }));
 
   return (
     <>

@@ -1690,11 +1690,7 @@ export const useAllDataCenterFromDomain = (storageDomainId, mapPredicate) => use
     const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
-  enabled: !!storageDomainId,
-  staleTime: 0,
-  cacheTime: 0,
 })
-
 /**
  * @name useAllVMFromDomain
  * @description 도메인 내 디스크 목록조회 useQuery훅
@@ -1852,6 +1848,25 @@ export const useDeleteDomain = () => {
     onError: (error) => {
       console.error('Error deleting domain:', error);
     },
+  });
+};
+
+/**
+ * @name useActivateDomain
+ * @description 호스트 활성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useActivateDomain = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (domainId) => await ApiManager.activateDomin(domainId),
+    onSuccess: () => {
+      // queryClient.invalidateQueries('allHosts');
+    },
+    onError: (error) => {
+      console.error('Error activate domain:', error);
+    },  
   });
 };
 

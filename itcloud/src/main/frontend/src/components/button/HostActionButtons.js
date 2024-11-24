@@ -53,27 +53,14 @@ const HostActionButtons = ({
   return (
     <div className="header_right_btns">
       {onCreate && 
-        <button onClick={onCreate}>
-          새로 만들기
-        </button>
+        <button onClick={onCreate}>새로 만들기</button>
       }
       {onEdit && 
-        <button 
-          onClick={onEdit} 
-          disabled={isEditDisabled || !isUp}
-        >
-          편집
-        </button>
+        <button onClick={onEdit} disabled={isEditDisabled || !isUp}>편집</button>
       }
       {onDelete && 
-        <button 
-          onClick={onDelete} 
-          disabled={isEditDisabled || isUp || !isMaintenance }
-        >
-          삭제
-        </button>
-      }
-
+        <button onClick={onDelete} disabled={isEditDisabled || isUp || !isMaintenance }>삭제</button>
+      } 
       {/* 관리 버튼 */}
       <div className="dropdown-container">
         <button onClick={toggleDropDown} className="manage-button">
@@ -82,7 +69,7 @@ const HostActionButtons = ({
         </button>
         {isDropDownOpen && (
           <div className="dropdown-menu">
-            {manageActions.map(({ onClick, label, disabled }, index) => (
+            { manageActions.map(({ onClick, label, disabled }, index) => (
               <button
                 key={index}
                 onClick={() => handleClick(label, onClick)}

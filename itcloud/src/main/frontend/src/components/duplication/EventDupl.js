@@ -1,7 +1,7 @@
 import React from 'react';
 import PagingTableOuter from '../table/PagingTableOuter';
 
-const EventDu = ({ 
+const EventDupl = ({ 
   columns, 
   data, 
   handleRowClick,
@@ -20,4 +20,4 @@ const EventDu = ({
   );
 };
 
-export default EventDu;
+export default EventDupl;

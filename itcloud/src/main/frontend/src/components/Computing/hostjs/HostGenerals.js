@@ -221,6 +221,7 @@ const HostGenerals = ({ hostId }) => {
                 </tbody>
               </table>
           </div>
+
         </div>
       </div>
     );

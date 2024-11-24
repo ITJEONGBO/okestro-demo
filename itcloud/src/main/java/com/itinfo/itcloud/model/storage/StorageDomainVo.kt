@@ -47,6 +47,9 @@ private val log = LoggerFactory.getLogger(StorageDomainVo::class.java)
  * @property hostVo [IdentifiedVo]
  * @property diskImageVos List<[DiskImageVo]>
  * @property profileVos List<[IdentifiedVo]>
+ * @property nfsVersion [String]  nfs 버전
+
+ *
  */
 class StorageDomainVo(
 	val id: String = "",
@@ -75,6 +78,7 @@ class StorageDomainVo(
 	val hostVo: IdentifiedVo = IdentifiedVo(),
 	val diskImageVos: List<DiskImageVo> = listOf(),
 	val profileVos: List<IdentifiedVo> = listOf(),
+	val nfsVersion: String = "",
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -105,8 +109,9 @@ class StorageDomainVo(
 		private var bHostVo: IdentifiedVo = IdentifiedVo();fun hostVo(block: () -> IdentifiedVo?) { bHostVo = block() ?: IdentifiedVo() }
 		private var bDiskImageVos: List<DiskImageVo> = listOf();fun diskImageVos(block: () -> List<DiskImageVo>?) { bDiskImageVos = block() ?: listOf() }
 		private var bProfileVos: List<IdentifiedVo> = listOf();fun profileVos(block: () -> List<IdentifiedVo>?) { bProfileVos = block() ?: listOf() }
+		private var bNfsVersion: String = "";fun nfsVersion(block: () -> String?) { bNfsVersion = block() ?: ""}
 
-		fun build(): StorageDomainVo = StorageDomainVo(bId, bName, bDescription, bComment, bStatus, bDomainType, bDomainTypeMaster, bHostedEngine, bStorageType, bFormat, bActive, bDiskSize, bAvailableSize, bUsedSize, bCommitedSize, bOverCommit, bImage, bStoragePath, bStorageAddress, bLogicalUnits, bWarning, bSpaceBlocker, bDataCenterVo, bHostVo, bDiskImageVos, bProfileVos, )
+		fun build(): StorageDomainVo = StorageDomainVo(bId, bName, bDescription, bComment, bStatus, bDomainType, bDomainTypeMaster, bHostedEngine, bStorageType, bFormat, bActive, bDiskSize, bAvailableSize, bUsedSize, bCommitedSize, bOverCommit, bImage, bStoragePath, bStorageAddress, bLogicalUnits, bWarning, bSpaceBlocker, bDataCenterVo, bHostVo, bDiskImageVos, bProfileVos, bNfsVersion,)
 	}
 	
 	companion object {
@@ -215,6 +220,7 @@ fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
 		format { this@toStorageDomainVo.storageFormat() }
 		usedSize { this@toStorageDomainVo.used() }
 		availableSize { this@toStorageDomainVo.available() }
+		commitedSize { this@toStorageDomainVo.committed() }
 		profileVos { diskProfiles.fromDiskProfilesToIdentifiedVos()  }
 		diskSize {
 //			 TODO: 이거 처리 어떻게 해야하는지 확립필요
@@ -223,6 +229,11 @@ fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
 		}
 		diskImageVos { disks.toDiskImageVos(conn) }
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+		warning { this@toStorageDomainVo.warningLowSpaceIndicatorAsInteger() }
+		spaceBlocker { this@toStorageDomainVo.criticalSpaceActionBlockerAsInteger() }
+		storageAddress { this@toStorageDomainVo.storage().address() + this@toStorageDomainVo.storage().path() } // 경로
+		nfsVersion { this@toStorageDomainVo.storage().nfsVersion().value() }
+
 	}
 }
 fun List<StorageDomain>.toStorageDomainVos(conn: Connection): List<StorageDomainVo> =

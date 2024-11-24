@@ -1,7 +1,7 @@
 import { faCheck, faCheckCircle, faExclamation, faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TableOuter from '../../table/TableOuter';
-import EventDu from '../../duplication/EventDu';
+import EventDupl from '../../duplication/EventDupl';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllEventFromVM } from '../../../api/RQHook';
 
@@ -29,7 +29,7 @@ const VmEvent = ({vm}) => {
 }
     return (
       <>
-        <EventDu 
+        <EventDupl 
           columns={TableColumnsInfo.EVENTS}
           data={events}
           handleRowClick={() => console.log('Row clicked')}

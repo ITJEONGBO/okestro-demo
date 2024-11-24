@@ -33,14 +33,20 @@ const HostTable = ({
         data={hosts.map((host) => ({
           ...host,
           icon: renderStatusIcon(host.status),
+          status: host?.status,
+          spmStatus: host?.spmStatus === 'NONE' ? '보통' : host?.spmStatus,
+          vmCnt: host?.vmSizeVo.allCnt,
+          memoryUsage: host?.usageDto.memoryPercent === null ? '' : host?.usageDto.memoryPercent + '%',
+          cpuUsage: host?.usageDto.cpuPercent === null ? '' : host?.usageDto.cpuPercent + '%',
+          networkUsage: host?.usageDto.networkPercent === null ? '' : host?.usageDto.networkPercent + '%',
           cluster: (
             <TableRowClick type="cluster" id={host.clusterVo.id}>
-              {host.cluster}
+              {host.clusterVo.name}
             </TableRowClick>
           ),          
           dataCenter: (
             <TableRowClick type="datacenter" id={host.dataCenterVo.id}>
-              {host.dataCenter}
+              {host.dataCenterVo.name}
             </TableRowClick>
           ),
         }))}

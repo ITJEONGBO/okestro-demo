@@ -13,7 +13,8 @@ const TablesOuter = ({
   onContextMenuItems,
   onClickableColumnClick
 }) => {
-  
+  console.log("Data passed to TablesOuter:", data);
+
   return (
     <div className="section_table_outer">
       {showSearchBox && ( // showSearchBox가 true일 때만 렌더링

@@ -10,17 +10,7 @@ const DataCenterHosts = ({datacenterId}) => {
     status: hostsStatus,
     isLoading: isHostsLoading,
     isError: isHostsError,
-  } = useHostsFromDataCenter(datacenterId, (e) => ({ 
-    ...e, 
-    status: e?.status,
-    cluster: e?.clusterVo.name,
-    dataCenter: e?.dataCenterVo.name,
-    spmStatus: e?.spmStatus === 'NONE' ? '보통' : e?.spmStatus,
-    vmCnt: e?.vmSizeVo.allCnt,
-    memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
-    cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
-    networkUsage: e?.usageDto.networkPercent === null ? '' : e?.usageDto.networkPercent + '%',
-  }));
+  } = useHostsFromDataCenter(datacenterId, (e) => ({ ...e }));
   
   return (
     <>
