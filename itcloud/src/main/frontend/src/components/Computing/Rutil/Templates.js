@@ -5,6 +5,8 @@ import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllTemplates } from '../../../api/RQHook';
 import TemplateActionButtons from '../../button/TemplateActionButtons';
+import { faDesktop } from '@fortawesome/free-solid-svg-icons';
+import HeaderButton from '../../button/HeaderButton';
 
 // const TemplateModal = React.lazy(() => import('../../Modal/TemplateModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -37,9 +39,19 @@ const Templates = () => {
       navigate(`/computing/templates/${id}`);
   };
 
-
   return (
-    <>
+    <div id="section">
+            <HeaderButton
+        titleIcon={faDesktop}
+        title="템플릿"
+        subtitle=""
+        buttons={[]}
+        popupItems={[]}
+   
+        togglePopup={() => {}}
+      />
+      <div className="host_btn_outer">
+
       <TemplateActionButtons
         onEdit={() => selectedTemplate?.id && toggleModal('edit', true)}
         onDelete={() => selectedTemplate?.id && toggleModal('delete', true)}
@@ -77,7 +89,8 @@ const Templates = () => {
           />
         )}
       </Suspense>
-    </>
+    </div>
+    </div>
   );
 };
 

@@ -19,6 +19,7 @@ const VmActionButtons = ({
   addTemplate,
   exportOva,
   isEditDisabled,
+  isMigrationDisabled,
   status
 }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
@@ -43,8 +44,9 @@ const VmActionButtons = ({
   ];
 
   const etcActions = [
-    { onClick: onExport, label: '가져오기', disabled: isEditDisabled },
+    { onClick: onExport, label: '가져오기'},
     { onClick: onCopy, label: '가상머신 복제', disabled: isEditDisabled },
+    { onClick: onDelete, label: '삭제', disabled: isEditDisabled },
     { onClick: addTemplate, label: '템플릿 생성', disabled: isEditDisabled},
     { onClick: exportOva, label: 'OVA로 내보내기', disabled: isEditDisabled}
   ];
@@ -58,9 +60,9 @@ const VmActionButtons = ({
       {onEdit && (
         <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
       )}
-      {onDelete && (
+      {/* {onDelete && (
         <button onClick={onDelete} disabled={isEditDisabled}>제거</button>
-      )}
+      )} */}
       
       {manageActions.map(({ onClick, label, disabled }, index) => (
         <button
@@ -83,7 +85,7 @@ const VmActionButtons = ({
         <button onClick={snapshots} disabled={isEditDisabled}>스냅샷</button>
       )}
       {migration && (
-        <button onClick={migration}>마이그레이션</button>
+        <button onClick={migration}  disabled={isMigrationDisabled} >마이그레이션</button>
       )}
 
       <div className="dropdown-container">

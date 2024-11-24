@@ -46,7 +46,6 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
   const handleContentTypeChange = (event) => {
     setActiveContentType(event.target.value);
   };  
-  
 /*
   const [data, setData] = useState([
     {

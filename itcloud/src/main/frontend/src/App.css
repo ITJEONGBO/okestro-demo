@@ -96,7 +96,7 @@ button{
     height: 3.3vh;
     background: white;
     display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
+    justify-content: left;
     align-items: center; /* 수직 가운데 정렬 */
 }
 .content_header_right  i{

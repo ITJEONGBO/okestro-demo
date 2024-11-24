@@ -29,11 +29,11 @@ const VmDu = ({
     setSelectedVms(row);
     if (colIndex === 1) {
       navigate(`/computing/vms/${row.id}`);
-    } else if (colIndex === 5) {
-      navigate(`/computing/hosts/${row.hostId}`);
     } else if (colIndex === 6) {
-      navigate(`/computing/clusters/${row.clusterId}`);
+      navigate(`/computing/hosts/${row.hostId}`);
     } else if (colIndex === 7) {
+      navigate(`/computing/clusters/${row.clusterId}`);
+    } else if (colIndex === 8) {
       navigate(`/computing/datacenters/${row.dataCenterId}/clusters`);
     }
   };
@@ -202,7 +202,7 @@ const VmDu = ({
             data={Vmdata}
             onRowClick={handleRowClick} // 내부에서 정의한 handleRowClick을 전달
             showSearchBox={true}
-            clickableColumnIndex={[1, 5, 6, 7]}
+            clickableColumnIndex={[1, 6, 7, 8]}
             shouldHighlight1stCol={true}
             onContextMenuItems={() => [
               <div key="새로 만들기" onClick={() => console.log("새로 만들기")}>새로 만들기</div>,
@@ -1404,7 +1404,7 @@ const VmDu = ({
         </Modal>
         
         {/* 마이그레이션 팝업*/}
-        <Modal
+        {/*<Modal
         isOpen={activePopup === 'migration'}
           onRequestClose={closeModal}
           contentLabel="마이그레이션"
@@ -1457,9 +1457,9 @@ const VmDu = ({
         <button onClick={closeModal}>취소</button>
       </div>
           </div>
-        </Modal>
+        </Modal>*/}
         {/*...버튼 가져오기 팝업 */}
-        <Modal
+        {/* <Modal
         isOpen={activePopup === 'bring'}
         onRequestClose={closeModal}
         contentLabel="디스크 업로드"
@@ -1531,10 +1531,10 @@ const VmDu = ({
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-        </Modal>
+        </Modal> */}
 
         {/*...버튼 가상머신복제 팝업 */}
-        <Modal
+        {/*<Modal
         isOpen={activePopup === 'vm_copy'}
         onRequestClose={closeModal}
         contentLabel="디스크 업로드"
@@ -1635,9 +1635,9 @@ const VmDu = ({
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-        </Modal>
+        </Modal>*/}
         {/*...버튼 템플릿생성 팝업 */}
-        <Modal
+        {/*<Modal
         isOpen={activePopup === 'new_template'}
         onRequestClose={closeModal}
         contentLabel="디스크 업로드"
@@ -1748,9 +1748,9 @@ const VmDu = ({
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-        </Modal>
+        </Modal>*/}
         {/*...버튼 OVA로내보내기 팝업 */}
-        <Modal
+        {/* <Modal
         isOpen={activePopup === 'OVA'}
         onRequestClose={closeModal}
         contentLabel="디스크 업로드"
@@ -1792,7 +1792,7 @@ const VmDu = ({
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-        </Modal>
+        </Modal> */}
         </div>
       )}
     </>

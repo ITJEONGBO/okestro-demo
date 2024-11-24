@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { useAllHosts } from '../../api/RQHook';
 
 const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVm }) => {
   const [host, setHost] = useState('#');
@@ -13,6 +14,16 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVm }) => {
     console.log('Exporting OVA:', { host, directory, name });
     onRequestClose(); // 모달 닫기
   };
+
+  // 모든 호스트 목록가져오기 
+  const { 
+    data: hosts, 
+  } = useAllHosts(toTableItemPredicateHosts);
+  function toTableItemPredicateHosts(host) {
+    return {                
+      name: host?.name ?? '',                                                     
+    };
+  }
 
   return (
     <Modal
@@ -34,10 +45,12 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVm }) => {
         <div className="py-1">
           <div className="vnic_new_box">
             <label htmlFor="host_select">호스트</label>
-            <select id="host_select" value={host} onChange={(e) => setHost(e.target.value)}>
-              <option value="#">#</option>
-              <option value="host01">host01</option>
-              <option value="host02">host02</option>
+            <select id="host_select" value={host} onChange={(e) => setHost(e.target.value)}>  
+              {hosts?.map((hostItem, index) => (
+                <option key={index} value={hostItem.name}>
+                  {hostItem.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="vnic_new_box">

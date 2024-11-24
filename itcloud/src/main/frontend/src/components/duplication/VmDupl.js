@@ -38,12 +38,13 @@ const VmDupl = ({
         templates={() => handleActionClick('templates')} 
         snapshots={() => selectedVm?.id && handleActionClick('snapshots')} 
         migration={() => selectedVm?.id && handleActionClick('migration')} 
-        onExport={() => selectedVm?.id && handleActionClick('export')} 
-        onCopy={() => selectedVm?.id && handleActionClick('copy')} 
+        onExport={() => handleActionClick('onExport')} 
+        onCopy={() => selectedVm?.id && handleActionClick('onCopy')} 
         addTemplate={() => selectedVm?.id && handleActionClick('addTemplate')} 
         exportOva={() => selectedVm?.id && handleActionClick('exportova')} 
         isEditDisabled={!selectedVm?.id} 
         status={selectedVm?.status} 
+        isMigrationDisabled={!selectedVm?.hostVo?.id} // 호스트 ID가 없으면 비활성화
       />
       <span>id = {selectedVm?.id || ''}</span>  
       

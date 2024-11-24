@@ -1309,7 +1309,7 @@ input[disabled] {
     z-index: 1000;
 }
 .load_btn{
-    width:3.5%;
+    width:4%;
     padding:0.1rem;
     border:1px solid gray;
     display: flex;
@@ -1391,7 +1391,7 @@ input[disabled] {
 .edit_first_content>div{
     display: flex;
     justify-content: space-between;
-    padding: 0.25rem 0.29rem;
+    padding: 0.2rem 0.29rem;
 }
 .edit_first_content>div:first-child{
 

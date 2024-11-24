@@ -594,7 +594,7 @@ return (
                               ))}
                             </select>
                             <span>
-                              {/* 선택된 운영 시스템: {osOptions.find((opt) => opt.value === selectedOs)?.label || ''} */}
+                              선택된 운영 시스템: {osOptions.find((opt) => opt.value === selectedOs)?.label || ''}
                             </span>
                           </div>
 
@@ -628,7 +628,7 @@ return (
                                   </option>
                                 ))}
                               </select>
-                              {/* <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span> */}
+                              <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span>
                             </div>
 
               </div>
