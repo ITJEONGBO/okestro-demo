@@ -254,13 +254,13 @@ const DiskModal = ({
             이미지
           </div>
           <div></div>
-          {/* <div
+          <div
             id="storage_directlun_btn"
             onClick={() => handleTabClick('directlun')}
             className={activeTab === 'directlun' ? 'active' : ''}
           >
             직접LUN
-          </div> */}
+          </div>
         </div>
 
         {/*이미지*/}
