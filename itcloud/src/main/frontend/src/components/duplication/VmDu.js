@@ -593,7 +593,7 @@ const VmDu = ({
         </div>
         </Modal> */}
         {/*새로만들기(연결)추가팝업*/}
-        <Modal
+        {/* <Modal
      isOpen={isConnectionPopupOpen}
      onRequestClose={() => setIsConnectionPopupOpen(false)}
       contentLabel="새 가상 디스크"
@@ -623,7 +623,7 @@ const VmDu = ({
           </div>
           
         </div>
-        {/*이미지(내용바꿔야함)*/}
+       
         {activeTab === 'img' && (
             <TableOuter 
             columns={TableColumnsInfo.VMS_FROM_HOST}
@@ -631,7 +631,7 @@ const VmDu = ({
             onRowClick={() => console.log('Row clicked')}
       />
         )}
-        {/*직접LUN(내용바꿔야함)*/}
+       
         {activeTab === 'directlun' && (
             <TableOuter 
             columns={TableColumnsInfo.VMS_STOP}
@@ -646,7 +646,7 @@ const VmDu = ({
           <button onClick={() => setIsConnectionPopupOpen(false)}>취소</button>
         </div>
       </div>
-        </Modal>
+        </Modal> */}
         {/*새로만들기(생성)추가팝업 */}
         <Modal
        isOpen={isCreatePopupOpen}

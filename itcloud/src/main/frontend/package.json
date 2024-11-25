@@ -27,6 +27,7 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.26.0",
     "react-scripts": "^5.0.1",
+    "react-select": "^5.8.3",
     "react-tooltip": "^5.28.0",
     "react-vnc": "^2.0.2",
     "sockjs-client": "1.6.1",

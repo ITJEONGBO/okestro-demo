@@ -9,9 +9,10 @@ import {
   useAllnicFromVM, 
   useAllTemplates, 
   useAllVMs, 
+  useClustersFromDataCenter, 
   useEditVm, 
   useHostFromCluster, 
-  useVmById 
+  useVmById,
 } from '../../api/RQHook';
 import VmConnectionPlusModal from './VmConnectionPlusModal';
 import VmCreatePlusModal from './VmCreatePlusModal';
@@ -22,6 +23,8 @@ const VmModal = ({
   editMode = false,
   vmdata,
   vmId,
+  selectedVm,
+  
 }) => {
 
   // 일반
@@ -30,6 +33,8 @@ const VmModal = ({
   const [clusterVoId, setClusterVoId] = useState();  
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
+  const [dataCenterId, setDataCenterId] = useState('');
+  const [clusters, setClusters] = useState([]);
   const [description, setDescription] = useState('');
   const [stateless, setStateless] = useState(false); // 무상태
   const [startPaused, setStartPaused] = useState(false); // 일시중지상태로시작
@@ -74,6 +79,12 @@ const VmModal = ({
     data: allvm, 
   } = useAllVMs(vmId);
 
+  useEffect(() => {
+    if (allvm) {
+      console.log('모든 가상머신 데이터:', allvm);
+    }
+  }, [allvm]);
+
 // 가상머신 상세데이터 가져오기
   const { 
     data: vm, 
@@ -86,17 +97,55 @@ useEffect(() => {
   }
 }, [vm]);
 
-  // 클러스터 가져오기
-  const {
-    data: clusters,
-  } = useAllClusters((e) => ({
-    ...e,
-  }));
+
+
+  // 데이터센터 ID 가져오기
   useEffect(() => {
-    if (clusters) {
-      console.log('가져온 모든 클러스터목록:', clusters);
+    if (selectedVm?.dataCenterId) {
+      setDataCenterId(selectedVm.dataCenterId);
     }
-  }, [clusters]);
+  }, [selectedVm]);
+
+  // 1. 데이터센터 ID 추출 및 상태 저장
+    useEffect(() => {
+      if (!editMode && allvm) {
+        const uniqueDataCenters = Array.from(
+          new Set(allvm.map(vm => vm?.dataCenterVo?.id).filter(Boolean))
+        );
+        if (uniqueDataCenters.length > 0) {
+          setDataCenterId(uniqueDataCenters[0]); // 첫 번째 데이터센터 선택
+          console.log('Unique DataCenter IDs:', uniqueDataCenters);
+        }
+      }
+    }, [allvm, editMode]);
+
+    // 2. 데이터센터 ID 기반 클러스터 목록 가져오기
+    const { data: clustersFromDataCenter } = useClustersFromDataCenter(dataCenterId, cluster => ({
+      id: cluster.id,
+      name: cluster.name,
+    }));
+
+    useEffect(() => {
+      if (clustersFromDataCenter) {
+        setClusters(clustersFromDataCenter);
+        if (clustersFromDataCenter.length > 0) {
+          setClusterVoId(clustersFromDataCenter[0].id); // 기본 선택값 설정
+        }
+      }
+    }, [clustersFromDataCenter]);
+      // 클러스터 목록 업데이트 및 콘솔 출력
+      useEffect(() => {
+        if (clustersFromDataCenter) {
+          console.log('Fetched Clusters:', clustersFromDataCenter); // 콘솔 출력
+          setClusters(clustersFromDataCenter);
+          if (clustersFromDataCenter.length > 0) {
+            setClusterVoId(clustersFromDataCenter[0].id); // 기본 선택값 설정
+          }
+        } else {
+          console.log('No clusters fetched or dataCenterId is missing.');
+        }
+      }, [clustersFromDataCenter]);
+
 
   // 클러스터 ID에대한 호스트목록
   const { data: hostsData } = useHostFromCluster(clusterVoId, (e) => ({
@@ -104,12 +153,19 @@ useEffect(() => {
     name: e.name,
   }));
 
-// NIC 목록 가져오기( 오류! 콘솔에 clusterVoId 이건 찍히는데 list목록이 비어있음)
-const { data: nicList, refetch: fetchNICs } = useAllnicFromVM(clusterVoId, (e) => ({
-  id: e.id,
-  name: e.name,
+
+// clusterVoId 값이 변경될 때 콘솔에 출력
+useEffect(() => {
+  console.log("Current clusterVoId:", clusterVoId);
+}, [clusterVoId]);
+
+// NIC 목록 가져오기
+const { data: nicList } = useAllnicFromVM(clusterVoId, (e) => ({
+  id: e?.id,
+  name: e?.name,
+  networkVoName:e?.networkVo?.name
 }));
-// NIC 목록 출력
+// NIC 목록 출력 (이미 포함된 코드 유지)
 useEffect(() => {
   if (nicList) {
     console.log("Fetched NIC List:", nicList);
@@ -350,27 +406,27 @@ useEffect(() => {
   };
 
   const handleFormSubmit = () => {
-    // const selectedCluster = clusters.find((c) => c.id === clusterVoId);
-    // if (!selectedCluster) {
-    //     alert("클러스터를 선택해주세요.");
-    //     return;
-    //   }
-    // // 선택된 템플릿 찾기
-    // const selectedTemplate = templates.find((t) => t.id === templateId);
-    // if (!selectedTemplate) {
-    //     alert("네트워크를 선택해주세요.");
-    //     return;
-    //   }
+    const selectedCluster = clusters.find((c) => c.id === clusterVoId);
+    if (!selectedCluster) {
+        alert("클러스터를 선택해주세요.");
+        return;
+      }
+    // 선택된 템플릿 찾기
+    const selectedTemplate = templates.find((t) => t.id === templateId);
+    if (!selectedTemplate) {
+        alert("네트워크를 선택해주세요.");
+        return;
+      }
   
     const dataToSubmit = {
-      // clusterVo:{
-      //   id: selectedCluster.id,
-      //   name: selectedCluster.name,
-      // },
-      // tempatlateVo:{
-      //   id: selectedTemplate.id,
-      //   name: selectedTemplate.name
-      // },
+      clusterVo:{
+        id: selectedCluster.id,
+        name: selectedCluster.name,
+      },
+      tempatlateVo:{
+        id: selectedTemplate.id,
+        name: selectedTemplate.name
+      },
       name,
       description,
       comment,
@@ -380,6 +436,7 @@ useEffect(() => {
       stateless,  //boolean
       startPaused,   //boolean
       deleteProtected, //boolean
+
       //시스템데이터
       memorySize,
       maxMemory,
@@ -530,32 +587,30 @@ return (
           {/* 탭 내용 */}
           <div className="vm_edit_select_tab">
             <div className="edit_first_content">
-                        <div>
-                              <label htmlFor="cluster">클러스터</label>
-                              <select 
-                                  id="cluster_location" 
-                                  value={clusterVoId} 
-                                  onChange={(e) => setClusterVoId(e.target.value)} 
-                                  
-                                  >
-                                  {editMode && vm?.clusterName ? (
-                                      // 편집 모드에서는 고정된 클러스터만 표시
-                                      clusters && clusters.map((cluster) => (
-                                      <option value={vm.clusterName}>{vm.clusterName}</option>
-                                    ))
-                                  ) : (
-                                      // editMode가 아닐 경우 클러스터 목록 표시
-                                      clusters && clusters.map((cluster) => (
-                                      <option key={cluster.id} value={cluster.id}>{cluster.name}</option>
-                                      ))
-                                  )}
-                              </select>
-                              <span>
-                                {/* 선택된 클러스터 표시 */}
-                                선택된 클러스터:{" "}
-                                {/* {clusters.find((cluster) => cluster.id === clusterVoId)?.name || "선택되지 않음"} */}
-                              </span>
-                          </div>
+            <div>
+  <label htmlFor="cluster">클러스터</label>
+  <select
+    id="cluster"
+    value={clusterVoId}
+    onChange={(e) => setClusterVoId(e.target.value)}
+  >
+    {clusters.length > 0 ? (
+      clusters.map((cluster) => (
+        <option key={cluster.id} value={cluster.id}>
+          {cluster.name}
+        </option>
+      ))
+    ) : (
+      <option value="">클러스터 없음</option>
+    )}
+  </select>
+  <span>
+    선택된 클러스터:{" "}
+    {clusters.find((cluster) => cluster.id === clusterVoId)?.name || "선택되지 않음"}
+  </span>
+</div>
+
+
 
                           <div>
                             <label htmlFor="template" style={{ color: 'gray' }}>템플릿</label>
@@ -693,7 +748,11 @@ return (
                               <div className='vm_plus_btn'>
                                       <div style={{color:'white'}}>.</div>
                                       <div className='flex'>
-                                          <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+                                          <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>      
+                                            <VmConnectionPlusModal
+                                               isOpen={isConnectionPopupOpen} // 상태를 부모에서 제어
+                                               onRequestClose={() => setIsConnectionPopupOpen(false)} // 닫기 함수 전달
+                                            />
                                           <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
                                           <div className="flex">
                                               <button>+</button>
@@ -708,12 +767,23 @@ return (
                         
                         <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
                             
-                            <div className='edit_fourth_content_select flex'>
-                                <label htmlFor="network_adapter">nic1</label>
-                                <select id="network_adapter">
-                                    <option value="default">Default</option>
-                                </select>
-                            </div>
+                        <div className="edit_fourth_content_select flex">
+  <label htmlFor="network_adapter">NIC 선택</label>
+  <select 
+    id="network_adapter" 
+    menuPlacement="bottom" // 항상 아래로 열리도록 설정
+  >
+    {nicList && nicList.length > 0 ? (
+      nicList.map((nic) => (
+        <option key={nic.id} value={nic.id}>
+          {nic.name} ({nic.networkVoName}) {/* NIC 이름과 네트워크 이름 표시 */}
+        </option>
+      ))
+    ) : (
+      <option value="">NIC 없음</option>
+    )}
+  </select>
+</div>
                             <div className='flex'>
                                 <button>+</button>
                                 <button>-</button>
@@ -1167,10 +1237,7 @@ return (
         <button onClick={onRequestClose}>취소</button>
       </div>
 
-      <VmConnectionPlusModal
-        isOpen={isConnectionPopupOpen}
-        onRequestClose={() => setIsConnectionPopupOpen(false)}
-      />
+
       <VmCreatePlusModal
         isOpen={isCreatePopupOpen}
         onRequestClose={() => setIsCreatePopupOpen(false)}

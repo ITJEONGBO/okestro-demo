@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableOuter from "../table/TableOuter";
 import TableColumnsInfo from '../table/TableColumnsInfo';
 
 const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
-  const [activeTab, setActiveTab] = useState('img');
+  const [activeTab, setActiveTab] = useState('img'); // 현재 선택된 탭 상태 관리
 
   const handleTabClick = (tab) => {
-    setActiveTab(tab);
+    setActiveTab(tab); // 탭 클릭 시 상태 업데이트
   };
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={isOpen} // 부모에서 모달 열림 상태 전달
+      onRequestClose={onRequestClose} // 부모에서 전달받은 닫기 함수 호출
       contentLabel="가상 디스크 연결"
       className="Modal"
       overlayClassName="modalOverlay"
-      shouldCloseOnOverlayClick={false}
+      shouldCloseOnOverlayClick={true} // 배경 클릭 시 모달 닫기
     >
       <div className="storage_disk_new_popup">
         <div className="popup_header">
@@ -48,15 +47,15 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
         {activeTab === 'img' && (
           <TableOuter
             columns={TableColumnsInfo.VMS_FROM_HOST}
-            data={[]}
-            onRowClick={() => console.log('Row clicked')}
+            data={[]} // 데이터를 여기에 추가하세요.
+            onRowClick={() => console.log('Row clicked in 이미지 탭')}
           />
         )}
         {activeTab === 'directlun' && (
           <TableOuter
             columns={TableColumnsInfo.VMS_STOP}
-            data={[]}
-            onRowClick={() => console.log('Row clicked')}
+            data={[]} // 데이터를 여기에 추가하세요.
+            onRowClick={() => console.log('Row clicked in 직접 LUN 탭')}
           />
         )}
         <div className="edit_footer">
@@ -64,6 +63,7 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>
+      
     </Modal>
   );
 };
