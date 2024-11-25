@@ -36,10 +36,11 @@ const SuperAreaChart = ({ vmPer }) => {
           };
         });
   
-      const sortedTimes = vmPer[0]?.time.map(formatDate).sort((a, b) => new Date(a) - new Date(b));
+      // Remove duplicate times
+      const uniqueTimes = [...new Set(vmPer[0]?.time.map(formatDate))];
   
       setSeries(sortedData);
-      setDatetimes(sortedTimes);
+      setDatetimes(uniqueTimes);
     } else {
       setSeries([]);
       setDatetimes([]);
