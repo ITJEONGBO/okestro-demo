@@ -117,15 +117,14 @@ const App = () => {
               <Route path="/computing/vms/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
 
-              <Route path="/networks/datacenters/:id/clusters" element={<DataCenterInfo />} />
-              <Route path="/storages/datacenters/:id/clusters" element={<DataCenterInfo />} />
                             
-
               <Route path="/networks" element={<Network />} />
+              <Route path="/networks/datacenters/:id/:section" element={<DataCenterInfo />} />
               <Route path="/networks/:id" element={<NetworkDetail />} /> 
               <Route path="/networks/:id/:section" element={<NetworkDetail />} /> 
 
               <Route path="/storages/domains" element={<AllDomain />} />
+              <Route path="/storages/datacenters/:id/:section" element={<DataCenterInfo />} />
               <Route path="/storages/domains/:id" element={<DomainInfo />} /> 
               <Route path="/storages/domains/:id/:section" element={<DomainInfo />} /> 
         

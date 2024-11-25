@@ -502,10 +502,7 @@ export const useEventFromCluster = (clusterId, mapPredicate) => useQuery({
     console.log(`useEventFromCluster ... ${clusterId}`);
     const res = await ApiManager.findEventsFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  },
-  enabled: !!clusterId, 
-  staleTime: 0,
-  cacheTime: 0,
+  }
 })
 
 /**
@@ -1676,21 +1673,24 @@ export const useDomainById = (storageDomainId) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findAllDataCenterFromDomain
+ * @see ApiManager.findAllDataCentersFromDomain
  */
-export const useAllDataCenterFromDomain = (storageDomainId, mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['AllDataCenterFromDomain', storageDomainId], 
+export const useAllDataCenterFromDomain = (storageDomainId) => useQuery({
+  // refetchOnWindowFocus: true,
+  queryKey: ['DomainById', storageDomainId], 
   queryFn: async () => {
-    if (!storageDomainId) {
-      console.warn('networkId가 존재하지 않습니다.');
-      return [];
-    }
-    console.log(`useAllDataCenterFromDomain ... ${storageDomainId}`);
-    const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+    if (!storageDomainId) return {};  
+    console.log(`Fetching datacenters with ID: ${storageDomainId}`);
+    const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId);
+    return res ?? {};
+
+    // console.log(`useAllDataCenterFromDomain ... ${storageDomainId}`);
+    // const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId); 
+    // console.log('API Response:', res);
+    // return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
 })
+
 /**
  * @name useAllVMFromDomain
  * @description 도메인 내 디스크 목록조회 useQuery훅
@@ -1730,6 +1730,25 @@ export const useAllDiskFromDomain = (storageDomainId, mapPredicate) => useQuery(
   queryFn: async () => {
     console.log(`useAllDiskFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllDisksFromDomain(storageDomainId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  }
+})
+/**
+ * @name useAllDiskProfileFromDomain
+ * @description 도메인 내 디스크 프로파일 목록조회 useQuery훅
+ * 
+ * @param {string} storageDomainId 도메인ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllDataCenterFromDomain
+ */
+export const useAllDiskProfileFromDomain = (storageDomainId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllDiskProfileFromDomain', storageDomainId], 
+  queryFn: async () => {
+    console.log(`useAllDiskProfileFromDomain ... ${storageDomainId}`);
+    const res = await ApiManager.findAllDiskProfilesFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })
@@ -1944,6 +1963,63 @@ export const useAllStorageDomainFromDisk = (diskId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })
+
+/**
+ * @name useAddDisk
+ * @description Disk 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddDisk = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (diskData) => await ApiManager.addDisk(diskData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allDisks'); // 호스트 추가 성공 시 'allDHosts' 쿼리를 리패칭하여 목록을 최신화
+    },
+    onError: (error) => {
+      console.error('Error adding disk:', error);
+    },  
+  });
+};
+/**
+ * @name useEditDisk
+ * @description Disk 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditDisk = () => {
+  const queryClient = useQueryClient();  
+  return useMutation({
+    mutationFn: async ({ diskId, diskData }) => await ApiManager.editDisk(diskId, diskData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allDisks');
+    },
+    onError: (error) => {
+      console.error('Error editing disk:', error);
+    },
+  });
+};
+/**
+ * @name useDeleteDisk
+ * @description Disk 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteDisk = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({ 
+    mutationFn: async (diskId) => await ApiManager.deleteDisk(diskId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allDisks');
+    },
+    onError: (error) => {
+      console.error('Error deleting disk:', error);
+    },
+  });
+};
+
+
 //region: event -----------------이벤트---------------------
 /**
  * @name useAllEvents

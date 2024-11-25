@@ -215,7 +215,7 @@ const TableInfo = {
     { header: '', accessor: 'icon', clickable: false },
     { header: 'id', accessor: 'id', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '데이터 센터 내의 도메인 상태', accessor: 'dataCenterStatus', clickable: false },
+    { header: '데이터 센터 내의 도메인 상태', accessor: 'status', clickable: false },
   ],
   // 가상머신
   // 템플릿
@@ -255,10 +255,9 @@ const TableInfo = {
 
 
   DISKS: [
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '별칭', accessor: 'name', clickable: true },
+    { header: '별칭', accessor: 'alias', clickable: true },
     { header: 'ID', accessor: 'id', clickable: false },
-    { header: '공유가능', accessor: 'icon1', clickable: false },
+    // { header: '공유가능', accessor: 'icon1', clickable: false },
     { header: '연결 대상', accessor: 'connectVm', clickable: false },
     { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
@@ -531,8 +530,8 @@ HOST_NETWORK_INTERFACE: [
   ],
 
   EVENTS: [
-    { header: '알림', accessor: 'severity', clickable: false, width: '5%' },
     { header: '시간', accessor: 'time', clickable: false },
+    { header: '알림', accessor: 'severity', clickable: false},    
     { header: '메세지', accessor: 'description', clickable: false },
     // { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
     // // { header: '소스', accessor: 'source', clickable: false },

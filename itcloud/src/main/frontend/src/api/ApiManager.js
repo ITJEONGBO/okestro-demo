@@ -1939,6 +1939,21 @@ const ApiManager = {
     // defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_DOMAIN
   }),
 
+  /**
+   * @name ApiManager.findAllDiskProfilesFromDomain
+   * @description 디스크 프로파일 목록
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllDiskProfilesFromDomain: async (storageDomainId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISK_PROFILES_FROM_STORAGE_DOMAINS(storageDomainId),
+    // defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_DOMAIN
+  }),
+
 
   /**
    * @name ApiManager.findAllDiskSnapshotsFromDomain
@@ -2183,7 +2198,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_DISK(diskId), 
-      // defaultValues: DEFAULT_VALUES.DELETE_DISK
+      data: diskId
     });
   },
   /**

@@ -11,6 +11,7 @@ import DomainGenerals from './DomainGenerals';
 import DomainDatacenters from './DomainDatacenters';
 import DomainVms from './DomainVms';
 import DomainEvents from './DomainEvents';
+import DomainDisks from './DomainDisks';
 
 const DomainModal = React.lazy(() => import('../../Modal/DomainModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -41,11 +42,6 @@ const DomainInfo = () => {
     deactivate: false,
     activate: false,
     restart: false,
-    stop: false,
-    reinstall: false,
-    register: false,
-    haon: false,
-    haoff: false,
   }); 
   
   const sections = [
@@ -79,6 +75,7 @@ const DomainInfo = () => {
       general: DomainGenerals,
       datacenters: DomainDatacenters,
       vms: DomainVms,
+      disks: DomainDisks,
       events: DomainEvents,
     }[activeTab];
     return SectionComponent ? <SectionComponent domainId={domainId} /> : null;
@@ -158,7 +155,7 @@ const DomainInfo = () => {
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
-        <div className="Domain_btn_outer">
+        <div className="domain_btn_outer">
           <Path pathElements={pathData} />
           {renderSectionContent()}
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../navigation/NavButton';
 import HeaderButton from '../../button/HeaderButton';
@@ -32,6 +32,7 @@ const DataCenterInfo = () => {
   }));
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('clusters');
   const [modals, setModals] = useState({ edit: false, delete: false }); 
 
@@ -53,7 +54,15 @@ const DataCenterInfo = () => {
   }, [section]);
 
   const handleTabClick = (tab) => {
-    const path = `/computing/datacenters/${dataCenterId}/${tab}`;
+    // 현재 경로에서 섹션 추출: computing, storages, networks 중 하나
+    const section = location.pathname.split('/')[1]; // 첫 번째 세그먼트가 섹션 정보
+  
+    // 섹션이 유효한 값인지 확인 (예외 처리 포함)
+    const validSections = ['computing', 'storages', 'networks'];
+    const currentSection = validSections.includes(section) ? section : 'computing'; // 기본값을 'computing'으로 설정
+  
+    // 동적 경로 생성 및 이동
+    const path = `/${currentSection}/datacenters/${dataCenterId}/${tab}`;
     navigate(path);
     setActiveTab(tab);
   };

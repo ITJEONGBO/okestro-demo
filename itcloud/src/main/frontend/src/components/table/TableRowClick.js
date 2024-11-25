@@ -13,6 +13,8 @@ const TableRowClick = ({ type, id, children, style }) => {
       cluster: `/computing/clusters/${id}`,
       host: `/computing/hosts/${id}`,
       vms: `/computing/vms/${id}`,
+      domains: `/storages/domains/${id}`,
+      disks: `/storages/disks/${id}`
     };
 
     const path = paths[type];

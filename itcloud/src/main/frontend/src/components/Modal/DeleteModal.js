@@ -9,11 +9,10 @@ import {
   useDeleteHost,
   useDeleteVm,
   // useDeleteTemplate,
-  // useDeleteStorageDomain,
-  // useDeleteDisk,
   useDeleteNetwork,
   useDeleteVnicProfile, // 네트워크 삭제 추가
   useDeleteDomain // 스토리지도메인 삭제
+  // useDeleteDisk,
 } from '../../api/RQHook';
 
 const DeleteModal = ({ 

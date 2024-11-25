@@ -1,11 +1,10 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React from 'react';
 import './css/AllDomain.css';
 import HeaderButton from '../button/HeaderButton';
 import DomainDupl from '../duplication/DomainDupl';
 import TableInfo from '../table/TableInfo';
 import { useAllStorageDomains } from '../../api/RQHook'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
-
 
 const AllDomain = () => {
   const {
@@ -31,8 +30,8 @@ const AllDomain = () => {
         />
         <div className="host_btn_outer">
           <DomainDupl
-            domains={storageDomains || []}
             columns={TableInfo.STORAGE_DOMAINS}
+            domains={storageDomains || []}            
             type={'domain'}
           />
         </div>

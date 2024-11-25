@@ -1,9 +1,6 @@
 import React from 'react';
-import TableInfo from "../../table/TableInfo";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import {useEventFromHost} from "../../../api/RQHook";
-import PagingTableOuter from '../../table/PagingTableOuter';
+import EventTable from '../../table/EventTable';
 
 const HostEvents = ({ hostId }) => {
   const { 
@@ -11,28 +8,12 @@ const HostEvents = ({ hostId }) => {
     status: eventsStatus, 
     isLoading: isEventsLoading, 
     isError: isEventsError 
-  } = useEventFromHost(hostId, toTableItemPredicateEvents);
-  function toTableItemPredicateEvents(event) {
-    const severity= event?.severity ?? '';
-      const icon = severity === 'NORMAL' 
-      ? <FontAwesomeIcon icon={faCheckCircle} fixedWidth style={{ color: 'green', fontSize: '0.3rem' }} />
-      : <FontAwesomeIcon icon={faTimesCircle} fixedWidth style={{ color: 'red', fontSize: '0.3rem' }} />
-      return {
-        severity: icon,               
-        time: event?.time ?? '',                
-        description: event?.description ?? '', 
-        userEventId: event?.userEventId ?? '',   
-      };
-  }
-
+  } = useEventFromHost(hostId, (e) => ({ ...e }));
+  console.log('HostEvents:', events);
   return (
-      <>
-        <PagingTableOuter
-          columns={TableInfo.EVENTS}
-          data={events}
-          showSearchBox={true}
-        />
-      </>
+    <>
+      <EventTable events={events}/>
+    </>
   );
 };
 
