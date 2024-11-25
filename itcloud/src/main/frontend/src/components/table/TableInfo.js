@@ -134,7 +134,7 @@ const TableInfo = {
   NETWORKS: [
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '데이터센터', accessor: 'datacenter', clickable: false },
+    { header: '데이터센터', accessor: 'datacenterVo', clickable: false },
     { header: '설명', accessor: 'description', clickable: false, width: '20%' },
     { header: '역할', accessor: 'role', clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
