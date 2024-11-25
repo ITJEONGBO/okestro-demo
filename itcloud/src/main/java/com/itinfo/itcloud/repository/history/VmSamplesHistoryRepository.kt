@@ -43,30 +43,24 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 		value =
 		"""
 			WITH RankedVMs AS (
-    SELECT *,
+    SELECT *, 
            ROW_NUMBER() OVER (PARTITION BY vm_id ORDER BY history_datetime DESC) AS rn
     FROM vm_samples_history
     WHERE cpu_usage_percent IS NOT NULL
-),
-LatestVMStatus AS (
-    SELECT vm_id,
+), LatestVMStatus AS (
+    SELECT vm_id, 
            vm_status
     FROM vm_samples_history
-    WHERE history_datetime = (
-        SELECT MAX(history_datetime)
-        FROM vm_samples_history AS sub
-        WHERE sub.vm_id = vm_samples_history.vm_id
-    )
+    WHERE history_datetime = (SELECT MAX(history_datetime) 
+                              FROM vm_samples_history AS sub
+                              WHERE sub.vm_id = vm_samples_history.vm_id)
 )
-SELECT RankedVMs.*, LatestVMStatus.vm_status, vm_configuration.vm_name
+SELECT *
 FROM RankedVMs
 JOIN LatestVMStatus ON RankedVMs.vm_id = LatestVMStatus.vm_id
-JOIN vm_configuration ON RankedVMs.vm_id = vm_configuration.vm_id
-WHERE RankedVMs.rn <= 10
+WHERE RankedVMs.rn <= 10 
   AND LatestVMStatus.vm_status = 1
-  AND vm_configuration.vm_name NOT LIKE '%HostedEngineLocal%'
-ORDER BY RankedVMs.vm_id, RankedVMs.history_datetime DESC;
-
+ORDER BY RankedVMs.vm_id, RankedVMs.history_datetime DESC
 	""",
 		nativeQuery = true
 	)
