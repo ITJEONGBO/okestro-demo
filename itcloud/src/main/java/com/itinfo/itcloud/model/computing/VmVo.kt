@@ -570,7 +570,7 @@ fun VmVo.toVmHostBuilder(vmBuilder: VmBuilder): VmBuilder {
 		)
 	}
 	vmBuilder
-		.placementPolicy(placementBuilder.affinity(VmAffinity.valueOf(this@toVmHostBuilder.migrationMode)))
+		.placementPolicy(placementBuilder.affinity(VmAffinity.fromValue(this@toVmHostBuilder.migrationMode)))
         // 정책은 찾을 수가 없음, parallel Migrations 안보임, 암호화
 
 		.migration(MigrationOptionsBuilder().encrypted(this@toVmHostBuilder.migrationEncrypt).build())
@@ -585,7 +585,7 @@ fun VmVo.toVmResourceBuilder(vmBuilder: VmBuilder): VmBuilder {
 		.cpuProfile(CpuProfileBuilder().id(this@toVmResourceBuilder.cpuProfileVo.id).build())
 		.cpuShares(this@toVmResourceBuilder.cpuShare)
 		.autoPinningPolicy(if ("RESIZE_AND_PIN_NUMA" == this@toVmResourceBuilder.cpuPinningPolicy) AutoPinningPolicy.ADJUST else AutoPinningPolicy.DISABLED)
-		.cpuPinningPolicy(CpuPinningPolicy.valueOf(this@toVmResourceBuilder.cpuPinningPolicy))
+		.cpuPinningPolicy(CpuPinningPolicy.fromValue(this@toVmResourceBuilder.cpuPinningPolicy))
 		.virtioScsiMultiQueuesEnabled(this@toVmResourceBuilder.multiQue) // VirtIO-SCSI 활성화
 }
 
