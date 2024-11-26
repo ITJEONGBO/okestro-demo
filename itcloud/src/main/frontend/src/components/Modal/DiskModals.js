@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
 
 const DiskModals = ({ isModalOpen, action, onRequestClose, selectedDisk }) => {
-  const DiskUploadModal = React.lazy(() => import('./DiskUploadModal'));
   const DiskModal = React.lazy(() => import('./DiskModal.js'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
   const DiskActionModal = React.lazy(() => import('../Modal/DiskActionModal'));
+  const DiskUploadModal = React.lazy(() => import('./DiskUploadModal'));
 
   if (!isModalOpen || !action) return null;
 
@@ -34,6 +34,7 @@ const DiskModals = ({ isModalOpen, action, onRequestClose, selectedDisk }) => {
           data={selectedDisk}
         />
       ) : (
+        // 이동, 복사
         <DiskActionModal
           isOpen={isModalOpen}
           action={action}

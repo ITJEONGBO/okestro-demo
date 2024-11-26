@@ -72,17 +72,19 @@ const DiskModal = ({
     isError: isDomainsError,
     error: domainsError,
     isLoading: isDomainsLoading,
-  } = useDomainsFromDataCenter(datacenterVoId);
+  } = useDomainsFromDataCenter(datacenterVoId || '', (e) => ({
+    ...e,
+  }));
 
-  const {
-    data: diskProfiles,
-    status: diskProfilesStatus,
-    isRefetching: isDiskProfilesRefetching,
-    refetch: diskProfilesRefetch,
-    isError: isDiskProfilesError,
-    error: diskProfilesError,
-    isLoading: isDiskProfilesLoading,
-  } = useAllDiskProfileFromDomain(domainVoId);
+  // const {
+  //   data: diskProfiles,
+  //   status: diskProfilesStatus,
+  //   isRefetching: isDiskProfilesRefetching,
+  //   refetch: diskProfilesRefetch,
+  //   isError: isDiskProfilesError,
+  //   error: diskProfilesError,
+  //   isLoading: isDiskProfilesLoading,
+  // } = useAllDiskProfileFromDomain(domainVoId);
 
   useEffect(() => {
     if (isOpen) {
@@ -102,19 +104,12 @@ const DiskModal = ({
         setSparse(disk?.sparse);
       } else if (!editMode && !isDatacentersLoading) {
         resetForm();
-        
         if (datacenters && datacenters.length > 0) {
           setDatacenterVoId(datacenters[0].id);
         }
       }
     }
-  }, [editMode, disk, datacenters, datacenterVoId]);
-
-  useEffect(() => {
-    if (!datacenterVoId && datacenters?.length > 0) {
-      setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
-    }
-  }, [datacenters]);
+  }, [isOpen, editMode, disk, datacenters]);
 
   useEffect(() => {
     if (!editMode && datacenterVoId) {
@@ -127,6 +122,21 @@ const DiskModal = ({
       });
     }
   }, [editMode, datacenterVoId]);
+
+  // 데이터센터 변경 시 스토리지 도메인 로드
+  useEffect(() => {
+    if (datacenterVoId) {
+      domainsRefetch({ datacenterVoId }).then((res) => {
+        if (res?.data && res.data.length > 0) {
+          setDomainVoId(res.data[0].id); // 첫 번째 도메인으로 기본값 설정
+        } else {
+          setDomainVoId(''); // 도메인이 없으면 빈 값으로 설정
+        }
+      }).catch((error) => {
+        console.error('Error fetching domains:', error);
+      });
+    }
+  }, [datacenterVoId, domainsRefetch]);
 
   const resetForm = () => {
     setSize('');
@@ -155,11 +165,11 @@ const DiskModal = ({
       return;
     }
 
-    const selectedDiskProfile = diskProfiles.find((profile) => profile.id === diskProfileVoId);
-    if (!selectedDomain) {
-      alert("디스크 프로파일를 선택해주세요.");
-      return;
-    }
+    // const selectedDiskProfile = diskProfiles.find((profile) => profile.id === diskProfileVoId);
+    // if (!selectedDomain) {
+    //   alert("디스크 프로파일를 선택해주세요.");
+    //   return;
+    // }
 
     if(alias === ''){
       alert("이름을 입력해주세요.");
@@ -188,10 +198,10 @@ const DiskModal = ({
         name: selectedDomain.name,
       },
       storageType,
-      diskProfileVo:{
-        id: selectedDiskProfile.id,
-        name: selectedDiskProfile.name,
-      },
+      // diskProfileVo:{
+      //   id: selectedDiskProfile.id,
+      //   name: selectedDiskProfile.name,
+      // },
       wipeAfterDelete,
       sharable,
       backup,
@@ -299,30 +309,44 @@ const DiskModal = ({
               </div>
 
               <div className="img_select_box">
-                <label htmlFor="os">데이터 센터</label>
+                <label htmlFor="data_center">데이터 센터</label>
                 <select
-                  id="data_center"
-                  value={datacenterVoId}
-                  onChange={(e) => setDatacenterVoId(e.target.value)}
-                  disabled={editMode}
-                >
-                  {datacenters &&
-                    datacenters.map((dc) => (
-                      <option key={dc.id} value={dc.id}>
-                        {dc.name}
-                      </option>
-                    ))
-                  }
-                </select>
+  id="data_center"
+  value={datacenterVoId}
+  onChange={(e) => {
+    const selectedId = e.target.value;
+    console.log('Selected Data Center ID:', selectedId); // 디버깅용
+    setDatacenterVoId(selectedId); // 상태 업데이트
+  }}
+  disabled={editMode}
+>
+  {datacenters &&
+    datacenters.map((dc) => (
+      <option key={dc.id} value={dc.id}>
+        {dc.name}
+      </option>
+    ))}
+</select>
                 <span>{datacenterVoId}</span>
               </div>
 
               <div className="img_select_box">
-                <label htmlFor="os">스토리지 도메인</label>
-                <select id="os">
-                  <option value="linux">Linux</option>
+                <label htmlFor="domains">스토리지 도메인</label>
+                <select
+                  id="domains"
+                  value={domainVoId}
+                  onChange={(e) => setDomainVoId(e.target.value)}
+                  disabled={editMode || !datacenterVoId}
+                >
+                  {domains && domains.map((domain) => (
+                    <option key={domain.id} value={domain.id}>
+                      {domain.name}
+                    </option>
+                  ))}
                 </select>
+                <span>{domainVoId}</span>
               </div>
+
               <div className="img_select_box">
                 <label htmlFor="storageType">할당 정책</label>
                 <select id="storageType">

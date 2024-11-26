@@ -74,7 +74,7 @@ const ClusterModal = ({
     data: networks,
     refetch: refetchNetworks,
     isLoading: isNetworksLoading
-  } = useNetworksFromDataCenter(datacenterVoId || 'default-datacenter-id', (e) => ({
+  } = useNetworksFromDataCenter(datacenterVoId || 'default', (e) => ({
     ...e,
   }));
 
