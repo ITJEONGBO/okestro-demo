@@ -16,7 +16,7 @@ import {
 } from '../../api/RQHook';
 import VmConnectionPlusModal from './VmConnectionPlusModal';
 import VmCreatePlusModal from './VmCreatePlusModal';
-
+Modal.setAppElement('#root');
 const VmModal = ({ 
   isOpen, 
   onRequestClose, 
@@ -42,9 +42,9 @@ const VmModal = ({
   const [templateId, setTemplateId] = useState('');
 
   //시스템
-  const [memorySize, setMemorySize] = useState(''); // 메모리 크기
-  const [maxMemory, setMaxMemory] = useState(''); //최대메모리
-  const [allocatedMemory, setAllocatedMemory] = useState(''); //실제 메모리
+  const [memorySize, setMemorySize] = useState(1); // 메모리 크기
+  const [maxMemory, setMaxMemory] = useState(1); //최대메모리
+  const [allocatedMemory, setAllocatedMemory] = useState(1); //실제 메모리
   const [cpuTopologyCnt, setCpuTopologyCnt] = useState(1); //총cpu
   const [cpuTopologyCore, setCpuTopologyCore] = useState(1); // 가상 소켓 당 코어
   const [cpuTopologySocket, setCpuTopologySocket] = useState(1); // 가상소켓
@@ -67,8 +67,8 @@ const VmModal = ({
   const [priority, setPriority] = useState(1); // 초기값
 
   // 부트옵션
-  const [firstDevice, setFirstDevice] = useState(1); // 첫번째 장치
-  const [secDevice, setSecDevice] = useState(1); // 두번째 장치
+  const [firstDevice, setFirstDevice] = useState('hd'); // 첫번째 장치
+  const [secDevice, setSecDevice] = useState(''); // 두번째 장치
   const [bootingMenu, setBootingMenu] = useState(false); // 부팅메뉴 활성화
 
   const { mutate: addVM } = useAddVm();
@@ -184,7 +184,11 @@ useEffect(() => {
   } = useAllTemplates((e) => ({
     ...e,
   }));
-
+  useEffect(() => {
+    if (templates && templates.length > 0 && !templateId) {
+      setTemplateId(templates[0].id); // 기본값 설정
+    }
+  }, [templates]);
   useEffect(() => {
     // editMode가 아닐 때만 첫 번째 데이터센터 ID를 기본값으로 설정
     if (!editMode && clusters && clusters.length > 0) {
@@ -292,7 +296,7 @@ const priorityOptions = [
 ];
 // 부트옵션(첫번째 장치)
 const firstDeviceOptions = [
-  { value: 'ha', label: '하드 디스크' },
+  { value: 'hd', label: '하드 디스크' },
   { value: 'cdrom', label: 'CD-ROM' },
   { value: 'network', label: '네트워크(PXE)' },
 ];
@@ -315,9 +319,13 @@ useEffect(() => {
   setSelectedChipset('SERVER'); // 초기 칩셋
 }, []);
 
+    // 메모리관련 -> KB를 MB로 변환하고 소수점 제거
+    const formatMemory = (valueInKB) => {
+      return `${Math.floor(valueInKB / 1024)} MB`;
+    };  
+  
 
-
-
+    const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false); // 연결 모달 상태 관리
 // 초기값 설정
 useEffect(() => {
     if (isOpen) {
@@ -380,10 +388,6 @@ useEffect(() => {
     }
   }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption]);
 
-    // 메모리관련 -> KB를 MB로 변환하고 소수점 제거
-  const formatMemory = (valueInKB) => {
-    return `${Math.floor(valueInKB / 1024)} MB`;
-  };  
 
   const resetForm = () => {
     setId('');
@@ -423,7 +427,7 @@ useEffect(() => {
         id: selectedCluster.id,
         name: selectedCluster.name,
       },
-      tempatlateVo:{
+      templateVo: {
         id: selectedTemplate.id,
         name: selectedTemplate.name
       },
@@ -507,6 +511,7 @@ const [selectedModalTab, setSelectedModalTab] = useState('common');
 const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false);
 const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
 const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+
   // 새로만들기->초기실행 화살표 누르면 밑에열리기
   const [isDomainHiddenBoxVisible, setDomainHiddenBoxVisible] = useState(false);
   const toggleDomainHiddenBox = () => {
@@ -749,9 +754,9 @@ return (
                                       <div style={{color:'white'}}>.</div>
                                       <div className='flex'>
                                           <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>      
-                                            <VmConnectionPlusModal
-                                               isOpen={isConnectionPopupOpen} // 상태를 부모에서 제어
-                                               onRequestClose={() => setIsConnectionPopupOpen(false)} // 닫기 함수 전달
+                                          <VmConnectionPlusModal
+                                              isOpen={isConnectionPopupOpen}
+                                              onRequestClose={() => setIsConnectionPopupOpen(false)}
                                             />
                                           <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
                                           <div className="flex">
@@ -1071,6 +1076,7 @@ return (
                           </option>
                         ))}
                       </select>
+                      <p>선택된 마이그레이션 모드: {migrationModeOptions.find((option) => option.value === migrationMode)?.label || "선택되지 않음"}</p>
                     </div>
                     {/* 마이그레이션 정책 */}
                     <div>
@@ -1173,16 +1179,16 @@ return (
                 <div className='cpu_res_box'>
                   <span>첫 번째 장치</span>
                   <select
-                    id="first_boot_device"
-                    value={firstDevice} // 선택된 값
-                    onChange={(e) => setFirstDevice(e.target.value)} // 값 업데이트
-                  >
-                    {firstDeviceOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+  id="first_boot_device"
+  value={firstDevice} // 선택된 값
+  onChange={(e) => setFirstDevice(e.target.value)} // 값 변경 핸들러
+>
+  {firstDeviceOptions.map((option) => (
+    <option key={option.value} value={option.value}>
+      {option.label}
+    </option>
+  ))}
+</select>
                 </div>
                 <div className='cpu_res_box'>
                   <span>두 번째 장치</span>
@@ -1238,10 +1244,7 @@ return (
       </div>
 
 
-      <VmCreatePlusModal
-        isOpen={isCreatePopupOpen}
-        onRequestClose={() => setIsCreatePopupOpen(false)}
-      />
+
     </div>
   </Modal>
 );

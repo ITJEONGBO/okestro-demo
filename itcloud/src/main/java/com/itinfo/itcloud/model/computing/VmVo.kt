@@ -450,7 +450,7 @@ fun VmVo.toVmBuilder(conn: Connection): VmBuilder {
     this@toVmBuilder.toVmSystemBuilder(vmBuilder, conn)
     this@toVmBuilder.toVmInitBuilder(vmBuilder)
     this@toVmBuilder.toVmHostBuilder(vmBuilder)
-    this@toVmBuilder.toVmResourceBuilder(vmBuilder)
+//    this@toVmBuilder.toVmResourceBuilder(vmBuilder)
     this@toVmBuilder.toVmHaBuilder(vmBuilder)
     this@toVmBuilder.toVmBootBuilder(vmBuilder)
     return vmBuilder
