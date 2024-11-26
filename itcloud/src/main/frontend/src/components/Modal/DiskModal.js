@@ -26,12 +26,11 @@ const DiskModal = ({
   const [description, setDescription] = useState('');
   const [datacenterVoId, setDatacenterVoId] = useState('');  
   const [domainVoId, setDomainVoId] = useState('');
-  const [storageType, setStorageType] = useState(''); // 씬
   const [diskProfileVoId, setDiskProfileVoId] = useState('');
   const [wipeAfterDelete, setWipeAfterDelete] = useState('');
   const [sharable, setSharable] = useState('');
   const [backup, setBackup] = useState('');
-  const [sparse, setSparse] = useState('');
+  const [sparse, setSparse] = useState(''); // 할당정책: 씬
   
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
@@ -75,16 +74,19 @@ const DiskModal = ({
   } = useDomainsFromDataCenter(datacenterVoId || '', (e) => ({
     ...e,
   }));
+  // 데이터센터 가 가지고 있는 스토리지도메인의 상태가 활성화 되어야 뜰수 잇음(백엔드 수정필요)
 
-  // const {
-  //   data: diskProfiles,
-  //   status: diskProfilesStatus,
-  //   isRefetching: isDiskProfilesRefetching,
-  //   refetch: diskProfilesRefetch,
-  //   isError: isDiskProfilesError,
-  //   error: diskProfilesError,
-  //   isLoading: isDiskProfilesLoading,
-  // } = useAllDiskProfileFromDomain(domainVoId);
+  const {
+    data: diskProfiles,
+    status: diskProfilesStatus,
+    isRefetching: isDiskProfilesRefetching,
+    refetch: diskProfilesRefetch,
+    isError: isDiskProfilesError,
+    error: diskProfilesError,
+    isLoading: isDiskProfilesLoading,
+  } = useAllDiskProfileFromDomain(domainVoId || '', (e) => ({
+    ...e,
+  }));
 
   useEffect(() => {
     if (isOpen) {
@@ -96,7 +98,6 @@ const DiskModal = ({
         setDescription(disk?.description);
         setDatacenterVoId(disk?.dataCenterVo.id);
         setDomainVoId(disk?.storageDomainVo.id);
-        setStorageType(disk?.storageType);
         setDiskProfileVoId(disk?.diskProfileVo.id);
         setWipeAfterDelete(disk?.wipeAfterDelete);
         setSharable(disk?.sharable);
@@ -131,6 +132,7 @@ const DiskModal = ({
           setDomainVoId(res.data[0].id); // 첫 번째 도메인으로 기본값 설정
         } else {
           setDomainVoId(''); // 도메인이 없으면 빈 값으로 설정
+          setDiskProfileVoId('');
         }
       }).catch((error) => {
         console.error('Error fetching domains:', error);
@@ -138,18 +140,36 @@ const DiskModal = ({
     }
   }, [datacenterVoId, domainsRefetch]);
 
+  useEffect(() => {
+    // domainVoId가 유효한 경우에만 호출
+    if (domainVoId) {
+      diskProfilesRefetch({ domainVoId })
+        .then((res) => {
+          if (res?.data && res.data.length > 0) {
+            setDiskProfileVoId(res.data[0].id); // 첫 번째 디스크 프로파일로 기본값 설정
+          } else {
+            setDiskProfileVoId(''); // 디스크 프로파일이 없으면 빈 값으로 설정
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching diskProfiles:', error);
+        });
+    } else {
+      setDiskProfileVoId(''); // domainVoId가 없으면 빈 값으로 설정
+    }
+  }, [domainVoId, diskProfilesRefetch]);
+
   const resetForm = () => {
     setSize('');
     setAlias('');
     setDescription('');
     setDatacenterVoId('');
     setDomainVoId('');
-    setStorageType('');
     setDiskProfileVoId('');
     setWipeAfterDelete('');
     setSharable('');
-    setBackup('');
-    setSparse('');
+    setBackup('true');
+    setSparse('true');
   };
 
   const handleFormSubmit = () => {
@@ -165,11 +185,11 @@ const DiskModal = ({
       return;
     }
 
-    // const selectedDiskProfile = diskProfiles.find((profile) => profile.id === diskProfileVoId);
-    // if (!selectedDomain) {
-    //   alert("디스크 프로파일를 선택해주세요.");
-    //   return;
-    // }
+    const selectedDiskProfile = diskProfiles.find((profile) => profile.id === diskProfileVoId);
+    if (!selectedDomain) {
+      alert("디스크 프로파일를 선택해주세요.");
+      return;
+    }
 
     if(alias === ''){
       alert("이름을 입력해주세요.");
@@ -197,15 +217,14 @@ const DiskModal = ({
         id: selectedDomain.id,
         name: selectedDomain.name,
       },
-      storageType,
-      // diskProfileVo:{
-      //   id: selectedDiskProfile.id,
-      //   name: selectedDiskProfile.name,
-      // },
-      wipeAfterDelete,
-      sharable,
-      backup,
-      sparse
+      diskProfileVo:{
+        id: selectedDiskProfile.id,
+        name: selectedDiskProfile.name,
+      },
+      wipeAfterDelete: wipeAfterDelete === 'true',
+      sharable: sharable === 'true',
+      backup: backup === 'true',
+      sparse: sparse === 'true',
     };
   
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
@@ -263,18 +282,19 @@ const DiskModal = ({
           >
             이미지
           </div>
-          <div></div>
-          <div
+          {/* <div></div> */}
+          {/* <div
             id="storage_directlun_btn"
             onClick={() => handleTabClick('directlun')}
             className={activeTab === 'directlun' ? 'active' : ''}
           >
             직접LUN
-          </div>
+          </div> */}
         </div>
 
         {/*이미지*/}
         {/* {activeTab === 'img' && ( */}
+        <div><br/></div>
           <div className="disk_new_img">
             <div className="disk_new_img_left">
 
@@ -311,23 +331,25 @@ const DiskModal = ({
               <div className="img_select_box">
                 <label htmlFor="data_center">데이터 센터</label>
                 <select
-  id="data_center"
-  value={datacenterVoId}
-  onChange={(e) => {
-    const selectedId = e.target.value;
-    console.log('Selected Data Center ID:', selectedId); // 디버깅용
-    setDatacenterVoId(selectedId); // 상태 업데이트
-  }}
-  disabled={editMode}
->
-  {datacenters &&
-    datacenters.map((dc) => (
-      <option key={dc.id} value={dc.id}>
-        {dc.name}
-      </option>
-    ))}
-</select>
-                <span>{datacenterVoId}</span>
+                  id="data_center"
+                  value={datacenterVoId}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    console.log('Selected Data Center ID:', selectedId); // 디버깅용
+                    setDatacenterVoId(selectedId); // 상태 업데이트
+                  }}
+                  disabled={editMode}
+                >
+                  {datacenters &&
+                    datacenters.map((dc) => (
+                      <option key={dc.id} value={dc.id}>
+                        {dc.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div className="img_select_box">
+                <span>dc: {datacenterVoId}</span>
               </div>
 
               <div className="img_select_box">
@@ -344,36 +366,75 @@ const DiskModal = ({
                     </option>
                   ))}
                 </select>
-                <span>{domainVoId}</span>
               </div>
-
               <div className="img_select_box">
-                <label htmlFor="storageType">할당 정책</label>
-                <select id="storageType">
+                <span>domain: {domainVoId}</span>
+              </div>
+            
+              <div className="img_select_box">
+                <label htmlFor="sparse">할당 정책</label>
+                <select 
+                  id="sparse"
+                  value={sparse}
+                  onChange={(e) => setSparse(e.target.value)}
+                >
                   <option value="true">씬 프로비저닝</option>
                   <option value="false">사전 할당</option>
                 </select>
               </div>
+
               <div className="img_select_box">
-                <label htmlFor="os">디스크 프로파일</label>
-                <select id="os">
-                  <option value="linux">Linux</option>
+                <label htmlFor="disk_profile">디스크 프로파일</label>
+                <select
+                  id="disk_profile"
+                  value={diskProfileVoId}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    console.log('Selected disk profile ID:', selectedId); // 디버깅용
+                    setDiskProfileVoId(selectedId); // 상태 업데이트
+                  }}
+                  disabled={editMode}
+                >
+                  {diskProfiles &&
+                    diskProfiles.map((dp) => (
+                      <option key={dp.id} value={dp.id}>
+                        {dp.name}
+                      </option>
+                    ))}
                 </select>
               </div>
+              <div className="img_select_box">
+                <span>diskprofile: {diskProfileVoId}</span>
+              </div>
             </div>
-
+            
             <div className="disk_new_img_right">
               <div>
-                <input type="checkbox" id="reset_after_deletion" />
-                <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                <input 
+                  type="checkbox" 
+                  id="wipeAfterDelete"
+                  checked={wipeAfterDelete === 'true'} // 상태와 연결
+                  onChange={(e) => setWipeAfterDelete(e.target.checked ? 'true' : 'false')}
+                />
+                <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
               </div>
               <div>
-                <input type="checkbox" className="shareable" />
-                <label htmlFor="shareable">공유 가능</label>
+                <input 
+                  type="checkbox" 
+                  className="sharable" 
+                  checked={sharable === 'true'} // 상태와 연결
+                  onChange={(e) => setSharable(e.target.checked ? 'true' : 'false')}
+                />
+                <label htmlFor="sharable">공유 가능</label>
               </div>
               <div>
-                <input type="checkbox" id="incremental_backup" defaultChecked />
-                <label htmlFor="incremental_backup">중복 백업 사용</label>
+                <input 
+                  type="checkbox" 
+                  id="backup" 
+                  checked={backup === 'true'} // 상태와 연결
+                  onChange={(e) => setBackup(e.target.checked ? 'true' : 'false')}
+                />
+                <label htmlFor="backup">중복 백업 사용</label>
               </div>
             </div>
           </div>
