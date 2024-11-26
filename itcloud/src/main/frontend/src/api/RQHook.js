@@ -1289,6 +1289,28 @@ export const useAllVmsFromTemplate = (tId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
+/**
+ * @name useAllDisksFromTemplate
+ * @description Template 내 디스크 목록조회 useQuery훅
+ * 
+ * @param {string} tId TemplateID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllVMsFromDomain
+ */
+export const useAllDisksFromTemplate = (tId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllDisksFromTemplate', tId], 
+  queryFn: async () => {
+    console.log(`useAllDisksFromTemplate ... ${tId}`);
+    const res = await ApiManager.findDisksFromTemplate(tId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  },
+  enabled: !!tId,
+  staleTime: 0,
+  cacheTime: 0,
+})
 
 /**
  * @name useAllNicsFromTemplate

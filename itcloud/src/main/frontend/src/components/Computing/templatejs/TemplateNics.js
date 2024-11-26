@@ -20,8 +20,13 @@ const TemplateNics = ({templateId}) => {
     };
     const { 
         data: vnicProfiles,
-      } = useAllNicsFromTemplate(templateId, (e) => ({ ...e }));
-
+      } = useAllNicsFromTemplate(templateId, (e) => { 
+        return {
+        ...e ,
+        networkVo: e?.networkVo.name,
+        vnicProfileVo: e?.vnicProfileVo.name,
+        }
+      });
 
     return (
         <>

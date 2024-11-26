@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import TemplateEditModal from './TemplateEditModal';
 
 const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate }) => {
   const TemplateModal = React.lazy(() => import('../Modal/TemplateModal'));
@@ -11,11 +12,12 @@ const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate 
       {action === 'add' ? (
         <span>생성</span>
       ) : action === 'edit' ? (
-        <TemplateModal
-          isOpen={isModalOpen}
-          onRequestClose={onRequestClose}
-          editMode={action === 'edit'}
-          templateId={selectedTemplate?.id || null}
+
+        <TemplateEditModal
+        isOpen={isModalOpen}
+        onRequestClose={onRequestClose}
+        editMode={action === 'edit'}
+        templateId={selectedTemplate?.id || null}
         />
       ): action === 'delete' ? (
         <DeleteModal

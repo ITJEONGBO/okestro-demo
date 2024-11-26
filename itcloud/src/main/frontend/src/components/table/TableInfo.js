@@ -148,7 +148,7 @@ const TableInfo = {
   NETWORKS: [
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '데이터센터', accessor: 'datacenter', clickable: false },
+    { header: '데이터센터', accessor: 'datacenterVo', clickable: false },
     { header: '설명', accessor: 'description', clickable: false, width: '20%' },
     { header: '역할', accessor: 'role', clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
@@ -241,10 +241,11 @@ const TableInfo = {
 //---------------------------
     // 템플릿
     NICS_FROM_TEMPLATES: [
+      { header: '', accessor: 'icon', clickable: false, width: '7%' },
       { header: '이름', accessor: 'name', clickable: false },
-      { header: '연결됨', accessor: 'linked', clickable: true, type: 'checkbox' },
-      { header: '네트워크 이름', accessor: 'networkVo.name', clickable: false },
-      { header: '프로파일 이름', accessor: 'vnicProfileVo.name', clickable: false },
+      { header: '연결됨', accessor: 'linked', clickable: true},
+      { header: '네트워크 이름', accessor: 'networkVo', clickable: false },
+      { header: '프로파일 이름', accessor: 'vnicProfileVo', clickable: false },
       { header: '링크 상태', accessor: 'status', clickable: false },
       { header: '유형', accessor: 'interface_', clickable: false },
     ],
