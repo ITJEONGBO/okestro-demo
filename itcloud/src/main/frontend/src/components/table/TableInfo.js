@@ -231,8 +231,6 @@ const TableInfo = {
     { header: '이름', accessor: 'name', clickable: false },
     { header: '데이터 센터 내의 도메인 상태', accessor: 'status', clickable: false },
   ],
-  // 가상머신
-  // 템플릿
   TEMPLATES_FROM_STORAGE_DOMAIN: [
     { header: '별칭', accessor: 'alias', clickable: false },
     { header: '디스크', accessor: 'disk', clickable: false },
@@ -240,6 +238,18 @@ const TableInfo = {
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
     { header: '생성 일자', accessor: 'creationDate', clickable: false },
   ],
+//---------------------------
+    // 템플릿
+    NICS_FROM_TEMPLATES: [
+      { header: '이름', accessor: 'name', clickable: false },
+      { header: '연결됨', accessor: 'linked', clickable: true, type: 'checkbox' },
+      { header: '네트워크 이름', accessor: 'networkVo.name', clickable: false },
+      { header: '프로파일 이름', accessor: 'vnicProfileVo.name', clickable: false },
+      { header: '링크 상태', accessor: 'status', clickable: false },
+      { header: '유형', accessor: 'interface_', clickable: false },
+    ],
+    
+//------------------------------------------
   DISKS_FROM_STORAGE_DOMAIN: [
     { header: '별칭', accessor: 'alias', clickable: false },
     { header: '', accessor: 'icon1', clickable: false },
@@ -278,7 +288,17 @@ const TableInfo = {
     { header: '상태', accessor: 'status', clickable: false },
     { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
   ],
-
+  TEMPLATE_VMS:[
+    { header: '', accessor: 'icon', clickable: false, width: '10%' },
+    { header: '이름', accessor: 'name', clickable: true, width: '20%' },
+    { header: 'IP주소', accessor: 'ipv4', clickable: false, width: '20%' },
+    { header: 'FQDN', accessor: 'fqdn', clickable: false, width: '20%' },
+    { header: '상태', accessor: 'status', clickable: false, width: '10%' },
+    { header: '호스트', accessor: 'host', clickable: true, width: '25%' },
+    { header: '업타임', accessor: 'upTime', clickable: false, width: '20%' },
+    { header: '설명', accessor: 'description', clickable: false, width: '25%' },
+    
+  ],
 
   DISKS: [
     { header: '별칭', accessor: 'alias', clickable: true },

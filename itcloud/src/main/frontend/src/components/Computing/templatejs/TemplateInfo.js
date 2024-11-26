@@ -7,6 +7,9 @@ import Footer from '../../footer/Footer';
 import { useTemplate } from '../../../api/RQHook';
 import Path from '../../Header/Path';
 import TemplateGeneral from './TemplateGeneral.js';
+import TemplateVm from './TemplateVm.js';
+import TemplateEvents from './TemplateEvents.js';
+import TemplateNics from './TemplateNics.js';
 // import TemplateNetworks from './TemplateNetworks';
 // import TemplateEvents from './TemplateEvents';
 
@@ -58,11 +61,11 @@ const TemplateInfo = () => {
 
   const sectionComponents = {
     general: TemplateGeneral,
-    // vms: TemplateVms,
-    // nics: TemplateNics,
+    vms: TemplateVm,
+    nics: TemplateNics,
     // disks: TemplateDisks,
     // storageDomains: TemplateStorageDomain,
-    // events: TemplateEvents
+    events: TemplateEvents,
   };
 
   const renderSectionContent = () => {

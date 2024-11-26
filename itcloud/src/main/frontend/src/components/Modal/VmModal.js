@@ -42,9 +42,9 @@ const VmModal = ({
   const [templateId, setTemplateId] = useState('');
 
   //시스템
-  const [memorySize, setMemorySize] = useState(1); // 메모리 크기
-  const [maxMemory, setMaxMemory] = useState(1); //최대메모리
-  const [allocatedMemory, setAllocatedMemory] = useState(1); //실제 메모리
+ const [memorySize, setMemorySize] = useState(1024); // 기본 메모리 크기를 1024MB로 설정
+  const [maxMemory, setMaxMemory] = useState(4096);   // 최대 메모리 크기를 4096MB로 설정
+  const [allocatedMemory, setAllocatedMemory] = useState(1024); // 기본 할당 메모리를 1024MB로 설정
   const [cpuTopologyCnt, setCpuTopologyCnt] = useState(1); //총cpu
   const [cpuTopologyCore, setCpuTopologyCore] = useState(1); // 가상 소켓 당 코어
   const [cpuTopologySocket, setCpuTopologySocket] = useState(1); // 가상소켓
@@ -409,6 +409,7 @@ useEffect(() => {
 
   };
 
+
   const handleFormSubmit = () => {
     const selectedCluster = clusters.find((c) => c.id === clusterVoId);
     if (!selectedCluster) {
@@ -421,7 +422,15 @@ useEffect(() => {
         alert("네트워크를 선택해주세요.");
         return;
       }
-  
+        // 메모리 값 변환: KB -> MB
+  const memorySizeMb = memorySize / 1024;
+  const maxMemoryMb = maxMemory / 1024;
+  const allocatedMemoryMb = allocatedMemory / 1024;
+  // 유효성 검사: 메모리 값이 최소 1MB 이상인지 확인
+  if (memorySizeMb < 1 || maxMemoryMb < 1 || allocatedMemoryMb < 1) {
+    alert("메모리 값이 올바르지 않습니다. 최소 1MB 이상이어야 합니다.");
+    return;
+  }
     const dataToSubmit = {
       clusterVo:{
         id: selectedCluster.id,
@@ -441,10 +450,10 @@ useEffect(() => {
       startPaused,   //boolean
       deleteProtected, //boolean
 
-      //시스템데이터
-      memorySize,
-      maxMemory,
-      allocatedMemory,
+      // 시스템데이터
+      memorySize: memorySizeMb,
+      maxMemory: maxMemoryMb,
+      allocatedMemory: allocatedMemoryMb,
       cpuTopologyCnt, // 총가상 cpu
       cpuTopologyCore, // 가상 소켓 당 코어
       cpuTopologySocket, // 가상소켓

@@ -1270,6 +1270,65 @@ export const useTemplate = (tId) => useQuery({
   cacheTime: 0,
 });
 
+/**
+ * @name useAllVmsFromTemplate
+ * @description Template 내 가상머신 목록조회 useQuery훅
+ * 
+ * @param {string} tId TemplateID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useAllVmsFromTemplate
+ */
+export const useAllVmsFromTemplate = (tId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllVmsFromTemplate', tId], 
+  queryFn: async () => {
+    console.log(`useAllVmsFromTemplate ... ${tId}`);
+    const res = await ApiManager.findVMsFromTemplate(tId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+
+/**
+ * @name useAllNicsFromTemplate
+ * @description  Template 내  이벤트 목록조회 useQuery훅
+ * 
+ * @param {string} tId TemplateID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findNicsFromTemplate
+ */
+export const useAllNicsFromTemplate = (tId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllNicsFromTemplate', tId], 
+  queryFn: async () => {
+    console.log(`useAllNicsFromTemplate ... ${tId}`);
+    const res = await ApiManager.findNicsFromTemplate(tId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  }
+})
+
+/**
+ * @name useAllEventFromTemplate
+ * @description  Template 내  이벤트 목록조회 useQuery훅
+ * 
+ * @param {string} tId TemplateID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllDataCenterFromDomain
+ */
+export const useAllEventFromTemplate = (tId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllEventFromTemplate', tId], 
+  queryFn: async () => {
+    console.log(`useAllEventFromTemplate ... ${tId}`);
+    const res = await ApiManager.findEventsFromTemplate(tId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  }
+})
 
 /**
  * @name useAddTemplate
