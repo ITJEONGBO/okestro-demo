@@ -26,7 +26,6 @@ const AllDomain = () => {
           title="스토리지 도메인"
           subtitle=""
           buttons={[]}
-          popupItems={[]}
         />
         <div className="host_btn_outer">
           <DomainDupl

@@ -206,7 +206,7 @@ const ENDPOINTS = {
   FIND_ALL_DISKS: () =>      `/api/v1/storages/disks`,
   FIND_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,
   FIND_VMS_FROM_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/vms`,
-  FIND_STORAGE_DOMAINS_FROM_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/storagdDomains`,
+  FIND_STORAGE_DOMAINS_FROM_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/storageDomains`,
   
   ADD_DISK: () =>      `/api/v1/storages/disks`,
   EDIT_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,

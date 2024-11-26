@@ -30,6 +30,7 @@ import HostInfo from './components/Computing/hostjs/HostInfo';
 import Templates from './components/Computing/Rutil/Templates';
 import DomainInfo from './components/Storage/domainjs/DomainInfo';
 import TemplateInfo from './components/Computing/templatejs/TemplateInfo';
+import DiskInfo from './components/Storage/diskjs/DiskInfo';
 
 
 const App = () => {
@@ -120,11 +121,17 @@ const App = () => {
               <Route path="/computing/templates/:id/:section" element={<TemplateInfo />} />
               {/* <Route path="/computing/templates/:id" element={<TemplateDetail />} /> */}
 
-                            
+              
+              <Route path="/networks/rutil-manager" element={<RutilManager />} />
+              <Route path="/networks/rutil-manager/:section" element={<RutilManager />} />
+
               <Route path="/networks" element={<Network />} />
               <Route path="/networks/datacenters/:id/:section" element={<DataCenterInfo />} />
               <Route path="/networks/:id" element={<NetworkDetail />} /> 
               <Route path="/networks/:id/:section" element={<NetworkDetail />} /> 
+
+              <Route path="/storages/rutil-manager" element={<RutilManager />} />
+              <Route path="/storages/rutil-manager/:section" element={<RutilManager />} />
 
               <Route path="/storages/domains" element={<AllDomain />} />
               <Route path="/storages/datacenters/:id/:section" element={<DataCenterInfo />} />
@@ -132,8 +139,9 @@ const App = () => {
               <Route path="/storages/domains/:id/:section" element={<DomainInfo />} /> 
         
               <Route path="/storages/disks" element={<AllDisk />} />
-              <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />
-              <Route path="/storages/disks/:id/:section" element={<StorageDiskDetail />} />
+              <Route path="/storages/disks/:id" element={<DiskInfo />} />
+              <Route path="/storages/disks/:id/:section" element={<DiskInfo />} />
+              {/* <Route path="/storages/disks/:id/:section" element={<StorageDiskDetail />} /> */}
 
               <Route path="/events" element={<Event />} />
               <Route path="/settings" element={<Setting />} />

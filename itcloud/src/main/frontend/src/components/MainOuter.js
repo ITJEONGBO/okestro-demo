@@ -81,7 +81,8 @@ const MainOuter = ({ children }) => {
         } else {
           handleClick('dashboard');  // 기본적으로 dashboard로 설정
         }
-      }, [location.pathname]);
+    }, [location.pathname]);
+    
       const getClassNames = (id) => {
         return selectedDiv === id ? 'selected' : ''; // 선택된 항목에 대해 클래스 추가
       };
@@ -93,11 +94,20 @@ const MainOuter = ({ children }) => {
       };
     
       const handleRutilManagerClick = () => {
-        if (selectedDiv !== 'rutil-manager') {
-          setSelectedDiv('rutil-manager');
-          navigate('/computing/rutil-manager');
+        let currentSection = '';
+        if (selected === 'computing') {
+            currentSection = 'computing';
+        } else if (selected === 'network') {
+            currentSection = 'networks';
+        } else if (selected === 'storage') {
+            currentSection = 'storages';
         }
-      };
+    
+        if (currentSection) {
+            setSelectedDiv('rutil-manager');
+            navigate(`/${currentSection}/rutil-manager`);
+        }
+    };
       useEffect(() => {
         const path = location.pathname;
         const pathParts = path.split('/'); // 경로를 "/"로 나누기
@@ -520,7 +530,7 @@ const toggleDataCenter = (dataCenterId) => {
           style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
           onClick={() => {
               setSelectedDiv('rutil-manager');
-              navigate('/computing/rutil-manager');
+              navigate('/networks/rutil-manager');
           }}
       >
           <FontAwesomeIcon
@@ -602,7 +612,7 @@ const toggleDataCenter = (dataCenterId) => {
           onClick={() => {
               if (selectedDiv !== 'rutil-manager') {
                   setSelectedDiv('rutil-manager');
-                  navigate('/computing/rutil-manager');
+                  navigate('/storages/rutil-manager');
               }
           }}
       >

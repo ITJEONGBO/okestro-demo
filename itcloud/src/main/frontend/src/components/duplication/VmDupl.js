@@ -5,8 +5,9 @@ import VmTable from '../table/VmTable';
 import VmModals from '../Modal/VmModals';
 
 const VmDupl = ({
-  vms, 
+  vms = [], 
   columns, 
+  type,
   onFetchVms, 
   status
 }) => {

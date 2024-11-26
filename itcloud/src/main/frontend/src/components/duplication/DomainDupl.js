@@ -28,6 +28,7 @@ const DomainDupl = ({
         onCreate={() => handleActionClick('create')}
         onEdit={() => selectedDomain?.id && handleActionClick('edit')}
         onDelete={() => selectedDomain?.id && handleActionClick('delete')}
+        disk={true}
         isEditDisabled={!selectedDomain?.id}
         status={selectedDomain?.status}
       />

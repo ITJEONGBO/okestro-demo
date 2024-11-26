@@ -55,7 +55,7 @@ const Disks = () => {
         data={disks} 
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedDisk(row)}
-        clickableColumnIndex={[1]} // "이름" 열의 인덱스 설정
+        clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
 

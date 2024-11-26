@@ -13,6 +13,7 @@ import DomainVms from './DomainVms';
 import DomainEvents from './DomainEvents';
 import DomainDisks from './DomainDisks';
 import DomainTemplates from './DomainTemplates';
+import DomainDiskSnapshots from './DomainDiskSnapshots';
 
 const DomainModal = React.lazy(() => import('../../Modal/DomainModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -77,7 +78,7 @@ const DomainInfo = () => {
       datacenters: DomainDatacenters,
       vms: DomainVms,
       disks: DomainDisks,
-      // diskSnapshots: ,
+      diskSnapshots: DomainDiskSnapshots,
       templates: DomainTemplates,
       events: DomainEvents,
     }[activeTab];

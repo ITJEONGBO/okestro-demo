@@ -20,7 +20,10 @@ import VnicProfiles from './Rutil/VnicProfiles';
 function RutilManager() {
   const { section } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('info') // 기본 탭은 info로 
+
+  const rootPath = location.pathname.split('/').slice(0, 2).join('/'); // '/computing' 또는 '/networks' 등 추출
 
   // Header와 Sidebar에 쓰일 섹션과 버튼 정보
   const sections = [
@@ -46,7 +49,7 @@ function RutilManager() {
   }, [section]); 
 
   const handleTabClick = (tab) => {
-    const path = tab === 'info' ? '/computing/rutil-manager' : `/computing/rutil-manager/${tab}`;
+    const path = tab === 'info' ? `${rootPath}/rutil-manager` : `${rootPath}/rutil-manager/${tab}`;
     navigate(path);
     setActiveTab(tab);
   };

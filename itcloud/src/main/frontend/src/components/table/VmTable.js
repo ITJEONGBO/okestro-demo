@@ -33,21 +33,27 @@ const VmTable = ({
         data={vms.map((vm) => ({
           ...vm,
           icon: renderStatusIcon(vm.status),
-          host: (
+          host: vm.hostVo?.id ? (
             <TableRowClick type="host" id={vm.hostVo.id}>
-              {vm.host}
+              {vm.hostVo.name}
             </TableRowClick>
-          ),
-          cluster: (
+          ): '',
+          cluster: vm.clusterVo?.id ?(
             <TableRowClick type="cluster" id={vm.clusterVo.id}>
-              {vm.cluster}
+              {vm.clusterVo.name}
             </TableRowClick>
-          ),
-          dataCenter: (
-            <TableRowClick type="datacenter" id={vm.dataCenterVo.id}>
-              {vm.dataCenter}
+          ): '',
+          dataCenter: vm.dataCenterVo?.id ?(
+            <TableRowClick type="dataCenter" id={vm.dataCenterVo.id}>
+              {vm.dataCenterVo.name}
             </TableRowClick>
-          ),
+          ): '',
+          memoryUsage: vm.usageDto?.memoryPercent === null || vm.usageDto?.memoryPercent === undefined 
+          ? '' : `${vm.usageDto.memoryPercent}%`,
+          cpuUsage: vm.usageDto?.cpuPercent === null || vm.usageDto?.cpuPercent === undefined 
+          ? '' : `${vm.usageDto.cpuPercent}%`,
+        networkUsage: vm.usageDto?.networkPercent === null || vm.usageDto?.networkPercent === undefined 
+          ? '' : `${vm.usageDto.networkPercent}%`,
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => {

@@ -1,11 +1,11 @@
 import { useHost } from "../../../api/RQHook";
 
-const HostGenerals = ({ hostId }) => {
+const HostGeneral = ({ hostId }) => {
   const { data: host } = useHost(hostId);
   console.log("host structure: ", host);
 
   function formatBytesToMB(bytes) {
-    return (bytes / (1024 * 1024)).toFixed(0);
+    return (bytes / (1024 * 1024)).toFixed(0) + " MB";
   }
 
   return (
@@ -54,17 +54,17 @@ const HostGenerals = ({ hostId }) => {
                 <tr>
                   <th>물리적 메모리:</th>
                   <td>
-                    {host?.memoryTotal && `${formatBytesToMB(host.memoryTotal)} MB`} 합계, 
-                    {host?.memoryUsed && `${formatBytesToMB(host.memoryUsed)} MB`} 사용됨, 
-                    {host?.memoryFree && `${formatBytesToMB(host.memoryFree)} MB`} 사용가능
+                    {host?.memoryTotal && `${formatBytesToMB(host.memoryTotal)}`} 합계, 
+                    {host?.memoryUsed && `${formatBytesToMB(host.memoryUsed)}`} 사용됨, 
+                    {host?.memoryFree && `${formatBytesToMB(host.memoryFree)}`} 사용가능
                   </td>
                 </tr>
                 <tr>
                   <th>Swap 크기:</th>
                   <td>
-                    {host?.swapTotal && `${formatBytesToMB(host.swapTotal)} MB`} 합계, 
-                    {host?.swapUsed && `${formatBytesToMB(host.swapUsed)} MB`} 사용됨, 
-                    {host?.swapFree && `${formatBytesToMB(host.swapFree)} MB`} 사용가능
+                    {host?.swapTotal && `${formatBytesToMB(host.swapTotal)}`} 합계, 
+                    {host?.swapUsed && `${formatBytesToMB(host.swapUsed)}`} 사용됨, 
+                    {host?.swapFree && `${formatBytesToMB(host.swapFree)}`} 사용가능
                   </td>
                 </tr>
                 <tr>
@@ -77,7 +77,7 @@ const HostGenerals = ({ hostId }) => {
                 </tr>
                 <tr>
                   <th>새로운 가상 머신의 스케줄링을 위한 최대 여유 메모리:</th>
-                  <td>{host?.memoryMax && `${formatBytesToMB(host.memoryMax)} MB`}</td>
+                  <td>{host?.memoryMax && `${formatBytesToMB(host.memoryMax)}`}</td>
                 </tr>
                 <tr>
                   <th>메모리 페이지 공유:</th>
@@ -207,7 +207,7 @@ const HostGenerals = ({ hostId }) => {
                   <tr>
                     <th>커널 기능:</th>
                     <td>
-                      MDS: (Not affected), L1TF: (Not affected), SRBDS: (Not affected), MELTDOWN: (Not affected), RETBLEED: (Not affected), SPECTRE_V1: (Mitigation: usercopy/swapgs barriers and __user pointer sanitization), SPECTRE_V2: (Mitigation: Enhanced / Automatic IBRS, IBPB: conditional, RSB filling, PBRSE-eIBRS: SW sequence), ITLB_MULTIHIT: (KVM: Mitigation: Split huge pages), MMIO_STALE_DATA: (Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown), TSX_ASYNC_ABORT: (Not affected), SPEC_STORE_BYPASS: (Mitigation: Speculative Store Bypass disabled via prctl), GATHER_DATA_SAMPLING: (Unknown: Dependent on hypervisor status), SPEC_RSTACK_OVERFLOW: (Not affected)
+                      
                     </td>
                   </tr>
                   <tr>
@@ -227,4 +227,4 @@ const HostGenerals = ({ hostId }) => {
     );
   };
   
-  export default HostGenerals;
+  export default HostGeneral;

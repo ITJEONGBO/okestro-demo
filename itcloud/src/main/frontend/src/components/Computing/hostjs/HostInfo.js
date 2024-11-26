@@ -7,7 +7,7 @@ import Footer from '../../footer/Footer';
 import '../css/Host.css';
 import { useHost } from '../../../api/RQHook';
 import Path from '../../Header/Path';
-import HostGenerals from './HostGenerals';
+import HostGeneral from './HostGeneral';
 import HostVms from './HostVms'
 import HostNics from './HostNics'
 import HostDevices from './HostDevices';
@@ -75,7 +75,7 @@ const HostInfo = () => {
 
   const renderSectionContent = () => {
     const SectionComponent = {
-      general: HostGenerals,
+      general: HostGeneral,
       vms: HostVms,
       nics: HostNics,
       devices: HostDevices,

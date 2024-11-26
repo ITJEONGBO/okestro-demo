@@ -33,18 +33,18 @@ const DiskTable = ({
           const sizeInGB = disk?.virtualSize / Math.pow(1024, 3);
           return {
             ...disk,
-            icon: renderStatusIcon(disk.status),
-            storageDomain: (
-              <TableRowClick type="domains" id={disk.storageDomainVo.id}>
-                {disk.storageDomainVo.name}
-              </TableRowClick>
-            ),
-            connectVm: (
-              <TableRowClick type="vms" id={disk.connectVm.id}>
-                {disk.connectVm.name}
-              </TableRowClick>
-            ),
-            virtualSize: sizeInGB < 1 ? "< 1 GB" : `${sizeInGB.toFixed(0)} GB`,
+            // icon: renderStatusIcon(disk.status),
+            // storageDomain: (
+            //   <TableRowClick type="domains" id={disk.storageDomainVo.id}>
+            //     {disk.storageDomainVo.name}
+            //   </TableRowClick>
+            // ),
+            // connectVm: (
+            //   <TableRowClick type="vms" id={disk.connectVm.id}>
+            //     {disk.connectVm.name}
+            //   </TableRowClick>
+            // ),
+            // virtualSize: sizeInGB < 1 ? "< 1 GB" : `${sizeInGB.toFixed(0)} GB`,
           };
         })}
         shouldHighlight1stCol={true}

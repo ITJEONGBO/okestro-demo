@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
@@ -16,11 +17,12 @@ const DomainActionButtons = ({
   onActive,
   onMaintenance,
   isEditDisabled, 
-  disk,
+  disk = false,
   status
 }) => {
   // 도메인 생성, 도메인 가져오기, 도메인 관리(편집), 삭제, connection, lun 새로고침, 파괴, 마스터 스토리지 도메인으로 선택
   // 데이터센터: 연결, 분리, 활성, 유지보수
+  const navigate = useNavigate();
 
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
@@ -89,8 +91,8 @@ const DomainActionButtons = ({
         )}
       </div>
 
-      {disk && (
-        <button >디스크</button>
+      {disk == true && (
+        <button onClick={() => navigate('/storages/disks')}>디스크</button>
       )}
     </div>
   );
