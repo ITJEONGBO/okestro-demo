@@ -129,14 +129,15 @@ fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 //
 fun StorageDomain.toStorageDomainDataCenter(conn: Connection): StorageDomainVo {
 	val dataCenter: DataCenter? =
-		if(this@toStorageDomainDataCenter.dataCentersPresent())
-			conn.findDataCenter(this@toStorageDomainDataCenter.dataCenters().first().id()).getOrNull()
+		if (this@toStorageDomainDataCenter.dataCentersPresent() && this@toStorageDomainDataCenter.dataCenters().isNotEmpty())
+			conn.findDataCenter(this@toStorageDomainDataCenter.dataCenters().first().id(), "storagedomains").getOrNull()
 		else null
+	val s = dataCenter?.storageDomains()?.find { it.id() == this@toStorageDomainDataCenter.id() }
 
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainDataCenter.id() }
 		name { this@toStorageDomainDataCenter.name() }
-		status { this@toStorageDomainDataCenter.status() }
+		status { s?.status() }
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }

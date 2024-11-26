@@ -8,7 +8,7 @@ import {
   useDeleteCluster,
   useDeleteHost,
   useDeleteVm,
-  // useDeleteTemplate,
+  useDeleteTemplate,
   useDeleteNetwork,
   useDeleteVnicProfile, // 네트워크 삭제 추가
   useDeleteDomain // 스토리지도메인 삭제
@@ -30,6 +30,7 @@ const DeleteModal = ({
   const { mutate: deleteCluster } = useDeleteCluster();
   const { mutate: deleteHost } = useDeleteHost();
   const { mutate: deleteVm } = useDeleteVm();
+  const { mutate: deleteTemplate } = useDeleteTemplate();
   const { mutate: deleteNetwork } = useDeleteNetwork();
   const { mutate: deleteVnicProfile } = useDeleteVnicProfile();
   const { mutate: deleteDomain } = useDeleteDomain();
@@ -46,7 +47,7 @@ const DeleteModal = ({
   }, [data]);
 
   useEffect(() => {
-    console.log('Current data and networkId in DeleteModal:', data, id);
+    console.log('Current data and Id in DeleteModal:', data, id);
   }, [data, id]);
 
   const handleFormSubmit = () => {
@@ -67,6 +68,9 @@ const DeleteModal = ({
     } else if (type === 'Vm') {
       console.log('Deleting Vm');
       handleDelete(deleteVm);
+    } else if (type === 'Template') {
+      console.log('Deleting Template');
+      handleDelete(deleteTemplate);
     } else if (type === 'Network') {
       console.log('Deleting Network');
       handleDelete(deleteNetwork);

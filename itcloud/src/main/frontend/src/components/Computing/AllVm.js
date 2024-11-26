@@ -98,7 +98,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
         columns={TableInfo.VMS}
       />
     </>
-      </div>
+      </div>  
   
       
         {/*새로만들기(생성)추가팝업 */}

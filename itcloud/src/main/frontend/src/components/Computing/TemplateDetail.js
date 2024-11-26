@@ -160,6 +160,7 @@ function TemplateDetail() {
         <div id='section'>
              <HeaderButton
       title="템플릿"
+      titleIcon={faDesktop}
       subtitle={name}
       additionalText="목록이름"
       buttons={buttons}

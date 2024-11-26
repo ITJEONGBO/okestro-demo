@@ -30,8 +30,11 @@ fun Connection.findAllDataCenters(search: String = "", follow: String = ""): Res
 fun Connection.srvDataCenter(dataCenterId: String): DataCenterService =
 	this.srvDataCenters().dataCenterService(dataCenterId)
 
-fun Connection.findDataCenter(dcId: String): Result<DataCenter?> = runCatching {
-	this.srvDataCenter(dcId).get().send().dataCenter()
+fun Connection.findDataCenter(dcId: String, follow: String = ""): Result<DataCenter?> = runCatching {
+	if (follow.isNotEmpty())
+		this.srvDataCenter(dcId).get().follow(follow).send().dataCenter()
+	else
+		this.srvDataCenter(dcId).get().send().dataCenter()
 }.onSuccess {
 	Term.DATACENTER.logSuccess("상세조회")
 }.onFailure {

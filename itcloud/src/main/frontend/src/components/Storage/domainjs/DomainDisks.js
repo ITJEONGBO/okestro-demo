@@ -7,7 +7,7 @@ import Modal from 'react-modal';
 import { faAngleDown, faChevronLeft, faPlay, faTimes } from "@fortawesome/free-solid-svg-icons";
 import TableInfo from "../../table/TableInfo";
 
-const DomainDisks = ({ domain }) => {
+const DomainDisks = ({ domainId }) => {
     const navigate = useNavigate();
     // 모달 관련 상태 및 함수
     const [activePopup, setActivePopup] = useState(null);
@@ -41,9 +41,8 @@ const DomainDisks = ({ domain }) => {
     status: disksStatus, 
     isLoading: isDisksLoading, 
     isError: isDisksError,
-  } = useAllDiskFromDomain(domain?.id, toTableItemPredicateDisks);
+  } = useAllDiskFromDomain(domainId, toTableItemPredicateDisks);
   function toTableItemPredicateDisks(disk) {
-
     return {
       id: disk?.id ?? '', 
       alias: disk?.alias ?? '없음',  // 별칭

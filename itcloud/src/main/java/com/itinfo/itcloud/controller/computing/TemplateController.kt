@@ -133,7 +133,7 @@ class TemplateController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun remove(
-		@RequestBody templateId: String? = null,
+		@PathVariable templateId: String? = null,
 	): ResponseEntity<Boolean> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()

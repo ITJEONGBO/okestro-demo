@@ -375,19 +375,8 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllDataCentersFromStorageDomain(storageDomainId: String): StorageDomainVo {
 		log.info("findAllDataCentersFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val storageDomain: StorageDomain =
-			conn.findStorageDomain(storageDomainId).getOrNull()
+		val storageDomain: StorageDomain = conn.findStorageDomain(storageDomainId).getOrNull()
 				?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
-
-//		val res: List<DataCenter> =
-//			storageDomain.dataCenters()
-//				.map { dataCenter ->
-//					val dc: DataCenter =
-//						conn.findDataCenter(dataCenter.id())
-//							.getOrNull() ?: throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-//					dc
-//				}
-//		return res.toStorageDomainDataCenterVos(conn)
 		return storageDomain.toStorageDomainDataCenter(conn)
 	}
 

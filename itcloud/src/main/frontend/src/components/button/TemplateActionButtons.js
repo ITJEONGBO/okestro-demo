@@ -1,6 +1,10 @@
 import React from 'react';
 
-const TemplateActionButtons = ({ onEdit, onDelete, isEditDisabled }) => {
+const TemplateActionButtons = ({ 
+  onEdit, 
+  onDelete, 
+  isEditDisabled 
+}) => {
   return (
     <div className="header_right_btns">
       {onEdit && (

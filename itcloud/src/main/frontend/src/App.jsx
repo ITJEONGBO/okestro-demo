@@ -29,6 +29,7 @@ import HostInfo from './components/Computing/hostjs/HostInfo';
 
 import Templates from './components/Computing/Rutil/Templates';
 import DomainInfo from './components/Storage/domainjs/DomainInfo';
+import TemplateInfo from './components/Computing/templatejs/TemplateInfo';
 
 
 const App = () => {
@@ -115,7 +116,9 @@ const App = () => {
               <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
               
               <Route path="/computing/vms/templates" element={<Templates />} />
-              <Route path="/computing/templates/:id" element={<TemplateDetail />} />
+              <Route path="/computing/templates/:id" element={<TemplateInfo />} />
+              <Route path="/computing/templates/:id/:section" element={<TemplateInfo />} />
+              {/* <Route path="/computing/templates/:id" element={<TemplateDetail />} /> */}
 
                             
               <Route path="/networks" element={<Network />} />
