@@ -479,8 +479,8 @@ fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
     return vmBuilder
         .cluster(ClusterBuilder().id(this@toVmInfoBuilder.clusterVo.id).build())
         .template(TemplateBuilder().id(this@toVmInfoBuilder.templateVo.id).build()) // template지정된게 있으면
-        .bios(BiosBuilder().type(BiosType.valueOf(this@toVmInfoBuilder.chipsetFirmwareType)))
-        .type(VmType.valueOf(this@toVmInfoBuilder.optimizeOption))
+        .bios(BiosBuilder().type(BiosType.fromValue(this@toVmInfoBuilder.chipsetFirmwareType)))
+        .type(VmType.fromValue(this@toVmInfoBuilder.optimizeOption))
         .name(this@toVmInfoBuilder.name)
         .description(this@toVmInfoBuilder.description)
         .comment(this@toVmInfoBuilder.comment)
@@ -613,11 +613,11 @@ fun VmVo.toVmHaBuilder(vmBuilder: VmBuilder): VmBuilder {
  */
 fun VmVo.toVmBootBuilder(vmBuilder: VmBuilder): VmBuilder {
 	val bootDeviceList: MutableList<BootDevice> = mutableListOf(
-		BootDevice.valueOf(this@toVmBootBuilder.firstDevice), // 첫번째 장치
+		BootDevice.fromValue(this@toVmBootBuilder.firstDevice), // 첫번째 장치
 	)
 
 	if (this@toVmBootBuilder.secDevice.isNotEmpty())
-		bootDeviceList.add(BootDevice.valueOf(this@toVmBootBuilder.secDevice)) // 두번째 장치
+		bootDeviceList.add(BootDevice.fromValue(this@toVmBootBuilder.secDevice)) // 두번째 장치
 
 	vmBuilder
 		.os(
