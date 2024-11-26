@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { useTemplate } from '../../api/RQHook';
 
 const TemplateEditModal = ({ isOpen, onRequestClose, editMode, templateId }) => {
   const [selectedModalTab, setSelectedModalTab] = useState('general');
+
+  const { data: templateData, isLoading, isError } = useTemplate(templateId);
 
   return (
     <Modal

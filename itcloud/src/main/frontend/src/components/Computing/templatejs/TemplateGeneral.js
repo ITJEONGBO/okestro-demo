@@ -5,15 +5,6 @@ const TemplateGeneral = ({ templateId }) => {
   // useTemplate 훅으로 템플릿 데이터 가져오기
   const { data: templateData, isLoading, isError } = useTemplate(templateId);
 
-  // 데이터 로딩 중 상태
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  // 데이터 불러오기 실패 상태
-  if (isError || !templateData) {
-    return <div>데이터를 불러올 수 없습니다.</div>;
-  }
 
   // 메모리 크기를 GB 단위로 변환
   const memoryInGB = (templateData.memorySize / (1024 ** 3)).toFixed(2);
