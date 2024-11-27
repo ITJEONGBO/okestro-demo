@@ -495,6 +495,11 @@ fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
 fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder, conn: Connection): VmBuilder {
 	val convertMb = BigInteger.valueOf(1024).pow(2)
 
+    log.info("memoryMax {}", this@toVmSystemBuilder.memoryMax)
+    log.info("memoryMax toMB {}", this@toVmSystemBuilder.memoryMax * convertMb)
+
+    log.info("memoryActual {}", this@toVmSystemBuilder.memoryActual * convertMb)
+
 	// 시스템-일반 하드웨어 클럭의 시간 오프셋
 	vmBuilder.timeZone(TimeZoneBuilder().name(this@toVmSystemBuilder.timeOffset))
 
