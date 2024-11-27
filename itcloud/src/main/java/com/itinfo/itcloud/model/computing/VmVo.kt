@@ -453,6 +453,7 @@ fun VmVo.toVmBuilder(conn: Connection): VmBuilder {
 //    this@toVmBuilder.toVmResourceBuilder(vmBuilder)
     this@toVmBuilder.toVmHaBuilder(vmBuilder)
     this@toVmBuilder.toVmBootBuilder(vmBuilder)
+    log.info("vmvo: {}", this)
     return vmBuilder
 }
 
