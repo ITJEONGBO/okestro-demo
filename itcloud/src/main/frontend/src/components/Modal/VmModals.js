@@ -20,7 +20,7 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}
-          hId={selectedVm?.id || null}
+          vmId={selectedVm?.id || null}
           selectedVm={selectedVm} // 데이터센터 ID 포함
         />
       ) : action === 'delete' ? (

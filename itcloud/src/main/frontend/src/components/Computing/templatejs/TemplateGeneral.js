@@ -6,8 +6,7 @@ const TemplateGeneral = ({ templateId }) => {
   const { data: templateData, isLoading, isError } = useTemplate(templateId);
 
 
-  // 메모리 크기를 GB 단위로 변환
-  const memoryInGB = (templateData.memorySize / (1024 ** 3)).toFixed(2);
+
 
   return (
     <div className="cluster_general">
@@ -16,23 +15,23 @@ const TemplateGeneral = ({ templateId }) => {
           <tbody>
             <tr>
               <th>이름:</th>
-              <td>{templateData.name || "N/A"}</td>
+              <td>{templateData?.name || "N/A"}</td>
             </tr>
             <tr>
               <th>설명:</th>
-              <td>{templateData.description || "N/A"}</td>
+              <td>{templateData?.description || "N/A"}</td>
             </tr>
             <tr>
               <th>호스트 클러스터:</th>
-              <td>{templateData.clusterVo?.name || "N/A"}</td>
+              <td>{templateData?.clusterVo?.name || "N/A"}</td>
             </tr>
             <tr>
               <th>운영 시스템:</th>
-              <td>{templateData.osSystem || "N/A"}</td>
+              <td>{templateData?.osSystem || "N/A"}</td>
             </tr>
             <tr>
               <th>칩셋/펌웨어 유형:</th>
-              <td>{templateData.chipsetFirmwareType || "N/A"}</td>
+              <td>{templateData?.chipsetFirmwareType || "N/A"}</td>
             </tr>
             <tr>
               <th>그래픽 프로토콜:</th>
@@ -44,7 +43,7 @@ const TemplateGeneral = ({ templateId }) => {
             </tr>
             <tr>
               <th>최적화 옵션:</th>
-              <td>{templateData.optimizeOption || "N/A"}</td>
+              <td>{templateData?.optimizeOption || "N/A"}</td>
             </tr>
           </tbody>
         </table>
@@ -54,27 +53,27 @@ const TemplateGeneral = ({ templateId }) => {
           <tbody>
             <tr>
               <th>설정된 메모리:</th>
-              <td>{memoryInGB} GB</td>
+              <td>{templateData?.memorySize} GB</td>
             </tr>
             <tr>
               <th>CPU 코어 수:</th>
-              <td>{templateData.cpuTopologyCore || "N/A"}</td>
+              <td>{templateData?.cpuTopologyCore || "N/A"}</td>
             </tr>
             <tr>
               <th>모니터 수:</th>
-              <td>{templateData.monitor || "N/A"}</td>
+              <td>{templateData?.monitor || "N/A"}</td>
             </tr>
             <tr>
               <th>고가용성:</th>
-              <td>{templateData.ha ? "예" : "아니오"}</td>
+              <td>{templateData?.ha ? "예" : "아니오"}</td>
             </tr>
             <tr>
               <th>우선 순위:</th>
-              <td>{templateData.priority || "N/A"}</td>
+              <td>{templateData?.priority || "N/A"}</td>
             </tr>
             <tr>
               <th>USB:</th>
-              <td>{templateData.usb ? "사용" : "사용 안 함"}</td>
+              <td>{templateData?.usb ? "사용" : "사용 안 함"}</td>
             </tr>
             <tr>
               <th>소스:</th>
@@ -82,11 +81,11 @@ const TemplateGeneral = ({ templateId }) => {
             </tr>
             <tr>
               <th>상태 비저장:</th>
-              <td>{templateData.stateless ? "예" : "아니오"}</td>
+              <td>{templateData?.stateless ? "예" : "아니오"}</td>
             </tr>
             <tr>
               <th>템플릿 ID:</th>
-              <td>{templateData.id || "N/A"}</td>
+              <td>{templateData?.id || "N/A"}</td>
             </tr>
           </tbody>
         </table>

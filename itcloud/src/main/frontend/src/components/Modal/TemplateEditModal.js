@@ -1,13 +1,68 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useTemplate } from '../../api/RQHook';
 
-const TemplateEditModal = ({ isOpen, onRequestClose, editMode, templateId }) => {
+const TemplateEditModal = ({ 
+  isOpen, 
+  onRequestClose, 
+  editMode, 
+  templateId 
+}) => {
+  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [comment, setComment] = useState('');
+  const [osSystem, setOsSystem] = useState(''); // 운영체제 string
+  const [chipsetFirmwareType, setChipsetFirmwareType] = useState('');// string
+  // 최적화옵션
+  const [optimizeOption, setOptimizeOption] = useState([
+    { value: 'DESKTOP', label: '데스크톱' },
+    { value: 'HIGH_PERFORMANCE', label: '고성능' },
+    { value: 'SERVER', label: '서버' }
+  ]);
+
+  
   const [selectedModalTab, setSelectedModalTab] = useState('general');
 
-  const { data: templateData, isLoading, isError } = useTemplate(templateId);
+  //해당데이터 상세정보 가져오기
+  const { data: templateData } = useTemplate(templateId);
+
+
+
+  // 초기값설정
+  useEffect(() => {
+    if (isOpen) {
+      if (editMode && templateData) {
+        setId(templateData?.id);
+        setName(templateData?.name);
+        setDescription(templateData?.description);
+        setComment(templateData?.comment || '');
+        setOsSystem(templateData?.osSystem || '');
+        setOptimizeOption(templateData?.optimizeOption || '');
+        setChipsetFirmwareType(templateData?.chipsetFirmwareType || '');
+      }
+    }
+  }, [isOpen, editMode, templateData]);
+
+  const handleFormSubmit = () => {
+    if (editMode) {
+      if (name === '') {
+        alert("이름을 입력해주세요.");
+        return;
+      }
+      const dataToSubmit = {
+        id,
+        name,
+        description,
+        comment,
+      };
+  
+      console.log('Data:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
+    }
+  };
+
 
   return (
     <Modal
@@ -45,7 +100,6 @@ const TemplateEditModal = ({ isOpen, onRequestClose, editMode, templateId }) => 
             </div>
           </div>
 
-          {/* 오른쪽 콘텐츠 */}
           <div className="backup_edit_content">
             {selectedModalTab === 'general' && (
               <>
@@ -67,11 +121,21 @@ const TemplateEditModal = ({ isOpen, onRequestClose, editMode, templateId }) => 
                   </div>
                   <div className="host_textbox">
                     <label htmlFor="description">설명</label>
-                    <input type="text" id="description" />
+                    <input
+                        type="text"
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)} 
+                      />
                   </div>
                   <div className="host_textbox">
                     <label htmlFor="comment">코멘트</label>
-                    <input type="text" id="comment" />
+                    <input
+                        type="text"
+                        id="comment"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)} 
+                      />
                   </div>
                 </div>
 
@@ -115,13 +179,9 @@ const TemplateEditModal = ({ isOpen, onRequestClose, editMode, templateId }) => 
 
         <div className="edit_footer">
           <button
-            onClick={() =>
-              alert(
-                editMode
-                  ? `템플릿 ID: ${templateId}가 수정되었습니다.`
-                  : '새 템플릿이 생성되었습니다.'
-              )
-            }
+            onClick={() => {
+              handleFormSubmit();
+            }}
           >
             OK
           </button>

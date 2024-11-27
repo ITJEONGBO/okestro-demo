@@ -42,9 +42,9 @@ const VmModal = ({
   const [templateId, setTemplateId] = useState('');
 
   //시스템
- const [memorySize, setMemorySize] = useState(1024); // 기본 메모리 크기를 1024MB로 설정
-  const [maxMemory, setMaxMemory] = useState(4096);   // 최대 메모리 크기를 4096MB로 설정
-  const [allocatedMemory, setAllocatedMemory] = useState(1024); // 기본 할당 메모리를 1024MB로 설정
+  const [memorySize, setMemorySize] = useState(1024);
+  const [maxMemory, setMaxMemory] = useState(1024);
+  const [allocatedMemory, setAllocatedMemory] = useState(1024);
   const [cpuTopologyCnt, setCpuTopologyCnt] = useState(1); //총cpu
   const [cpuTopologyCore, setCpuTopologyCore] = useState(1); // 가상 소켓 당 코어
   const [cpuTopologySocket, setCpuTopologySocket] = useState(1); // 가상소켓
@@ -77,7 +77,9 @@ const VmModal = ({
 
   const { 
     data: allvm, 
-  } = useAllVMs(vmId);
+  } = useAllVMs((e) =>({
+    ...e,
+  }));
 
   useEffect(() => {
     if (allvm) {
@@ -93,9 +95,10 @@ const VmModal = ({
   // vm 데이터 변경 시 콘솔에 출력
 useEffect(() => {
   if (vm) {
-    console.log('가져온 가상머신 데이터:', vm);
+    console.log('가져온 가상머신 데이터아이디:', vmId);
+    console.log('변경된 가상머신 데이터:', vm);
   }
-}, [vm]);
+}, [vm,vmId]);
 
 
 
@@ -312,28 +315,20 @@ const [selectedOs, setSelectedOs] = useState('Linux'); // 운영 시스템 선�
 const [selectedChipset, setSelectedChipset] = useState('Q35_OVMF'); // 칩셋 선택
 const [selectedOptimizeOption, setSelectedOptimizeOption] = useState('SERVER'); // 칩셋 선택
 
-useEffect(() => {
-  // 초기 상태 설정 (필요하면 기본값 설정 가능)
-  setSelectedOs('Linux'); // 초기 운영 시스템
-  setSelectedChipset('Q35_OVMF'); // 초기 칩셋
-  setSelectedChipset('SERVER'); // 초기 칩셋
-}, []);
-
-    // 메모리관련 -> KB를 MB로 변환하고 소수점 제거
-    const formatMemory = (valueInKB) => {
-      return `${Math.floor(valueInKB / 1024)} MB`;
-    };  
-  
+// useEffect(() => {
+//   setSelectedOs('Linux'); // 초기 운영 시스템
+//   setSelectedChipset('Q35_OVMF'); // 초기 칩셋
+//   setSelectedChipset('SERVER'); // 초기 칩셋
+// }, []);
 
     const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false); // 연결 모달 상태 관리
 // 초기값 설정
 useEffect(() => {
-    if (isOpen) {
-      if (editMode && vm) {
+  if (editMode && vm) {
         console.log("편집 모드에서 가져온 VM 데이터:", vm);
   
-        setId(vm?.id || '');
-        setName(vm?.name || '');
+        setId(vm?.id);
+        setName(vm?.name);
         setClusterVoName(vm?.clusterVo?.name || '');
         setClusterVoId(vm?.clusterVo?.id || '');
         setDescription(vm?.description || '');
@@ -376,21 +371,16 @@ useEffect(() => {
       } else if (!editMode) {
         resetForm();    
         setClusterVoId(vmId || clusters?.[0]?.id || '');
-        setMaxMemory(4096 * 1024); // 기본 최대 메모리 (KB 단위)
-        setAllocatedMemory(1024 * 1024); // 기본 할당 메모리 (KB 단위)
-        setMemorySize(1024 * 1024); // 기본 메모리 크기 (KB 단위)
-        setCpuTopologyCnt(1);
         // 마이그레이션 모드와 정책 기본값 설정
         setMigrationMode(vm?.migrationMode || migrationModeOptions[0].value);
         setMigrationPolicy(vm?.migrationPolicy || migrationPolicyOptions[0].value);
         
       }
-    }
+    
   }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption]);
 
 
   const resetForm = () => {
-    setId('');
     setClusterVoId('');
     setName('');
     setDescription('');
@@ -400,6 +390,10 @@ useEffect(() => {
     setDeleteProtected(false); // 기본값 설정
     setSelectedOs('Linux'); // 기본값
     setSelectedChipset('Q35_SEA_BIOS'); // 기본값
+    setMaxMemory(1024); // 기본 최대 메모리 (KB 단위)
+    setAllocatedMemory(1024); // 기본 할당 메모리 (KB 단위)
+    setMemorySize(1024); // 기본 메모리 크기 (KB 단위)
+    setCpuTopologyCnt(1)
     setCpuTopologyCnt(1);
     setCpuTopologyCore(1);
     setCpuTopologySocket(1);
@@ -411,6 +405,10 @@ useEffect(() => {
 
 
   const handleFormSubmit = () => {
+    if (maxMemory > 9223372036854775807 ||  memorySize > 9223372036854775807) {
+      alert('메모리 값이 너무 큽니다. 다시 확인해주세요.');
+      return;
+    }
     const selectedCluster = clusters.find((c) => c.id === clusterVoId);
     if (!selectedCluster) {
         alert("클러스터를 선택해주세요.");
@@ -422,15 +420,7 @@ useEffect(() => {
         alert("네트워크를 선택해주세요.");
         return;
       }
-        // 메모리 값 변환: KB -> MB
-  const memorySizeMb = memorySize / 1024;
-  const maxMemoryMb = maxMemory / 1024;
-  const allocatedMemoryMb = allocatedMemory / 1024;
-  // 유효성 검사: 메모리 값이 최소 1MB 이상인지 확인
-  if (memorySizeMb < 1 || maxMemoryMb < 1 || allocatedMemoryMb < 1) {
-    alert("메모리 값이 올바르지 않습니다. 최소 1MB 이상이어야 합니다.");
-    return;
-  }
+
     const dataToSubmit = {
       clusterVo:{
         id: selectedCluster.id,
@@ -451,9 +441,9 @@ useEffect(() => {
       deleteProtected, //boolean
 
       // 시스템데이터
-      memorySize: memorySizeMb,
-      maxMemory: maxMemoryMb,
-      allocatedMemory: allocatedMemoryMb,
+      memorySize: memorySize,
+      memoryMax: maxMemory,
+      memoryActual: allocatedMemory,
       cpuTopologyCnt, // 총가상 cpu
       cpuTopologyCore, // 가상 소켓 당 코어
       cpuTopologySocket, // 가상소켓
@@ -479,7 +469,7 @@ useEffect(() => {
 
 
     };
-    console.log('가상머신 생성데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
+    console.log('가상머신 생성or편집데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
 
 
@@ -809,64 +799,64 @@ return (
                 <>
                   
                     <div className="edit_second_content">
-                      <div>
-                        <label htmlFor="memory_size">메모리 크기</label>
-                        <input
-                          type="text"
-                          id="memory_size"
-                          value={formatMemory(memorySize)} // 메모리 크기
-                          readOnly
-                        />
-                      </div>
-                      <div>
-                        <div>
-                          <label htmlFor="max_memory">최대 메모리</label>
-                          <FontAwesomeIcon
-                            icon={faInfoCircle}
-                            style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-                            data-tooltip-id="max-memory-tooltip"
-                          />
-                          <Tooltip
-                            id="max-memory-tooltip"
-                            className="icon_tooltip"
-                            place="top"
-                            effect="solid"
-                          >
-                            메모리 핫 플러그를 실행할 수 있는 가상 머신 메모리 상한
-                          </Tooltip>
-                        </div>
-                        <input
-                          type="text"
-                          id="max_memory"
-                          value={formatMemory(maxMemory)} // 최대 메모리
-                          readOnly
-                        />
-                      </div>
+                    <div>
+  <label htmlFor="memory_size">메모리 크기</label>
+  <input
+    type="number"
+    id="memory_size"
+    value={memorySize} // 메모리 크기
+    onChange={(e) => setMemorySize(Number(e.target.value))} // 상태 업데이트
+  />
+</div>
+<div>
+  <div>
+    <label htmlFor="max_memory">최대 메모리</label>
+    <FontAwesomeIcon
+      icon={faInfoCircle}
+      style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+      data-tooltip-id="max-memory-tooltip"
+    />
+    <Tooltip
+      id="max-memory-tooltip"
+      className="icon_tooltip"
+      place="top"
+      effect="solid"
+    >
+      메모리 핫 플러그를 실행할 수 있는 가상 머신 메모리 상한
+    </Tooltip>
+  </div>
+  <input
+    type="number"
+    id="max_memory"
+    value={maxMemory} // 최대 메모리
+    onChange={(e) => setMaxMemory(Number(e.target.value))} // 상태 업데이트
+  />
+</div>
 
-                      <div>
-                        <div>
-                          <label htmlFor="actual_memory">할당할 실제 메모리</label>
-                          <FontAwesomeIcon
-                            icon={faInfoCircle}
-                            style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-                            data-tooltip-id="actual-memory-tooltip"
-                          />
-                          <Tooltip
-                            id="actual-memory-tooltip"
-                            className="icon_tooltip"
-                            place="top"
-                            effect="solid"
-                          >
-                            ballooning 기능 사용 여부에 관계없이 가상 머신에 확보된 메모리 양입니다.
-                          </Tooltip>
-                        </div>
-                        <input
-                          type="text"
-                          id="actual_memory"
-                          value={formatMemory(allocatedMemory)} // 실제 메모리
-                          readOnly
-                        />
-                      </div>
+<div>
+  <div>
+    <label htmlFor="actual_memory">할당할 실제 메모리</label>
+    <FontAwesomeIcon
+      icon={faInfoCircle}
+      style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+      data-tooltip-id="actual-memory-tooltip"
+    />
+    <Tooltip
+      id="actual-memory-tooltip"
+      className="icon_tooltip"
+      place="top"
+      effect="solid"
+    >
+      ballooning 기능 사용 여부에 관계없이 가상 머신에 확보된 메모리 양입니다.
+    </Tooltip>
+  </div>
+  <input
+    type="number"
+    id="actual_memory"
+    value={allocatedMemory} // 실제 메모리
+    onChange={(e) => setAllocatedMemory(Number(e.target.value))} // 상태 업데이트
+  />
+</div>
 
                       <div>
     <div>
