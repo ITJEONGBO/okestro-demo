@@ -167,8 +167,10 @@ fun List<DiskAttachmentVo>.toAddDiskAttachmentList(): List<DiskAttachment> {
 	val diskAttachmentList = mutableListOf<DiskAttachment>()
 	this@toAddDiskAttachmentList.forEach { diskAttachmentVo ->
 		if (diskAttachmentVo.diskImageVo.id.isEmpty()) {
+			// 디스크 생성
 			diskAttachmentList.add(diskAttachmentVo.toAddDiskAttachment())
 		} else {
+			// 디스크 연결
 			diskAttachmentList.add(diskAttachmentVo.toAttachDisk())
 		}
 	}

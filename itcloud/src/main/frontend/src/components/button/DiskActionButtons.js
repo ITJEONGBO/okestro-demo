@@ -10,6 +10,8 @@ const DiskActionButtons = ({
   isEditDisabled,
   status
 }) => {
+  const isOk = status == "OK"
+
   return (
     <div className="header_right_btns">
       {onCreate && 
@@ -19,7 +21,7 @@ const DiskActionButtons = ({
         <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
       )}
       {onDelete && (
-        <button onClick={onDelete} disabled={isEditDisabled}>제거</button>
+        <button onClick={onDelete} disabled={isEditDisabled && !isOk}>제거</button>
       )}
       {onMove && (
         <button onClick={onMove} disabled={isEditDisabled}>이동</button>

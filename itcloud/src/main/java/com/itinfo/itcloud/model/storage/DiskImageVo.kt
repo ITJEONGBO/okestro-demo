@@ -176,10 +176,14 @@ fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 		id { this@toDiskInfo.id() }
 		alias { this@toDiskInfo.alias() }
 		description { this@toDiskInfo.description() }
+		sparse { this@toDiskInfo.sparse() } // 할당정책
 		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
 		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
 		virtualSize { this@toDiskInfo.provisionedSize() }
 		actualSize { this@toDiskInfo.actualSize() }
+		wipeAfterDelete { this@toDiskInfo.wipeAfterDelete() }
+		sharable { this@toDiskInfo.shareable() }
+		backup { this@toDiskInfo.backup() == DiskBackup.INCREMENTAL }
 	}
 }
 fun List<Disk>.toDisksInfo(conn: Connection): List<DiskImageVo> =
