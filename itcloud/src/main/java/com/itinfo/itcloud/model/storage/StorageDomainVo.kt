@@ -195,6 +195,18 @@ fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
 fun List<StorageDomain>.toStorageDomainsMenu(conn: Connection): List<StorageDomainVo> =
 	this@toStorageDomainsMenu.map { it.toStorageDomainMenu(conn) }
 
+fun StorageDomain.toActiveDomain(conn: Connection): StorageDomainVo {
+	return StorageDomainVo.builder {
+		id { this@toActiveDomain.id() }
+		name { this@toActiveDomain.name() }
+		usedSize { this@toActiveDomain.used() }
+		availableSize { this@toActiveDomain.available() }
+		diskSize { this@toActiveDomain.available().add(this@toActiveDomain.used()) }
+	}
+}
+fun List<StorageDomain>.toActiveDomains(conn: Connection): List<StorageDomainVo> =
+	this@toActiveDomains.map { it.toActiveDomain(conn)}
+
 
 fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
 	val diskProfiles: List<DiskProfile> =

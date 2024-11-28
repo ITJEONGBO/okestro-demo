@@ -1896,6 +1896,19 @@ const ApiManager = {
     url: ENDPOINTS.FIND_STORAGE_DOMAIN(storageDomainId),
     // defaultValues: DEFAULT_VALUES.FIND_DOMAIN_BY_ID
   }),
+   /**
+   * @name ApiManager.findActiveDomainFromDataCenter
+   * @description 도메인 
+   *
+   * @param {string} storageDomainId
+   * @returns 
+   * 
+   * @see
+   */
+   findActiveDomainFromDataCenter: async (dataCenterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ACTIVE_STORAGE_DOMAINS_FROM_DATA_CENTER(dataCenterId),
+  }),
   /**
    * @name ApiManager.findAllDataCentersFromDomain
    * @description 데이터센터 목록
@@ -1997,6 +2010,19 @@ const ApiManager = {
   findAllEventsFromDomain: async (storageDomainId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_EVENTS_FROM_STORAGE_DOMAINS(storageDomainId),
+    // defaultValues: DEFAULT_VALUES.FIND_EVENT
+  }),
+  /**
+   * @name ApiManager.findActiveDataCenters
+   * @description  목록
+   *
+   * @returns 
+   * 
+   * @see
+   */
+  findActiveDataCenters: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ACTIVE_DATA_CENTERS(),
     // defaultValues: DEFAULT_VALUES.FIND_EVENT
   }),
 

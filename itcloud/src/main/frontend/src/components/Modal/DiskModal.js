@@ -7,8 +7,8 @@ import {
   useDiskById,
   useAddDisk,
   useEditDisk, 
-  useAllDataCenters,
-  useDomainsFromDataCenter, 
+  useAllActiveDataCenters,
+  useAllActiveDomainFromDataCenter, 
   useAllDiskProfileFromDomain,
 } from '../../api/RQHook';
 
@@ -30,7 +30,7 @@ const DiskModal = ({
   const [diskProfileVoId, setDiskProfileVoId] = useState('');
   const [wipeAfterDelete, setWipeAfterDelete] = useState(false);
   const [sharable, setSharable] = useState(false);
-  const [backup, setBackup] = useState(false);
+  const [backup, setBackup] = useState(true);
   const [sparse, setSparse] = useState(true); // 할당정책: 씬
   
   const { mutate: addDisk } = useAddDisk();
@@ -42,6 +42,7 @@ const DiskModal = ({
     setActiveTab(tab);
   };
 
+  // 디스크 데이터 가져오기
   const {
     data: disk,
     status: diskStatus,
@@ -52,6 +53,7 @@ const DiskModal = ({
     isLoading: isDiskLoading
   } = useDiskById(diskId);
 
+  // 전체 데이터센터 가져오기
   const {
     data: datacenters,
     status: datacentersStatus,
@@ -60,10 +62,11 @@ const DiskModal = ({
     isError: isDatacentersError,
     error: datacentersError,
     isLoading: isDatacentersLoading
-  } = useAllDataCenters((e) => ({
+  } = useAllActiveDataCenters((e) => ({
     ...e,
   }));
 
+  // 선택한 데이터센터가 가진 도메인 가져오기
   const {
     data: domains,
     status: domainsStatus,
@@ -72,11 +75,11 @@ const DiskModal = ({
     isError: isDomainsError,
     error: domainsError,
     isLoading: isDomainsLoading,
-  } = useDomainsFromDataCenter(datacenterVoId || '', (e) => ({
+  } = useAllActiveDomainFromDataCenter(datacenterVoId || '', (e) => ({
     ...e,
   }));
-  // 데이터센터 가 가지고 있는 스토리지도메인의 상태가 활성화 되어야 뜰수 잇음(백엔드 수정필요)
 
+  // 선택한 도메인이 가진 디스크 프로파일 가져오기
   const {
     data: diskProfiles,
     status: diskProfilesStatus,
@@ -85,7 +88,7 @@ const DiskModal = ({
     isError: isDiskProfilesError,
     error: diskProfilesError,
     isLoading: isDiskProfilesLoading,
-  } = useAllDiskProfileFromDomain(domainVoId && domainVoId.trim() !== '' ? domainVoId : null, (e) => ({
+  } = useAllDiskProfileFromDomain(domainVoId || '', (e) => ({
     ...e,
   }));  
 
@@ -105,11 +108,14 @@ const DiskModal = ({
         setSharable(disk?.sharable);
         setBackup(disk?.backup);
         setSparse(disk?.sparse);
-      } else if (!editMode && !isDatacentersLoading && !isDomainsLoading && !isDiskProfilesLoading) {
+      } else if (!editMode && !isDatacentersLoading && !isDomainsLoading) {
         resetForm();
+        if(datacenters && datacenters.length > 0){
+          setDatacenterVoId(datacenters[0].id);
+        }
       }
     }
-  }, [isOpen, editMode, disk]);
+  }, [isOpen, editMode, disk, datacenters]);
 
   // 데이터센터 기본 상태
   useEffect(() => {
@@ -123,33 +129,59 @@ const DiskModal = ({
       setDomainVoId(domains[0].id); // 첫 번째 도메인으로 초기화
     } else if (!domains || domains.length === 0) {
       setDomainVoId(''); // 도메인이 없으면 빈 값
+      setDiskProfileVoId('');
     }
   }, [domains]);
-  
+
   useEffect(() => {
-    if (diskProfiles && diskProfiles.length > 0 && !diskProfileVoId) {
-      setDiskProfileVoId(diskProfiles[0].id); // 첫 번째 도메인으로 초기화
+    if (diskProfiles && diskProfiles.length > 0 && !diskProfiles) {
+      setDiskProfileVoId(diskProfiles[0].id);
     } else if (!diskProfiles || diskProfiles.length === 0) {
-      setDiskProfileVoId(''); // 도메인이 없으면 빈 값
+      setDiskProfileVoId('');
     }
   }, [diskProfiles]);
   
-
   // 데이터센터 변경 시 스토리지 도메인 로드
-  useEffect(() => {
-    if (datacenterVoId) {
-      domainsRefetch({ datacenterVoId }).then((res) => {
+useEffect(() => {
+  if (datacenterVoId) {
+    domainsRefetch({ datacenterVoId })
+      .then((res) => {
         if (res?.data && res.data.length > 0) {
           setDomainVoId(res.data[0].id); // 첫 번째 도메인으로 기본값 설정
         } else {
           setDomainVoId(''); // 도메인이 없으면 빈 값으로 설정
-          setDiskProfileVoId('');
+          setDiskProfileVoId(''); // 디스크 프로파일도 초기화
         }
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.error('Error fetching domains:', error);
       });
-    }
-  }, [datacenterVoId, domainsRefetch]);  
+  } else {
+    setDomainVoId(''); // 데이터센터가 없으면 초기화
+    setDiskProfileVoId('');
+  }
+}, [datacenterVoId, domainsRefetch]);
+
+// 도메인이 없을 경우 디스크 프로파일을 검색하지 않음
+useEffect(() => {
+  if (domainVoId && domainVoId.trim() !== '') {
+    diskProfilesRefetch({ domainVoId })
+      .then((res) => {
+        if (res?.data && res.data.length > 0) {
+          setDiskProfileVoId(res.data[0].id); // 첫 번째 디스크 프로파일 선택
+        } else {
+          setDiskProfileVoId(''); // 결과가 없으면 초기화
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching disk profiles:', error);
+      });
+  } else {
+    setDiskProfileVoId(''); // 도메인 ID가 없을 경우 초기화
+  }
+}, [domainVoId, diskProfilesRefetch]);
+
+
   
   // 편집: 데이터센터에 따라 도메인 지정
   useEffect(() => {

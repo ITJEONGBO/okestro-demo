@@ -5,10 +5,7 @@ import com.itinfo.itcloud.controller.BaseController
 import com.itinfo.itcloud.controller.storage.DiskController.Companion
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.error.toException
-import com.itinfo.itcloud.model.computing.EventVo
-import com.itinfo.itcloud.model.computing.SnapshotDiskVo
-import com.itinfo.itcloud.model.computing.TemplateVo
-import com.itinfo.itcloud.model.computing.VmVo
+import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.DiskProfileVo
@@ -68,7 +65,7 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="데이터센터 - 스토리지 도메인 목록",
+		value="디스크 생성에 사용될 스토리지 도메인 목록",
 		notes="선택된 데이터센터가 가지고 있는 스토리지 도메인 목록"
 	)
 	@ApiImplicitParams(
@@ -77,15 +74,15 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/{dataCenterId}/storageDomains")
+	@GetMapping("/{dataCenterId}/domains")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	fun storageDomainsFromDataCenter(
+	fun domainsFromDataCenter(
 		@PathVariable dataCenterId: String? = null,
 	): ResponseEntity<List<StorageDomainVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/storages/domains/{}/storageDomains ... Domain(s) 목록", dataCenterId)
+		log.info("/storages/domains/{}/domains ... Domain(s) 목록", dataCenterId)
 		return ResponseEntity.ok(iDomain.findAllFromDataCenter(dataCenterId))
 	}
 
@@ -537,6 +534,23 @@ class StorageController: BaseController() {
 			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/permissions ... Permission(s) 목록", storageDomainId)
 		return ResponseEntity.ok(iDomain.findAllPermissionsFromStorageDomain(storageDomainId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="",
+		notes="datacenter 목록"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/dataCenters")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	fun activeDatacenters(
+	): ResponseEntity<List<DataCenterVo>> {
+		log.info("/storages/datacenters ...")
+		return ResponseEntity.ok(iDomain.findAllDataCenterFromStorageDomain())
 	}
 
 

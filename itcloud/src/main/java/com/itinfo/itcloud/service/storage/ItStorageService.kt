@@ -267,6 +267,14 @@ interface ItStorageService {
 	@Deprecated("나중구현")
 	fun findAllPermissionsFromStorageDomain(storageDomainId: String): List<PermissionVo>
 
+	/**
+	 * [ItStorageService.findAllDataCenterFromStorageDomain]
+	 * 데이터센터가 가지고 있는 스토리지 도메인 목록
+	 *
+	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDataCenterFromStorageDomain(): List<DataCenterVo>
 }
 
 @Service
@@ -289,8 +297,8 @@ class StorageServiceImpl(
 	override fun findAllFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.info("findAllFromDataCenter ... dcId: $dataCenterId")
 		val res: List<StorageDomain> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf())
-		return res.toStorageDomainsMenu(conn)
+			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf()).filter { it.status() == StorageDomainStatus.ACTIVE }
+		return res.toActiveDomains(conn)
 	}
 
 	@Throws(Error::class)
@@ -512,6 +520,19 @@ class StorageServiceImpl(
 		val res: List<Permission> =
 			conn.findAllPermissionsFromStorageDomain(storageDomainId).getOrDefault(listOf())
 		return res.toPermissionVos(conn)
+	}
+
+	@Throws(Error::class)
+	override fun findAllDataCenterFromStorageDomain(): List<DataCenterVo> {
+		log.info("findAllDataCenterFromStorageDomain ... ")
+		val res: List<DataCenter> =
+			conn.findAllDataCenters(follow = "storagedomains").getOrDefault(listOf()).filter { dataCenter ->
+				dataCenter.storageDomainsPresent() &&
+					dataCenter.storageDomains().any { storageDomain ->
+						storageDomain.status() == StorageDomainStatus.ACTIVE
+					}
+			}
+		return res.toDataCenterIdNames()
 	}
 
 

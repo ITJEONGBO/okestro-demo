@@ -1751,6 +1751,27 @@ export const useDomainById = (storageDomainId) => useQuery({
   cacheTime: 0,
 });
 /**
+ * @name useAllActiveDomainFromDataCenter
+ * @description active 도메인 목록조회 useQuery훅
+ * 
+ * @param {string} dataCenterId 도메인ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findActiveDomainFromDataCenter
+ */
+export const useAllActiveDomainFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllActiveDomainFromDataCenter', dataCenterId], 
+  queryFn: async () => {
+    console.log(`useAllActiveDomainFromDataCenter ... ${dataCenterId}`);
+    const res = await ApiManager.findActiveDomainFromDataCenter(dataCenterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  },
+  enabled: !!dataCenterId,
+})
+
+/**
  * @name useAllDataCenterFromDomain
  * @description 도메인 내 데이터센터 목록조회 useQuery훅
  * 
@@ -1894,6 +1915,24 @@ export const useAllEventFromDomain = (storageDomainId, mapPredicate) => useQuery
   queryFn: async () => {
     console.log(`useAllEventFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllEventsFromDomain(storageDomainId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  }
+})
+/**
+ * @name useAllActiveDataCenters
+ * @description 데이터센터 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findActiveDataCenters
+ */
+export const useAllActiveDataCenters = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  // queryKey: ['AllEventFromDomain', storageDomainId], 
+  queryFn: async () => {
+    console.log(`useAllEventFromDomain ...`);
+    const res = await ApiManager.findActiveDataCenters(); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
   }
 })

@@ -117,6 +117,7 @@ class DiskController: BaseController() {
 //		return ResponseEntity.ok(iDisk.findAllDiskProfilesFromStorageDomain(storageDomainId))
 //	}
 
+
 	@ApiOperation(
 		httpMethod="POST",
 		value="디스크 생성",
