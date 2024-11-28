@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useTemplate } from '../../api/RQHook';
+import { useEditTemplate, useTemplate } from '../../api/RQHook';
 
 const TemplateEditModal = ({ 
   isOpen, 
@@ -16,7 +16,14 @@ const TemplateEditModal = ({
   const [comment, setComment] = useState('');
   const [osSystem, setOsSystem] = useState(''); // 운영체제 string
   const [chipsetFirmwareType, setChipsetFirmwareType] = useState('');// string
-  // 최적화옵션
+  const [stateless, setStateless] = useState(false); // 상태비저장
+  const [startPaused, setStartPaused] = useState(false); // 일시정지상태에서시작
+  const [deleteProtected, setDeleteProtected] = useState(false); // 일시정지상태에서시작
+  
+  const { mutate: editCluster } = useEditTemplate();
+
+
+  // 최적화옵션(영어로 값바꿔야됨)
   const [optimizeOption, setOptimizeOption] = useState([
     { value: 'DESKTOP', label: '데스크톱' },
     { value: 'HIGH_PERFORMANCE', label: '고성능' },
@@ -28,7 +35,7 @@ const TemplateEditModal = ({
 
   //해당데이터 상세정보 가져오기
   const { data: templateData } = useTemplate(templateId);
-
+  const [selectedOptimizeOption, setSelectedOptimizeOption] = useState('SERVER'); // 칩셋 선택
 
 
   // 초기값설정
@@ -40,25 +47,37 @@ const TemplateEditModal = ({
         setDescription(templateData?.description);
         setComment(templateData?.comment || '');
         setOsSystem(templateData?.osSystem || '');
-        setOptimizeOption(templateData?.optimizeOption || '');
+        setStateless(templateData?.stateless);
+        setStartPaused(templateData?.startPaused);
+        setDeleteProtected(templateData?.deleteProtected);
+        setSelectedOptimizeOption(templateData?.optimizeOption || 'SERVER'); // 최적화 옵션
         setChipsetFirmwareType(templateData?.chipsetFirmwareType || '');
       }
     }
   }, [isOpen, editMode, templateData]);
 
   const handleFormSubmit = () => {
-    if (editMode) {
-      if (name === '') {
-        alert("이름을 입력해주세요.");
-        return;
-      }
+    if (name === '') {
+      alert("이름을 입력해주세요.");
+      return;
+    }
       const dataToSubmit = {
         id,
         name,
         description,
         comment,
       };
-  
+      if (editMode) {
+        dataToSubmit.id = id;
+        editCluster( {
+          onSuccess: () => {
+            alert("템플릿 편집 완료");
+            onRequestClose();
+          },
+          onError: (error) => {
+            console.error('Error editing cluster:', error);
+          }
+        });
       console.log('Data:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
     }
   };
@@ -101,15 +120,23 @@ const TemplateEditModal = ({
           </div>
 
           <div className="backup_edit_content">
+            <div className="vnic_new_box" style={{ borderBottom: '1px solid gray', paddingBottom: '0.3rem' }}>
+                <label htmlFor="optimization">최적화 옵션</label>
+                              <select
+                                id="optimization"
+                                value={selectedOptimizeOption} // 선택된 값과 동기화
+                                onChange={(e) => setSelectedOptimizeOption(e.target.value)} // 값 변경 핸들러
+                              >
+                                {optimizeOption.map((option) => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label} {/* UI에 표시되는 값 */}
+                                  </option>
+                                ))}
+                              </select>
+                              <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span>
+            </div>
             {selectedModalTab === 'general' && (
               <>
-                <div className="vnic_new_box" style={{ borderBottom: '1px solid gray', paddingBottom: '0.3rem' }}>
-                  <label htmlFor="optimization">최적화 옵션</label>
-                  <select id="optimization">
-                    <option value="서버">서버</option>
-                  </select>
-                </div>
-
                 <div className="template_edit_texts">
                   <div className="host_textbox">
                     <label htmlFor="template_name">이름</label>
@@ -141,15 +168,30 @@ const TemplateEditModal = ({
 
                 <div className="flex">
                   <div className="vnic_new_checkbox">
-                    <input type="checkbox" id="stateless" />
+                    <input
+                      type="checkbox"
+                      id="stateless"
+                      checked={stateless} // 상태에 따라 체크 상태 설정
+                      onChange={(e) => setStateless(e.target.checked)} // 값 변경 핸들러
+                    />
                     <label htmlFor="stateless">상태 비저장</label>
                   </div>
                   <div className="vnic_new_checkbox">
-                    <input type="checkbox" id="start_in_pause_mode" />
+                    <input
+                      type="checkbox"
+                      id="start_in_pause_mode"
+                      checked={startPaused} // 상태에 따라 체크 상태 설정
+                      onChange={(e) => setStartPaused(e.target.checked)} // 값 변경 핸들러
+                    />
                     <label htmlFor="start_in_pause_mode">일시정지 모드에서 시작</label>
                   </div>
                   <div className="vnic_new_checkbox">
-                    <input type="checkbox" id="prevent_deletion" />
+                    <input
+                      type="checkbox"
+                      id="prevent_deletion"
+                      checked={deleteProtected} // 상태에 따라 체크 상태 설정
+                      onChange={(e) => setDeleteProtected(e.target.checked)} // 값 변경 핸들러
+                    />
                     <label htmlFor="prevent_deletion">삭제 방지</label>
                   </div>
                 </div>
@@ -157,12 +199,6 @@ const TemplateEditModal = ({
             )}
             {selectedModalTab === 'console' && (
               <>
-                <div className="vnic_new_box" style={{ borderBottom: '1px solid gray', paddingBottom: '0.3rem' }}>
-                  <label htmlFor="console_optimization">최적화 옵션</label>
-                  <select id="console_optimization">
-                    <option value="서버">서버</option>
-                  </select>
-                </div>
                 <div className="p-1.5">
                   <div className="font-bold">그래픽 콘솔</div>
                   <div className="monitor">
