@@ -12,6 +12,7 @@ import TemplateEvents from './TemplateEvents.js';
 import TemplateNics from './TemplateNics.js';
 import TemplateEditModal from '../../Modal/TemplateEditModal'; // Import TemplateEditModal
 import TmplateDisks from './TmplateDisks.js';
+import TemplateStorage from './TemplateStorage.js';
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
 const TemplateInfo = () => {
@@ -55,6 +56,7 @@ const TemplateInfo = () => {
     vms: TemplateVm,
     nics: TemplateNics,
     disks: TmplateDisks,
+    storageDomain: TemplateStorage,
     events: TemplateEvents,
   };
 

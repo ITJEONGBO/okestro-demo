@@ -47,7 +47,7 @@ const DeleteModal = ({
   }, [data]);
 
   useEffect(() => {
-    console.log('Current data and Id in DeleteModal:', data, id);
+    console.log('Current data and Id in DeleteModal삭제데이터:', data, id);
   }, [data, id]);
 
   const handleFormSubmit = () => {

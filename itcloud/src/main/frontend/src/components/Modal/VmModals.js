@@ -23,12 +23,12 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
           vmId={selectedVm?.id || null}
           selectedVm={selectedVm} // 데이터센터 ID 포함
         />
-      ) : action === 'delete' ? (
+      ) : action === 'delete' ? ( // 삭제오류고치기
         <DeleteModal
           isOpen={isModalOpen}
-          type="VM"
+          type="Vm"
           onRequestClose={onRequestClose}
-          contentLabel="가상머신"
+          contentLabel={"가상머신"}
           data={selectedVm}
         />
       ):  action === 'migration' ? ( // 마이그레이션

@@ -1317,6 +1317,29 @@ export const useAllDisksFromTemplate = (tId, mapPredicate) => useQuery({
 })
 
 /**
+ * @name useAllStoragesFromTemplate
+ * @description Template 내 스토리지 목록조회 useQuery훅
+ * 
+ * @param {string} tId TemplateID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findStorageDomainsFromTemplate
+ */
+export const useAllStoragesFromTemplate = (tId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllStoragesFromTemplate', tId], 
+  queryFn: async () => {
+    console.log(`useAllStoragesFromTemplate ... ${tId}`);
+    const res = await ApiManager.findStorageDomainsFromTemplate(tId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  },
+  enabled: !!tId,
+  staleTime: 0,
+  cacheTime: 0,
+})
+
+/**
  * @name useAllNicsFromTemplate
  * @description  Template 내  이벤트 목록조회 useQuery훅
  * 
