@@ -22,6 +22,7 @@ const DeleteModal = ({
     contentLabel, 
     data,
     networkId // 외부에서 전달된 prop TODO 바꿔야함
+    
 }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -47,7 +48,7 @@ const DeleteModal = ({
   }, [data]);
 
   useEffect(() => {
-    console.log('Current data and Id in DeleteModal삭제데이터:', data, id);
+    console.log('Current data and Id in DeleteModal삭제데이터:', data, '아아'+id);
   }, [data, id]);
 
   const handleFormSubmit = () => {
@@ -104,7 +105,8 @@ const DeleteModal = ({
           navigate('/computing/rutil-manager/hosts');
         } else if (type === 'Vm') {
           // Datacenter 삭제 후 특정 경로로 이동
-          navigate('/computing/rutil-manager/vms');
+          // navigate('/computing/rutil-manager/vms');
+          navigate('/computing/vms');
         } else {
           // 다른 타입일 경우 기본 동작 수행
           const currentPath = location.pathname;

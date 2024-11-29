@@ -1084,7 +1084,7 @@ export const useEditVm = () => {
 
 /**
  * @name useDeleteVm
- * @description 가상머신 삭제 useMutation 훅
+ * @description 가상머신 삭제 useMutation 훅(아이디 잘뜸)
  * 
  * @returns useMutation 훅
  */
@@ -1235,6 +1235,42 @@ export const useExportVM = () => {
   });
 };
 
+/**
+ * @name useAddDataCenter
+ * @description 가상머신 네트워크 인터페이스 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddNicFromVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.addNicFromVM(vmId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('NetworkInterfaceFromVM');
+    },
+    onError: (error) => {
+      console.error('Error adding data center:', error);
+    },  
+  });
+};
+/** 수정해야됨
+ * @name useEditNicFromVM
+ * @description 가상머신 네트워크 인터페이스 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditNicFromVM = () => {
+  const queryClient = useQueryClient();  
+  return useMutation({
+    mutationFn: async ({  vmId,nicId, nicData }) => await ApiManager.editNicFromVM(vmId,  nicId, nicData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('NetworkInterfaceFromVM');
+    },
+    onError: (error) => {
+      console.error('Error editing data center:', error);
+    },
+  });
+};
 
 //endregion: VM
 
@@ -1407,14 +1443,18 @@ export const useEditTemplate = () => {
   const queryClient = useQueryClient();  
   return useMutation({
     mutationFn: async ({ templateId, templateData }) => await ApiManager.editTemplate(templateId, templateData),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      const { templateId } = variables; // variables에서 templateId 추출
       queryClient.invalidateQueries('allTemplates');
+      queryClient.invalidateQueries(['templateId', templateId]); // templateId 올바르게 사용
     },
     onError: (error) => {
       console.error('Error editing Template:', error);
     },
   });
 };
+
+
 /**
  * @name useDeleteTemplate
  * @description Template 삭제 useMutation 훅

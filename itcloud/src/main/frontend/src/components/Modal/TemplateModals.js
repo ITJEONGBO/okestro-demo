@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import TemplateEditModal from './TemplateEditModal';
 
 const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate }) => {
-  const TemplateModal = React.lazy(() => import('../Modal/TemplateModal'));
+  const TemplateEditModal = React.lazy(() => import('../Modal/TemplateEditModal'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
 
   if (!isModalOpen || !action) return null;
@@ -16,8 +16,8 @@ const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate 
         <TemplateEditModal
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
-        editMode={action === 'edit'}
-        templateId={selectedTemplate?.id || null}
+        editMode={true}
+        templateId={selectedTemplate?.id}
         />
       ): action === 'delete' ? (
         <DeleteModal

@@ -46,6 +46,7 @@ const VmDupl = ({
         isEditDisabled={!selectedVm?.id} 
         status={selectedVm?.status} 
         isMigrationDisabled={!selectedVm?.hostVo?.id} // 호스트 ID가 없으면 비활성화
+        setSelectedVm={setSelectedVm}
       />
       <span>id = {selectedVm?.id || ''}</span>  
       

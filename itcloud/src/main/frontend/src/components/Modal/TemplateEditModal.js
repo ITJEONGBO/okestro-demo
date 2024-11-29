@@ -20,9 +20,16 @@ const TemplateEditModal = ({
   const [startPaused, setStartPaused] = useState(false); // 일시정지상태에서시작
   const [deleteProtected, setDeleteProtected] = useState(false); // 일시정지상태에서시작
   
-  const { mutate: editCluster } = useEditTemplate();
+  const { mutate: editTemplate } = useEditTemplate();
 
-
+// // 칩셋 옵션(ui에서안씀)
+// const [chipsetOptions, setChipsetOptions] = useState([
+//   { value: 'CLUSTER_DEFAULT', label: '클러스터 기본값' },
+//   { value: 'I440FX_SEA_BIOS', label: 'BIOS의 I440FX 칩셋' },
+//   { value: 'Q35_OVMF', label: 'UEFI의 Q35 칩셋' },
+//   { value: 'Q35_SEA_BIOS', label: 'BIOS의 Q35 칩셋' },
+//   { value: 'Q35_SECURE_BOOT', label: 'UEFI SecureBoot의 Q35 칩셋' },
+// ]); 
   // 최적화옵션(영어로 값바꿔야됨)
   const [optimizeOption, setOptimizeOption] = useState([
     { value: 'DESKTOP', label: '데스크톱' },
@@ -36,7 +43,7 @@ const TemplateEditModal = ({
   //해당데이터 상세정보 가져오기
   const { data: templateData } = useTemplate(templateId);
   const [selectedOptimizeOption, setSelectedOptimizeOption] = useState('SERVER'); // 칩셋 선택
-
+  const [selectedChipset, setSelectedChipset] = useState('Q35_OVMF'); // 칩셋 선택
 
   // 초기값설정
   useEffect(() => {
@@ -51,12 +58,16 @@ const TemplateEditModal = ({
         setStartPaused(templateData?.startPaused);
         setDeleteProtected(templateData?.deleteProtected);
         setSelectedOptimizeOption(templateData?.optimizeOption || 'SERVER'); // 최적화 옵션
-        setChipsetFirmwareType(templateData?.chipsetFirmwareType || '');
+        setSelectedChipset(templateData?.chipsetFirmwareType || 'Q35_OVMF');
       }
     }
-  }, [isOpen, editMode, templateData]);
+  }, [isOpen, editMode, templateData,templateId]);
 
   const handleFormSubmit = () => {
+    if (!templateId) {
+      console.error('템플릿 ID가 없습니다. 수정 요청을 취소합니다.');
+      return;
+    }
     if (name === '') {
       alert("이름을 입력해주세요.");
       return;
@@ -66,20 +77,32 @@ const TemplateEditModal = ({
         name,
         description,
         comment,
+        chipsetFirmwareType:selectedChipset,
+        optimizeOption:selectedOptimizeOption,
+        osSystem
       };
+      console.log('템플릿 Data:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
       if (editMode) {
         dataToSubmit.id = id;
-        editCluster( {
-          onSuccess: () => {
-            alert("템플릿 편집 완료");
-            onRequestClose();
+        editTemplate(
+          {
+            templateId: id,
+            templateData: dataToSubmit,
           },
-          onError: (error) => {
-            console.error('Error editing cluster:', error);
+          {
+            onSuccess: () => {
+              alert("템플릿 편집 완료");
+              onRequestClose();
+            },
+            onError: (error) => {
+              console.error('Error editing cluster:', error);
+            },
           }
-        });
-      console.log('Data:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
-    }
+        );
+      }
+      
+
+    
   };
 
 
@@ -143,7 +166,8 @@ const TemplateEditModal = ({
                     <input
                       type="text"
                       id="template_name"
-                      defaultValue={editMode ? `${templateId}` : ''}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                   <div className="host_textbox">

@@ -16,7 +16,7 @@ import {
 } from '../../api/RQHook';
 import VmConnectionPlusModal from './VmConnectionPlusModal';
 import VmCreatePlusModal from './VmCreatePlusModal';
-Modal.setAppElement('#root');
+
 const VmModal = ({ 
   isOpen, 
   onRequestClose, 
@@ -90,6 +90,7 @@ const VmModal = ({
 // 가상머신 상세데이터 가져오기
   const { 
     data: vm, 
+    refetch: refetchvms,
   } = useVmById(vmId);
 
   // vm 데이터 변경 시 콘솔에 출력
@@ -377,7 +378,7 @@ useEffect(() => {
         
       }
     
-  }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption]);
+  }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption,vmId]);
 
 
   const resetForm = () => {

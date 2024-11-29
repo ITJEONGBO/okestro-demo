@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import VmonExportModal from './VmonExportModal';
 import VmAddTemplateModal from './VmAddTemplateModal';
 import VmMigrationModal from './VmMigrationModal';
 // import VmExportOVAModal from './VmExportOVAModal';

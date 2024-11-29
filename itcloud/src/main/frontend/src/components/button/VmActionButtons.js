@@ -20,7 +20,7 @@ const VmActionButtons = ({
   exportOva,
   isEditDisabled,
   isMigrationDisabled,
-  status
+  status,
 }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
@@ -101,7 +101,7 @@ const VmActionButtons = ({
                 onClick={() => handleClick(label, onClick)}
                 disabled={disabled}
                 className="dropdown-item"
-              >
+              > 
                 {label}
               </button>
             ))}

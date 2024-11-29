@@ -57,6 +57,7 @@ const VmTable = ({
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => {
+          console.log('Selected VM row:', row); // 선택된 행의 데이터를 확인
           // 선택된 VM 정보와 데이터센터 ID 포함
           setSelectedVm({
             ...row,
