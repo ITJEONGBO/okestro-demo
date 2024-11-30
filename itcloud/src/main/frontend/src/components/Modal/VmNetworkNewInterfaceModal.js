@@ -7,69 +7,121 @@ import { useAddNicFromVM, useEditNicFromVM, useNetworkInterfaceFromVM } from '..
 const VmNetworkNewInterfaceModal = ({
   isOpen,
   onRequestClose,
-  type = 'create', // 'create' or 'edit'
-  networkInterfaceData = {}, // 편집 모드에서 사용할 초기 데이터
-  onSubmit, // 부모 컴포넌트로 데이터 전달
+  editMode = false,
+  nicData,
+  vmId
 }) => {
+  const [id, setId] = useState('');
   const [name, setName] = useState('');
-  const [profile, setProfile] = useState('');
+  const [profile, setProfile] = useState(''); 
+  const [vnicProfileVoId, setVnicProfileVoId] = useState(''); 
+  const [vnicProfileVoName, setVnicProfileVoName] = useState(''); 
+  const [interface_, setInterface_] = useState('');//유형  NicInterface
+  const [linked, setLinked] = useState(''); //링크상태(link state) t(up)/f(down) -> nic 상태도 같이 변함
+  const [plugged, setPlugged] = useState(false); 
   const [status, setStatus] = useState('up');
+  const [macAddress, setMacAddress] = useState('');
   const [connectionStatus, setConnectionStatus] = useState('connected');
 
   const { mutate: addNicFromVM } = useAddNicFromVM();
   const { mutate: editNicFromVM } = useEditNicFromVM();
 
-    // 가상머신 내 네트워크인터페이스 목록
-    const {
-        data: nics,
-        } = useNetworkInterfaceFromVM((e) => ({
-        ...e,
-        }));
-    
-
-
+  
   useEffect(() => {
-    if (type === 'edit' && networkInterfaceData) {
-      setName(networkInterfaceData.name || '');
-      setProfile(networkInterfaceData.profile || '');
-      setStatus(networkInterfaceData.status || 'up');
-      setConnectionStatus(networkInterfaceData.connectionStatus || 'connected');
-    } else {
-      resetForm();
-    }
-  }, [type, networkInterfaceData]);
+    console.log('VM ID아아아:', vmId); // vmId 값 확인
+  }, [vmId]);
+
+    // 가상머신 내 네트워크인터페이스 목록
+    const { 
+      data: nics 
+    } = useNetworkInterfaceFromVM(vmId);
+
+      useEffect(() => {
+        if (editMode && nicData) {
+          setId(nicData.id);
+          setName(nicData.name);
+          setProfile(nicData.profile);
+          setVnicProfileVoId(nicData.vnicProfileVo?.id || '');
+          setVnicProfileVoName(nicData.vnicProfileVo.name || '');
+          setInterface_(nicData.interface_);
+          setLinked(nicData.linked);
+          setPlugged(nicData.plugged);
+          setStatus(nicData.status);
+          setMacAddress(nicData.macAddress);
+        } else {
+          resetForm();
+        }
+      }, [isOpen, editMode, nicData, vmId, nics]);
+
 
   const resetForm = () => {
+    setId('');
     setName('');
+    setInterface_('');
+    setLinked(false);
+    setPlugged(false);
     setProfile('');
+    setMacAddress('');
     setStatus('up');
     setConnectionStatus('connected');
   };
 
   const handleSubmit = () => {
     const dataToSubmit = {
+      vnicProfileVo: {
+        id: vnicProfileVoId || null, // null이면 서버에서 오류가 발생할 가능성 있음
+        name: vnicProfileVoName || '', // 빈 문자열 처리 필요
+      },
       name,
-      profile,
-      status,
-      connectionStatus,
+      interface_,
+      linked,
+      plugged,
+      macAddress
+      // profile,
+      // status,
+      // connectionStatus,
     };
+    console.log('네트워크인터페이스 생성, 편집데이터:', dataToSubmit); 
 
-    onSubmit(dataToSubmit);
-    onRequestClose();
+    if (editMode) {
+      dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
+      editNicFromVM({
+        nicId: id,
+        nicData: dataToSubmit
+      }, {
+        onSuccess: () => {
+          alert('네트워크인터페이스 편집 완료');
+          onRequestClose();
+        },
+        onError: (error) => {
+          console.error('Error editing network:', error);
+        }
+      });
+    } else {
+      addNicFromVM(dataToSubmit, {
+        onSuccess: () => {
+          alert('네트워크인터페이스 생성 완료');
+          onRequestClose();
+        },
+        onError: (error) => {
+          console.error('Error adding network:', error);
+        }
+      });
+    }
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      contentLabel={type === 'edit' ? '네트워크 인터페이스 편집' : '새 네트워크 인터페이스'}
+      contentLabel={editMode ? '네트워크 인터페이스 편집' : '새 네트워크 인터페이스 생성'}
       className="Modal"
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
       <div className="new_network_interface p">
         <div className="popup_header">
-          <h1>{type === 'edit' ? '네트워크 인터페이스 편집' : '새 네트워크 인터페이스'}</h1>
+          <h1>{editMode ? '네트워크 인터페이스 편집' : '새 네트워크 인터페이스 생성'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
@@ -165,7 +217,7 @@ const VmNetworkNewInterfaceModal = ({
 
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>
-          <button onClick={handleSubmit}>{type === 'edit' ? '편집' : '생성'}</button>
+          <button onClick={handleSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>

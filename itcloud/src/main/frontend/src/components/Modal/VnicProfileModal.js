@@ -5,7 +5,6 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useAddVnicProfile, useAllDataCenters, useEditVnicProfile, useAllNetworks, useAllVnicProfilesFromNetwork } from '../../api/RQHook'; // 네트워크 훅 임포트
 
 const VnicProfileModal = ({ 
-
   // 편집기능은 되지만 테이블 행이제일첫번째로 올라감
   isOpen, 
   onRequestClose,

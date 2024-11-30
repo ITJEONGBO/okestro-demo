@@ -85,7 +85,11 @@ const VmNetwork = ({vm}) => {
         
             <div className='network_interface_outer'>
               {nics?.map((nic, index) => (
-                <div  key={nic.id}>
+                <div
+                className={`network_content ${selectedNics?.id === nic.id ? 'selected' : ''}`}
+                onClick={() => setSelectedNics(nic)} // NIC 선택 시 상태 업데이트
+                key={nic.id}
+              >
                   <div className="network_content">
                     <div>
                       <FontAwesomeIcon icon={faChevronRight} onClick={() => toggleDetails(nic.id)} fixedWidth />
@@ -202,7 +206,8 @@ const VmNetwork = ({vm}) => {
                         isOpen={modals.create || modals.edit}
                         onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
                         editMode={modals.edit}
-                        nicId={selectedNics?.id || null}
+                        nicData={selectedNics}
+                        vmId={vm?.id || null}
                     />
                 )}
             </Suspense>
