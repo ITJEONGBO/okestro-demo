@@ -12,6 +12,13 @@ import {
   useNetworksFromDataCenter
 } from '../../api/RQHook';
 
+const FormGroup = ({ label, children }) => (
+  <div className="network_form_group">
+    <label>{label}</label>
+    {children}
+  </div>
+);
+
 const ClusterModal = ({ 
   isOpen, 
   onRequestClose, 
@@ -19,40 +26,32 @@ const ClusterModal = ({
   cId, 
   datacenterId
 }) => {
-  const [id, setId] = useState('');
-  const [dataCenterVoId, setDataCenterVoId] = useState('');  
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [comment, setComment] = useState('');
-  const [networkVoId, setNetworkVoId] = useState('');  
-  const [cpuArc, setCpuArc] = useState('');
-  const [cpuType, setCpuType] = useState('');
+  const [formState, setFormState] = useState({
+    id: '',
+    name: '',
+    description: '',
+    comment: '',
+    cpuArc: '',
+    cpuType: '',
+    biosType: '',
+    errorHandling: 'migrate',
+  });
+  const [dataCenterVoId, setDataCenterVoId] = useState('');
+  const [networkVoId, setNetworkVoId] = useState('');
   const [cpuOptions, setCpuOptions] = useState([]);
-  const [biosType, setBiosType] = useState('');
-  const [errorHandling, setErrorHandling] = useState('');
 
-  const { mutate: addCluster } = useAddCluster();
-  const { mutate: editCluster } = useEditCluster();
-
+  
    // 클러스터 데이터 가져오기
    const {
     data: cluster,
-    status: clusterStatus,
-    isRefetching: isClusterRefetching,
     refetch: refetchCluster,
-    isError: isClusterError,
-    error: clusterError,
     isLoading: isClusterLoading
   } = useCluster(cId);
   
   // 데이터센터 가져오기
   const {
     data: datacenters,
-    status: datacentersStatus,
-    isRefetching: isDatacentersRefetching,
     refetch: refetchDatacenters,
-    isError: isDatacentersError,
-    error: datacentersError,
     isLoading: isDatacentersLoading
   } = useAllDataCenters((e) => ({
     ...e,
@@ -61,11 +60,7 @@ const ClusterModal = ({
   // 데이터센터에서 클러스터 생성시 자신의 데이터센터 아이디 넣기
   const {
     data: dataCenter,
-    status: dataCenterStatus,
-    isRefetching: isDataCenterRefetching,
     refetch: dataCenterRefetch,
-    isError: isDataCenterError,
-    error: dataCenterError,
     isLoading: isDataCenterLoading,
   } = useDataCenter(datacenterId);
 
@@ -74,61 +69,42 @@ const ClusterModal = ({
     data: networks = [],
     refetch: refetchNetworks,
     isLoading: isNetworksLoading,
-  } = useNetworksFromDataCenter(!isDataCenterLoading && dataCenterVoId, (e) => ({
-    ...e,
-  }));
+  } = useNetworksFromDataCenter(
+    dataCenterVoId && !isDataCenterLoading ? dataCenterVoId : undefined,
+    (e) => ({
+      ...e,
+    })
+  );
 
+  const { mutate: addCluster } = useAddCluster();
+  const { mutate: editCluster } = useEditCluster();
 
-  useEffect(() => {
-    if (editMode && cluster) {  // 편집 모드일 때
-      setId(cluster?.id);
-      setDataCenterVoId(cluster?.dataCenterVo?.id || ''); // 클러스터의 데이터센터 ID 설정
-      setNetworkVoId(cluster?.networkVo?.id || ''); // 네트워크 ID 설정
-      setName(cluster?.name || '');
-      setDescription(cluster?.description || '');
-      setComment(cluster?.comment || '');
-      setBiosType(cluster?.biosType || '');
-      setCpuArc(cluster?.cpuArc || '');
-      setCpuType(cluster?.cpuType || '');
-      setErrorHandling(cluster?.errorHandling || '');
-    } else if (!editMode && !isDatacentersLoading) { // 생성 모드일 때
-      resetForm();
-      if (datacenterId) {
-        setDataCenterVoId(datacenterId); // 부모 컴포넌트에서 전달된 데이터센터 ID 설정
-      }
-    }
-  }, [editMode, cluster]);
   
-  useEffect(() => {
-    if (datacenters && datacenters.length > 0) {
-      setDataCenterVoId(datacenters[0].id); // 네트워크 목록의 첫 번째 항목으로 초기화
-    }
-  }, [datacenters]);
-
-  useEffect(() => {
-    if (networks && networks.length > 0) {
-      setNetworkVoId(networks[0].id); // 네트워크 목록의 첫 번째 항목으로 초기화
-    }
-  }, [networks]);
+  const cpuArcs = [
+    { value: "", label: "정의되지 않음" },
+    { value: "X86_64", label: "x86_64" },
+    { value: "PPC64", label: "ppc64" },
+    { value: "S390X", label: "s390x" },
+  ];
   
-  const resetForm = () => {
-    setDataCenterVoId('');
-    setName('');
-    setDescription('');
-    setComment('');
-    setNetworkVoId('');
-    setCpuArc('');
-    setCpuType('');
-    setBiosType('');
-    setErrorHandling('migrate');
-  };
-
-  // cpuArc, biosType
-  useEffect(() => {
-    let options = [];
-    switch (cpuArc) {
+  const biosTypeOptions = [
+    { value: "CLUSTER_DEFAULT", label: "자동 감지" },
+    { value: "Q35_OVMF", label: "UEFI의 Q35 칩셋" },
+    { value: "I440FX_SEA_BIOS", label: "BIOS의 I440FX 칩셋" },
+    { value: "Q35_SEA_BIOS", label: "BIOS의 Q35 칩셋" },
+    { value: "Q35_SECURE_BOOT", label: "UEFI SecureBoot의 Q35 칩셋" },
+  ];  
+  
+  const errorHandlingOptions = [
+    { value: "migrate", label: "가상 머신을 마이그레이션함" },
+    { value: "migrate_highly_available", label: "고가용성 가상 머신만 마이그레이션" },
+    { value: "do_not_migrate", label: "가상 머신은 마이그레이션 하지 않음" },
+  ];
+  
+  const cpuArcOptions = (arc) => {
+    switch (arc) {
       case 'X86_64':
-        options = [
+        return [
           'Intel Nehalem Family', 
           'Secure Intel Nehalem Family', 
           'Intel Westmere Family', 
@@ -154,23 +130,17 @@ const ClusterModal = ({
           'AMD EPYC',
           'Secure AMD EPYC'
         ];
-        break;
       case 'PPC64':
-        options = [
-          'IBM POWER8',
-          'IBM POWER9'
-        ];
-        break;
+        return ['IBM POWER8', 'IBM POWER9'];
       case 'S390X':
-        options = [
+        return [
           'IBM z114, z196',
           'IBM zBC12, zEC12',
           'IBM z13s, z13',
           'IBM z14'
         ];
-        break;
       default:
-        options = [
+        return [
           '자동 감지',
           'Intel Nehalem Family', 
           'Secure Intel Nehalem Family', 
@@ -204,83 +174,115 @@ const ClusterModal = ({
           'IBM z14'
         ];
     }
-    setCpuOptions(options);
-    if (!editMode) {  // 편집 모드가 아닐 때만 초기화
-      setCpuType('');
-      setBiosType('');
-    }
-  }, [cpuArc, editMode]);
+  };
 
-  // cpuArc에 따른 cpuType 변화
+  
   useEffect(() => {
-    if (editMode && cluster?.cpuType && cpuOptions.includes(cluster.cpuType)) {
-      setCpuType(cluster.cpuType);
+    if (editMode && cluster) {
+      setFormState({
+        id: cluster.id || '',
+        name: cluster.name || '',
+        description: cluster.description || '',
+        comment: cluster.comment || '',
+        cpuArc: cluster.cpuArc || '',
+        cpuType: cluster.cpuType || '',
+        biosType: cluster.biosType || '',
+        errorHandling: cluster.errorHandling || 'migrate',
+      });
+      setDataCenterVoId(cluster?.dataCenterVo?.id || '');
+      setNetworkVoId(cluster?.networkVo?.id || '');
+    } else if (!editMode && !isDatacentersLoading) {
+      resetForm();
+      setDataCenterVoId(datacenterId);
     }
-  }, [cpuOptions, editMode, cluster]);
+  }, [editMode, cluster, datacenterId]);
+
+  useEffect(() => {
+    if (!editMode && datacenters && datacenters.length > 0) {
+      setDataCenterVoId(datacenters[0].id);
+    }
+  }, [datacenters, editMode]);
+  
+  useEffect(() => {
+    if (!editMode && networks && networks.length > 0) {
+      setNetworkVoId(networks[0].id);
+    }
+  }, [networks, editMode]);
+
+  useEffect(() => {
+    const options = cpuArcOptions(formState.cpuArc);
+    setCpuOptions(options);
+    if (!editMode) {
+      setFormState((prev) => ({
+        ...prev,
+        cpuType: '', // CPU 유형 초기화
+        biosType: '', // BIOS 유형 초기화
+      }));
+    } else if (editMode && options.length > 0 && !options.includes(formState.cpuType)) {
+      // 현재 CPU 유형이 새 옵션 리스트에 없으면 초기화
+      setFormState((prev) => ({
+        ...prev,
+        cpuType: '',
+      }));
+    }
+  }, [formState.cpuArc, editMode]);
+  
+  const resetForm = () => {
+    setFormState({
+      id: '',
+      name: '',
+      description: '',
+      comment: '',
+      cpuArc: '',
+      cpuType: '',
+      biosType: '',
+      errorHandling: 'migrate',
+    });
+    setCpuOptions([]);
+    setDataCenterVoId('');
+    setNetworkVoId('');
+  };
+
+  const validateForm = () => {
+    if (!formState.name) return '이름을 입력해주세요.';
+    if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
+    if (!networkVoId) return '네트워크를 선택해주세요.';
+    return null;
+  };
 
 
-  // 폼 제출 핸들러
   const handleFormSubmit = () => {
+    const error = validateForm();
+    if (error) {
+      alert(error);
+      return;
+    }
+
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
-    if (!selectedDataCenter) {
-      alert("데이터 센터를 선택해주세요.");
-      return;
-    }
-
-    // 선택된 네트워크 찾기
     const selectedNetwork = networks.find((n) => n.id === networkVoId);
-    if (!selectedNetwork) {
-      alert("네트워크를 선택해주세요.");
-      return;
-    }
-
-    if(name === ''){
-      alert("이름을 입력해주세요.");
-      return;
-    }
 
     const dataToSubmit = {
-      dataCenterVo: {
-        id: selectedDataCenter.id,
-        name: selectedDataCenter.name,
-      },
-      name,
-      description,
-      comment,
-      networkVo: {
-        id: selectedNetwork.id,
-        name: selectedNetwork.name
-      },
-      cpuArc,
-      cpuType,
-      biosType,
-      errorHandling
+      dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+      networkVo: { id: selectedNetwork.id, name: selectedNetwork.name },
+      ...formState,
     };
-    console.log('Data:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
-    
+
     if (editMode) {
-      dataToSubmit.id = id;
-      editCluster({
-        clusterId: id,
-        clusterData: dataToSubmit
-      }, {
-        onSuccess: () => {
-          alert("클러스터 편집 완료");
-          onRequestClose();
-        },
-        onError: (error) => {
-          console.error('Error editing cluster:', error);
+      editCluster(
+        { clusterId: formState.id, clusterData: dataToSubmit },
+        {
+          onSuccess: () => {
+            alert('클러스터 편집 완료');
+            onRequestClose();
+          },
         }
-      });
+      );
     } else {
       addCluster(dataToSubmit, {
         onSuccess: () => {
-          alert("클러스터 생성 완료");
+          alert('클러스터 생성 완료');
           onRequestClose();
         },
-        onError: (error) => {
-          console.error('Error adding cluster:', error);
-        }
       });
     }
   };
@@ -304,160 +306,118 @@ const ClusterModal = ({
         </div>
 
         <div className="cluster_new_content">
-          <div className="network_form_group">
-            <label htmlFor="data_center">데이터 센터</label>
-            {datacenterId ? (
-              <input 
-                type="text" 
-                value={dataCenter?.name} 
-                readOnly 
-              />
-            ) : (
-              <select
-                id="data_center"
-                value={dataCenterVoId}
-                onChange={(e) => setDataCenterVoId(e.target.value)}
-                disabled={editMode}
-              >
-                {datacenters &&
-                  datacenters.map((dc) => (
-                    <option key={dc.id} value={dc.id}>
-                      {dc.name}: {dataCenterVoId} / {dc.id}
-                    </option>
-                  ))
-                }
-              </select>
-            )}
-          </div>
-          <hr/>
 
-          <div className="network_form_group">
-            <label htmlFor="name">이름</label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-          </div>
-
-          <div className="network_form_group">
-            <label htmlFor="description">설명</label>
-            <input
-              type="text"
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-
-          <div className="network_form_group">
-            <label htmlFor="comment">코멘트</label>
-            <input
-              type="text"
-              id="comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-          </div>
-
-          <div className="network_form_group">
-            <label htmlFor="network">관리 네트워크</label>
+          <FormGroup label="데이터 센터">
             <select
-              id="network"
-              value={networkVoId}
-              onChange={(e) => setNetworkVoId(e.target.value)}
-              disabled={editMode || isNetworksLoading}
+              value={dataCenterVoId}
+              onChange={(e) => setDataCenterVoId(e.target.value)}
+              disabled={editMode}
             >
-              {networks && networks.map((n) => (
-                <option key={n.id} value={n.id}>
-                  {n.name}: {networkVoId} / {n.id}
+              {datacenters && datacenters.map((dc) => (
+                <option key={dc.id} value={dc.id}>
+                  {dc.name} : {dataCenterVoId}
                 </option>
               ))}
             </select>
-          </div>
+          </FormGroup>
+          <hr/>
 
-          <div className="network_form_group">
-            <label htmlFor="cpuArc">CPU 아키텍처</label>
-            <select
-              id="cpuArc"
-              value={cpuArc}
-              onChange={(e) => setCpuArc(e.target.value)}
-            >
-              <option value="undefined">정의되지 않음</option>
-              <option value="X86_64">x86_64</option>
-              <option value="PPC64">ppc64</option>
-              <option value="S390X">s390x</option>
-            </select>
-          </div>
+          <FormGroup label="이름">
+            <input
+              type="text"
+              value={formState.name}
+              onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
+            />
+          </FormGroup>
 
-          <div className="network_form_group">
-            <label htmlFor="cpuType">CPU 유형</label>
+          <FormGroup label="설명">
+            <input
+              type="text"
+              value={formState.description}
+              onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
+            />
+          </FormGroup>
+
+          <FormGroup label="코멘트">
+            <input
+              type="text"
+              value={formState.comment}
+              onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
+            />
+          </FormGroup>
+
+          <FormGroup label="관리 네트워크">
             <select
-              id="cpuType"
-              value={cpuType}
-              onChange={(e) => setCpuType(e.target.value)}
-              disabled={cpuOptions.length === 0}
+              value={networkVoId}
+              onChange={(e) => setNetworkVoId(e.target.value)}
+              disabled={editMode}
             >
-            <option value="">선택</option>
-              {cpuOptions.map((option) => {
-                return <option key={option} value={option}>
-                  {option}
+              {networks && networks.map((n) => (
+                <option key={n.id} value={n.id}>
+                  {n.name} : {networkVoId}
                 </option>
-              })}
+              ))}
             </select>
-          </div>
-          
-          <div className="network_form_group">
-            <label htmlFor="biosType">칩셋/펌웨어 유형</label>
-              <select
-                id="biosType"
-                value={biosType}
-                onChange={(e) => setBiosType(e.target.value)}
-                disabled={cpuArc === 'PPC64' || cpuArc === 'S390X'}
-              >
-                <option value="CLUSTER_DEFAULT">자동 감지</option>
-                <option key="Q35_OVMF" value="Q35_OVMF">UEFI의 Q35 칩셋</option>
-                <option key="I440FX_SEA_BIOS" value="I440FX_SEA_BIOS">BIOS의 I440FX 칩셋</option>              
-                <option key="Q35_SEA_BIOS" value="Q35_SEA_BIOS">BIOS의 Q35 칩셋</option>
-                <option key="Q35_SECURE_BOOT" value="Q35_SECURE_BOOT">UEFI SecureBoot의 Q35 칩셋</option>
-              </select>
-              <span>{biosType}</span>
-          </div>
+          </FormGroup>
 
-          <div className='font-bold px-1.5 py-0.5'>
-            <label htmlFor="errorHandling">복구 정책</label>
-            <div className='host_text_radio_box px-1.5 py-0.5'>
-              <input 
-                type="radio" 
-                name="recovery_policy" 
-                value="migrate" 
-                checked={errorHandling === 'migrate'}
-                onChange={(e) => setErrorHandling(e.target.value)}
-              />
-              <label htmlFor="migration_option">가상 머신을 마이그레이션함</label>
-            </div>
-            <div className='host_text_radio_box px-1.5 py-0.5'>
-              <input 
-                type="radio" 
-                name="recovery_policy" 
-                value="migrate_highly_available"
-                checked={errorHandling === 'migrate_highly_available'}
-                onChange={(e) => setErrorHandling(e.target.value)}
-              />
-              <label htmlFor="high_usage_migration_option">고가용성 가상 머신만 마이그레이션</label>
-            </div>
-            <div className='host_text_radio_box px-1.5 py-0.5'>
-              <input 
-                type="radio"
-                name="recovery_policy" 
-                value="do_not_migrate" 
-                checked={errorHandling === 'do_not_migrate'}
-                onChange={(e) => setErrorHandling(e.target.value)}
-              />
-              <label htmlFor="no_migration_option">가상 머신은 마이그레이션 하지 않음</label>
-            </div>
-          </div>
+          <FormGroup label="CPU 아키텍처">
+            <select
+              value={formState.cpuArc}
+              onChange={(e) => setFormState((prev) => ({ ...prev, cpuArc: e.target.value }))}
+            >
+              {cpuArcs.map((arc) => (
+                <option key={arc.value} value={arc.value}>
+                  {arc.label}
+                </option>
+              ))}
+            </select>
+          </FormGroup>
+
+          <FormGroup label="CPU 유형">
+            <select
+              value={formState.cpuType}
+              onChange={(e) =>setFormState((prev) => ({ ...prev, cpuType: e.target.value }))}
+            >
+              <option value="">선택</option>
+              {cpuOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </FormGroup>
+
+          <FormGroup label="칩셋/펌웨어 유형">
+            <select
+              id="biosType"
+              value={formState.biosType}
+              onChange={(e) => setFormState((prev) => ({ ...prev, biosType: e.target.value }))}
+              disabled={editMode || formState.cpuArc === "PPC64" || formState.cpuArc === "S390X"}
+            >
+              {biosTypeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </FormGroup>
+
+          <FormGroup label="복구 정책">
+            {errorHandlingOptions.map((option) => (
+              <div key={option.value} className="host_text_radio_box px-1.5 py-0.5">
+                <input
+                  type="radio"
+                  name="recovery_policy"
+                  value={option.value}
+                  checked={formState.errorHandling === option.value}
+                  onChange={(e) =>
+                    setFormState((prev) => ({ ...prev, errorHandling: e.target.value }))
+                  }
+                />
+                <label htmlFor={option.value}>{option.label}</label>
+              </div>
+            ))}
+          </FormGroup>
 
         </div>
 
