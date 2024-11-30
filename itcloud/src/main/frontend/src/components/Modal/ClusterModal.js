@@ -74,7 +74,7 @@ const ClusterModal = ({
     data: networks = [],
     refetch: refetchNetworks,
     isLoading: isNetworksLoading,
-  } = useNetworksFromDataCenter(dataCenterVoId && dataCenterVoId.trim() ? dataCenterVoId : null, (e) => ({
+  } = useNetworksFromDataCenter(!isDataCenterLoading && dataCenterVoId, (e) => ({
     ...e,
   }));
 
@@ -98,28 +98,25 @@ const ClusterModal = ({
       }
     }
   }, [editMode, cluster]);
-
+  
   useEffect(() => {
     if (datacenters && datacenters.length > 0) {
-      setDataCenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
+      setDataCenterVoId(datacenters[0].id); // 네트워크 목록의 첫 번째 항목으로 초기화
     }
-    if(networks && networks.length > 0){
-      setNetworkVoId(networks[0].id);
+  }, [datacenters]);
+
+  useEffect(() => {
+    if (networks && networks.length > 0) {
+      setNetworkVoId(networks[0].id); // 네트워크 목록의 첫 번째 항목으로 초기화
     }
-  }, []);
+  }, [networks]);
   
   const resetForm = () => {
-    if (datacenters && datacenters.length > 0) {
-      setDataCenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
-    }
-    // setDataCenterVoId('');
+    setDataCenterVoId('');
     setName('');
     setDescription('');
     setComment('');
-    if(networks && networks.length > 0){
-      setNetworkVoId(networks[0].id);
-    }
-    // setNetworkVoId('');
+    setNetworkVoId('');
     setCpuArc('');
     setCpuType('');
     setBiosType('');
@@ -243,7 +240,7 @@ const ClusterModal = ({
     }
 
     const dataToSubmit = {
-      datacenterVo: {
+      dataCenterVo: {
         id: selectedDataCenter.id,
         name: selectedDataCenter.name,
       },
@@ -370,9 +367,9 @@ const ClusterModal = ({
               id="network"
               value={networkVoId}
               onChange={(e) => setNetworkVoId(e.target.value)}
-              disabled={editMode || isNetworksLoading || !dataCenterVoId || isDatacentersLoading} // 로딩 중일 때 비활성화
+              disabled={editMode || isNetworksLoading}
             >
-              {!isNetworksLoading && networks && networks.map((n) => (
+              {networks && networks.map((n) => (
                 <option key={n.id} value={n.id}>
                   {n.name}: {networkVoId} / {n.id}
                 </option>
