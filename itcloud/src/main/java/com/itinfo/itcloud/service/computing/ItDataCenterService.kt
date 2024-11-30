@@ -177,53 +177,48 @@ interface ItDataCenterService {
 
 @Service
 class DataCenterServiceImpl(
-
 ): BaseService(), ItDataCenterService {
-
 	@Autowired private lateinit var diskVmElementRepository: DiskVmElementRepository
 	@Autowired private lateinit var itGraphService: ItGraphService
 
 	@Throws(Error::class)
 	override fun findAll(): List<DataCenterVo> {
 		log.info("findAll ... ")
-		val res: List<DataCenter> =
-			conn.findAllDataCenters().getOrDefault(listOf())
+		val res: List<DataCenter> = conn.findAllDataCenters()
+			.getOrDefault(listOf())
 		return res.toDataCentersMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findOne(dataCenterId: String): DataCenterVo? {
 		log.info("findOne ... dataCenterId: {}", dataCenterId)
-		val res: DataCenter? =
-			conn.findDataCenter(dataCenterId).getOrNull()
+		val res: DataCenter? = conn.findDataCenter(dataCenterId)
+			.getOrNull()
 		return res?.toDataCenterVoInfo()
 	}
 
 	@Throws(Error::class)
 	override fun add(dataCenterVo: DataCenterVo): DataCenterVo? {
 		log.info("add ... ")
-		val res: DataCenter? =
-			conn.addDataCenter(
-				dataCenterVo.toAddDataCenterBuilder()
-			).getOrNull()
+		val addBuilder = dataCenterVo.toAddDataCenterBuilder()
+		val res: DataCenter? = conn.addDataCenter(addBuilder)
+			.getOrNull()
 		return res?.toDataCenterVoInfo()
 	}
 
 	@Throws(Error::class)
 	override fun update(dataCenterVo: DataCenterVo): DataCenterVo? {
 		log.info("update ... ")
-		val res: DataCenter? =
-			conn.updateDataCenter(
-				dataCenterVo.toEditDataCenterBuilder()
-			).getOrNull()
+		val editBuilder = dataCenterVo.toEditDataCenterBuilder()
+		val res: DataCenter? = conn.updateDataCenter(editBuilder)
+			.getOrNull()
 		return res?.toDataCenterVoInfo()
 	}
 
 	@Throws(Error::class)
 	override fun remove(dataCenterId: String): Boolean {
 		log.info("remove ... dataCenterId: {}", dataCenterId)
-		val res: Result<Boolean> =
-			conn.removeDataCenter(dataCenterId)
+		val res: Result<Boolean> = conn.removeDataCenter(dataCenterId)
 		return res.isSuccess
 	}
 
@@ -231,24 +226,27 @@ class DataCenterServiceImpl(
 	@Throws(Error::class)
 	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
 		log.info("findAllClustersFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Cluster> =
-			conn.findAllClustersFromDataCenter(dataCenterId).getOrDefault(listOf())
-//				.filter { it.cpuPresent() }
+		val res: List<Cluster> = conn.findAllClustersFromDataCenter(dataCenterId)
+			.getOrDefault(listOf())
+//			.filter { it.cpuPresent() }
 		return res.toClustersMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo> {
 		log.debug("findAllHostsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Host> =
-			conn.findAllHostsFromDataCenter(dataCenterId).getOrDefault(listOf())
-		return res.map { host ->
-			val hostNic: HostNic? =
-				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
+		val res: List<Host> = conn.findAllHostsFromDataCenter(dataCenterId)
+			.getOrDefault(listOf())
 
-			val usageDto: UsageDto? =
-				if(host.status() == HostStatus.UP) hostNic?.id()?.let { itGraphService.hostPercent(host.id(), it) }
-				else null
+		return res.map { host ->
+			val hostNic: HostNic? = conn.findAllNicsFromHost(host.id())
+				.getOrDefault(listOf()).firstOrNull()
+
+			val usageDto: UsageDto? = if(host.status() == HostStatus.UP && hostNic != null) {
+				itGraphService.hostPercent(host.id(), hostNic.id())
+			} else {
+				null
+			}
 			host.toHostMenu(conn, usageDto)
 		}
 	}
@@ -256,24 +254,25 @@ class DataCenterServiceImpl(
 	@Throws(Error::class)
 	override fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo> {
 		log.debug("findAllVmsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Vm> =
-			conn.findAllVmsFromDataCenter(dataCenterId).getOrDefault(listOf())
+		val res: List<Vm> = conn.findAllVmsFromDataCenter(dataCenterId)
+			.getOrDefault(listOf())
 		return res.toVmsMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<StorageDomain> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf())
+		val res: List<StorageDomain> = conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
+			.getOrDefault(listOf())
 		return res.toStorageDomainsMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo> {
-		val res: List<Disk> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf())
-				.flatMap { conn.findAllDisksFromStorageDomain(it.id()).getOrDefault(listOf()) }
+		val res: List<Disk> = conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
+			.getOrDefault(listOf())
+			.flatMap { conn.findAllDisksFromStorageDomain(it.id()).getOrDefault(listOf()) }
+
 		return res.map { disk ->
 			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
 				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
@@ -287,24 +286,23 @@ class DataCenterServiceImpl(
 	@Throws(Error::class)
 	override fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo> {
 		log.info("findAllNetworksFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Network> =
-			conn.findAllNetworks().getOrDefault(listOf())
-				.filter { it.dataCenter().id() == dataCenterId }
+		val res: List<Network> = conn.findAllNetworks()
+			.getOrDefault(listOf())
+			.filter { it.dataCenter().id() == dataCenterId }
 		return res.toNetworkVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo> {
 		log.info("findAllEventsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val dataCenter: DataCenter =
-			conn.findDataCenter(dataCenterId).getOrNull()
-				?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
-		val res: List<Event> =
-			conn.findAllEvents().getOrDefault(listOf())
-				.filter { (it.dataCenterPresent() && (
-								(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
-										(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter.name())
-				)) }
+		val dataCenter: DataCenter = conn.findDataCenter(dataCenterId)
+			.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
+		val res: List<Event> = conn.findAllEvents()
+			.getOrDefault(listOf())
+			.filter {(it.dataCenterPresent() && (
+						(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
+						(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter.name())
+			))}
 		return res.toEventVos()
 	}
 

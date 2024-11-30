@@ -20,7 +20,7 @@ const ClusterModal = ({
   datacenterId
 }) => {
   const [id, setId] = useState('');
-  const [datacenterVoId, setDatacenterVoId] = useState('');  
+  const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [comment, setComment] = useState('');
@@ -30,7 +30,7 @@ const ClusterModal = ({
   const [cpuOptions, setCpuOptions] = useState([]);
   const [biosType, setBiosType] = useState('');
   const [errorHandling, setErrorHandling] = useState('');
-  
+
   const { mutate: addCluster } = useAddCluster();
   const { mutate: editCluster } = useEditCluster();
 
@@ -71,61 +71,55 @@ const ClusterModal = ({
 
   // 네트워크 가져오기
   const {
-    data: networks,
+    data: networks = [],
     refetch: refetchNetworks,
-    isLoading: isNetworksLoading
-  } = useNetworksFromDataCenter(datacenterVoId || 'default', (e) => ({
+    isLoading: isNetworksLoading,
+  } = useNetworksFromDataCenter(dataCenterVoId && dataCenterVoId.trim() ? dataCenterVoId : null, (e) => ({
     ...e,
   }));
 
+
   useEffect(() => {
-    if (isOpen) {
-      if (editMode && cluster) {  // 편집 시
-        setId(cluster?.id);
-        setDatacenterVoId(cluster?.datacenterVo?.id);
-        setNetworkVoId(cluster?.networkVo?.id);
-        setName(cluster?.name);
-        setDescription(cluster?.description || '');
-        setComment(cluster?.comment || '');
-        setBiosType(cluster?.biosType);
-        setCpuArc(cluster?.cpuArc);
-        setCpuType(cluster?.cpuType);
-        setErrorHandling(cluster?.errorHandling);
-      } else if (!editMode && !isDatacentersLoading) { // 생성 시
-        resetForm();
-        if (datacenterId) {
-          setDatacenterVoId(datacenterId);
-        } else if (datacenters && datacenters.length > 0) {
-          setDatacenterVoId(datacenters[0].id);
-        }
+    if (editMode && cluster) {  // 편집 모드일 때
+      setId(cluster?.id);
+      setDataCenterVoId(cluster?.dataCenterVo?.id || ''); // 클러스터의 데이터센터 ID 설정
+      setNetworkVoId(cluster?.networkVo?.id || ''); // 네트워크 ID 설정
+      setName(cluster?.name || '');
+      setDescription(cluster?.description || '');
+      setComment(cluster?.comment || '');
+      setBiosType(cluster?.biosType || '');
+      setCpuArc(cluster?.cpuArc || '');
+      setCpuType(cluster?.cpuType || '');
+      setErrorHandling(cluster?.errorHandling || '');
+    } else if (!editMode && !isDatacentersLoading) { // 생성 모드일 때
+      resetForm();
+      if (datacenterId) {
+        setDataCenterVoId(datacenterId); // 부모 컴포넌트에서 전달된 데이터센터 ID 설정
       }
     }
-  }, [isOpen, editMode, cluster, datacenters, datacenterId]);
+  }, [editMode, cluster]);
 
   useEffect(() => {
-    if (!datacenterVoId && datacenters?.length > 0) {
-      setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
+    if (datacenters && datacenters.length > 0) {
+      setDataCenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
     }
-  }, [datacenters]);
-
-  useEffect(() => {
-    if (!editMode && datacenterVoId) {
-      refetchNetworks({ datacenterVoId }).then((res) => {
-        if (res?.data && res.data.length > 0) {
-          setNetworkVoId(res.data[0].id); // 첫 번째 호스트를 기본값으로 설정
-        }
-      }).catch((error) => {
-        console.error('Error fetching hosts:', error);
-      });
+    if(networks && networks.length > 0){
+      setNetworkVoId(networks[0].id);
     }
-  }, [editMode, datacenterVoId]);
+  }, []);
   
   const resetForm = () => {
-    setDatacenterVoId('');
+    if (datacenters && datacenters.length > 0) {
+      setDataCenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
+    }
+    // setDataCenterVoId('');
     setName('');
     setDescription('');
     setComment('');
-    setNetworkVoId('');
+    if(networks && networks.length > 0){
+      setNetworkVoId(networks[0].id);
+    }
+    // setNetworkVoId('');
     setCpuArc('');
     setCpuType('');
     setBiosType('');
@@ -230,7 +224,7 @@ const ClusterModal = ({
 
   // 폼 제출 핸들러
   const handleFormSubmit = () => {
-    const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
+    const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     if (!selectedDataCenter) {
       alert("데이터 센터를 선택해주세요.");
       return;
@@ -304,7 +298,6 @@ const ClusterModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      
       <div className="cluster_new_popup">
         <div className="popup_header">
           <h1>{editMode ? '클러스터 편집' : '새 클러스터'}</h1>
@@ -325,20 +318,19 @@ const ClusterModal = ({
             ) : (
               <select
                 id="data_center"
-                value={datacenterVoId}
-                onChange={(e) => setDatacenterVoId(e.target.value)}
+                value={dataCenterVoId}
+                onChange={(e) => setDataCenterVoId(e.target.value)}
                 disabled={editMode}
               >
                 {datacenters &&
                   datacenters.map((dc) => (
                     <option key={dc.id} value={dc.id}>
-                      {dc.name}
+                      {dc.name}: {dataCenterVoId} / {dc.id}
                     </option>
                   ))
                 }
               </select>
             )}
-            <span>{datacenterVoId}</span>
           </div>
           <hr/>
 
@@ -378,15 +370,14 @@ const ClusterModal = ({
               id="network"
               value={networkVoId}
               onChange={(e) => setNetworkVoId(e.target.value)}
-              disabled={editMode || isNetworksLoading || !datacenterVoId || isDatacentersLoading} // 로딩 중일 때 비활성화
+              disabled={editMode || isNetworksLoading || !dataCenterVoId || isDatacentersLoading} // 로딩 중일 때 비활성화
             >
               {!isNetworksLoading && networks && networks.map((n) => (
                 <option key={n.id} value={n.id}>
-                  {n.name}
+                  {n.name}: {networkVoId} / {n.id}
                 </option>
               ))}
             </select>
-            <span>{networkVoId}</span>
           </div>
 
           <div className="network_form_group">

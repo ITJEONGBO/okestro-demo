@@ -181,7 +181,7 @@ fun Template.toTemplateInfo(conn: Connection): TemplateVo {
 		creationTime { ovirtDf.format(this@toTemplateInfo.creationTime()) }
 		osSystem { if (this@toTemplateInfo.osPresent()) Os.findByCode(this@toTemplateInfo.os().type()).fullName else null }
 		chipsetFirmwareType { if (this@toTemplateInfo.bios().typePresent()) this@toTemplateInfo.bios().type().findBios() else null }
-		optimizeOption { this@toTemplateInfo.type().findVmType() } // 최적화 옵션
+		optimizeOption { this@toTemplateInfo.type().value() } // 최적화 옵션 this@toTemplateInfo.type().findVmType()
 		memorySize { this@toTemplateInfo.memory() }
 		cpuTopologyCore { this@toTemplateInfo.cpu().topology().coresAsInteger() }
 		cpuTopologySocket { this@toTemplateInfo.cpu().topology().socketsAsInteger() }
@@ -212,7 +212,6 @@ fun TemplateVo.toTemplateBuilder(): TemplateBuilder {
 }
 
 fun TemplateVo.toAddTemplateBuilder(): Template {
-
 	val diskAttachments: List<DiskAttachment> =
 		this@toAddTemplateBuilder.diskAttachmentVos.map { disk ->
 			DiskAttachmentBuilder()
@@ -241,8 +240,8 @@ fun TemplateVo.toEditTemplateBuilder(): Template {
 	return TemplateBuilder()
 		.id(this@toEditTemplateBuilder.id)
 		.os(OperatingSystemBuilder().type(this@toEditTemplateBuilder.osSystem))
-		.bios(BiosBuilder().type(BiosType.valueOf(this@toEditTemplateBuilder.chipsetFirmwareType)))
-		.type(VmType.valueOf(this@toEditTemplateBuilder.optimizeOption))
+		.bios(BiosBuilder().type(BiosType.fromValue(this@toEditTemplateBuilder.chipsetFirmwareType)))
+		.type(VmType.fromValue(this@toEditTemplateBuilder.optimizeOption))
 		.build()
 }
 

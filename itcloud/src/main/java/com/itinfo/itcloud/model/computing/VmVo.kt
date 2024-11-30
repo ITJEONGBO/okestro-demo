@@ -319,8 +319,7 @@ fun List<Vm>.toVmsIdName(): List<VmVo> =
     this@toVmsIdName.map { it.toVmIdName() }
 
 fun Vm.toVmMenu(conn: Connection): VmVo {
-    val cluster: Cluster? =
-        conn.findCluster(this@toVmMenu.cluster().id())
+    val cluster: Cluster? = conn.findCluster(this@toVmMenu.cluster().id())
             .getOrNull()
     val dataCenter: DataCenter? =
         cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }

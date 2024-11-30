@@ -10,8 +10,6 @@ import org.ovirt.engine.sdk4.builders.CpuBuilder
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder
 import org.ovirt.engine.sdk4.builders.ErrorHandlingBuilder
 import org.ovirt.engine.sdk4.builders.FencingPolicyBuilder
-import org.ovirt.engine.sdk4.builders.MigrationBandwidthBuilder
-import org.ovirt.engine.sdk4.builders.MigrationOptionsBuilder
 import org.ovirt.engine.sdk4.builders.NetworkBuilder
 import org.ovirt.engine.sdk4.builders.SkipIfConnectivityBrokenBuilder
 import org.ovirt.engine.sdk4.builders.SkipIfSdActiveBuilder
@@ -50,7 +48,7 @@ private val log = LoggerFactory.getLogger(ClusterVo::class.java)
  * @property version [String]
  * @property virtService [Boolean] virt 서비스 활성화
  * @property networkProvider [Boolean] 네트워크 공급자 여부 (clusters/id/externalnetworkproviders 에 포함되는지)
- * @property datacenterVo [IdentifiedVo]
+ * @property dataCenterVo [IdentifiedVo]
  * @property networkVo [NetworkVo] // 관리네트워크
  * @property hostSize [SizeVo]
  * @property vmSize [SizeVo]
@@ -71,8 +69,8 @@ class ClusterVo(
     val comment: String = "",
     val isConnected: Boolean = false,
     val ballooningEnabled: Boolean = false,
-    val biosType: String /*BiosType*/ = "",
-    val cpuArc: String/*Architecture*/ = "",
+    val biosType: String = "",
+    val cpuArc: String = "",
     val cpuType: String = "",
     val errorHandling: String/*MigrateOnError*/ = "",
     val fipsMode: FipsMode = FipsMode.UNDEFINED,
@@ -90,7 +88,7 @@ class ClusterVo(
     val version: String = "",
     val virtService: Boolean = false,
     val networkProvider: Boolean = false,
-	val datacenterVo: IdentifiedVo = IdentifiedVo(),
+	val dataCenterVo: IdentifiedVo = IdentifiedVo(),
     val networkVo: NetworkVo = NetworkVo(), // 관리네트워크
     val hostSize: SizeVo = SizeVo(),
     val vmSize: SizeVo = SizeVo(),
@@ -130,7 +128,7 @@ class ClusterVo(
 		private var bVersion: String = ""; fun version(block: () -> String?) { bVersion = block() ?: "" }
 		private var bVirtService: Boolean = false; fun virtService(block: () -> Boolean?) { bVirtService = block() ?: false }
 		private var bNetworkProvider: Boolean = false; fun networkProvider(block: () -> Boolean?) { bNetworkProvider = block() ?: false }
-		private var bDatacenterVo: IdentifiedVo = IdentifiedVo(); fun datacenterVo(block: () -> IdentifiedVo?) { bDatacenterVo = block() ?: IdentifiedVo() }
+		private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
 		private var bNetworkVo: NetworkVo = NetworkVo(); fun networkVo(block: () -> NetworkVo?) { bNetworkVo = block() ?: NetworkVo() }
 		private var bHostSize: SizeVo = SizeVo(); fun hostSize(block: () -> SizeVo?) { bHostSize = block() ?: SizeVo() }
 		private var bVmSize: SizeVo = SizeVo(); fun vmSize(block: () -> SizeVo?) { bVmSize = block() ?: SizeVo() }
@@ -139,7 +137,7 @@ class ClusterVo(
 		private var bTemplateVos: List<IdentifiedVo> = listOf();fun templateVos(block: () -> List<IdentifiedVo>?) { bTemplateVos = block() ?: listOf() }
 		private var bRequired: Boolean = false; fun required(block: () -> Boolean?) { bRequired = block() ?: false }
 
-		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDatacenterVo, bNetworkVo, bHostSize, bVmSize, bHostVos, bNetworkVos, bTemplateVos, /*bNetworkProperty, bAttached, */bRequired)
+		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenterVo, bNetworkVo, bHostSize, bVmSize, bHostVos, bNetworkVos, bTemplateVos, /*bNetworkProperty, bAttached, */bRequired)
 	}
 
 	companion object {
@@ -167,7 +165,7 @@ fun Cluster.toClusterMenu(conn: Connection): ClusterVo = ClusterVo.builder {
 	version { this@toClusterMenu.version().major().toString() + "." + this@toClusterMenu.version().minor() }
 	description { this@toClusterMenu.description() }
 	cpuType { if(this@toClusterMenu.cpuPresent()) this@toClusterMenu.cpu().type().toString() else null }
-	datacenterVo { if(this@toClusterMenu.dataCenterPresent()) conn.findDataCenter(this@toClusterMenu.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() else null }
+	dataCenterVo { if(this@toClusterMenu.dataCenterPresent()) conn.findDataCenter(this@toClusterMenu.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() else null }
 	hostSize { this@toClusterMenu.findHostCntFromCluster(conn) }
 	vmSize { this@toClusterMenu.findVmCntFromCluster(conn) }
 }
@@ -198,7 +196,7 @@ fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
 		bandwidth { this@toClusterInfo.migration().bandwidth().assignmentMethod() }
 		networkVo { network.toNetworkIdName() }
 		version { this@toClusterInfo.version().major().toString() + "." + this@toClusterInfo.version().minor() }
-		datacenterVo { if(this@toClusterInfo.dataCenterPresent()) conn.findDataCenter(this@toClusterInfo.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() else null }
+		dataCenterVo { if(this@toClusterInfo.dataCenterPresent()) conn.findDataCenter(this@toClusterInfo.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() else null }
 		vmSize { this@toClusterInfo.findVmCntFromCluster(conn) }
 	}
 }
@@ -230,7 +228,7 @@ fun List<Cluster>.toNetworkClusterVos(conn: Connection, networkId: String): List
  */
 fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 	return ClusterBuilder()
-		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.datacenterVo.id).build()) // 필수
+		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenterVo.id).build()) // 필수
 		.name(this@toClusterBuilder.name) // 필수
 		.cpu(CpuBuilder().architecture(Architecture.fromValue(this@toClusterBuilder.cpuArc)).type(this@toClusterBuilder.cpuType)) // 필수
 		.description(this@toClusterBuilder.description)
@@ -338,7 +336,7 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 		version { this@toClusterVo.version().major().toString() + "." + this@toClusterVo.version().minor() }
 		virtService { this@toClusterVo.virtService() }
 		networkProvider { this@toClusterVo.externalNetworkProviders().size != 0 } // 0이 아니라면 네트워크 공급자 존재
-		datacenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 		networkVo { manageNetworkVo }
 		hostSize { this@toClusterVo.findHostCntFromCluster(conn) }
 		vmSize { this@toClusterVo.findVmCntFromCluster(conn) }

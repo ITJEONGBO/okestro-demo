@@ -73,6 +73,9 @@ class DataCenterVo (
 	}
 }
 
+/**
+ * 단순 데이터센터 이름, 아이디 출력
+ */
 fun DataCenter.toDataCenterIdName(): DataCenterVo = DataCenterVo.builder {
 	id { this@toDataCenterIdName.id() }
 	name { this@toDataCenterIdName.name() }
@@ -83,16 +86,21 @@ fun List<DataCenter>.toDataCenterIdNames(): List<DataCenterVo> =
 /**
  * 데이터센터 목록
  */
-fun DataCenter.toDataCenterMenu(conn: Connection): DataCenterVo = DataCenterVo.builder {
-	id { this@toDataCenterMenu.id() }
-	name { this@toDataCenterMenu.name() }
-	comment { this@toDataCenterMenu.comment() }
-	description { this@toDataCenterMenu.description() }
-	status { this@toDataCenterMenu.status() }
-	version { this@toDataCenterMenu.version().major().toString() + "." + this@toDataCenterMenu.version().minor() }
-	storageType { this@toDataCenterMenu.local() }
-	clusterCnt { conn.findAllClustersFromDataCenter(this@toDataCenterMenu.id()).getOrDefault(listOf()).size }
-	hostCnt { conn.findAllHostsFromDataCenter(this@toDataCenterMenu.id()).getOrDefault(listOf()).size }
+fun DataCenter.toDataCenterMenu(conn: Connection): DataCenterVo {
+	val clusterSize = conn.findAllClustersFromDataCenter(this@toDataCenterMenu.id()).getOrDefault(listOf()).size
+	val hostSize = conn.findAllHostsFromDataCenter(this@toDataCenterMenu.id()).getOrDefault(listOf()).size
+
+	return DataCenterVo.builder {
+		id { this@toDataCenterMenu.id() }
+		name { this@toDataCenterMenu.name() }
+		comment { this@toDataCenterMenu.comment() }
+		description { this@toDataCenterMenu.description() }
+		status { this@toDataCenterMenu.status() }
+		version { this@toDataCenterMenu.version().major().toString() + "." + this@toDataCenterMenu.version().minor() }
+		storageType { this@toDataCenterMenu.local() }
+		clusterCnt { clusterSize }
+		hostCnt { hostSize }
+	}
 }
 fun List<DataCenter>.toDataCentersMenu(conn: Connection): List<DataCenterVo> =
 	this@toDataCentersMenu.map { it.toDataCenterMenu(conn) }
@@ -111,48 +119,6 @@ fun DataCenter.toDataCenterVoInfo(): DataCenterVo = DataCenterVo.builder {
 	version { this@toDataCenterVoInfo.version().major().toString() + "." + this@toDataCenterVoInfo.version().minor() }
 	status { this@toDataCenterVoInfo.status() }
 }
-
-fun DataCenter.toStorageDomainDataCenterVo(conn: Connection): DataCenterVo {
-	val storageDomains: List<StorageDomain> =
-		conn.findAllAttachedStorageDomainsFromDataCenter(this@toStorageDomainDataCenterVo.id())
-			.getOrDefault(listOf())
-
-	return DataCenterVo.builder {
-		id { this@toStorageDomainDataCenterVo.id() }
-		name { this@toStorageDomainDataCenterVo.name() }
-		storageDomainVos { storageDomains.toDomainStatuss(conn) }
-	}
-}
-fun List<DataCenter>.toStorageDomainDataCenterVos(conn: Connection): List<DataCenterVo> =
-	this@toStorageDomainDataCenterVos.map { it.toStorageDomainDataCenterVo(conn) }
-
-
-/**
- * 데이터센터 빌더
- */
-fun DataCenterVo.toDataCenterBuilder(): DataCenterBuilder {
-
-	return DataCenterBuilder()
-		.name(this@toDataCenterBuilder.name) // 이름
-		.description(this@toDataCenterBuilder.description) // 설명
-		.local(this@toDataCenterBuilder.storageType) // 스토리지 유형
-		.version(VersionBuilder().major(4).minor(7))
-		.quotaMode(this@toDataCenterBuilder.quotaMode)
-		.comment(this@toDataCenterBuilder.comment)
-}
-
-/**
- * 데이터센터 생성 빌더
- */
-fun DataCenterVo.toAddDataCenterBuilder(): DataCenter =
-	this@toAddDataCenterBuilder.toDataCenterBuilder().build()
-
-/**
- * 데이터센터 편집 빌더
- */
-fun DataCenterVo.toEditDataCenterBuilder(): DataCenter =
-	this@toEditDataCenterBuilder.toDataCenterBuilder().id(this@toEditDataCenterBuilder.id).build()
-
 
 
 fun DataCenter.toDataCenterVo(
@@ -194,3 +160,31 @@ fun List<DataCenter>.toDataCenterVos(
 ): List<DataCenterVo> =
 	this@toDataCenterVos.map { it.toDataCenterVo(conn, findClusters, findNetworks, findStorageDomains) }
 
+
+// region: builder
+
+/**
+ * 데이터센터 빌더
+ */
+fun DataCenterVo.toDataCenterBuilder(): DataCenterBuilder =
+	DataCenterBuilder()
+		.name(this@toDataCenterBuilder.name) // 이름
+		.description(this@toDataCenterBuilder.description) // 설명
+		.local(this@toDataCenterBuilder.storageType) // 스토리지 유형
+		.version(VersionBuilder().major(4).minor(7))
+		.quotaMode(this@toDataCenterBuilder.quotaMode)
+		.comment(this@toDataCenterBuilder.comment)
+
+/**
+ * 데이터센터 생성 빌더
+ */
+fun DataCenterVo.toAddDataCenterBuilder(): DataCenter =
+	this@toAddDataCenterBuilder.toDataCenterBuilder().build()
+
+/**
+ * 데이터센터 편집 빌더
+ */
+fun DataCenterVo.toEditDataCenterBuilder(): DataCenter =
+	this@toEditDataCenterBuilder.toDataCenterBuilder().id(this@toEditDataCenterBuilder.id).build()
+
+// endregion

@@ -98,90 +98,29 @@ const DiskModal = ({
       if (editMode && disk) {
         setId(disk?.id);
         setSize(disk?.virtualSize);
-        setAppendSize();
         setAlias(disk?.alias);
         setDescription(disk?.description);
-        setDatacenterVoId(disk?.dataCenterVo?.id);
-        setDomainVoId(disk?.storageDomainVo?.id);
-        setDiskProfileVoId(disk?.diskProfileVo?.id);
-        setWipeAfterDelete(disk?.wipeAfterDelete);
-        setSharable(disk?.sharable);
-        setBackup(disk?.backup);
-        setSparse(disk?.sparse);
-      } else if (!editMode && !isDatacentersLoading && !isDomainsLoading) {
+        setDatacenterVoId(disk?.dataCenterVo?.id || '');
+        setDomainVoId(disk?.storageDomainVo?.id || '');
+        setDiskProfileVoId(disk?.diskProfileVo?.id || '');
+        setWipeAfterDelete(disk?.wipeAfterDelete || false);
+        setSharable(disk?.sharable || false);
+        setBackup(disk?.backup || false);
+        setSparse(disk?.sparse || false);
+      } else if (!editMode && !isDatacentersLoading && !isDomainsLoading && !isDiskProfilesLoading) {
         resetForm();
-        if(datacenters && datacenters.length > 0){
+        if (datacenters && datacenters.length > 0) {
           setDatacenterVoId(datacenters[0].id);
         }
       }
     }
   }, [isOpen, editMode, disk, datacenters]);
-
-  // 데이터센터 기본 상태
-  useEffect(() => {
-    if (datacenters && datacenters.length > 0 && !datacenterVoId) {
-      setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터 선택
-    }
-  }, [datacenters]); // 의존성 배열에 datacenters 추가
-
-  useEffect(() => {
-    if (domains && domains.length > 0 && !domainVoId) {
-      setDomainVoId(domains[0].id); // 첫 번째 도메인으로 초기화
-    } else if (!domains || domains.length === 0) {
-      setDomainVoId(''); // 도메인이 없으면 빈 값
-      setDiskProfileVoId('');
-    }
-  }, [domains]);
-
-  useEffect(() => {
-    if (diskProfiles && diskProfiles.length > 0 && !diskProfiles) {
-      setDiskProfileVoId(diskProfiles[0].id);
-    } else if (!diskProfiles || diskProfiles.length === 0) {
-      setDiskProfileVoId('');
-    }
-  }, [diskProfiles]);
   
-  // 데이터센터 변경 시 스토리지 도메인 로드
-useEffect(() => {
-  if (datacenterVoId) {
-    domainsRefetch({ datacenterVoId })
-      .then((res) => {
-        if (res?.data && res.data.length > 0) {
-          setDomainVoId(res.data[0].id); // 첫 번째 도메인으로 기본값 설정
-        } else {
-          setDomainVoId(''); // 도메인이 없으면 빈 값으로 설정
-          setDiskProfileVoId(''); // 디스크 프로파일도 초기화
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching domains:', error);
-      });
-  } else {
-    setDomainVoId(''); // 데이터센터가 없으면 초기화
-    setDiskProfileVoId('');
-  }
-}, [datacenterVoId, domainsRefetch]);
-
-// 도메인이 없을 경우 디스크 프로파일을 검색하지 않음
-useEffect(() => {
-  if (domainVoId && domainVoId.trim() !== '') {
-    diskProfilesRefetch({ domainVoId })
-      .then((res) => {
-        if (res?.data && res.data.length > 0) {
-          setDiskProfileVoId(res.data[0].id); // 첫 번째 디스크 프로파일 선택
-        } else {
-          setDiskProfileVoId(''); // 결과가 없으면 초기화
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching disk profiles:', error);
-      });
-  } else {
-    setDiskProfileVoId(''); // 도메인 ID가 없을 경우 초기화
-  }
-}, [domainVoId, diskProfilesRefetch]);
-
-
+  useEffect(() => {
+    if (!datacenterVoId && datacenters?.length > 0) {
+      setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
+    }
+  }, [datacenters]);
   
   // 편집: 데이터센터에 따라 도메인 지정
   useEffect(() => {
@@ -197,6 +136,44 @@ useEffect(() => {
   }, [editMode, datacenterVoId]);
 
 
+  // useEffect(() => {
+  //   // 데이터센터가 변경되면 도메인 및 디스크 프로파일 초기화
+  //   if (datacenterVoId) {
+  //     setDomainVoId(''); // 도메인 초기화
+  //     setDiskProfileVoId(''); // 디스크 프로파일 초기화
+  
+  //     // 도메인 가져오기
+  //     domainsRefetch({ datacenterVoId })
+  //       .then((res) => {
+  //         if (res?.data?.length > 0) {
+  //           setDomainVoId(res.data[0].id); // 첫 번째 도메인 설정
+  //         } else {
+  //           console.warn("도메인이 없습니다.");
+  //         }
+  //       })
+  //       .catch((error) => console.error("도메인 가져오기 오류:", error));
+  //   }
+  // }, [datacenterVoId, domainsRefetch]);
+
+  // useEffect(() => {
+  //   // 도메인이 변경되면 디스크 프로파일 초기화
+  //   if (domainVoId && domainVoId.trim() !== '') {
+  //     setDiskProfileVoId(''); // 디스크 프로파일 초기화
+  
+  //     // 디스크 프로파일 가져오기
+  //     diskProfilesRefetch({ domainVoId })
+  //       .then((res) => {
+  //         if (res?.data?.length > 0) {
+  //           setDiskProfileVoId(res.data[0].id); // 첫 번째 디스크 프로파일 설정
+  //         } else {
+  //           console.warn("디스크 프로파일이 없습니다.");
+  //         }
+  //       })
+  //       .catch((error) => console.error("디스크 프로파일 가져오기 오류:", error));
+  //   }
+  // }, [domainVoId, diskProfilesRefetch]);
+
+
   const resetForm = () => {
     setSize('');
     setAppendSize('');
@@ -207,8 +184,8 @@ useEffect(() => {
     setDiskProfileVoId('');
     setWipeAfterDelete('');
     setSharable('');
-    setBackup('true');
-    setSparse('true');
+    setBackup();
+    setSparse();
   };
 
   const handleFormSubmit = () => {
@@ -413,9 +390,9 @@ useEffect(() => {
                   onChange={(e) => setDomainVoId(e.target.value)}
                   disabled={editMode}
                 >
-                  {domains && domains.map((domain) => (
-                    <option key={domain.id} value={domain.id}>
-                      {domain.name || `도메인 ${domain.id}`} {/* 디버깅용 */}
+                  {domains && domains.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name} 
                     </option>
                   ))}
                 </select>
@@ -467,6 +444,7 @@ useEffect(() => {
                 />
                 <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
               </div>
+{/* 
               <div>
                 <input 
                   type="checkbox" 
@@ -475,7 +453,8 @@ useEffect(() => {
                   onChange={(e) => setSharable(e.target.checked)}
                 />
                 <label htmlFor="sharable">공유 가능</label>
-              </div>
+              </div> */}
+
               <div>
                 <input 
                   type="checkbox" 
