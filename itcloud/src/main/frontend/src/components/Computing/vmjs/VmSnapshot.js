@@ -6,11 +6,12 @@ import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useSnapshotFromVM } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';
+import VmSnapshotAddModal from '../../Modal/VmSnapshotaddModal';
 
 // 스냅샷(각각 밑에 열리는 창 만들어야함)
 const VmSnapshot = ({vm}) => {
   const [activePopup, setActivePopup] = useState(null);
-  
+  const [selectedSnapshot, setSelectedSnapshot] = useState(null);
   const openPopup = (popupType) => {
       setActivePopup(popupType);
     };
@@ -55,7 +56,9 @@ const VmSnapshot = ({vm}) => {
     return (
       <>
         <div className="header_right_btns">
-          <button className="snap_create_btn" onClick={() => openPopup('new')}>생성</button>
+        <button className="snap_create_btn" onClick={() => openPopup('new')}>
+          생성
+        </button>
           <button className='disabled'>미리보기</button>
           <button className='disabled'>커밋</button>
           <button className='disabled'>되돌리기</button>
@@ -63,7 +66,8 @@ const VmSnapshot = ({vm}) => {
           <button className='disabled'>복제</button>
 
         </div>
-
+    <span>id = {selectedSnapshot?.id || ''}</span>
+    <div>
         <div className="snapshot_content">
         <div className="snapshot_content_left">
           <div><FontAwesomeIcon icon={faCamera} fixedWidth /></div>
@@ -182,9 +186,14 @@ const VmSnapshot = ({vm}) => {
         <div className={`snap_hidden_content ${activeSection === 'applications' ? 'active' : ''}`}>
           설치된 애플리케이션 섹션 내용
         </div>
+    </div>
 
+        <VmSnapshotAddModal
+        isOpen={activePopup === 'new'}
+        onRequestClose={closePopup}
+      />
           {/*생성 팝업 */}
-          <Modal
+          {/* <Modal
         isOpen={activePopup === 'new'}
         onRequestClose={closePopup}
         contentLabel="디스크 업로드"
@@ -222,7 +231,7 @@ const VmSnapshot = ({vm}) => {
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
-          </Modal>
+          </Modal> */}
       </>
     );
   };

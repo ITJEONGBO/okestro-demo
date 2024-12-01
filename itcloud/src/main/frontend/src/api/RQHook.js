@@ -909,6 +909,24 @@ export const useSnapshotFromVM = (vmId, mapPredicate) => useQuery({
 });
 
 /**
+ * @name useAddSnapshotFromVM
+ * @description 가상머신 스냅샷 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddSnapshotFromVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (snapshotData) => await ApiManager.addSnapshotFromVM(snapshotData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('SnapshotFromVM'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
+    },
+    onError: (error) => {
+      console.error('Error adding snapshot:', error);
+    },  
+  });
+};
+/**
  * @name useHostdevicesFromVM
  * @description 가상머신 내 호스트 장치 목록조회 useQuery훅
  * 
@@ -1070,9 +1088,8 @@ export const useEditVm = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ vmId, vmData }) => await ApiManager.editVM(vmId, vmData),
-    onSuccess: (data,{vmId}) => {
+    onSuccess: () => {
       queryClient.invalidateQueries('allVMs');
-      queryClient.invalidateQueries(['vmId', vmId]); // 수정된 네트워크 상세 정보 업데이트
     },
     onError: (error) => {
       console.error('Error editing VM:', error);
@@ -1272,6 +1289,29 @@ export const useEditNicFromVM = () => {
   });
 };
 
+/**
+ * @name useNetworkInterface
+ * @description 가상머신 네트워크 인터페이스 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useNetworkInterface = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({ vmId,nicId}) => {
+      // ID들이 제대로 전달되는지 확인하기 위해 로그 추가
+      console.log('Deleting VnicProfile with vmId:', vmId);
+      console.log('Deleting VnicProfile with nicId:', nicId);
+      return await ApiManager.deleteNicFromVM(vmId,nicId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries('NetworkInterfaceFromVM');
+    },
+    onError: (error) => {
+      console.error('Error deleting NetworkInterface:', error);
+    },
+  });
+};
 //endregion: VM
 
 //region: TEMPLATE ----------------템플릿---------------------

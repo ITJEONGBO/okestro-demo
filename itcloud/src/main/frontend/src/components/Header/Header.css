@@ -113,10 +113,10 @@
 .user_loginbox>div:hover{
     background-color: #ebececd8;
 }
-.logo{
+/* .logo{
     width: 22%;
     margin: 0 0.2rem;
-}
+} */
 .path{
     font-size:0.32rem;
     margin-bottom: 0.2rem;
@@ -132,3 +132,10 @@
     font-weight: bold;
     font-size: 0.4rem
   }
+.logo{
+    height:4vh;
+    margin-right:0.25rem;
+}
+.rutil_logo{
+    width:22%;
+}

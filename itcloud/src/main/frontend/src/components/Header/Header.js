@@ -7,6 +7,7 @@ import {
 import { adjustFontSize } from '../../UIEvent';
 import './Header.css';
 import logo from '../../img/logo.png'
+import rutil_logo from '../../img/rutil_logo.png'
 
 const Header = ({ setAuthenticated }) => {
     const navigate = useNavigate();
@@ -69,7 +70,7 @@ const Header = ({ setAuthenticated }) => {
         <div className="header">
             <div className="header_right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
                 <img className='logo' src={logo} alt="logo Image" />
-                <span>RutilVM</span>
+                <img className='rutil_logo' src={rutil_logo} alt="logo Image" />
             </div>
 
             <div className="header_left">

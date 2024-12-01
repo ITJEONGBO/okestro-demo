@@ -4,6 +4,7 @@ import {faArrowCircleUp, faChevronRight, faGlassWhiskey, faPlug, faTimes } from 
 import Modal from 'react-modal';
 import { useHostdevicesFromVM, useNetworkInterfaceFromVM } from '../../../api/RQHook';
 import VmNetworkNewInterfaceModal from '../../Modal/VmNetworkNewInterfaceModal';
+import DeleteModal from '../../Modal/DeleteModal';
 
 
 
@@ -82,11 +83,11 @@ const VmNetwork = ({vm}) => {
                 <button onClick={() => selectedNics?.id && toggleModal('edit', true)} disabled={!selectedNics?.id}>편집</button>
                 <button className="disabled">제거</button>
               </div>
-        
+            <span>id = {selectedNics?.id || ''}</span>
             <div className='network_interface_outer'>
               {nics?.map((nic, index) => (
                 <div
-                className={`network_content ${selectedNics?.id === nic.id ? 'selected' : ''}`}
+                className={`network_content2 ${selectedNics?.id === nic.id ? 'selected' : ''}`}
                 onClick={() => setSelectedNics(nic)} // NIC 선택 시 상태 업데이트
                 key={nic.id}
               >
@@ -209,6 +210,16 @@ const VmNetwork = ({vm}) => {
                         nicData={selectedNics}
                         vmId={vm?.id || null}
                     />
+                )}
+                {modals.delete && selectedNics && (
+                <DeleteModal
+                    isOpen={modals.delete}
+                    type='NetworkInterface'
+                    onRequestClose={() => toggleModal('delete', false)}
+                    contentLabel={'NetworkInterface'}
+                    data={ selectedNics}
+                    vmId={vm?.id}
+                />
                 )}
             </Suspense>
       </>

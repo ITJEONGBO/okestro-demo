@@ -2828,7 +2828,7 @@ display: flex; /* Flexbox 설정 추가 */
     display: flex;
     justify-content: space-between;
 }
-.network_content.selected {
+.network_content2.selected {
     border: 2px solid #007bff; /* 선택된 NIC의 테두리를 강조 */
     background-color: #f0f8ff; /* 선택된 배경 */
   }

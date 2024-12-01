@@ -11,7 +11,8 @@ import {
   useDeleteTemplate,
   useDeleteNetwork,
   useDeleteVnicProfile, // 네트워크 삭제 추가
-  useDeleteDomain // 스토리지도메인 삭제
+  useDeleteDomain, // 스토리지도메인 삭제
+  useNetworkInterface
   // useDeleteDisk,
 } from '../../api/RQHook';
 
@@ -35,7 +36,8 @@ const DeleteModal = ({
   const { mutate: deleteNetwork } = useDeleteNetwork();
   const { mutate: deleteVnicProfile } = useDeleteVnicProfile();
   const { mutate: deleteDomain } = useDeleteDomain();
-  
+  const { mutate: deleteNetworkInterface } = useNetworkInterface();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -86,6 +88,8 @@ const DeleteModal = ({
     } else if (type === 'Domain') {
       console.log('Deleting Domain');
       handleDelete(deleteDomain);
+    }else if (type === 'NetworkInterface') {
+      handleDelete(deleteNetworkInterface);
     }
   };
 
