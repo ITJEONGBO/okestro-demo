@@ -14,6 +14,13 @@ import {
   useDataCenter
 } from '../../api/RQHook';
 
+const FormGroup = ({ label, children }) => (
+  <div className="domain_new_select">
+    <label>{label}</label>
+    {children}
+  </div>
+);
+
 const DomainModal = ({
   isOpen,
   onRequestClose,
@@ -22,196 +29,190 @@ const DomainModal = ({
   datacenterId,  // 데이터센터
   hostId,  // 호스트
 }) => {
-  const [id, setId] = useState('');
-  const [datacenterVoId, setDatacenterVoId] = useState('');  
-  const [domainType, setDomainType] = useState('');
-  const [storageType, setStorageType] = useState('');
-  const [name, setName] = useState('');
-  const [comment, setComment] = useState('');
-  const [description, setDescription] = useState('');
-  const [warning, setWarning] = useState('');
+  const [formState, setFormState] = useState({
+    id: '',
+    domainType: '',
+    storageType: '',
+    name: '',    
+    comment: '',
+    description: '',
+    warning: '',
+    spaceBlocker: '',
+    storagePath: '' , //nfs
+    storageAddress: '',
+  });
+  const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [hostVoName, setHostVoName] = useState('');
-  const [spaceBlocker, setSpaceBlocker] = useState('');
+  const [storageTypes, setStorageTypes] = useState([]);
 
   const { mutate: addDomain } = useAddDomain();
   const { mutate: editDomain } = useEditDomain();
 
+
   // 도메인 데이터 가져오기
   const {
     data: domain,
-    status: domainStatus,
-    isRefetching: isDomainRefetching,
-    refetch: domainRefetch,
-    isError: isDomainError,
-    error: domainError,
+    refetch: refetchDomain,
     isLoading: isDomainLoading,
   } = useDomainById(domainId);
 
   // 데이터센터 가져오기
   const {
-    data: datacenters,
-    status: datacentersStatus,
-    isRefetching: isDatacentersRefetching,
+    data: dataCenters = [],
     refetch: refetchDatacenters,
-    isError: isDatacentersError,
-    error: datacentersError,
     isLoading: isDatacentersLoading
-  } = useAllDataCenters((e) => ({
-    ...e,
-  }));
+  } = useAllDataCenters((e) => ({...e,}));
 
   const {
     data: dataCenter,
-    status: dataCenterStatus,
-    isRefetching: isDataCenterRefetching,
-    refetch: dataCenterRefetch,
-    isError: isDataCenterError,
-    error: dataCenterError,
+    refetch: refetchDataCenter,
     isLoading: isDataCenterLoading,
   } = useDataCenter(datacenterId);
 
   // 호스트 가져오기
   const {
-    data: hosts,
-    status: hostsStatus,
+    data: hosts = [],
     refetch: refetchHosts,
     isLoading: isHostsLoading,
-    isError: isHostsError,
-  } = useHostsFromDataCenter(datacenterVoId || 'default-datacenter-id', (e) => ({
-    ...e,
-  }));
+  } = useHostsFromDataCenter(
+    dataCenterVoId ? dataCenterVoId : undefined, 
+    (e) => ({...e,})
+  );
 
   const [activeTab, setActiveTab] = useState('target_lun'); // 기본 탭 설정
+  const handleTabChange = (tab) => {setActiveTab(tab);};
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab); // 탭 변경 시 상태 업데이트
+  const domainTypes = [
+    { value: "DATA", label: "데이터" },
+    { value: "ISO", label: "ISO" },
+    { value: "EXPORT", label: "내보내기" },
+  ];
+
+  const storageTypeOptions = (dType) => {
+    switch (dType) {
+      case 'DATA':
+        return ['NFS', 'iSCSI', 'fc'];
+      case 'ISO':
+        return ['NFS'];
+      case 'EXPORT':
+        return ['NFS'];
+      default: 
+        return ['NFS', 'iSCSI', 'fc'];
+    }
   };
   
   useEffect(() => {
-    if (!datacenterVoId && datacenters?.length > 0) {
-      setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
-    }
-  }, [datacenters]);
-
-  useEffect(() => {
-    if (datacenterVoId) {
-      refetchHosts({ datacenterVoId }).then((res) => {
-        if (res?.data && res.data.length > 0) {
-          setHostVoName(res.data[0].name); // 첫 번째 호스트를 기본값으로 설정
-        }
-      }).catch((error) => {
-        console.error('Error fetching hosts:', error);
+    if (editMode && domain) {
+      console.log('Setting edit mode state with domain:', domain); // 디버깅 로그
+      setFormState({
+        id: domain.id || '',
+        domainType: domain.domainType || '',
+        storageType: domain.storageType || '',
+        name: domain.name || '',    
+        comment: domain.comment || '',
+        description: domain.description || '',
+        warning: domain.warning || '',
+        spaceBlocker: domain.spaceBlocker || '',
+        storagePath: domain.storagePath || '',
+        // storageAddress
       });
+      setDataCenterVoId(domain?.datacenterVo?.id);
+      setHostVoName(domain?.hostVo?.name);
+    } else if (!editMode && !isDatacentersLoading) {
+      resetForm();
+      setDataCenterVoId(datacenterId);
     }
-  }, [datacenterVoId]);
+  }, [editMode, domain, datacenterId]);
 
-  const handleDomainTypeChange = (event) => {
-    setDomainType(event.target.value);
   
-    // domainType 변경 시 storageType 기본값 설정
-    if (event.target.value === 'ISO' || event.target.value === 'EXPORT') {
-      setStorageType('NFS'); // ISO와 EXPORT에서는 NFS만 선택 가능
-    } else {
-      setStorageType(''); // DATA 타입일 경우 초기화
-    }
-  };
-  
-  const handleStorageTypeChange = (event) => {
-    setStorageType(event.target.value);
-  };
-  
-  // 스토리지 유형 옵션 필터링
-  const getStorageTypeOptions = () => {
-    if (domainType === 'ISO' || domainType === 'EXPORT') {
-      return ['NFS']; // ISO나 EXPORT일 경우 NFS만 허용
-    }
-    return ['NFS', 'iSCSI', 'fc']; // DATA일 경우 모든 옵션 허용
-  };
-  
-  
-  // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
-    if (isOpen) { // 모달이 열릴 때 상태를 설정
-      if (editMode && domain) {
-        console.log('Setting edit mode state with domain:', domain); // 디버깅 로그
-        setId(domain?.id);
-        setDatacenterVoId(domain?.datacenterVo?.id);
-        setName(domain?.name);
-        setDescription(domain?.description);
-        setComment(domain?.comment);
-        setDomainType(domain?.domainType);
-        setStorageType(domain?.storageType);
-      } else if (!editMode) { // 생성 시
-        resetForm();
-        if (datacenterId) {
-          setDatacenterVoId(datacenterId);
-        } else if (datacenters && datacenters.length > 0) {
-          setDatacenterVoId(datacenters[0].id);
-        }
-      }
+    if (!editMode && dataCenters && dataCenters.length > 0) {
+      setDataCenterVoId(dataCenters[0].id);
     }
-  }, [isOpen, editMode, domain, datacenters, datacenterId]);
+  }, [dataCenters, editMode]);
+  
+  useEffect(() => {
+    if (!editMode && hosts && hosts.length > 0) {
+      setHostVoName(hosts[0].name);
+    }
+  }, [hosts, editMode]);
+
+  useEffect(() => {
+    const options = storageTypeOptions(formState.domainType);
+    setStorageTypes(options);
+    if (!editMode) {
+      setFormState((prev) => ({
+        ...prev,
+        storageType: '',
+      }));
+    } else if (editMode && options.length > 0 && !options.includes(formState.storageType)) {
+      // 현재 CPU 유형이 새 옵션 리스트에 없으면 초기화
+      setFormState((prev) => ({
+        ...prev,
+        storageType: '',
+      }));
+    }
+  }, [formState.domainType, editMode]);
 
 
   const resetForm = () => {
-    setDatacenterVoId('');
-    setName('');
-    setDescription('');
-    setComment('');
+    setFormState({
+      id: '',
+      domainType: '',
+      storageType: '',
+      name: '',
+      comment: '',
+      description: '',
+      warning: '',
+      spaceBlocker: '',
+      storagePath: '',
+      storageAddress: '',
+    });
+    setStorageTypes([]);
+    setDataCenterVoId('');
     setHostVoName('');
-    setStorageType('NFS');
+  };
+
+  const validateForm = () => {
+    if (!formState.name) return '이름을 입력해주세요.';
+    if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
+    if (!hostVoName) return '호스트를 선택해주세요.';
+    // if (!formState.storagePath) return '경로를 입력해주세요';
+    return null;
   };
 
   const handleFormSubmit = () => {
-    const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
-    if (!selectedDataCenter) {
-      alert("데이터 센터를 선택해주세요.");
-      return;
-    }
-    const selectedHost = hosts.find((host) => host.name === hostVoName);
-    if (!selectedHost) {
-      alert("호스트를 선택해주세요.");
-      return;
-    }
+    // const error = validateForm();
+    // if (error) {
+    //   alert(error);
+    //   return;
+    // }
+    const selectedDataCenter = dataCenters.find((dc) => dc.id === dataCenterVoId);
+    const selectedHost = hosts.find((h) => h.name === hostVoName);;
 
     const dataToSubmit = {
-      datacenterVo: {
-        id: selectedDataCenter.id,
-        name: selectedDataCenter.name,
-      },
-      name,
-      description,
-      comment,
-      hostVo: {
-        id: selectedHost.id,
-        name: selectedHost.name
-      },
+      dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+      hostVo: { id: selectedHost.id, name: selectedHost.name },
+      ...formState,
     };
+
     console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
     if (editMode) {
-      dataToSubmit.id = id; // 수정 모드에서는 id를 추가
-      editDomain({
-        domainId: id,
-        domainData: dataToSubmit
-      }, {
-        onSuccess: () => {
-          alert('도메인 편집 완료');
-          onRequestClose();
-        },
-        onError: (error) => {
-          console.error('Error editing domain:', error);
-        }
-      });
+      editDomain(
+        {domainId: formState.id, domainData: dataToSubmit}, 
+        {
+          onSuccess: () => {
+            alert('도메인 편집 완료');
+            onRequestClose();
+          },
+        });
     } else {
       addDomain(dataToSubmit, {
         onSuccess: () => {
           alert('도메인 생성 완료');
           onRequestClose();
         },
-        onError: (error) => {
-          console.error('Error adding domain:', error);
-        }
       });
     }
   };
@@ -235,168 +236,163 @@ const DomainModal = ({
 
         <div className="storage_domain_new_first">
           <div className="domain_new_left">
-            <div className="domain_new_select">
-              <label htmlFor="data_hub_location">데이터 센터</label>
-              {datacenterId ? (
-                <input 
-                  type="text" 
-                  value={dataCenter?.name} 
-                  readOnly 
-                />
+
+          <FormGroup label="데이터 센터">
+            {datacenterId ? (
+              <input 
+                type="text" 
+                value={dataCenter?.name} 
+                readOnly 
+              />
             ) : (
               <select
-                id="data_center"
-                value={datacenterVoId}
-                onChange={(e) => setDatacenterVoId(e.target.value)}
+                value={dataCenterVoId}
+                onChange={(e) => setDataCenterVoId(e.target.value)}
                 disabled={editMode}
               >
-                {datacenters &&
-                  datacenters.map((dc) => (
-                    <option key={dc.id} value={dc.id}>
-                      {dc.name}
-                    </option>
-                  ))}
+                {dataCenters && dataCenters.map((dc) => (
+                  <option key={dc.id} value={dc.id}>
+                    {dc.name} : {dataCenterVoId}
+                  </option>
+                ))}
               </select>
             )}
-            <span>{datacenterVoId}</span>
-          </div>
-        <div className="domain_new_select">
-          <label htmlFor="domainType">도메인 기능</label>
-          <select
-            id="domainType"
-            value={domainType}
-            onChange={handleDomainTypeChange}
-            disabled={editMode}
-          >
-            <option value="DATA">데이터</option>
-            <option value="ISO">ISO</option>
-            <option value="EXPORT">내보내기</option>
-          </select>
-        </div>
+          </FormGroup>
 
-        <div className="domain_new_select">
-          <label htmlFor="storageType">스토리지 유형</label>
-          <select
-            id="storageType"
-            value={storageType}
-            onChange={handleStorageTypeChange}
-          >
-            {getStorageTypeOptions().map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="domain_new_select" style={{ marginBottom: 0 }}>
-          <label htmlFor="host">호스트</label>
-          <select 
-            id="host" 
-            value={hostVoName}
-            onChange={(e) => setHostVoName(e.target.value)}
-            disabled={editMode}
-          >
-            {hosts && 
-              hosts.map((n) => {
-                return <option value={n.name}>
-                  {n.name}
+          <FormGroup label="도메인 유형">
+            <select
+              value={formState.domainType}
+              onChange={(e) => setFormState((prev) => ({ ...prev, domainType: e.target.value }))}
+              disabled={editMode}
+            >
+              {domainTypes.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
                 </option>
-              })
-            }
-          </select>
-        </div>
+              ))}
+            </select>
+          </FormGroup>
+
+          <FormGroup label="스토리지 유형">
+            <select
+              value={formState.storageType}
+              onChange={(e) =>setFormState((prev) => ({ ...prev, storageType: e.target.value }))}
+            >
+              {storageTypes.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </FormGroup>
+
+          <FormGroup label="호스트">
+            <select
+              value={hostVoName}
+              onChange={(e) => setHostVoName(e.target.value)}
+              disabled={editMode}
+            >
+              {hosts && hosts.map((h) => (
+                <option key={h.name} value={h.name}>
+                  {h.name} : {h.id}
+                </option>
+              ))}
+            </select>
+          </FormGroup>
       </div>
 
       <div className="domain_new_right">
-        <div className="domain_new_select">
-          <label>이름</label>
+        <FormGroup label="이름">
           <input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)} 
+            value={formState.name}
+            onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
           />
-        </div>
-        <div className="domain_new_select">
-          <label>설명</label>
+        </FormGroup>
+        
+        <FormGroup label="설명">
           <input
             type="text"
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)} 
+            value={formState.description}
+            onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
           />
-        </div>
-        <div className="domain_new_select">
-          <label>코멘트</label>
+        </FormGroup>
+
+        <FormGroup label="코멘트">
           <input
             type="text"
-            id="comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)} 
+            value={formState.comment}
+            onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
           />
-        </div>
+        </FormGroup>
       </div>
     </div>
 
-        <div className="storage_specific_content">
-  {storageType === 'NFS' && (
-    <div className="storage_popup_NFS">
-      <div className="network_form_group">
-        <label htmlFor="nfsPath">NFS 서버 경로</label>
-        <input
-          type="text"
-          id="nfsPath"
-          placeholder="예: myserver.mydomain.com/my/local/path"
-        />
-      </div>
-    </div>
-  )}
-
-  {storageType === 'iSCSI' && (
-    <div className="storage_popup_iSCSI">
-      <div className="iscsi_buttons">
-        <button
-          className={`tab_button ${activeTab === 'target_lun' ? 'active' : ''}`}
-          onClick={() => setActiveTab('target_lun')}
-        >
-          대상 - LUN
-        </button>
-        <button
-          className={`tab_button ${activeTab === 'lun_target' ? 'active' : ''}`}
-          onClick={() => setActiveTab('lun_target')}
-        >
-          LUN - 대상
-        </button>
-      </div>
-
-      {activeTab === 'target_lun' && (
-        <div className="tab_content">
-          <p>LUN 관련 설정 화면 (대상 - LUN)</p>
+    <div className="storage_specific_content">
+      {formState.storageType === 'NFS' && (
+        <div className="storage_popup_NFS">
+          <div className="network_form_group">
+            <label htmlFor="nfsPath">NFS 서버 경로</label>
+            <input
+              type="text"
+              placeholder="예: myserver.mydomain.com"
+              value={formState.storageAddress}
+              onChange={(e) => setFormState((prev) => ({ ...prev, storageAddress: e.target.value }))}
+            />
+            <input
+              type="text"
+              placeholder="예: /my/local/path"
+              value={formState.storagePath}
+              onChange={(e) => setFormState((prev) => ({ ...prev, storagePath: e.target.value }))}
+            />
+          </div>
         </div>
       )}
 
-      {activeTab === 'lun_target' && (
-        <div className="tab_content">
-          <p>LUN 관련 설정 화면 (LUN - 대상)</p>
+      {formState.storageType === 'iSCSI' && (
+        <div className="storage_popup_iSCSI">
+          <div className="iscsi_buttons">
+            <button
+              className={`tab_button ${activeTab === 'target_lun' ? 'active' : ''}`}
+              onClick={() => setActiveTab('target_lun')}
+            >
+              대상 - LUN
+            </button>
+            <button
+              className={`tab_button ${activeTab === 'lun_target' ? 'active' : ''}`}
+              onClick={() => setActiveTab('lun_target')}
+            >
+              LUN - 대상
+            </button>
+          </div>
+
+          {activeTab === 'target_lun' && (
+            <div className="tab_content">
+              <p>LUN 관련 설정 화면 (대상 - LUN)</p>
+            </div>
+          )}
+
+          {activeTab === 'lun_target' && (
+            <div className="tab_content">
+              <p>LUN 관련 설정 화면 (LUN - 대상)</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {formState.storageType === 'fc' && (
+        <div className="storage_popup_fc">
+          <div className="fc_table">
+            <Table
+              columns={TableColumnsInfo.CLUSTERS_ALT}
+              data={domain} // 데이터가 적절히 전달되었는지 확인
+              onRowClick={() => {}}
+              shouldHighlight1stCol={true}
+            />
+          </div>
         </div>
       )}
     </div>
-  )}
-
-  {storageType === 'fc' && (
-    <div className="storage_popup_fc">
-      <div className="fc_table">
-        <Table
-          columns={TableColumnsInfo.CLUSTERS_ALT}
-          data={domain} // 데이터가 적절히 전달되었는지 확인
-          onRowClick={() => {}}
-          shouldHighlight1stCol={true}
-        />
-      </div>
-    </div>
-  )}
-</div>
 
 
         {/* {storageType === 'NFS' && (

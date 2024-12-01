@@ -276,8 +276,8 @@ fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
 		.name(this@toAddStorageDomainBuilder.name)
 		.type(StorageDomainType.fromValue(this@toAddStorageDomainBuilder.domainType))
 		.description(this@toAddStorageDomainBuilder.description)
-		.warningLowSpaceIndicator(this@toAddStorageDomainBuilder.warning)
-		.criticalSpaceActionBlocker(this@toAddStorageDomainBuilder.spaceBlocker)  //디스크 공간 동작 차단
+//		.warningLowSpaceIndicator(this@toAddStorageDomainBuilder.warning)
+//		.criticalSpaceActionBlocker(this@toAddStorageDomainBuilder.spaceBlocker)  //디스크 공간 동작 차단
 		.dataCenters(*arrayOf(DataCenterBuilder().id(this@toAddStorageDomainBuilder.dataCenterVo.id).build()))
 		.host(HostBuilder().name(this@toAddStorageDomainBuilder.hostVo.name).build())
 		.storage(

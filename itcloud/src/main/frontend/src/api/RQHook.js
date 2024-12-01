@@ -225,6 +225,7 @@ export const useHostsFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['hostsFromDataCenter', dataCenterId], 
   queryFn: async () => {
+    if(dataCenterId == '') return [];
     console.log(`hostsFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findAllHostsFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
@@ -2105,12 +2106,12 @@ export const useAllActiveDataCenters = (mapPredicate) => useQuery({
 export const useAddDomain = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (networkData) => await ApiManager.addNetwork(networkData),
+    mutationFn: async (domainData) => await ApiManager.addDomain(domainData),
     onSuccess: () => {
-      queryClient.invalidateQueries('allNetworks'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
+      queryClient.invalidateQueries('allStorageDomains');
     },
     onError: (error) => {
-      console.error('Error adding network:', error);
+      console.error('Error adding storageDomain:', error);
     },  
   });
 };

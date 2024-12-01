@@ -85,6 +85,7 @@ const DiskModal = ({
 
   useEffect(() => {
     if (editMode && disk) {
+      console.log('Setting edit mode state with domain:', disk);
       setFormState({
         id: disk.id || '',
         size: disk.virtualSize || '',

@@ -2079,14 +2079,14 @@ const ApiManager = {
    * @name ApiManager.addDomain
    * @description 새 스토리지도메인 생성
    * 
-   * @param {Object} domaineData 
+   * @param {Object} domainData 
    * @returns {Promise<Object>}
    */
-  addDomain: async (domaineData) => {
+  addDomain: async (domainData) => {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.ADD_STORAGE_DOMAIN(),
-      data: domaineData, 
+      data: domainData, 
       // defaultValues: DEFAULT_VALUES.ADD_STORAGE_DOMAIN
     });
   },
