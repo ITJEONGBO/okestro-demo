@@ -1369,6 +1369,30 @@ export const useAllVmsFromTemplate = (tId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
+
+/**
+ * @name useAllNicsFromTemplate
+ * @description Template 내 네트워크 목록조회 useQuery훅
+ * 
+ * @param {string} tId TemplateID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllVMsFromDomain
+ */
+export const useAllNicsFromTemplate = (tId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllNicsFromTemplate', tId], 
+  queryFn: async () => {
+    console.log(`useAllNicsFromTemplate ... ${tId}`);
+    const res = await ApiManager.findNicsFromTemplate(tId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  },
+  enabled: !!tId,
+  staleTime: 0,
+  cacheTime: 0,
+})
+
 /**
  * @name useAllDisksFromTemplate
  * @description Template 내 디스크 목록조회 useQuery훅
@@ -1415,25 +1439,6 @@ export const useAllStoragesFromTemplate = (tId, mapPredicate) => useQuery({
   cacheTime: 0,
 })
 
-/**
- * @name useAllNicsFromTemplate
- * @description  Template 내  이벤트 목록조회 useQuery훅
- * 
- * @param {string} tId TemplateID
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.findNicsFromTemplate
- */
-export const useAllNicsFromTemplate = (tId, mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['AllNicsFromTemplate', tId], 
-  queryFn: async () => {
-    console.log(`useAllNicsFromTemplate ... ${tId}`);
-    const res = await ApiManager.findNicsFromTemplate(tId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
-})
 
 /**
  * @name useAllEventFromTemplate
@@ -1513,6 +1518,47 @@ export const useDeleteTemplate = () => {
     },
   });
 };
+
+/**
+ * @name useAddNicFromTemplate
+ * @description 템플릿 네트워크 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddNicFromTemplate = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (nicData) => await ApiManager.addNicFromTemplate(nicData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('AllNicsFromTemplate'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
+    },
+    onError: (error) => {
+      console.error('Error adding Template network:', error);
+    },  
+  });
+};
+/**
+ * @name useEditNetwork
+ * @description 템플릿 네트워크 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditNicFromTemplate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ templateId, nicData }) => await ApiManager.editNetwork(templateId, nicData),
+    onSuccess: (data, { templateId }) => {
+      queryClient.invalidateQueries('AllNicsFromTemplate'); // 전체 네트워크 목록 업데이트
+      queryClient.invalidateQueries(['tId', templateId]); // 수정된 네트워크 상세 정보 업데이트
+    },
+    onError: (error) => {
+      console.error('Error editing Template network:', error);
+    },
+  });
+};
+
+
+
 //endregion: TEMPLATE
 
 

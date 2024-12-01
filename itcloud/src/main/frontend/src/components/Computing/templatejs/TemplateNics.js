@@ -9,6 +9,8 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import VnicProfileModal from "../../Modal/VnicProfileModal";
 import DeleteModal from "../../Modal/DeleteModal";
 import TableInfo from "../../table/TableInfo";
+import VmNetworkNewInterfaceModal from "../../Modal/VmNetworkNewInterfaceModal";
+import TemplateNeworkNewInterModal from "../../Modal/TemplateNeworkNewInterModal";
 
 // 애플리케이션 섹션
 const TemplateNics = ({templateId}) => {
@@ -49,38 +51,32 @@ const TemplateNics = ({templateId}) => {
         {/* vNIC 프로파일 */}
         <TableOuter
           columns={TableInfo.NICS_FROM_TEMPLATES} 
+          onRowClick={(row) => setSelectedVnicProfiles(row)}
           data={vnicProfiles}
-          onRowClick={(row, column, colIndex) => {
-            // setSelectedVnicProfiles(row);
-            // if (colIndex === 2) {
-            //   navigate(`/computing/datacenters/${row.dataCenterId}`);
-            // } 
-          }}
           clickableColumnIndex={[]} 
         />
       {/*vNIC 프로파일(새로만들기)팝업 */}
       <Suspense>
-          {(modals.create || (modals.edit && selectedVnicProfiles)) && (
-              <VnicProfileModal
-                  isOpen={modals.create || modals.edit}
-                  onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
-                  editMode={modals.edit}
-                  vnicProfile={selectedVnicProfiles}
-                  templateId={templateId} // 네트워크 이름 전달
-           
-              />
-          )}
-          {modals.delete && selectedVnicProfiles && (
-                <DeleteModal
-                    isOpen={modals.delete}
-                    type='vnic'
-                    onRequestClose={() => toggleModal('delete', false)}
-                    contentLabel={'vnic'}
-                    data={ selectedVnicProfiles}
+            {(modals.create || (modals.edit && selectedVnicProfiles)) && (
+                <TemplateNeworkNewInterModal
+                    isOpen={modals.create || modals.edit}
+                    onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
+                    editMode={modals.edit}
+                    nicData={selectedVnicProfiles}
                     templateId={templateId}
                 />
-                )}
-        </Suspense>
+            )}
+            {/* {modals.delete && selectedVnicProfiles && (
+            <DeleteModal
+                isOpen={modals.delete}
+                type='NetworkInterface'
+                onRequestClose={() => toggleModal('delete', false)}
+                contentLabel={'NetworkInterface'}
+                data={ selectedVnicProfiles}
+                vmId={vnicProfiles?.id}
+            />
+            )} */}
+            </Suspense>
 
 
    </>

@@ -1504,6 +1504,23 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.ADD_NICS_FROM_TEMPLATE
     });
   },
+
+
+  //   /**
+  //  * @name ApiManager.editNicFromTemplate
+  //  * @description  nic 수정
+  //  * 
+  //  * @param {string} templateId
+  //  * @param {Object} nicData
+  //  * @returns {Promise<Object>}
+  //  */
+  //   addNicFromTemplate: async (templateId, nicData) => {
+  //     return makeAPICall({
+  //       method: "POST",
+  //       url: ENDPOINTS.ADD_NICS_FROM_TEMPLATE(templateId,nicData),
+  //       data: nicData,
+  //     });
+  //   },
   /**
    * @name ApiManager.findDisksFromTemplate
    * @description disk 목록

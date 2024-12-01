@@ -13,16 +13,49 @@ const VmSnapshotAddModal = ({
     vmId
 }) => {
     const [id, setId] = useState(''); // 스냅샷 ID
+    const [name, setName] = useState(''); // 스냅샷 ID
     const [description, setDescription] = useState(''); // 스냅샷 설명
-    const [date, setDate] = useState(''); // 스냅샷 생성 날짜
     const [persistMemory, setPersistMemory] = useState(false); // 메모리 저장 여부
-    const [status, setStatus] = useState(''); // 스냅샷 상태
-    const [vmVo, setVmVo] = useState({}); // VM 정보
-    const [snapshotDiskVos, setSnapshotDiskVos] = useState([]); // 스냅샷 디스크 목록
-    const [nicVos, setNicVos] = useState([]); // 네트워크 인터페이스 목록
-    const [applicationVos, setApplicationVos] = useState([]); // 설치된 애플리케이션 목록
  
     const { mutate: addSnapshotFromVM } = useAddSnapshotFromVM();
+
+    const {
+      data: snapshot,
+    } = useAddSnapshotFromVM(vmId);
+
+    // useEffect(() => {
+    //   if (isOpen && snapshotData ) {
+    //     setId(snapshotData.id);
+    //     setName(datacenter.name);
+    //     setComment(datacenter.comment);
+    //     setDescription(datacenter.description);
+    //     setStorageType(datacenter.storageType);
+    //     setVersion(datacenter.version);
+    //     setQuotaMode(datacenter.quotaMode);
+    //   }
+    // }, [snapshotData]);
+
+    const handleFormSubmit = () => {
+      // 데이터 객체 생성
+      const dataToSubmit = {
+        name,
+        description,
+        persistMemory
+      };
+    
+      console.log("snapshot Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
+
+      addSnapshotFromVM(dataToSubmit, {
+        onSuccess: () => {
+          alert("스냅샷 생성 완료(alert기능구현)")
+          onRequestClose();
+        },
+        onError: (error) => {
+          console.error('Error adding snapshot:', error);
+        }
+      });
+    }
+    
     return (
     <Modal
       isOpen={isOpen}
@@ -43,7 +76,12 @@ const VmSnapshotAddModal = ({
         <div className="p-1">
           <div className="host_textbox mb-1">
             <label htmlFor="user_name">사용자 이름</label>
-            <input type="text" id="user_name" />
+            <input
+              type="text"
+              id="user_name"
+              value={name}
+              onChange={(e) => setName(e.target.value)} // 사용자 입력 관리
+            />
           </div>
           <div>
             <div className="font-bold">포함할 디스크 :</div>
@@ -59,7 +97,7 @@ const VmSnapshotAddModal = ({
 
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>
-          <button>OK</button>
+          <button onClick={handleFormSubmit}>OK</button>
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>

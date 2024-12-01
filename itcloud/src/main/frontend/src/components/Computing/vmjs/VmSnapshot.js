@@ -12,6 +12,8 @@ import VmSnapshotAddModal from '../../Modal/VmSnapshotaddModal';
 const VmSnapshot = ({vm}) => {
   const [activePopup, setActivePopup] = useState(null);
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
+
+
   const openPopup = (popupType) => {
       setActivePopup(popupType);
     };
@@ -67,126 +69,144 @@ const VmSnapshot = ({vm}) => {
 
         </div>
     <span>id = {selectedSnapshot?.id || ''}</span>
-    <div>
+    <div className="snapshot_list">
+  {snapshots && snapshots.length > 0 ? (
+    snapshots.map((snapshot) => (
+      <div key={snapshot.id}>
         <div className="snapshot_content">
-        <div className="snapshot_content_left">
-          <div><FontAwesomeIcon icon={faCamera} fixedWidth /></div>
-          <span>Active VM</span>
+          <div className="snapshot_content_left">
+            <div><FontAwesomeIcon icon={faCamera} fixedWidth /></div>
+            <span>{snapshot.name || 'Unnamed Snapshot'}</span>
+          </div>
+
+          <div className="snapshot_content_right">
+            {/* 일반 섹션 */}
+            <div
+              onClick={() => {
+                setActiveSection(activeSection === 'general' ? null : 'general');
+                setSelectedSnapshot(snapshot);
+              }}
+              style={{ color: activeSection === 'general' && selectedSnapshot?.id === snapshot.id ? '#449bff' : 'inherit' }}
+            >
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth />
+              <span>일반</span>
+              <FontAwesomeIcon icon={faEye} fixedWidth />
+            </div>
+
+            {/* 디스크 섹션 */}
+            <div
+              onClick={() => {
+                setActiveSection(activeSection === 'disk' ? null : 'disk');
+                setSelectedSnapshot(snapshot);
+              }}
+              style={{ color: activeSection === 'disk' && selectedSnapshot?.id === snapshot.id ? '#449bff' : 'inherit' }}
+            >
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth />
+              <span>디스크</span>
+              <FontAwesomeIcon icon={faTrash} fixedWidth />
+            </div>
+
+            {/* 네트워크 섹션 */}
+            <div
+              onClick={() => {
+                setActiveSection(activeSection === 'network' ? null : 'network');
+                setSelectedSnapshot(snapshot);
+              }}
+              style={{ color: activeSection === 'network' && selectedSnapshot?.id === snapshot.id ? '#449bff' : 'inherit' }}
+            >
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth />
+              <span>네트워크 인터페이스</span>
+              <FontAwesomeIcon icon={faServer} fixedWidth />
+            </div>
+
+            {/* 설치된 애플리케이션 섹션 */}
+            <div
+              onClick={() => {
+                setActiveSection(activeSection === 'applications' ? null : 'applications');
+                setSelectedSnapshot(snapshot);
+              }}
+              style={{ color: activeSection === 'applications' && selectedSnapshot?.id === snapshot.id ? '#449bff' : 'inherit' }}
+            >
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth />
+              <span>설치된 애플리케이션</span>
+              <FontAwesomeIcon icon={faNewspaper} fixedWidth />
+            </div>
+          </div>
         </div>
 
-        <div className="snapshot_content_right">
-          <div
-            onClick={() => toggleSection('general')}
-            style={{ color: activeSection === 'general' ? '#449bff' : 'inherit' }} // 조건부 색상
-          >
-            <FontAwesomeIcon icon={faChevronRight} fixedWidth />
-            <span>일반</span>
-            <FontAwesomeIcon icon={faEye} fixedWidth />
+        {/* General Section */}
+        {activeSection === 'general' && selectedSnapshot?.id === snapshot.id && (
+          <div className="snap_hidden_content active">
+            <table className="snap_table">
+              <tbody>
+                <tr>
+                  <th>상태:</th>
+                  <td>{snapshot.status || '알 수 없음'}</td>
+                </tr>
+                <tr>
+                  <th>생성 날짜:</th>
+                  <td>{snapshot.creationDate || '알 수 없음'}</td>
+                </tr>
+                <tr>
+                  <th>크기:</th>
+                  <td>{snapshot.actualSize || '알 수 없음'}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+        )}
 
-          <div
-            onClick={() => toggleSection('disk')}
-            style={{ color: activeSection === 'disk' ? '#449bff' : 'inherit' }} // 조건부 색상
-          >
-            <FontAwesomeIcon icon={faChevronRight} fixedWidth />
-            <span>디스크</span>
-            <FontAwesomeIcon icon={faTrash} fixedWidth />
+        {/* Disk Section */}
+        {activeSection === 'disk' && selectedSnapshot?.id === snapshot.id && (
+          <div className="snap_hidden_content active">
+            <TableOuter
+              columns={TableInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
+              data={snapshots}
+              onRowClick={() => console.log('Row clicked')}
+            />
           </div>
+        )}
 
-          <div
-            onClick={() => toggleSection('network')}
-            style={{ color: activeSection === 'network' ? '#449bff' : 'inherit' }} // 조건부 색상
-          >
-            <FontAwesomeIcon icon={faChevronRight} fixedWidth />
-            <span>네트워크 인터페이스</span>
-            <FontAwesomeIcon icon={faServer} fixedWidth />
+        {/* Network Section */}
+        {activeSection === 'network' && selectedSnapshot?.id === snapshot.id && (
+          <div className="snap_hidden_content active">
+            <table className="snap_table">
+              <tbody>
+                <tr>
+                  <th>네트워크 이름:</th>
+                  <td>{vm?.nicVos?.[0]?.networkVo?.name || '알 수 없음'}</td>
+                </tr>
+                <tr>
+                  <th>MAC 주소:</th>
+                  <td>{vm?.nicVos?.[0]?.macAddress || '알 수 없음'}</td>
+                </tr>
+                <tr>
+                  <th>IPv4 주소:</th>
+                  <td>{vm?.nicVos?.[0]?.ipv4 || '알 수 없음'}</td>
+                </tr>
+                <tr>
+                  <th>IPv6 주소:</th>
+                  <td>{vm?.nicVos?.[0]?.ipv6 || '알 수 없음'}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+        )}
 
-          <div
-            onClick={() => toggleSection('applications')}
-            style={{ color: activeSection === 'applications' ? '#449bff' : 'inherit' }} // 조건부 색상
-          >
-            <FontAwesomeIcon icon={faChevronRight} fixedWidth />
-            <span>설치된 애플리케이션</span>
-            <FontAwesomeIcon icon={faNewspaper} fixedWidth />
+        {/* Applications Section */}
+        {activeSection === 'applications' && selectedSnapshot?.id === snapshot.id && (
+          <div className="snap_hidden_content active">
+            설치된 애플리케이션 섹션 내용
           </div>
-        </div>
+        )}
       </div>
+    ))
+  ) : (
+    <div className="no_snapshots">스냅샷 데이터가 없습니다.</div>
+  )}
+</div>
 
-        
-     {/* General Section */}
-     <div className={`snap_hidden_content ${activeSection === 'general' ? 'active' : ''}`}>
-        <table className="snap_table">
-          <tbody>
-            <tr>
-              <th>상태:</th>
-              <td>{vm?.status || '알 수 없음'}</td>
-            </tr>
-            <tr>
-              <th>운영 시간:</th>
-              <td>{vm?.vmVo?.upTime || '알 수 없음'}</td>
-            </tr>
-            <tr>
-              <th>설치된 메모리:</th>
-              <td>{vm?.vmVo?.memoryInstalled ? `${(vm.vmVo.memoryInstalled / (1024 ** 3)).toFixed(2)} GB` : '알 수 없음'}</td>
-            </tr>
-            <tr>
-              <th>사용 중 메모리:</th>
-              <td>{vm?.vmVo?.memoryUsed ? `${(vm.vmVo.memoryUsed / (1024 ** 3)).toFixed(2)} GB` : '알 수 없음'}</td>
-            </tr>
-            <tr>
-              <th>시간대:</th>
-              <td>{vm?.vmVo?.timeOffset || 'KST (UTC + 09:00)'}</td>
-            </tr>
-            <tr>
-              <th>커널 버전:</th>
-              <td>{vm?.applicationVos?.find((app) => app.name.includes('kernel'))?.name || '알 수 없음'}</td>
-            </tr>
-            <tr>
-              <th>FQDN:</th>
-              <td>{vm?.fqdn || '알 수 없음'}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      {/* Disk Section */}
-      <div className={`snap_hidden_content ${activeSection === 'disk' ? 'active' : ''}`}>
-        <TableOuter
-          columns={TableInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
-          data={snapshots}
-          onRowClick={() => console.log('Row clicked')}
-        />
-      </div>
-
-      {/* Network Section */}
-      <div className={`snap_hidden_content ${activeSection === 'network' ? 'active' : ''}`}>
-        <table className="snap_table">
-          <tbody>
-            <tr>
-              <th>네트워크 이름:</th>
-              <td>{vm?.nicVos?.[0]?.networkVo?.name || '알 수 없음'}</td>
-            </tr>
-            <tr>
-              <th>MAC 주소:</th>
-              <td>{vm?.nicVos?.[0]?.macAddress || '알 수 없음'}</td>
-            </tr>
-            <tr>
-              <th>IPv4 주소:</th>
-              <td>{vm?.nicVos?.[0]?.ipv4 || '알 수 없음'}</td>
-            </tr>
-            <tr>
-              <th>IPv6 주소:</th>
-              <td>{vm?.nicVos?.[0]?.ipv6 || '알 수 없음'}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-        <div className={`snap_hidden_content ${activeSection === 'applications' ? 'active' : ''}`}>
-          설치된 애플리케이션 섹션 내용
-        </div>
-    </div>
 
         <VmSnapshotAddModal
         isOpen={activePopup === 'new'}
