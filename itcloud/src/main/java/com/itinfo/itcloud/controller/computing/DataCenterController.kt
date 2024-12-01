@@ -2,6 +2,8 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
+import com.itinfo.itcloud.controller.storage.StorageController
+import com.itinfo.itcloud.controller.storage.StorageController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -232,6 +234,31 @@ class DataCenterController: BaseController() {
 		log.info("/computing/dataCenters/{}/storageDomains ... 데이터센터 스토리지 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllStorageDomainsFromDataCenter(dataCenterId))
 	}
+
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="디스크 생성에 사용될 스토리지 도메인 목록",
+		notes="선택된 데이터센터가 가지고 있는 스토리지 도메인 목록"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/activeDomains")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	fun domainsFromDataCenter(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<StorageDomainVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/activeDomains ... Domain(s) 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllAcitveStorageDomainsFromDataCenter(dataCenterId))
+	}
+
 
 	@ApiOperation(
 		httpMethod="GET",

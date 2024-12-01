@@ -13,6 +13,8 @@ import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
 import com.itinfo.itcloud.repository.engine.entity.toVmId
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.storage.StorageServiceImpl
+import com.itinfo.itcloud.service.storage.StorageServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.types.*
@@ -110,6 +112,15 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	/**
+	 * [ItDataCenterService.findAllAcitveStorageDomainsFromDataCenter]
+	 * 데이터센터가 가지고있는 활성화 된 스토리지 도메인 목록
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
+	 */
+	@Throws(Error::class)
+	fun findAllAcitveStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	// 생성, 분리, 활성, 유지보수
 	/**
 	 * [ItDataCenterService.findAllDisksFromDataCenter]
@@ -266,6 +277,15 @@ class DataCenterServiceImpl(
 			.getOrDefault(listOf())
 		return res.toStorageDomainsMenu(conn)
 	}
+
+	@Throws(Error::class)
+	override fun findAllAcitveStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+		log.info("findAllFromDataCenter ... dcId: $dataCenterId")
+		val res: List<StorageDomain> =
+			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf()).filter { it.status() == StorageDomainStatus.ACTIVE }
+		return res.toActiveDomains(conn)
+	}
+
 
 	@Throws(Error::class)
 	override fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo> {

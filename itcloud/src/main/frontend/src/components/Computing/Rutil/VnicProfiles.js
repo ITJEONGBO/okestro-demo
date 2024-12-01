@@ -49,7 +49,7 @@ const VnicProfiles = () => {
 
       <TablesOuter
         columns={TableInfo.VNIC_PROFILES} 
-        data={vnicProfiles} 
+        data={vnicProfiles || []} 
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedVnicProfile(row)}
         // clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정

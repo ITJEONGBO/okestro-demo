@@ -1913,6 +1913,10 @@ export const useAllActiveDomainFromDataCenter = (dataCenterId, mapPredicate) => 
   refetchOnWindowFocus: true,
   queryKey: ['AllActiveDomainFromDataCenter', dataCenterId], 
   queryFn: async () => {
+    if (!dataCenterId) {
+      console.warn('dataCenterId is undefined. Skipping API call.');
+      return []; // 빈 배열 반환
+    }
     console.log(`useAllActiveDomainFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findActiveDomainFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
@@ -1932,12 +1936,11 @@ export const useAllActiveDomainFromDataCenter = (dataCenterId, mapPredicate) => 
  */
 export const useAllDataCenterFromDomain = (storageDomainId) => useQuery({
   // refetchOnWindowFocus: true,
-  queryKey: ['DomainById', storageDomainId], 
+  queryKey: ['AllDataCenterFromDomain', storageDomainId], 
   queryFn: async () => {
-    if (!storageDomainId) return {};  
     console.log(`Fetching datacenters with ID: ${storageDomainId}`);
     const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId);
-    return res ?? {};
+    return res ?? '';
 
     // console.log(`useAllDataCenterFromDomain ... ${storageDomainId}`);
     // const res = await ApiManager.findAllDataCentersFromDomain(storageDomainId); 
@@ -2000,13 +2003,20 @@ export const useAllDiskFromDomain = (storageDomainId, mapPredicate) => useQuery(
  */
 export const useAllDiskProfileFromDomain = (storageDomainId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['AllDiskProfileFromDomain', storageDomainId], 
+  queryKey: ['AllDiskProfileFromDomain', storageDomainId],
   queryFn: async () => {
+    if (!storageDomainId) {
+      console.warn('storageDomainId is undefined. Skipping API call.');
+      return []; // 빈 배열 반환
+    }
     console.log(`useAllDiskProfileFromDomain ... ${storageDomainId}`);
-    const res = await ApiManager.findAllDiskProfilesFromDomain(storageDomainId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
-})
+    const res = await ApiManager.findAllDiskProfilesFromDomain(storageDomainId);
+    return res?.map((e) => mapPredicate(e)) ?? [];
+  },
+  enabled: !!storageDomainId, // storageDomainId가 있을 때만 쿼리 실행
+});
+
+
 /**
  * @name useAllDiskSnapshotFromDomain
  * @description 도메인 내 디스크스냅샷 목록조회 useQuery훅

@@ -34,15 +34,6 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun findAll(): List<StorageDomainVo>
 	/**
-	 * [ItStorageService.findAllFromDataCenter]
-	 * 데이터센터가 가지고 있는 스토리지 도메인 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터 Id
-	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
-	 */
-	@Throws(Error::class)
-	fun findAllFromDataCenter(dataCenterId: String): List<StorageDomainVo>
-	/**
 	 * [ItStorageService.findOne]
 	 * 데이터센터 - 스토리지 도메인 정보
 	 *
@@ -291,14 +282,6 @@ class StorageServiceImpl(
 			conn.findAllStorageDomains().getOrDefault(listOf())
 				.filter { it.storage().type() != StorageType.GLANCE }
 		return res.toStorageDomainsMenu(conn)
-	}
-
-	@Throws(Error::class)
-	override fun findAllFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
-		log.info("findAllFromDataCenter ... dcId: $dataCenterId")
-		val res: List<StorageDomain> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf()).filter { it.status() == StorageDomainStatus.ACTIVE }
-		return res.toActiveDomains(conn)
 	}
 
 	@Throws(Error::class)

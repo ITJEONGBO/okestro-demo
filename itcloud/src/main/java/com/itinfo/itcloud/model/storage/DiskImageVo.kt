@@ -169,14 +169,19 @@ fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 	val diskProfile: DiskProfile? =
 		if(this@toDiskInfo.diskProfilePresent()) conn.findDiskProfile(this@toDiskInfo.diskProfile().id()).getOrNull()
 		else null
-	val storageDomain: StorageDomain? =
-		conn.findStorageDomain(this.storageDomains().first().id()).getOrNull()
+	val storageDomain: StorageDomain? = conn.findStorageDomain(this.storageDomains().first().id())
+			.getOrNull()
+	val dataCenter: DataCenter? = storageDomain?.dataCenters()?.first()?.let {
+		conn.findDataCenter(it.id())
+			.getOrNull()
+	}
 
 	return DiskImageVo.builder {
 		id { this@toDiskInfo.id() }
 		alias { this@toDiskInfo.alias() }
 		description { this@toDiskInfo.description() }
 		sparse { this@toDiskInfo.sparse() } // 할당정책
+		diskProfileVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
 		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
 		virtualSize { this@toDiskInfo.provisionedSize() }

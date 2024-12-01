@@ -12,6 +12,13 @@ import {
   useAllDiskProfileFromDomain,
 } from '../../api/RQHook';
 
+const FormGroup = ({ label, children }) => (
+  <div className="img_input_box">
+    <label>{label}</label>
+    {children}
+  </div>
+);
+
 const DiskModal = ({
   isOpen,
   onRequestClose,
@@ -20,258 +27,179 @@ const DiskModal = ({
   vmId,
   type='disk'
 }) => {
-  const [id, setId] = useState('');
-  const [size, setSize] = useState('');
-  const [appendSize, setAppendSize] = useState(0);
-  const [alias, setAlias] = useState('');
-  const [description, setDescription] = useState('');
-  const [datacenterVoId, setDatacenterVoId] = useState('');  
+  const [formState, setFormState] = useState({
+    id: '',
+    size: '',
+    appendSize: 0,
+    alias: '',
+    description: '',
+    wipeAfterDelete: false,
+    sharable: false,
+    backup: true,
+    sparse: true, //할당정책: 씬
+  });
+  const [dataCenterVoId, setDataCenterVoId] = useState('');
   const [domainVoId, setDomainVoId] = useState('');
   const [diskProfileVoId, setDiskProfileVoId] = useState('');
-  const [wipeAfterDelete, setWipeAfterDelete] = useState(false);
-  const [sharable, setSharable] = useState(false);
-  const [backup, setBackup] = useState(true);
-  const [sparse, setSparse] = useState(true); // 할당정책: 씬
-  
-  const { mutate: addDisk } = useAddDisk();
-  const { mutate: editDisk } = useEditDisk();
 
   const [activeTab, setActiveTab] = useState('img');
-  
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
+  const handleTabClick = (tab) => { setActiveTab(tab); };
 
   // 디스크 데이터 가져오기
   const {
     data: disk,
-    status: diskStatus,
-    isRefetching: isDiskRefetching,
     refetch: refetchDisk,
-    isError: isDiskError,
-    error: diskError,
     isLoading: isDiskLoading
   } = useDiskById(diskId);
 
   // 전체 데이터센터 가져오기
   const {
-    data: datacenters,
-    status: datacentersStatus,
-    isRefetching: isDatacentersRefetching,
+    data: datacenters = [],
     refetch: refetchDatacenters,
-    isError: isDatacentersError,
-    error: datacentersError,
     isLoading: isDatacentersLoading
-  } = useAllActiveDataCenters((e) => ({
-    ...e,
-  }));
+  } = useAllActiveDataCenters((e) => ({...e,}));
 
   // 선택한 데이터센터가 가진 도메인 가져오기
   const {
-    data: domains,
-    status: domainsStatus,
-    isRefetching: isDomainsRefetching,
-    refetch: domainsRefetch,
-    isError: isDomainsError,
-    error: domainsError,
+    data: domains = [],
+    refetch: refetchDomains,
     isLoading: isDomainsLoading,
-  } = useAllActiveDomainFromDataCenter(datacenterVoId || '', (e) => ({
-    ...e,
-  }));
+  } = useAllActiveDomainFromDataCenter(
+    dataCenterVoId ? dataCenterVoId : undefined, 
+    (e) => ({...e,})
+  );
 
   // 선택한 도메인이 가진 디스크 프로파일 가져오기
   const {
-    data: diskProfiles,
-    status: diskProfilesStatus,
-    isRefetching: isDiskProfilesRefetching,
+    data: diskProfiles = [],
     refetch: diskProfilesRefetch,
-    isError: isDiskProfilesError,
-    error: diskProfilesError,
     isLoading: isDiskProfilesLoading,
-  } = useAllDiskProfileFromDomain(domainVoId || '', (e) => ({
-    ...e,
-  }));  
+  } = useAllDiskProfileFromDomain(
+    domainVoId ? domainVoId : undefined, 
+    (e) => ({...e,})
+  );  
+
+  const { mutate: addDisk } = useAddDisk();
+  const { mutate: editDisk } = useEditDisk();
 
 
   useEffect(() => {
-    if (isOpen) {
-      if (editMode && disk) {
-        setId(disk?.id);
-        setSize(disk?.virtualSize);
-        setAlias(disk?.alias);
-        setDescription(disk?.description);
-        setDatacenterVoId(disk?.dataCenterVo?.id || '');
-        setDomainVoId(disk?.storageDomainVo?.id || '');
-        setDiskProfileVoId(disk?.diskProfileVo?.id || '');
-        setWipeAfterDelete(disk?.wipeAfterDelete || false);
-        setSharable(disk?.sharable || false);
-        setBackup(disk?.backup || false);
-        setSparse(disk?.sparse || false);
-      } else if (!editMode && !isDatacentersLoading && !isDomainsLoading && !isDiskProfilesLoading) {
-        resetForm();
-        if (datacenters && datacenters.length > 0) {
-          setDatacenterVoId(datacenters[0].id);
-        }
-      }
-    }
-  }, [isOpen, editMode, disk, datacenters]);
-  
-  useEffect(() => {
-    if (!datacenterVoId && datacenters?.length > 0) {
-      setDatacenterVoId(datacenters[0].id); // 첫 번째 데이터센터를 기본값으로 설정
-    }
-  }, [datacenters]);
-  
-  // 편집: 데이터센터에 따라 도메인 지정
-  useEffect(() => {
-    if (!editMode && datacenterVoId) {
-      domainsRefetch({ datacenterVoId }).then((res) => {
-        if (res?.data && res.data.length > 0) {
-          setDomainVoId(res.data[0].id); 
-        }
-      }).catch((error) => {
-        console.error('Error fetching disks:', error);
+    if (editMode && disk) {
+      setFormState({
+        id: disk.id || '',
+        size: disk.virtualSize || '',
+        alias: disk.alias || '',
+        description: disk.description || '',
+        wipeAfterDelete: disk.wipeAfterDelete || false,
+        sharable: disk.sharable || false,
+        backup: disk.backup || false,
+        sparse: disk.sparse || false,
       });
+      setDataCenterVoId(disk?.dataCenterVo?.id || '');
+      setDomainVoId(disk?.storageDomainVo?.id || '');
+      setDiskProfileVoId(disk?.diskProfileVo?.id || '');
+    } else if (!editMode && !isDatacentersLoading) {
+      resetForm();
     }
-  }, [editMode, datacenterVoId]);
+  }, [editMode, disk]);
+
+  useEffect(() => {
+    if (!editMode && datacenters && datacenters.length > 0) {
+      setDataCenterVoId(datacenters[0].id);
+    }
+  }, [datacenters, editMode]);
+
+  useEffect(() => {
+    if (!editMode && domains && domains.length > 0) {
+      setDomainVoId(domains[0].id);
+    }
+  }, [domains, editMode]);
+
+  useEffect(() => {
+    if (!editMode && diskProfiles && diskProfiles.length > 0) {
+      setDiskProfileVoId(diskProfiles[0].id);
+    }
+  }, [diskProfiles, editMode]);
 
 
-  // useEffect(() => {
-  //   // 데이터센터가 변경되면 도메인 및 디스크 프로파일 초기화
-  //   if (datacenterVoId) {
-  //     setDomainVoId(''); // 도메인 초기화
-  //     setDiskProfileVoId(''); // 디스크 프로파일 초기화
+  useEffect(() => {
+    console.log("현재 데이터센터 목록:", datacenters);
+    console.log("현재 선택된 데이터센터 ID:", dataCenterVoId);
+    console.log("현재 도메인 목록:", domains);
+    console.log("현재 선택된 도메인 ID:", domainVoId);
+    console.log("현재 디스크 프로파일 목록:", diskProfiles);
+  }, [datacenters, dataCenterVoId, domains, domainVoId, diskProfiles]);
   
-  //     // 도메인 가져오기
-  //     domainsRefetch({ datacenterVoId })
-  //       .then((res) => {
-  //         if (res?.data?.length > 0) {
-  //           setDomainVoId(res.data[0].id); // 첫 번째 도메인 설정
-  //         } else {
-  //           console.warn("도메인이 없습니다.");
-  //         }
-  //       })
-  //       .catch((error) => console.error("도메인 가져오기 오류:", error));
-  //   }
-  // }, [datacenterVoId, domainsRefetch]);
-
-  // useEffect(() => {
-  //   // 도메인이 변경되면 디스크 프로파일 초기화
-  //   if (domainVoId && domainVoId.trim() !== '') {
-  //     setDiskProfileVoId(''); // 디스크 프로파일 초기화
   
-  //     // 디스크 프로파일 가져오기
-  //     diskProfilesRefetch({ domainVoId })
-  //       .then((res) => {
-  //         if (res?.data?.length > 0) {
-  //           setDiskProfileVoId(res.data[0].id); // 첫 번째 디스크 프로파일 설정
-  //         } else {
-  //           console.warn("디스크 프로파일이 없습니다.");
-  //         }
-  //       })
-  //       .catch((error) => console.error("디스크 프로파일 가져오기 오류:", error));
-  //   }
-  // }, [domainVoId, diskProfilesRefetch]);
-
-
   const resetForm = () => {
-    setSize('');
-    setAppendSize('');
-    setAlias('');
-    setDescription('');
-    setDatacenterVoId('');
+    setFormState({
+      id: '',
+      size: '',
+      alias: '',
+      description: '',
+      wipeAfterDelete: false,
+      sharable: false,
+      backup: true,
+      sparse: true,
+    });
+    setDataCenterVoId('');
     setDomainVoId('');
     setDiskProfileVoId('');
-    setWipeAfterDelete('');
-    setSharable('');
-    setBackup();
-    setSparse();
   };
 
+  const validateForm = () => {
+    if (!formState.alias) return '별칭을 입력해주세요.';
+    if (!formState.size) return '크기를 입력해주세요.';
+    // if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
+    if (!domainVoId) return '스토리지 도메인을 선택해주세요.';
+    if (!diskProfileVoId) return '디스크 프로파일을 선택해주세요.';
+    return null;
+  };
+
+
   const handleFormSubmit = () => {
-    const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
-    if (!selectedDataCenter) {
-      alert("데이터 센터를 선택해주세요.");
+    const error = validateForm();
+    if (error) {
+      alert(error);
       return;
     }
 
-    const selectedDomain = domains.find((domain) => domain.id === domainVoId);
-    if (!selectedDomain) {
-      alert("도메인를 선택해주세요.");
-      return;
-    }
-
-    const selectedDiskProfile = diskProfiles.find((profile) => profile.id === diskProfileVoId);
-    if (!selectedDomain) {
-      alert("디스크 프로파일를 선택해주세요.");
-      return;
-    }
-
-    if(alias === ''){
-      alert("이름을 입력해주세요.");
-      return;
-    }
-
-    if(size === ''){
-      alert("크기를 입력해주세요.");
-      return;
-    }
+    const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
+    const selectedDomain = domains.find((dm) => dm.id === domainVoId);
+    const selectedDiskProfile = diskProfiles.find((dp) => dp.id === diskProfileVoId);
 
 
     // 데이터 객체 생성
     const dataToSubmit = {
-      // id
-      size,
-      // appendSize
-      alias,
-      description,
-      datacenterVo: {
-        id: selectedDataCenter.id,
-        name: selectedDataCenter.name,
-      },
-      storageDomainVo:{
-        id: selectedDomain.id,
-        name: selectedDomain.name,
-      },
-      diskProfileVo:{
-        id: selectedDiskProfile.id,
-        name: selectedDiskProfile.name,
-      },
-      wipeAfterDelete: wipeAfterDelete,
-      sharable: sharable,
-      backup: backup,
-      sparse: sparse,
+      // dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+      storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
+      diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
+      ...formState,
     };
-  
+
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
     
     if (editMode) {
-      dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
-      dataToSubmit.appendSize = appendSize;      
-      editDisk({
-        diskId: id,              // 전달된 id
-        diskData: dataToSubmit   // 수정할 데이터
-      }, {
-        onSuccess: () => {
-          alert("disk 편집 완료")
-          onRequestClose();  // 성공 시 모달 닫기
-        },
-        onError: (error) => {
-          console.error('Error editing disk:', error);
+      dataToSubmit.appendSize = formState.appendSize;      
+      editDisk(
+        { diskId: formState.id, diskData: dataToSubmit}, 
+        {
+          onSuccess: () => {
+            alert("디스크 편집 완료")
+            onRequestClose();  // 성공 시 모달 닫기
+          },
         }
-      });
+      );
     } else {
       addDisk(dataToSubmit, {
         onSuccess: () => {
-          alert("Disk 생성 완료")
+          alert("디스크 생성 완료")
           onRequestClose();
         },
-        onError: (error) => {
-          console.error('Error adding Disk:', error);
-        }
       });
     }
   };
+
 
   return (
     <Modal
@@ -310,162 +238,131 @@ const DiskModal = ({
 
         {/*이미지*/}
         {/* {activeTab === 'img' && ( */}
-        <div><br/></div>
           <div className="disk_new_img">
             <div className="disk_new_img_left">
 
-              <div className="img_input_box">
-                <label htmlFor="size">크기(GB)</label>
+              <FormGroup label="크기(GB)">
                 <input
                   type="number"
-                  id="size"
-                  value={
-                    editMode ? (size / (1024 * 1024 * 1024)).toFixed(0) : size
-                  }
-                  onChange={
-                    (e) => setSize(editMode ? e.target.value * 1024 * 1024 * 1024 : e.target.value)
-                  }
+                  value={editMode ? (formState.size / (1024 * 1024 * 1024)).toFixed(0) : formState.size}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, size: e.target.value }))}
                   disabled={editMode}
                 />
-              </div>
-              {editMode && (
-                <>
-                  <div className="img_input_box">
-                    <label htmlFor="appendsize">추가크기(GB)</label>
-                    <input
-                      type="number"
-                      id="appendsize"
-                      value={appendSize}
-                      onChange={(e) => setAppendSize(e.target.value)}
-                    />
-                  </div>
-                </>
-              )}              
+              </FormGroup>
 
-              <div className="img_input_box">
-                <label htmlFor="alias">별칭</label>
+            {editMode && (
+              <FormGroup label="추가크기(GB)">
+                <input
+                  type="number"
+                  value={formState.appendSize}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, appendSize: e.target.value }))}
+                />
+              </FormGroup>
+            )}              
+
+              <FormGroup label="별칭">
                 <input
                   type="text"
-                  id="alias"
-                  value={alias}
-                  onChange={(e) => setAlias(e.target.value)}
+                  value={formState.alias}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, alias: e.target.value }))}
                 />
-              </div>
+              </FormGroup>
 
-              <div className="img_input_box">
-                <label htmlFor="description">설명</label>
+              <FormGroup label="설명">
                 <input
                   type="text"
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={formState.description}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
                 />
-              </div>
+              </FormGroup>
 
-              <div className="img_select_box">
-                <label htmlFor="data_center">데이터 센터</label>
+              <FormGroup label="데이터 센터">
                 <select
-                  id="data_center"
-                  value={datacenterVoId}
-                  onChange={(e) => setDatacenterVoId(e.target.value)}
+                  value={dataCenterVoId}
+                  onChange={(e) => setDataCenterVoId(e.target.value)}
                   disabled={editMode}
                 >
                   {datacenters && datacenters.map((dc) => (
                     <option key={dc.id} value={dc.id}>
-                      {dc.name} {/* 디버깅용 */}
+                      {dc.name}: {dc.id === dataCenterVoId ? dataCenterVoId : ''}
                     </option>
                   ))}
                 </select>
-              </div>
-              <div className="img_select_box">
-                <span>dc: {datacenterVoId}</span>
-              </div>
-              
+              </FormGroup>
 
-              <div className="img_select_box">
-                <label htmlFor="domains">스토리지 도메인</label>
+              <FormGroup label="스토리지 도메인">
                 <select
-                  id="domains"
-                  value={domainVoId || ''}
+                  value={domainVoId}
                   onChange={(e) => setDomainVoId(e.target.value)}
                   disabled={editMode}
                 >
-                  {domains && domains.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name} 
+                  {domains && domains.map((dm) => (
+                    <option key={dm.id} value={dm.id}>
+                      {dm.name}/{dm.id}: {domainVoId}
                     </option>
                   ))}
                 </select>
-              </div>
-              <div className="img_select_box">
-                <span>domain: {domainVoId}</span>
-              </div>
-            
-              <div className="img_select_box">
-                <label htmlFor="sparse">할당 정책</label>
-                <select 
-                  id="sparse"
-                  value={sparse}
-                  onChange={(e) => setSparse(e.target.value)}
+              </FormGroup>
+
+              <FormGroup label="할당 정책">
+                <select
+                  value={formState.sparse}
+                  onChange={(e) =>setFormState((prev) => ({ ...prev, sparse: e.target.value }))}
                   disabled={editMode}
                 >
                   <option value="true">씬 프로비저닝</option>
                   <option value="false">사전 할당</option>
                 </select>
-              </div>
-
-              <div className="img_select_box">
-                <label htmlFor="disk_profile">디스크 프로파일</label>
+              </FormGroup>
+            
+              <FormGroup label="디스크 프로파일">
                 <select
-                  id="disk_profile"
                   value={diskProfileVoId}
                   onChange={(e) => setDiskProfileVoId(e.target.value)}
                 >
-                  {diskProfiles &&
-                    diskProfiles.map((dp) => (
-                      <option key={dp.id} value={dp.id}>
-                        {dp.name}
-                      </option>
-                    ))}
+                  {diskProfiles && diskProfiles.map((dp) => (
+                    <option key={dp.id} value={dp.id}>
+                      {dp.name}: {diskProfileVoId}
+                    </option>
+                  ))}
                 </select>
-              </div>
-              <div className="img_select_box">
-                <span>diskprofile: {diskProfileVoId}</span>
-              </div>
-            </div>
+              </FormGroup>
+
             
             <div className="disk_new_img_right">
               <div>
                 <input
                   type="checkbox"
                   id="wipeAfterDelete"
-                  checked={wipeAfterDelete}
-                  onChange={(e) => setWipeAfterDelete(e.target.checked)}
+                  checked={formState.wipeAfterDelete}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, wipeAfterDelete: e.target.checked }))}
                 />
                 <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
               </div>
-{/* 
+ 
               <div>
                 <input 
                   type="checkbox" 
-                  className="sharable" 
-                  checked={sharable} // 상태와 연결
-                  onChange={(e) => setSharable(e.target.checked)}
+                  className="sharable"
+                  checked={formState.sharable}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, sharable: e.target.checked }))}
                 />
                 <label htmlFor="sharable">공유 가능</label>
-              </div> */}
+              </div>
 
               <div>
                 <input 
                   type="checkbox" 
                   id="backup" 
-                  checked={backup} // 상태와 연결
-                  onChange={(e) => setBackup(e.target.checked)}
+                  checked={formState.backup}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, backup: e.target.checked }))}
+
                 />
                 <label htmlFor="backup">중복 백업 사용</label>
               </div>
             </div>
           </div>
+        </div>
         {/* )} */}
         {/* 직접LUN
         {activeTab === 'directlun' && (

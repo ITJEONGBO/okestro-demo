@@ -49,7 +49,7 @@ const Networks = () => {
 
       <TablesOuter
         columns={TableInfo.NETWORKS} 
-        data={networks} 
+        data={networks || []} 
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedNetwork(row)}
         clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정

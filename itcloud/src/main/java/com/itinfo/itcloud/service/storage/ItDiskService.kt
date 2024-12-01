@@ -217,8 +217,8 @@ class DiskServiceImpl(
     @Throws(Error::class)
     override fun findOne(diskId: String): DiskImageVo? {
         log.info("findOne ... diskId: $diskId")
-        val res: Disk? =
-            conn.findDisk(diskId).getOrNull()
+        val res: Disk? = conn.findDisk(diskId)
+            .getOrNull()
         return res?.toDiskInfo(conn)
     }
 

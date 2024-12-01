@@ -37,7 +37,7 @@ const Clusters = () => {
   return (
     <>
       <ClusterDupl
-        clusters={clusters}
+        clusters={clusters || []}
         columns={TableInfo.CLUSTERS}
         onRowClick={setSelectedCluster}
         onCreate={() => toggleModal('create', true)}

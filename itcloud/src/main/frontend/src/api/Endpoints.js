@@ -31,6 +31,7 @@ const ENDPOINTS = {
   FIND_HOSTS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/hosts`, 
   FIND_VMS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/vms`, 
   FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/storageDomains`, 
+  FIND_ACTIVE_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/activeDomains`,
   FIND_NETWORKS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/networks`, 
   FIND_EVENTS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/events`,
 
@@ -176,7 +177,6 @@ const ENDPOINTS = {
   //region: StorageDomain
   FIND_ALL_STORAGE_DOMAINS: () => `/api/v1/storages/domains`,
   FIND_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
-  FIND_ACTIVE_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/storages/domains/${dataCenterId}/domains`,
   
   FIND_DATA_CENTERS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters`,    
   ACTIVATE_FROM_DATACENTER: (storageDomainId, dataCenterId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters/${dataCenterId}/activate`,

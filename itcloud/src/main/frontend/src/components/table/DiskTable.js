@@ -35,13 +35,13 @@ const DiskTable = ({
             ...disk,
             icon: renderStatusIcon(disk.status),
             storageDomain: (
-              <TableRowClick type="domains" id={disk.storageDomainVo.id}>
-                {disk.storageDomainVo.name}
+              <TableRowClick type="domains" id={disk?.storageDomainVo.id}>
+                {disk?.storageDomainVo.name}
               </TableRowClick>
             ),
             connectVm: (
-              <TableRowClick type="vms" id={disk.connectVm.id}>
-                {disk.connectVm.name}
+              <TableRowClick type="vms" id={disk?.connectVm.id}>
+                {disk?.connectVm.name}
               </TableRowClick>
             ),
             virtualSize: sizeInGB < 1 ? "< 1 GB" : `${sizeInGB.toFixed(0)} GB`,

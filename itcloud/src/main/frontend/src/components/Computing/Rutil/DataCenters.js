@@ -51,7 +51,7 @@ const DataCenters = () => {
 
       <TablesOuter
         columns={TableInfo.DATACENTERS}
-        data={datacenters}
+        data={datacenters || []}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedDataCenter(row)}
         clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정

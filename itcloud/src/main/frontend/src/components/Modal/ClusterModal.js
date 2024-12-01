@@ -50,17 +50,15 @@ const ClusterModal = ({
   
   // 데이터센터 가져오기
   const {
-    data: datacenters,
+    data: datacenters = [],
     refetch: refetchDatacenters,
     isLoading: isDatacentersLoading
-  } = useAllDataCenters((e) => ({
-    ...e,
-  }));
+  } = useAllDataCenters((e) => ({...e,}));
 
   // 데이터센터에서 클러스터 생성시 자신의 데이터센터 아이디 넣기
   const {
     data: dataCenter,
-    refetch: dataCenterRefetch,
+    refetch: refetchDataCenter,
     isLoading: isDataCenterLoading,
   } = useDataCenter(datacenterId);
 
@@ -70,10 +68,8 @@ const ClusterModal = ({
     refetch: refetchNetworks,
     isLoading: isNetworksLoading,
   } = useNetworksFromDataCenter(
-    dataCenterVoId && !isDataCenterLoading ? dataCenterVoId : undefined,
-    (e) => ({
-      ...e,
-    })
+    dataCenterVoId ? dataCenterVoId : undefined, 
+    (e) => ({...e,})
   );
 
   const { mutate: addCluster } = useAddCluster();
@@ -197,6 +193,7 @@ const ClusterModal = ({
     }
   }, [editMode, cluster, datacenterId]);
 
+
   useEffect(() => {
     if (!editMode && datacenters && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
@@ -306,7 +303,6 @@ const ClusterModal = ({
         </div>
 
         <div className="cluster_new_content">
-
           <FormGroup label="데이터 센터">
             <select
               value={dataCenterVoId}
