@@ -71,6 +71,9 @@
 > # 아티팩트 생성 (운영)
 > ./gradlew itcloud:bootJar -Pprofile=staging -PskipNpm=true
 > ```
+>
+> # back+front
+> ./gradlew itcloud:bootRun -Pprofile=staging -PskipNpm=false
 
 ![itcloud:bootRun](imgs/gradle-itcloud-bootRun.png)
 
