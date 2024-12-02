@@ -1,4 +1,4 @@
-.iscsi_tab_buttons {
+/* .iscsi_tab_buttons {
     display: flex;
     margin-bottom: 10px;
   }
@@ -19,4 +19,23 @@
   .iscsi_tab_content {
     margin-top: 20px;
   }
+   */
+
+   .iscsi_buttons {
+    display: flex;
+    justify-content: center; /* 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    gap: 10px; /* 버튼 간격 */
+  }
   
+  .tab_button {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+  }
+  
+  .tab_button.active {
+    background-color: #007bff;
+    color: white;
+  }

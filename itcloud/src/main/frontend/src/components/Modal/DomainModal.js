@@ -4,7 +4,7 @@ import './css/MDomain.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faChevronCircleRight, faGlassWhiskey } from '@fortawesome/free-solid-svg-icons';
 import Table from '../table/Table';
-import TableColumnsInfo from '../table/TableColumnsInfo';
+import TableInfo from '../table/TableInfo';
 import { 
   useAddDomain, 
   useAllDataCenters, 
@@ -31,8 +31,8 @@ const DomainModal = ({
 }) => {
   const [formState, setFormState] = useState({
     id: '',
-    domainType: '',
-    storageType: '',
+    domainType: 'DATA', // 기본값 설정
+    storageType: 'NFS', // 기본값 설정
     name: '',    
     comment: '',
     description: '',
@@ -121,6 +121,11 @@ const DomainModal = ({
     } else if (!editMode && !isDatacentersLoading) {
       resetForm();
       setDataCenterVoId(datacenterId);
+      setFormState((prev) => ({
+        ...prev,
+        domainType: 'DATA', // 도메인 유형 기본값 설정
+        storageType: 'NFS', // 스토리지 유형 기본값 설정
+      }));
     }
   }, [editMode, domain, datacenterId]);
 
@@ -143,32 +148,31 @@ const DomainModal = ({
     if (!editMode) {
       setFormState((prev) => ({
         ...prev,
-        storageType: '',
+        storageType: 'NFS',
       }));
     } else if (editMode && options.length > 0 && !options.includes(formState.storageType)) {
       // 현재 CPU 유형이 새 옵션 리스트에 없으면 초기화
       setFormState((prev) => ({
         ...prev,
-        storageType: '',
+        storageType: 'NFS',
       }));
     }
   }, [formState.domainType, editMode]);
 
-
   const resetForm = () => {
     setFormState({
       id: '',
-      domainType: '',
-      storageType: '',
+      domainType: 'DATA', // 도메인 유형 기본값 설정
+      storageType: 'NFS', // 스토리지 유형 기본값 설정
       name: '',
       comment: '',
       description: '',
       warning: '',
       spaceBlocker: '',
-      storagePath: '',
+      storagePath: '', // NFS 기본값
       storageAddress: '',
     });
-    setStorageTypes([]);
+    setStorageTypes(['NFS', 'iSCSI', 'fc']); // 기본 도메인 유형에 따른 스토리지 유형
     setDataCenterVoId('');
     setHostVoName('');
   };
@@ -383,9 +387,10 @@ const DomainModal = ({
       {formState.storageType === 'fc' && (
         <div className="storage_popup_fc">
           <div className="fc_table">
+            <span>fc </span>
             <Table
-              columns={TableColumnsInfo.CLUSTERS_ALT}
-              data={domain} // 데이터가 적절히 전달되었는지 확인
+              columns={TableInfo.ISCSI}
+              // data={}
               onRowClick={() => {}}
               shouldHighlight1stCol={true}
             />

@@ -238,6 +238,12 @@ const TableInfo = {
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
     { header: '생성 일자', accessor: 'creationDate', clickable: false },
   ],
+
+  ISCSI: [
+    { header: 'Target Name', accessor: 'target', clickable: false },
+    { header: 'address', accessor: 'address', clickable: false },
+    { header: 'port', accessor: 'port', clickable: false },
+  ],
 //---------------------------
     // 템플릿
     NICS_FROM_TEMPLATES: [
