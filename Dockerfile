@@ -47,17 +47,17 @@ FROM eclipse-temurin:11-jdk-focal
 
 # Add labels to the runtime stage
 LABEL maintainer="Chan Hee Lee <chanhi2000@gmail.com>"
-LABEL description="Rutil"
-LABEL version="0.1.0"
+LABEL description="RutilVM"
+LABEL version="0.1.1"
 LABEL vcs-url="https://github.com/ITJEONGBO/okestro-demo"
-LABEL build-date="2024-09-09"
+LABEL build-date="2024-12-02"
 LABEL commit-hash="05f9e12ee27c1532623112d1df92004226d0d347"
 LABEL license="Apache-2.0"
 LABEL environment="production"
 LABEL app-name="itcloud"
 
 ENV ITCLOUD_VERSION=0.1.0
-ENV ITCLOUD_RELEASE_DATE=2024-09-09
+ENV ITCLOUD_RELEASE_DATE=2024-12-02
 ENV ITCLOUD_PORT_HTTP=8080
 ENV ITCLOUD_PORT_HTTPS=8443
 ENV ITCLOUD_OVIRT_IP=192.168.0.70
