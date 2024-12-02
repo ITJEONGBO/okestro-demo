@@ -80,14 +80,14 @@ const DomainModal = ({
     (e) => ({...e,})
   );
 
-  const {
-    data: iscsis = [],
-    refetch: refetchIscsis,
-    isLoading: isIscsisLoading,
-  } = useIscsiFromHost(
-    dataCenterVoId ? dataCenterVoId : undefined, 
-    (e) => ({...e,})
-  );
+  // const {
+  //   data: iscsis = [],
+  //   refetch: refetchIscsis,
+  //   isLoading: isIscsisLoading,
+  // } = useIscsiFromHost(
+  //   dataCenterVoId ? dataCenterVoId : undefined, 
+  //   (e) => ({...e,})
+  // );
 
   const [activeTab, setActiveTab] = useState('target_lun'); // 기본 탭 설정
   const handleTabChange = (tab) => {setActiveTab(tab);};
