@@ -698,6 +698,48 @@ export const usePermissionFromHost = (hostId, mapPredicate) => useQuery({
   }
 })
 
+
+/**
+ * @name useIscsiFromHost
+ * @description 호스트 내 iscsi 목록조회 useQuery훅
+ * 
+ * @param {string} hostId
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllIscsiFromHost
+ */
+export const useIscsiFromHost = (hostId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['IscsiFromHost', hostId], 
+  queryFn: async () => {
+    console.log(`IscsiFromHost ... ${hostId}`);
+    const res = await ApiManager.findAllIscsiFromHost(hostId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+
+/**
+ * @name useFibreFromHost
+ * @description 호스트 내 fibre 목록조회 useQuery훅
+ * 
+ * @param {string} hostId
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllFibreFromHost
+ */
+export const useFibreFromHost = (hostId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['febreFromHost', hostId], 
+  queryFn: async () => {
+    console.log(`febreFromHost ... ${hostId}`);
+    const res = await ApiManager.findAllFibreFromHost(hostId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+
+
 /**
  * @name useAddHost
  * @description 호스트 생성 useMutation 훅

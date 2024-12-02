@@ -13,8 +13,6 @@ import Login from './page/Login';
 import AllDomain from './components/Storage/AllDomain';
 import Network from './components/Network/Network';
 import Setting from './components/Setting/Setting';
-import StorageDomainDetail from './components/Storage/StorageDomainDetail';
-import StorageDiskDetail from './components/Storage/StorageDiskDetail';
 import NetworkDetail from './components/Network/NetworkDetail';
 import TemplateDetail from './components/Computing/TemplateDetail';
 import AllVm from './components/Computing/AllVm';

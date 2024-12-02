@@ -43,6 +43,7 @@ const DomainModal = ({
   });
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [hostVoName, setHostVoName] = useState('');
+  const [hostVoId, setHostVoId] = useState('');
   const [storageTypes, setStorageTypes] = useState([]);
 
   const { mutate: addDomain } = useAddDomain();
@@ -75,6 +76,15 @@ const DomainModal = ({
     refetch: refetchHosts,
     isLoading: isHostsLoading,
   } = useHostsFromDataCenter(
+    dataCenterVoId ? dataCenterVoId : undefined, 
+    (e) => ({...e,})
+  );
+
+  const {
+    data: iscsis = [],
+    refetch: refetchIscsis,
+    isLoading: isIscsisLoading,
+  } = useIscsiFromHost(
     dataCenterVoId ? dataCenterVoId : undefined, 
     (e) => ({...e,})
   );
@@ -373,6 +383,12 @@ const DomainModal = ({
           {activeTab === 'target_lun' && (
             <div className="tab_content">
               <p>LUN 관련 설정 화면 (대상 - LUN)</p>
+              <Table
+                columns={TableInfo.ISCSI}
+                // data={}
+                onRowClick={() => {}}
+                shouldHighlight1stCol={true}
+              />
             </div>
           )}
 

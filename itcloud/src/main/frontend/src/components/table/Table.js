@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip';
 import './Table.css';
 
-const Table = ({ columns = [], data = [], onRowClick = () => {}, clickableColumnIndex = [], onContextMenuItems = false }) => {
+const Table = ({ 
+  columns = [], 
+  data = [], 
+  onRowClick = () => {}, 
+  clickableColumnIndex = [], 
+  onContextMenuItems = false 
+}) => {
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [tooltips, setTooltips] = useState({});
   const [sortedData, setSortedData] = useState(data);
