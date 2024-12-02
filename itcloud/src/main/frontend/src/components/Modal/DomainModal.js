@@ -11,7 +11,8 @@ import {
   useDomainById, 
   useEditDomain ,
   useHostsFromDataCenter,
-  useDataCenter
+  useDataCenter,
+  useIscsiFromHost
 } from '../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
@@ -80,14 +81,14 @@ const DomainModal = ({
     (e) => ({...e,})
   );
 
-  // const {
-  //   data: iscsis = [],
-  //   refetch: refetchIscsis,
-  //   isLoading: isIscsisLoading,
-  // } = useIscsiFromHost(
-  //   dataCenterVoId ? dataCenterVoId : undefined, 
-  //   (e) => ({...e,})
-  // );
+  const {
+    data: iscsis = [],
+    refetch: refetchIscsis,
+    isLoading: isIscsisLoading,
+  } = useIscsiFromHost(
+    hostVoId ? hostVoId : undefined, 
+    (e) => ({...e,})
+  );
 
   const [activeTab, setActiveTab] = useState('target_lun'); // 기본 탭 설정
   const handleTabChange = (tab) => {setActiveTab(tab);};
@@ -128,6 +129,7 @@ const DomainModal = ({
       });
       setDataCenterVoId(domain?.datacenterVo?.id);
       setHostVoName(domain?.hostVo?.name);
+      setHostVoId(domain?.hostVo?.id);
     } else if (!editMode && !isDatacentersLoading) {
       resetForm();
       setDataCenterVoId(datacenterId);
@@ -149,6 +151,7 @@ const DomainModal = ({
   useEffect(() => {
     if (!editMode && hosts && hosts.length > 0) {
       setHostVoName(hosts[0].name);
+      setHostVoId(hosts[0].id);
     }
   }, [hosts, editMode]);
 
@@ -185,6 +188,7 @@ const DomainModal = ({
     setStorageTypes(['NFS', 'iSCSI', 'fc']); // 기본 도메인 유형에 따른 스토리지 유형
     setDataCenterVoId('');
     setHostVoName('');
+    setHostVoId('');
   };
 
   const validateForm = () => {
