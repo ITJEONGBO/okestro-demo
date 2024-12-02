@@ -28,8 +28,8 @@ const TemplateEditModal = ({
 //   { value: 'I440FX_SEA_BIOS', label: 'BIOS의 I440FX 칩셋' },
 //   { value: 'Q35_OVMF', label: 'UEFI의 Q35 칩셋' },
 //   { value: 'Q35_SEA_BIOS', label: 'BIOS의 Q35 칩셋' },
-//   { value: 'Q35_SECURE_BOOT', label: 'UEFI SecureBoot의 Q35 칩셋' },
-// ]); 
+//   { value: 'Q35_SECURE_BOOT', label: 'UEFI SecureBoot의 Q35 칩' },
+// ]); 셋
   // 최적화옵션(영어로 값바꿔야됨)
   const [optimizeOption, setOptimizeOption] = useState([
     { value: 'DESKTOP', label: '데스크톱' },

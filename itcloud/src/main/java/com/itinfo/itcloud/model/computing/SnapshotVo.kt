@@ -103,6 +103,7 @@ fun List<Snapshot>.toSnapshotVos(conn: Connection, vmId: String): List<SnapshotV
 
 
 fun SnapshotVo.toSnapshotBuilder(): SnapshotBuilder {
+    log.info("snapshotvo: {}", this)
     return SnapshotBuilder()
         .description(this@toSnapshotBuilder.description)
         .persistMemorystate(this@toSnapshotBuilder.persistMemory)

@@ -90,16 +90,16 @@ const VmModal = ({
 // 가상머신 상세데이터 가져오기
   const { 
     data: vm, 
-    refetch: refetchvms,
-  } = useVmById(vmId);
+    refetch: refetchvms, 
+  } = useVmById(vmId); 
 
   // vm 데이터 변경 시 콘솔에 출력
-useEffect(() => {
-  if (vm) {
-    console.log('가져온 가상머신 데이터아이디:', vmId);
-    console.log('변경된 가상머신 데이터:', vm);
-  }
-}, [vm,vmId]);
+  useEffect(() => {
+    if (vm) {
+      console.log('가져온 가상머신 데이터아이디:', vmId);
+      console.log('변경된 가상머신 데이터:', vm);
+    }
+  }, [vm,vmId]);
 
 
 
@@ -177,7 +177,6 @@ useEffect(() => {
     console.log("NIC List is empty or undefined.");
   }
 }, [nicList]);
-
 
 
 
@@ -517,6 +516,27 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const toggleDomainHiddenBox = () => {
     setDomainHiddenBoxVisible(!isDomainHiddenBoxVisible);
   };
+
+  
+// 초기 NIC 리스트 상태
+const [nicSelections, setNicSelections] = useState([{ id: '', networkVoName: '' }]);
+
+// NIC 선택 변경 핸들러
+const handleNicChange = (index, field, value) => {
+  setNicSelections((prev) =>
+    prev.map((nic, i) => (i === index ? { ...nic, [field]: value } : nic))
+  );
+};
+
+// NIC 추가 핸들러
+const handleAddNic = () => {
+  setNicSelections((prev) => [...prev, { id: '', networkVoName: '' }]);
+};
+
+// NIC 삭제 핸들러
+const handleRemoveNic = (index) => {
+  setNicSelections((prev) => prev.filter((_, i) => i !== index));
+};
 return (
   <Modal
     isOpen={isOpen}
@@ -770,30 +790,42 @@ return (
                           </div>
 
                         
-                        <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
-                            
-                        <div className="edit_fourth_content_select flex">
-  <label htmlFor="network_adapter">NIC 선택</label>
-  <select 
-    id="network_adapter" 
-    menuPlacement="bottom" // 항상 아래로 열리도록 설정
-  >
-    {nicList && nicList.length > 0 ? (
-      nicList.map((nic) => (
-        <option key={nic.id} value={nic.id}>
-          {nic.name} ({nic.networkVoName}) {/* NIC 이름과 네트워크 이름 표시 */}
-        </option>
-      ))
-    ) : (
-      <option value="">NIC 없음</option>
-    )}
-  </select>
-</div>
-                            <div className='flex'>
-                                <button>+</button>
-                                <button>-</button>
-                            </div>
-                        </div>
+                          <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
+                            {nicSelections.map((nic, index) => (
+                              <div key={index} className="edit_fourth_content_row" style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                                <div className="edit_fourth_content_select" style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                                  <label htmlFor={`network_adapter_${index}`} style={{ marginRight: '10px', width: '100px' }}>NIC {index + 1}</label>
+                                  <select
+                                    id={`network_adapter_${index}`}
+                                    style={{ flex: 1 }}
+                                    value={nic.id}
+                                    onChange={(e) => handleNicChange(index, 'id', e.target.value)}
+                                  >
+                                    <option value="">항목을 선택하십시오...</option>
+                                    {nicList && nicList.length > 0 ? (
+                                      nicList.map((nicOption) => (
+                                        <option key={nicOption.id} value={nicOption.id}>
+                                          {nicOption.name} ({nicOption.networkVoName})
+                                        </option>
+                                      ))
+                                    ) : (
+                                      <option value="">NIC 없음</option>
+                                    )}
+                                  </select>
+                                </div>
+                                <div style={{ display: 'flex', marginLeft: '10px' }}>
+                                  
+                                  <button onClick={handleAddNic} style={{ marginRight: '5px' }}>+</button>
+                                  {nicSelections.length > 1 && (
+                                    <button onClick={() => handleRemoveNic(index)}>-</button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                                          
+                      
                 </>
               }
               {selectedModalTab === 'system' && 

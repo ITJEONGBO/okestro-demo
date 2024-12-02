@@ -69,7 +69,7 @@ const Header = ({ setAuthenticated }) => {
     return (
         <div className="header">
             <div className="header_right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
-                <img className='logo' src={logo} alt="logo Image" />
+                {/* <img className='logo' src={logo} alt="logo Image" /> */}
                 <img className='rutil_logo' src={rutil_logo} alt="logo Image" />
             </div>
 

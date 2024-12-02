@@ -1015,6 +1015,33 @@ export const useNetworkInterfaceFromVM = (vmId, mapPredicate) => useQuery({
   staleTime: 0,
   cacheTime: 0,
 });
+
+/**
+ * @name useNetworkInterfaceByVMId
+ * @description 가상머신 내 네트워크인터페이스 상세조회 useQuery훅
+ * 
+ * @param {string} vmId 가상머신ID
+ *  * @param {string} nicId 닉ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findNicFromVM
+ */
+export const useNetworkInterfaceByVMId = (vmId,nicId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['NetworkInterfaceFromVM', vmId], 
+  queryFn: async () => {
+    console.log(`useNetworkInterfaceByVMId ... ${vmId}`);
+    console.log(`useNetworkInterfaceByVMId ... ${nicId}`);
+    const res = await ApiManager.findNicFromVM(vmId,nicId); 
+    console.log('API Response:', res); // 반환된 데이터 구조 확인
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!vmId, 
+  staleTime: 0,
+  cacheTime: 0,
+});
+
 /**
  * @name useApplicationFromVM
  * @description 가상머신 내 어플리케이션 목록조회 useQuery훅
@@ -1355,6 +1382,25 @@ export const useNetworkInterface = () => {
     },
   });
 };
+
+/**
+ * @name useDisksFromVM
+ * @description 가상머신 연결할 수 있는 디스크 useQuery훅
+ * 
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findDisksFromVM
+ */
+export const useFindDiskListFromVM = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['FindDiskListFromVM'], 
+  queryFn: async () => {
+    const res = await ApiManager.findDiskListFromVM(); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+});
+
 //endregion: VM
 
 //region: TEMPLATE ----------------템플릿---------------------

@@ -209,6 +209,8 @@ const VmNetwork = ({vm}) => {
                         editMode={modals.edit}
                         nicData={selectedNics}
                         vmId={vm?.id || null}
+                        nicId={selectedNics?.id}
+                    
                     />
                 )}
                 {modals.delete && selectedNics && (

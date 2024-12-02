@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableOuter from "../table/TableOuter";
 import TableColumnsInfo from '../table/TableColumnsInfo';
+import TableInfo from '../table/TableInfo';
+import { useFindDiskListFromVM } from '../../api/RQHook';
 
 const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
   const [activeTab, setActiveTab] = useState('img'); // 현재 선택된 탭 상태 관리
@@ -12,6 +14,16 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
     setActiveTab(tab); // 탭 클릭 시 상태 업데이트
   };
 
+  const {
+    data: disks,
+  } = useFindDiskListFromVM((e) => ({
+    ...e,
+    storageDomainVo: e?.storageDomainVo?.name,
+    status: e?.status === 'UNINITIALIZED' ? '초기화되지 않음' : 'UP'
+  }));
+
+
+  
   return (
     <Modal
       isOpen={isOpen} // 부모에서 모달 열림 상태 전달
@@ -46,8 +58,8 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
         </div>
         {activeTab === 'img' && (
           <TableOuter
-            columns={TableColumnsInfo.VMS_FROM_HOST}
-            data={[]} // 데이터를 여기에 추가하세요.
+            columns={TableInfo.VIRTUAL_DISK}
+            data={disks || []}
             onRowClick={() => console.log('Row clicked in 이미지 탭')}
           />
         )}

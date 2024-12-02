@@ -341,8 +341,8 @@ button{
 
 .edit_fourth_content{
     padding: 2.3% 2% 0 2%;
-    display:flex;
-    justify-content: space-between;
+    /* display:flex;
+    justify-content: space-between; */
     border-top: 1px solid #cecece;
 }
 .edit_fourth_content_select{

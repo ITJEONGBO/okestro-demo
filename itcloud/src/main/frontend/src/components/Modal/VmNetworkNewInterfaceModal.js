@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faGlassWhiskey } from '@fortawesome/free-solid-svg-icons';
-import { useAddNicFromVM, useEditNicFromVM, useNetworkInterfaceFromVM } from '../../api/RQHook';
+import { useAddNicFromVM, useAllVnicProfiles, useEditNicFromVM, useNetworkInterfaceByVMId, useNetworkInterfaceFromVM } from '../../api/RQHook';
 
 const VmNetworkNewInterfaceModal = ({
   isOpen,
   onRequestClose,
   editMode = false,
   nicData,
-  vmId
+  vmId,
+  nicId
 }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -40,20 +41,43 @@ const VmNetworkNewInterfaceModal = ({
 
   useEffect(() => {
     console.log('VM ID아아아:', vmId); // vmId 값 확인
-  }, [vmId]);
+    console.log('nicID아아아:', nicId); // nicId 값 확인
+  }, [vmId,nicId]);
 
     // 가상머신 내 네트워크인터페이스 목록
+    // const { 
+    //   data: nics 
+    // } = useNetworkInterfaceFromVM(vmId);
+
+    // 가상머신 내 네트워크인터페이스 상세조회
     const { 
-      data: nics 
-    } = useNetworkInterfaceFromVM(vmId);
+      data: nics
+    } = useNetworkInterfaceByVMId(vmId,nicId);
+    useEffect(() => {
+      console.log('nicDetail정보:', nics); // vmId 값 확인
+    }, [nics]);
+
+
+
+
+
+    
+    // 모든 vnic프로파일 목록
+    const { 
+      data: vnics 
+    } = useAllVnicProfiles((e)=>({
+      ...e
+    }));
+
 
       useEffect(() => {
         console.log('useEffect 호출 - nicData 상태:', nicData);
         if (editMode && nicData) {
+          console.log('vnicProfileVo:', nicData.vnicProfileVo?.name);
           setId(nicData.id);
           setName(nicData.name);
           setVnicProfileVoId(nicData.vnicProfileVo?.id || '');
-          setVnicProfileVoName(nicData.vnicProfileVo.name || '');
+          setVnicProfileVoName(nicData.vnicProfileVo?.name || '');
           setSelectedInterface(nicData.interface_ || 'VIRTIO');
           setLinked(nicData.linked);
           setPlugged(nicData.plugged); // 기본값 설정
@@ -150,22 +174,24 @@ const VmNetworkNewInterfaceModal = ({
             />
           </div>
           <div className="select_box">
-            <label htmlFor="profile">프로파일</label>
-            <select
-              id="profile"
-              value={vnicProfileVoName}
-              onChange={(e) => setVnicProfileVoName(e.target.value)}
-            >
-              <option value="">프로파일을 선택하세요</option>
-              <option value="default">Default</option>
-              <option value="custom">Custom</option>
-              {nics?.map((nic) => (
-                <option key={nic.id} value={nic.vnicProfileVo.name}>
-                  {nic.vnicProfileVo.name}
-                </option>
-              ))}
-            </select>
-          </div>
+  <label htmlFor="profile">프로파일</label>
+  <select
+    id="profile"
+    value={vnicProfileVoId} // vnicProfileVoId를 상태로 연결
+    onChange={(e) => {
+      setVnicProfileVoId(e.target.value); // 선택된 프로파일 ID 업데이트
+      const selectedVnic = vnics?.find((vnic) => vnic.id === e.target.value);
+      setVnicProfileVoName(selectedVnic ? selectedVnic.name : ''); // 선택된 프로파일 이름 업데이트
+    }}
+  >
+    <option value="">프로파일을 선택하세요</option>
+    {vnics?.map((vnic) => (
+      <option key={vnic.id} value={vnic.id}>
+        {vnic.name} {/* 각 프로파일의 이름을 표시 */}
+      </option>
+    ))}
+  </select>
+</div>
           <div className="network_form_group">
   <label htmlFor="type">유형</label>
   <select
@@ -213,6 +239,7 @@ const VmNetworkNewInterfaceModal = ({
               </div>
             </div>
           </div>
+
           <div className="plug_radio_btn">
   <span>카드 상태</span>
   <div>
@@ -241,7 +268,7 @@ const VmNetworkNewInterfaceModal = ({
       </div>
     </div>
   </div>
-</div>
+          </div>
 
 
         </div>

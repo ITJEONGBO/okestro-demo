@@ -342,7 +342,21 @@ const TableInfo = {
     { header: '사용된 공간', accessor: 'usedSize', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-  
+
+  VIRTUAL_DISK:  [
+    { header: '', accessor: 'radio', clickable: false, width: '5%'  },
+    { header: '별칭', accessor: 'alias', clickable: true },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: 'ID', accessor: 'id', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '실제 크기', accessor: 'actualSize', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomainVo', clickable: false, width: '15%'  },
+    { header: '인터페이스', accessor: 'select', clickable: false },
+    { header: 'R/O', accessor: 'checkbox', clickable: false, width: '5%'  },
+    { header: 'i', accessor: 'checkbox', clickable: false, width: '5%'  },
+    { header: 'i', accessor: 'icon1', clickable: false, width: '5%'  },
+
+  ],
 // ---------------------------------------------------------------
 
 
