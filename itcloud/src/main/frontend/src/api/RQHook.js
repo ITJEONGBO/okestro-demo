@@ -225,7 +225,7 @@ export const useHostsFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['hostsFromDataCenter', dataCenterId], 
   queryFn: async () => {
-    if(dataCenterId == '') return [];
+    if(dataCenterId === '') return [];
     console.log(`hostsFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findAllHostsFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
@@ -713,10 +713,16 @@ export const useIscsiFromHost = (hostId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['IscsiFromHost', hostId], 
   queryFn: async () => {
+    if(hostId === null) return [];
     console.log(`IscsiFromHost ... ${hostId}`);
     const res = await ApiManager.findAllIscsiFromHost(hostId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+    const processedData = res?.map((e) => mapPredicate(e)) ?? [];
+    console.log('Processed iSCSI data:', processedData);
+    return processedData; // 데이터 가공 후 반환
+  },
+  onSuccess: (data) => {
+    console.log('iSCSI data:', data);
+  },
 })
 
 /**
@@ -731,12 +737,18 @@ export const useIscsiFromHost = (hostId, mapPredicate) => useQuery({
  */
 export const useFibreFromHost = (hostId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['febreFromHost', hostId], 
+  queryKey: ['fibreFromHost', hostId], 
   queryFn: async () => {
+    if(hostId === null) return [];
     console.log(`febreFromHost ... ${hostId}`);
     const res = await ApiManager.findAllFibreFromHost(hostId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+    const processedData = res?.map((e) => mapPredicate(e)) ?? [];
+    console.log('Processed Fibre data:', processedData);
+    return processedData; // 데이터 가공 후 반환
+  },
+  onSuccess: (data) => {
+    console.log('Fibre data:', data);
+  },
 })
 
 
@@ -2196,6 +2208,7 @@ export const useAddDomain = () => {
   return useMutation({
     mutationFn: async (domainData) => await ApiManager.addDomain(domainData),
     onSuccess: () => {
+      console.log('domain 생성성공')
       queryClient.invalidateQueries('allStorageDomains');
     },
     onError: (error) => {

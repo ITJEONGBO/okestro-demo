@@ -10,11 +10,17 @@ import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.model.network.toSetHostNicVos
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
+import com.itinfo.itcloud.model.storage.HostStorageVo
+import com.itinfo.itcloud.model.storage.toFibreHostStorageVos
+import com.itinfo.itcloud.model.storage.toIscsiHostStorageVos
 import com.itinfo.itcloud.repository.*
 import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.storage.ItStorageService
+import com.itinfo.itcloud.service.storage.StorageServiceImpl
+import com.itinfo.itcloud.service.storage.StorageServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
@@ -132,6 +138,26 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllEventsFromHost(hostId: String): List<EventVo>
+
+	/**
+	 * [ItHostService.findAllIscsiFromHost]
+	 * 도메인 생성(가져오기?) - iSCSI 유형 대상 LUN 목록
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[HostStorageVo]>
+	 */
+	@Throws(Error::class)
+	fun findAllIscsiFromHost(hostId: String): List<HostStorageVo>
+	/**
+	 * [ItHostService.findAllFibreFromHost]
+	 * 도메인 생성(가져오기?) - Fibre Channel 유형 대상 LUN 목록
+	 * 타입이 tcp로 뜸
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[HostStorageVo]>
+	 */
+	@Throws(Error::class)
+	fun findAllFibreFromHost(hostId: String): List<HostStorageVo>
 
 	/**
 	 * [ItHostService.findAllPermissionsFromHost]
@@ -272,6 +298,25 @@ class HostServiceImpl(
 			conn.findAllEvents("host.name= ${host.name()}").getOrDefault(listOf())
 		return res.toEventVos()
 	}
+
+	@Throws(Error::class)
+	override fun findAllIscsiFromHost(hostId: String): List<HostStorageVo> {
+		log.info("findAllIscsiFromHost... hostId: {}", hostId)
+		val res: List<HostStorage> =
+			conn.findAllStoragesFromHost(hostId).getOrDefault(listOf())
+				.filter { it.type() == StorageType.ISCSI }
+		return res.toIscsiHostStorageVos()
+	}
+
+	@Throws(Error::class)
+	override fun findAllFibreFromHost(hostId: String): List<HostStorageVo> {
+		log.info("findAllFibreFromHost... hostId: {}", hostId)
+		val res: List<HostStorage> =
+			conn.findAllStoragesFromHost(hostId).getOrDefault(listOf())
+				.filter { it.type() == StorageType.FCP }
+		return res.toFibreHostStorageVos()
+	}
+
 
 	@Deprecated("필요없음")
 	@Throws(Error::class)

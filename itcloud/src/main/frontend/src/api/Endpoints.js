@@ -192,8 +192,8 @@ const ENDPOINTS = {
   FIND_EVENTS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/events`,
   FIND_ACTIVE_DATA_CENTERS: () => `/api/v1/storages/domains/dataCenters`,
   
-  FIND_FIBRES_FROM_HOST: (hostId) => `/api/v1/storages/domains/fibres/${hostId}`,
-  FIND_ISCSIS_FROM_HOST: (hostId) => `/api/v1/storages/domains/iscsis/${hostId}`,
+  FIND_FIBRES_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/fibres`,
+  FIND_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsis`,
   
   ADD_STORAGE_DOMAIN: () => `/api/v1/storages/domains`,
   EDIT_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,

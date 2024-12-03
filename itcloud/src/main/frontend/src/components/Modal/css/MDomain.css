@@ -21,21 +21,24 @@
   }
    */
 
-   .iscsi_buttons {
-    display: flex;
-    justify-content: center; /* 중앙 정렬 */
-    align-items: center; /* 수직 중앙 정렬 */
-    gap: 10px; /* 버튼 간격 */
-  }
-  
-  .tab_button {
-    padding: 10px 20px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    cursor: pointer;
-  }
-  
-  .tab_button.active {
-    background-color: #007bff;
-    color: white;
-  }
+.iscsi_buttons {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  gap: 10px; /* 버튼 간격 */
+}
+
+.tab_button {
+  width: 100px;
+  height: 32px;
+  padding: 5px 3px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.tab_button.active {
+  background-color: #007bff;
+  color: white;
+}

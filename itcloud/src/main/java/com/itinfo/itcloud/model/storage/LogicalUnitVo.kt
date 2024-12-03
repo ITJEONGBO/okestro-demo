@@ -42,6 +42,7 @@ class LogicalUnitVo (
     val storageDomainId: String = "",
     val target: String = "",
     val vendorId: String = "",
+    val serial: String = "",
 ): Serializable {
     override fun toString(): String =
         gson.toJson(this)
@@ -62,8 +63,9 @@ class LogicalUnitVo (
         private var bStorageDomainId: String = ""; fun storageDomainId(block: () -> String?) { bStorageDomainId = block() ?: ""}
         private var bTarget: String = ""; fun target(block: () -> String?) { bTarget = block() ?: ""}
         private var bVendorId: String = ""; fun vendorId(block: () -> String?) { bVendorId = block() ?: ""}
+        private var bSerial: String = ""; fun serial(block: () -> String?) { bSerial = block() ?: ""}
 
-        fun build(): LogicalUnitVo = LogicalUnitVo(bId, bAddress, bDiscardMaxSize, bDiscardZeroesData, bDiskId, bLunMapping, bPaths, bPort, bPortal, bProductId, bSize, bStatus, bStorageDomainId, bTarget, bVendorId, )
+        fun build(): LogicalUnitVo = LogicalUnitVo(bId, bAddress, bDiscardMaxSize, bDiscardZeroesData, bDiskId, bLunMapping, bPaths, bPort, bPortal, bProductId, bSize, bStatus, bStorageDomainId, bTarget, bVendorId, bSerial )
     }
 
     companion object {
@@ -72,12 +74,15 @@ class LogicalUnitVo (
     }
 }
 
+// TODO 밑의 두개가 거의 같음 수정필요
 fun LogicalUnit.toIscsiLogicalUnitVo(): LogicalUnitVo = LogicalUnitVo.builder {
     id { this@toIscsiLogicalUnitVo.id() }
     address { this@toIscsiLogicalUnitVo.address() }
     discardMaxSize { this@toIscsiLogicalUnitVo.discardMaxSizeAsInteger() }
     discardZeroesData { this@toIscsiLogicalUnitVo.discardZeroesData() }
+
 //    lunMapping { this@toLogicalUnitVo.lunMappingAsInteger() }
+    paths { this@toIscsiLogicalUnitVo.pathsAsInteger() }
     port { this@toIscsiLogicalUnitVo.portAsInteger() }
     portal { this@toIscsiLogicalUnitVo.portal() }
     productId { this@toIscsiLogicalUnitVo.productId() }
@@ -86,6 +91,7 @@ fun LogicalUnit.toIscsiLogicalUnitVo(): LogicalUnitVo = LogicalUnitVo.builder {
     storageDomainId { this@toIscsiLogicalUnitVo.storageDomainId() }
     target { this@toIscsiLogicalUnitVo.target() }
     vendorId { this@toIscsiLogicalUnitVo.vendorId() }
+    serial { this@toIscsiLogicalUnitVo.serial() }
 }
 fun List<LogicalUnit>.toIscsiLogicalUnitVos(): List<LogicalUnitVo> =
     this@toIscsiLogicalUnitVos.map { it.toIscsiLogicalUnitVo() }
@@ -102,6 +108,7 @@ fun LogicalUnit.toFibreLogicalUnitVo(): LogicalUnitVo = LogicalUnitVo.builder {
     status { this@toFibreLogicalUnitVo.status() }
     storageDomainId { this@toFibreLogicalUnitVo.storageDomainId() }
     vendorId { this@toFibreLogicalUnitVo.vendorId() }
+    serial { this@toFibreLogicalUnitVo.serial() }
 }
 fun List<LogicalUnit>.toFibreLogicalUnitVos(): List<LogicalUnitVo> =
     this@toFibreLogicalUnitVos.map { it.toFibreLogicalUnitVo() }

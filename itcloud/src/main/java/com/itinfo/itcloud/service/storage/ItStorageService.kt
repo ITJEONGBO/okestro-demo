@@ -44,25 +44,8 @@ interface ItStorageService {
 	fun findOne(storageDomainId: String): StorageDomainVo?
 
 	// 도메인 생성 - 호스트 목록 [ItDataCenterService.findAllHostsFromDataCenter]
-	/**
-	 * [ItStorageService.findAllIscsiFromHost]
-	 * 도메인 생성(가져오기?) - iSCSI 유형 대상 LUN 목록
-	 *
-	 * @param hostId [String] 호스트 Id
-	 * @return List<[HostStorageVo]>
-	 */
-	@Throws(Error::class)
-	fun findAllIscsiFromHost(hostId: String): List<HostStorageVo>
-	/**
-	 * [ItStorageService.findAllFibreFromHost]
-	 * 도메인 생성(가져오기?) - Fibre Channel 유형 대상 LUN 목록
-	 * 타입이 tcp로 뜸
-	 *
-	 * @param hostId [String] 호스트 Id
-	 * @return List<[HostStorageVo]>
-	 */
-	@Throws(Error::class)
-	fun findAllFibreFromHost(hostId: String): List<HostStorageVo>
+	// iscis 목록 - 호스트 목록
+	// fibre 목록 - 호스트 목록
 
 	/**
 	 * [ItStorageService.add]
@@ -291,25 +274,6 @@ class StorageServiceImpl(
 			conn.findStorageDomain(storageDomainId).getOrNull()
 		return res?.toStorageDomainVo(conn)
 	}
-
-	@Throws(Error::class)
-	override fun findAllIscsiFromHost(hostId: String): List<HostStorageVo> {
-		log.info("findAllIscsiFromHost... hostId: {}", hostId)
-		val res: List<HostStorage> =
-			conn.findAllStoragesFromHost(hostId).getOrDefault(listOf())
-				.filter { it.type() == StorageType.ISCSI }
-		return res.toIscsiHostStorageVos()
-	}
-
-	@Throws(Error::class)
-	override fun findAllFibreFromHost(hostId: String): List<HostStorageVo> {
-		log.info("findAllFibreFromHost... hostId: {}", hostId)
-		val res: List<HostStorage> =
-			conn.findAllStoragesFromHost(hostId).getOrDefault(listOf())
-				.filter { it.type() == StorageType.FCP }
-		return res.toFibreHostStorageVos()
-	}
-
 
 	@Throws(Error::class)
 	override fun add(storageDomainVo: StorageDomainVo): StorageDomainVo? {

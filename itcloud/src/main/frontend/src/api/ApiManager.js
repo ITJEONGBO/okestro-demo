@@ -2,7 +2,6 @@ import ENDPOINTS from "./Endpoints"
 import DEFAULT_VALUES from "./DefaultValues"
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { data } from "jquery";
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -18,7 +17,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 const makeAPICall = async ({method = "GET", url, data}) => {
   try {
     const res = 
-      (data == null || data == undefined) ? await axios.get(url) 
+      (data == null || data === undefined) ? await axios.get(url) 
       : await axios({
         method: method,
         url: url,

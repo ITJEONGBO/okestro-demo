@@ -23,7 +23,7 @@ const DomainDupl = ({
   // 데이터센터: 연결, 분리, 활성, 유지보수
   return (
     <>
-    { type == 'domain' && 
+    { type === 'domain' && 
       <DomainActionButtons
         onCreate={() => handleActionClick('create')}
         onEdit={() => selectedDomain?.id && handleActionClick('edit')}
@@ -33,7 +33,7 @@ const DomainDupl = ({
         status={selectedDomain?.status}
       />
     } 
-    { type == 'datacenter' &&
+    { type === 'datacenter' &&
       <DomainActionButtons
         onAttach={() => handleActionClick('attach')}
         onSeparate={() => selectedDomain?.id && handleActionClick('separate')}

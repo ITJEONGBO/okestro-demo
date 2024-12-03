@@ -64,52 +64,7 @@ class StorageController: BaseController() {
 	}
 
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="도메인 생성(가져오기)",
-		notes="도메인 생성(가져오기) - iSCSI 유형 대상 LUN 목록"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/iscsis/{hostId}")
-	@ResponseBody
-	fun iSCSIs(
-		@PathVariable("hostId") hostId: String? = null
-	): ResponseEntity<List<HostStorageVo>> {
-		if (hostId == null)
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/storages/domains/iscsis/{} ... ", hostId)
-		return ResponseEntity.ok(iDomain.findAllIscsiFromHost(hostId))
-	}
-	
-	@ApiOperation(
-		httpMethod="GET",
-		value="도메인 생성(가져오기)",
-		notes="도메인 생성(가져오기?) - Fibre Channel 유형 대상 LUN 목록"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/fibres/{hostId}")
-	@ResponseBody
-	fun fibres(
-		@PathVariable("hostId") hostId: String? = null
-	): ResponseEntity<List<HostStorageVo>> {
-		if (hostId == null)
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/storages/domains/fibres/{} ... ", hostId)
-		return ResponseEntity.ok(iDomain.findAllFibreFromHost(hostId))
-	}
-
 	// 생성
-
 	@ApiOperation(
 		httpMethod="POST",
 		value="스토리지 도메인 생성",

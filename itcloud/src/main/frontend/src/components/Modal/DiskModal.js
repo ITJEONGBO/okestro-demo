@@ -407,7 +407,6 @@ const DiskModal = ({
           </div>
         )} */}
         <div className="edit_footer">
-          {/* <button style={{ display: 'none' }}></button> */}
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

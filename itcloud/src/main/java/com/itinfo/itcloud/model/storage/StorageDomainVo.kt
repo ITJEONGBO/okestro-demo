@@ -271,22 +271,28 @@ fun List<StorageDomain>.toStorageDomainSizes(): List<StorageDomainVo> =
  * 스토리지 도메인 생성 빌더
  * 기본
  */
-fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
+fun StorageDomainVo.toStorageDomainBuilder(): StorageDomainBuilder {
+	log.info("st: {}", this)
 	return StorageDomainBuilder()
-		.name(this@toAddStorageDomainBuilder.name)
-		.type(StorageDomainType.fromValue(this@toAddStorageDomainBuilder.domainType))
-		.description(this@toAddStorageDomainBuilder.description)
-//		.warningLowSpaceIndicator(this@toAddStorageDomainBuilder.warning)
-//		.criticalSpaceActionBlocker(this@toAddStorageDomainBuilder.spaceBlocker)  //디스크 공간 동작 차단
-		.dataCenters(*arrayOf(DataCenterBuilder().id(this@toAddStorageDomainBuilder.dataCenterVo.id).build()))
-		.host(HostBuilder().name(this@toAddStorageDomainBuilder.hostVo.name).build())
+		.name(this@toStorageDomainBuilder.name)
+		.type(StorageDomainType.fromValue(this@toStorageDomainBuilder.domainType))
+		.description(this@toStorageDomainBuilder.description)
+		.warningLowSpaceIndicator(this@toStorageDomainBuilder.warning)
+		.criticalSpaceActionBlocker(this@toStorageDomainBuilder.spaceBlocker)  //디스크 공간 동작 차단
+		.dataCenters(*arrayOf(DataCenterBuilder().id(this@toStorageDomainBuilder.dataCenterVo.id).build()))
+		.host(HostBuilder().name(this@toStorageDomainBuilder.hostVo.name).build())
 		.storage(
-			if(StorageType.fromValue(this@toAddStorageDomainBuilder.storageType) == StorageType.NFS) {
-				this@toAddStorageDomainBuilder.toAddNFSBuilder()
+			if(StorageType.fromValue(this@toStorageDomainBuilder.storageType) == StorageType.NFS) {
+				this@toStorageDomainBuilder.toAddNFSBuilder()
 			} else { // ISCSI, Fibre Channel
-				this@toAddStorageDomainBuilder.toAddEtcBuilder()
+				this@toStorageDomainBuilder.toAddEtcBuilder()
 			}
-		).build()
+		)
+}
+
+fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
+
+	return this@toAddStorageDomainBuilder.toStorageDomainBuilder().build();
 }
 
 /**

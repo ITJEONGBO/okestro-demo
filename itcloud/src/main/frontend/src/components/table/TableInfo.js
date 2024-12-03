@@ -239,11 +239,31 @@ const TableInfo = {
     { header: '생성 일자', accessor: 'creationDate', clickable: false },
   ],
 
-  ISCSI: [
-    { header: 'Target Name', accessor: 'target', clickable: false },
-    { header: 'address', accessor: 'address', clickable: false },
-    { header: 'port', accessor: 'port', clickable: false },
+  TARGETS_LUNS: [
+    { header: 'Target Name', accessor: 'target', clickable: true },
+    { header: 'address', accessor: 'address', clickable: true },
+    { header: 'port', accessor: 'port', clickable: true },
   ],
+  LUNS_TARGETS: [
+    { header: 'status', accessor: 'status', clickable: false },
+    { header: 'Lun ID', accessor: 'id', clickable: false },
+    { header: 'size', accessor: 'size', clickable: false },
+    { header: '#path', accessor: 'paths', clickable: false },
+    { header: 'vendor ID', accessor: 'vendorId', clickable: false },
+    { header: 'product ID', accessor: 'productId', clickable: false },
+    { header: 'serial', accessor: 'serial', clickable: false },
+  ],
+  
+  FIBRE: [
+    { header: 'status', accessor: 'status', clickable: false },
+    { header: 'Lun ID', accessor: 'id', clickable: false },
+    { header: 'size', accessor: 'size', clickable: false },
+    { header: '#path', accessor: 'paths', clickable: false },
+    { header: 'vendor ID', accessor: 'vendorId', clickable: false },
+    { header: 'product ID', accessor: 'productId', clickable: false },
+    { header: 'serial', accessor: 'serial', clickable: false },
+  ],
+
 //---------------------------
     // 템플릿
     NICS_FROM_TEMPLATES: [

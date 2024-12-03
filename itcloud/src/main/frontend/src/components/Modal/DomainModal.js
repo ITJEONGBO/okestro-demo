@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
 import './css/MDomain.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faChevronCircleRight, faGlassWhiskey } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import Table from '../table/Table';
 import TableInfo from '../table/TableInfo';
 import { 
@@ -12,8 +12,11 @@ import {
   useEditDomain ,
   useHostsFromDataCenter,
   useDataCenter,
-  useIscsiFromHost
+  useIscsiFromHost,
+  useFibreFromHost
 } from '../../api/RQHook';
+
+Modal.setAppElement('#root');
 
 const FormGroup = ({ label, children }) => (
   <div className="domain_new_select">
@@ -37,15 +40,20 @@ const DomainModal = ({
     name: '',    
     comment: '',
     description: '',
-    warning: '',
-    spaceBlocker: '',
-    storagePath: '' , //nfs
-    storageAddress: '',
+    warning: '10',
+    spaceBlocker: '5',
   });
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [hostVoName, setHostVoName] = useState('');
   const [hostVoId, setHostVoId] = useState('');
   const [storageTypes, setStorageTypes] = useState([]);
+
+  // nfs
+  const [storagePath, setStoragePath] = useState('');
+  const [storageAddress, setStorageAddress] = useState('');
+
+  // iscsi, fibre
+  const [lunId, setLunId] = useState('');
 
   const { mutate: addDomain } = useAddDomain();
   const { mutate: editDomain } = useEditDomain();
@@ -81,17 +89,48 @@ const DomainModal = ({
     (e) => ({...e,})
   );
 
+  // iscsi 가져오기
   const {
     data: iscsis = [],
     refetch: refetchIscsis,
+    error: isIscsisError,
     isLoading: isIscsisLoading,
   } = useIscsiFromHost(
-    hostVoId ? hostVoId : undefined, 
-    (e) => ({...e,})
+    hostVoId ? hostVoId : null, (e) => ({
+      ...e,
+      target: e?.logicalUnits[0].target,
+      address: e?.logicalUnits[0].address,
+      port: e?.logicalUnits[0].port,
+
+      status: e?.logicalUnits[0].status,
+      size: (e?.logicalUnits[0].size ? e?.logicalUnits[0].size / (1024 ** 3) + 'GB': e?.logicalUnits[0].size),
+      paths: e?.logicalUnits[0].paths,   
+      productId: e?.logicalUnits[0].productId,   
+      vendorId: e?.logicalUnits[0].vendorId,
+      serial: e?.logicalUnits[0].serial,
+    })
+  );
+
+  // fibre 가져오기
+  const {
+    data: fibres = [],
+    refetch: refetchFibres,
+    error: isFibresError,
+    isLoading: isFibresLoading,
+  } = useFibreFromHost(
+    hostVoId ? hostVoId : null, (e) => ({
+      ...e,
+      status: e?.logicalUnits[0].status,
+      size: (e?.logicalUnits[0].size ? e?.logicalUnits[0].size / (1024 ** 3) + 'GB': e?.logicalUnits[0].size),
+      paths: e?.logicalUnits[0].paths,   
+      productId: e?.logicalUnits[0].productId,   
+      vendorId: e?.logicalUnits[0].vendorId,   
+      serial: e?.logicalUnits[0].serial,   
+    })
   );
 
   const [activeTab, setActiveTab] = useState('target_lun'); // 기본 탭 설정
-  const handleTabChange = (tab) => {setActiveTab(tab);};
+  // const handleTabChange = (tab) => {setActiveTab(tab);};
 
   const domainTypes = [
     { value: "DATA", label: "데이터" },
@@ -102,13 +141,11 @@ const DomainModal = ({
   const storageTypeOptions = (dType) => {
     switch (dType) {
       case 'DATA':
-        return ['NFS', 'iSCSI', 'fc'];
-      case 'ISO':
-        return ['NFS'];
-      case 'EXPORT':
+        return ['NFS', 'ISCSI', 'FCP'];
+      case 'ISO' || 'EXPORT':
         return ['NFS'];
       default: 
-        return ['NFS', 'iSCSI', 'fc'];
+        return ['NFS', 'ISCSI', 'FCP'];
     }
   };
   
@@ -124,12 +161,42 @@ const DomainModal = ({
         description: domain.description || '',
         warning: domain.warning || '',
         spaceBlocker: domain.spaceBlocker || '',
-        storagePath: domain.storagePath || '',
-        // storageAddress
       });
       setDataCenterVoId(domain?.datacenterVo?.id);
       setHostVoName(domain?.hostVo?.name);
       setHostVoId(domain?.hostVo?.id);
+      if(formState.storageType === 'NFS'){
+        setFormState({
+          id: domain.id || '',
+          domainType: domain.domainType || '',
+          storageType: domain.storageType || '',
+          name: domain.name || '',    
+          comment: domain.comment || '',
+          description: domain.description || '',
+          warning: domain.warning || '',
+          spaceBlocker: domain.spaceBlocker || '',
+        });
+        setDataCenterVoId(domain?.datacenterVo?.id);
+        setHostVoName(domain?.hostVo?.name);
+        setHostVoId(domain?.hostVo?.id);
+        setStoragePath(domain?.storagePath);
+        setStorageAddress(domain?.storageAddress);
+      }else if(formState.storageType === 'ISCSI' || formState.storageType === 'FCP'){
+        setFormState({
+          id: domain.id || '',
+          domainType: domain.domainType || '',
+          storageType: domain.storageType || '',
+          name: domain.name || '',    
+          comment: domain.comment || '',
+          description: domain.description || '',
+          warning: domain.warning || '',
+          spaceBlocker: domain.spaceBlocker || '',
+        });
+        setDataCenterVoId(domain?.datacenterVo?.id);
+        setHostVoName(domain?.hostVo?.name);
+        setHostVoId(domain?.hostVo?.id);
+        setLunId(domain.logicalUnits[0].id);
+      }
     } else if (!editMode && !isDatacentersLoading) {
       resetForm();
       setDataCenterVoId(datacenterId);
@@ -139,7 +206,7 @@ const DomainModal = ({
         storageType: 'NFS', // 스토리지 유형 기본값 설정
       }));
     }
-  }, [editMode, domain, datacenterId]);
+  }, [editMode, domain, datacenterId, isDatacentersLoading]);
 
   
   useEffect(() => {
@@ -163,13 +230,7 @@ const DomainModal = ({
         ...prev,
         storageType: 'NFS',
       }));
-    } else if (editMode && options.length > 0 && !options.includes(formState.storageType)) {
-      // 현재 CPU 유형이 새 옵션 리스트에 없으면 초기화
-      setFormState((prev) => ({
-        ...prev,
-        storageType: 'NFS',
-      }));
-    }
+    } 
   }, [formState.domainType, editMode]);
 
   const resetForm = () => {
@@ -180,51 +241,88 @@ const DomainModal = ({
       name: '',
       comment: '',
       description: '',
-      warning: '',
-      spaceBlocker: '',
-      storagePath: '', // NFS 기본값
-      storageAddress: '',
+      warning: '10',
+      spaceBlocker: '5',
     });
-    setStorageTypes(['NFS', 'iSCSI', 'fc']); // 기본 도메인 유형에 따른 스토리지 유형
+    setStorageTypes(['NFS', 'ISCSI', 'FCP']); // 기본 도메인 유형에 따른 스토리지 유형
     setDataCenterVoId('');
     setHostVoName('');
     setHostVoId('');
+    setStorageAddress('');
+    setStoragePath('');
+    setLunId('');
+  };
+
+  const handleRowClick = (row) => {
+    console.log('선택한 행 데이터:', row);
+    setLunId(row.id); // 선택된 LUN ID를 설정
   };
 
   const validateForm = () => {
     if (!formState.name) return '이름을 입력해주세요.';
     if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
     if (!hostVoName) return '호스트를 선택해주세요.';
-    // if (!formState.storagePath) return '경로를 입력해주세요';
+    if (formState.storageType === 'NFS' && !storagePath) return '경로를 입력해주세요';
     return null;
   };
 
   const handleFormSubmit = () => {
-    // const error = validateForm();
-    // if (error) {
-    //   alert(error);
-    //   return;
-    // }
+    const error = validateForm();
+    if (error) {
+      alert(error);
+      return;
+    }
     const selectedDataCenter = dataCenters.find((dc) => dc.id === dataCenterVoId);
-    const selectedHost = hosts.find((h) => h.name === hostVoName);;
+    const selectedHost = hosts.find((h) => h.name === hostVoName);
+    const logicalUnit = 
+      formState.storageType === 'ISCSI'
+        ? iscsis.find((iLun) => iLun.id === lunId)
+        : formState.storageType === 'FCP'
+        ? fibres.find((fLun) => fLun.id === lunId)
+        : null;
+
+    console.log(`lun id: ${lunId}`);
 
     const dataToSubmit = {
+      ...formState,
       dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
       hostVo: { id: selectedHost.id, name: selectedHost.name },
-      ...formState,
+      logicalUnits: logicalUnit ? [logicalUnit.id] : [], // logicalUnit.id 설정
+      ...(formState.storageType === 'NFS' && { storageAddress, storagePath }),
     };
+
+    // let dataToSubmit;
+
+    // if (formState.storageType === 'NFS') {
+    //   dataToSubmit = {
+    //     dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+    //     hostVo: { id: selectedHost.id, name: selectedHost.name },
+    //     storageAddress,
+    //     storagePath,
+    //     ...formState,
+    //   };
+    // } else if (formState.storageType === 'ISCSI' || formState.storageType === 'FCP') {
+    //   dataToSubmit = {
+    //     dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+    //     hostVo: { id: selectedHost.id, name: selectedHost.name },
+    //     logicalUnits: [logicalUnit.id],
+    //     storageType: formState.storageType === 'ISCSI' ? 'ISCSI' : 'FCP',
+    //     ...formState,
+    //   };
+    // }
 
     console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
     if (editMode) {
       editDomain(
-        {domainId: formState.id, domainData: dataToSubmit}, 
+        { domainId: formState.id, domainData: dataToSubmit }, 
         {
           onSuccess: () => {
             alert('도메인 편집 완료');
             onRequestClose();
           },
-        });
+        }
+      );
     } else {
       addDomain(dataToSubmit, {
         onSuccess: () => {
@@ -295,6 +393,7 @@ const DomainModal = ({
             <select
               value={formState.storageType}
               onChange={(e) =>setFormState((prev) => ({ ...prev, storageType: e.target.value }))}
+              disabled={editMode}
             >
               {storageTypes.map((opt) => (
                 <option key={opt} value={opt}>
@@ -347,27 +446,28 @@ const DomainModal = ({
     </div>
 
     <div className="storage_specific_content">
+
       {formState.storageType === 'NFS' && (
-        <div className="storage_popup_NFS">
+        <div className="storage_popup_iSCSI">
           <div className="network_form_group">
             <label htmlFor="nfsPath">NFS 서버 경로</label>
             <input
               type="text"
               placeholder="예: myserver.mydomain.com"
-              value={formState.storageAddress}
-              onChange={(e) => setFormState((prev) => ({ ...prev, storageAddress: e.target.value }))}
+              value={storageAddress}
+              onChange={(e) => setStorageAddress(e.target.value)}
             />
             <input
               type="text"
               placeholder="예: /my/local/path"
-              value={formState.storagePath}
-              onChange={(e) => setFormState((prev) => ({ ...prev, storagePath: e.target.value }))}
+              value={storagePath}
+              onChange={(e) => setStoragePath(e.target.value)}
             />
           </div>
         </div>
       )}
-
-      {formState.storageType === 'iSCSI' && (
+      
+      {formState.storageType === 'ISCSI' && (
         <div className="storage_popup_iSCSI">
           <div className="iscsi_buttons">
             <button
@@ -386,229 +486,82 @@ const DomainModal = ({
 
           {activeTab === 'target_lun' && (
             <div className="tab_content">
-              <p>LUN 관련 설정 화면 (대상 - LUN)</p>
-              <Table
-                columns={TableInfo.ISCSI}
-                // data={}
-                onRowClick={() => {}}
-                shouldHighlight1stCol={true}
-              />
+              {isIscsisLoading ? (
+                  <div className="loading-message">로딩 중...</div>
+                ) : isIscsisError ? (
+                  <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
+                ) : (
+                  <Table
+                    columns={TableInfo.TARGETS_LUNS}
+                    data={iscsis}
+                    onRowClick={handleRowClick}
+                    shouldHighlight1stCol={true}
+                  />
+                )}
             </div>
           )}
 
           {activeTab === 'lun_target' && (
             <div className="tab_content">
-              <p>LUN 관련 설정 화면 (LUN - 대상)</p>
+              {isFibresLoading ? (
+                  <div className="loading-message">로딩 중...</div>
+                ) : isFibresError ? (
+                  <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
+                ) : (
+                  <Table
+                    columns={TableInfo.LUNS_TARGETS}
+                    data={iscsis}
+                    onRowClick={handleRowClick}
+                    shouldHighlight1stCol={true}
+                  />
+                )}
             </div>
           )}
         </div>
       )}
 
-      {formState.storageType === 'fc' && (
-        <div className="storage_popup_fc">
-          <div className="fc_table">
-            <span>fc </span>
-            <Table
-              columns={TableInfo.ISCSI}
-              // data={}
-              onRowClick={() => {}}
-              shouldHighlight1stCol={true}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-
-
-        {/* {storageType === 'NFS' && (
-          <div className="storage_popup_NFS">
-            <div className ="network_form_group">
-              <label htmlFor="data_hub">NFS 서버 경로</label>
-              <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
-            </div>
-            
-            <div id="domain_hidden_box">
-              <div className="domain_new_select">
-                <label htmlFor="nfs_version">NFS 버전</label>
-                <select id="nfs_version">
-                  <option value="auto_negotiate">자동 협상(기본)</option>
-                  <option value="v3">V3</option>
-                  <option value="v4">V4</option>
-                  <option value="v4_0">V4.0</option>
-                  <option value="v4_1">V4.1</option>
-                  <option value="v4_2">V4.2</option>
-                </select>
-              </div>
-            </div>
-            
-            <div id="domain_hidden_box2">
-              <div className="domain_new_select">
-                <label>디스크 공간 부족 경고 표시(%)</label>
-                <input type="text" value="10"/>
-              </div>
-              <div className="domain_new_select">
-                <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-                <input type="text" value="5"/>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {storageType === 'iSCSI' && (
-          <div className="storage_popup_NFS">
-            <div className='target_btns flex'> 
-              <button 
-                className={`target_lun ${activeLunTab === 'target_lun' ? 'active' : ''}`}
-                onClick={() => handleLunTabClick('target_lun')}
-              >
-                대상 - LUN
-              </button>
-              <button 
-                className={`lun_target ${activeLunTab === 'lun_target' ? 'active' : ''}`}
-                onClick={() => handleLunTabClick('lun_target')}
-              > 
-                LUN - 대상
-              </button>
-            </div>
-            
-            {activeLunTab === 'target_lun' &&(
-              <div className='target_lun_outer'>
-                <div className="search_target_outer">
-                  <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn4" onClick={toggleDomainHiddenBox4} fixedWidth/>
-                  <span>대상 검색</span>
-                  <div id="domain_hidden_box4" style={{ display: isDomainHiddenBox4Visible ? 'block' : 'none' }}>
-                    <div className="search_target ">
-                      <div>
-                        <div className ="network_form_group">
-                          <label htmlFor="data_hub">내보내기 경로</label>
-                          <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
-                        </div>
-                        <div className ="network_form_group">
-                          <label htmlFor="data_hub">내보내기 경로</label>
-                          <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className='input_checkbox'>
-                          <input type="checkbox" id="reset_after_deletion"/>
-                          <label htmlFor="reset_after_deletion">사용자 인증 :</label>
-                        </div>
-                        <div className ="network_form_group">
-                          <label htmlFor="data_hub">내보내기 경로</label>
-                          <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
-                        </div>
-                        <div className ="network_form_group">
-                          <label htmlFor="data_hub">내보내기 경로</label>
-                          <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
-                        </div>
-                      </div>
-                    </div>
-                    <button>검색</button>
-                  </div>
-                </div>
-                
-                <div>
-                  <button className='all_login'>전체 로그인</button>
-                  <div className='section_table_outer'>
-                    <Table
-                      columns={TableColumnsInfo.CLUSTERS_ALT} 
-                      data={domain} 
-                      onRowClick={[]}
-                      shouldHighlight1stCol={true}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}      
-
-            {activeLunTab === 'lun_target' && (
-              <div className='lun_target_outer'>
-                <div className='section_table_outer'>
-                  <Table
-                    columns={TableColumnsInfo.CLUSTERS_ALT} 
-                    data={domain} 
-                    onRowClick={[]}
-                    shouldHighlight1stCol={true}
-                  />
-                </div>
-              </div>
-            )}
-            
-            <div>
-              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn5" onClick={toggleDomainHiddenBox5} fixedWidth/>
-              <span>고급 매개 변수</span>
-              <div id="domain_hidden_box5" style={{ display: isDomainHiddenBox5Visible ? 'block' : 'none' }}>
-                <div className="domain_new_select">
-                  <label>디스크 공간 부족 경고 표시(%)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-                  <input type="text" />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {storageType === 'fc' && (
-          <div className="storage_popup_NFS">
-            <div className='section_table_outer'>
+      {formState.storageType === 'FCP' && (
+        <div className="tab_content">
+          {isIscsisLoading ? (
+              <div className="loading-message">로딩 중...</div>
+            ) : isIscsisError ? (
+              <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
+            ) : (
               <Table
-                columns={TableColumnsInfo.CLUSTERS_ALT} 
-                data={domain} 
-                onRowClick={[]}
+                columns={TableInfo.FIBRE}
+                data={fibres}
+                onRowClick={(row) => console.log('선택한 행 데이터:', row)}
                 shouldHighlight1stCol={true}
               />
-            </div>
-            <div>
-              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn5" onClick={toggleDomainHiddenBox5} fixedWidth/>
-              <span>고급 매개 변수</span>
-              <div id="domain_hidden_box5" style={{ display: isDomainHiddenBox5Visible ? 'block' : 'none' }}>
-                <div className="domain_new_select">
-                  <label>디스크 공간 부족 경고 표시(%)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label>디스크 공간 부족 경고 표시(%)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
-                  <select id="format_type_selector" disabled>
-                    <option value="linux">V5</option>
-                  </select>
-                </div>
-                <div className="hidden_checkbox">
-                  <input type="checkbox" id="reset_after_deletion"/>
-                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
-                </div>
-                <div className="hidden_checkbox">
-                  <input type="checkbox" id="backup_vault"/>
-                  <label htmlFor="backup_vault">백업</label>
-                </div>
-                <div className="hidden_checkbox">
-                  <input type="checkbox" id="backup_vault"/>
-                  <label htmlFor="backup_vault">삭제 후 폐기</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        )} */}
-
-        <div className="edit_footer">
-          <button style={{ display: 'none' }}></button>
-          <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
-          <button onClick={onRequestClose}>취소</button>
+            )}
         </div>
+      )}
+      <div><br/></div>
+
+      <div className="domain_new_select">
+        <label>디스크 공간 부족 경고 표시(%)</label>
+        <input
+          type="number"
+          value={formState.warning}
+          onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
+        />
       </div>
+      <div className="domain_new_select">
+        <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+        <input
+          type="number"
+          value={formState.spaceBlocker}
+          onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
+        />
+      </div>
+    </div>
 
-
+      <div className="edit_footer">
+        <button style={{ display: 'none' }}></button>
+        <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
+        <button onClick={onRequestClose}>취소</button>
+      </div>
+    </div>
     </Modal>
   );
 };
