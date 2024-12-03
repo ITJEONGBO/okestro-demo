@@ -37,6 +37,10 @@ const DiskModal = ({
     sharable: false,
     backup: true,
     sparse: true, //할당정책: 씬
+    interfaced: '', // vm 인터페이스 
+    bootable: true, // vm 부팅가능
+    readOnly: false, // vm 읽기전용
+    cancelActive: false, // vm 취소 활성화
   });
   const [dataCenterVoId, setDataCenterVoId] = useState('');
   const [domainVoId, setDomainVoId] = useState('');
@@ -82,6 +86,11 @@ const DiskModal = ({
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
 
+  const interfaceList = [
+    { value: "VirtIO-SCSI", label: "VirtIO-SCSI" },
+    { value: "VirtIO", label: "VirtIO" },
+    { value: "SATA", label: "SATA" },
+  ];
 
   useEffect(() => {
     if (editMode && disk) {
@@ -151,7 +160,7 @@ const DiskModal = ({
   const validateForm = () => {
     if (!formState.alias) return '별칭을 입력해주세요.';
     if (!formState.size) return '크기를 입력해주세요.';
-    // if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
+    if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
     if (!domainVoId) return '스토리지 도메인을 선택해주세요.';
     if (!diskProfileVoId) return '디스크 프로파일을 선택해주세요.';
     return null;
@@ -165,7 +174,7 @@ const DiskModal = ({
       return;
     }
 
-    const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
+    // const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedDomain = domains.find((dm) => dm.id === domainVoId);
     const selectedDiskProfile = diskProfiles.find((dp) => dp.id === diskProfileVoId);
 
@@ -277,6 +286,38 @@ const DiskModal = ({
                 />
               </FormGroup>
 
+              
+
+              {type === 'vm' && (
+                <FormGroup label="인터페이스">
+                <select
+                  value={formState.interfaced}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, cpuArc: e.target.value }))}
+                >
+                  {interfaceList.map((inter) => (
+                    <option key={inter.value} value={inter.value}>
+                      {inter.label}
+                    </option>
+                  ))}
+                </select>
+              </FormGroup>
+
+                // <div className="tab_content">
+                //   {isIscsisLoading ? (
+                //       <div className="loading-message">로딩 중...</div>
+                //     ) : isIscsisError ? (
+                //       <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
+                //     ) : (
+                //       <Table
+                //         columns={TableInfo.FIBRE}
+                //         data={fibres}
+                //         onRowClick={(row) => console.log('선택한 행 데이터:', row)}
+                //         shouldHighlight1stCol={true}
+                //       />
+                //     )}
+                // </div>
+              )}
+
               <FormGroup label="데이터 센터">
                 <select
                   value={dataCenterVoId}
@@ -285,7 +326,7 @@ const DiskModal = ({
                 >
                   {datacenters && datacenters.map((dc) => (
                     <option key={dc.id} value={dc.id}>
-                      {dc.name}: {dc.id === dataCenterVoId ? dataCenterVoId : ''}
+                      {dc.name}: {dataCenterVoId }
                     </option>
                   ))}
                 </select>
@@ -299,7 +340,7 @@ const DiskModal = ({
                 >
                   {domains && domains.map((dm) => (
                     <option key={dm.id} value={dm.id}>
-                      {dm.name}/{dm.id}: {domainVoId}
+                      {dm.name}: {domainVoId}
                     </option>
                   ))}
                 </select>
@@ -331,6 +372,7 @@ const DiskModal = ({
 
             
             <div className="disk_new_img_right">
+
               <div>
                 <input
                   type="checkbox"
@@ -340,6 +382,38 @@ const DiskModal = ({
                 />
                 <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
               </div>
+
+              {type === 'vm' && (
+                <>
+                <div>
+                  <input 
+                    type="checkbox" 
+                    id="backup" 
+                    checked={formState.bootable}
+                    onChange={(e) => setFormState((prev) => ({ ...prev, bootable: e.target.checked }))}
+                  />
+                  <label htmlFor="backup">부팅 가능</label>
+                </div>
+                <div>
+                  <input 
+                    type="checkbox" 
+                    id="backup" 
+                    checked={formState.readOnly}
+                    onChange={(e) => setFormState((prev) => ({ ...prev, readOnly: e.target.checked }))}
+                  />
+                  <label htmlFor="backup">읽기전용</label>
+                </div>
+                <div>
+                  <input 
+                    type="checkbox" 
+                    id="backup" 
+                    checked={formState.cancelActive}
+                    onChange={(e) => setFormState((prev) => ({ ...prev, cancelActive: e.target.checked }))}
+                  />
+                  <label htmlFor="backup">취소 활성화</label>
+                </div>
+                </>
+              )}
  
               <div>
                 <input 
@@ -357,10 +431,10 @@ const DiskModal = ({
                   id="backup" 
                   checked={formState.backup}
                   onChange={(e) => setFormState((prev) => ({ ...prev, backup: e.target.checked }))}
-
                 />
                 <label htmlFor="backup">중복 백업 사용</label>
               </div>
+
             </div>
           </div>
         </div>

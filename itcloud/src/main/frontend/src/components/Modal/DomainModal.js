@@ -469,7 +469,7 @@ const DomainModal = ({
       
       {formState.storageType === 'ISCSI' && (
         <div className="storage_popup_iSCSI">
-          <div className="iscsi_buttons">
+          {/* <div className="iscsi_buttons">
             <button
               className={`tab_button ${activeTab === 'target_lun' ? 'active' : ''}`}
               onClick={() => setActiveTab('target_lun')}
@@ -482,9 +482,9 @@ const DomainModal = ({
             >
               LUN - 대상
             </button>
-          </div>
+          </div> */}
 
-          {activeTab === 'target_lun' && (
+          {/* {activeTab === 'target_lun' && (
             <div className="tab_content">
               {isIscsisLoading ? (
                   <div className="loading-message">로딩 중...</div>
@@ -499,9 +499,9 @@ const DomainModal = ({
                   />
                 )}
             </div>
-          )}
+          )} */}
 
-          {activeTab === 'lun_target' && (
+          {/* {activeTab === 'lun_target' && ( */}
             <div className="tab_content">
               {isFibresLoading ? (
                   <div className="loading-message">로딩 중...</div>
@@ -516,7 +516,7 @@ const DomainModal = ({
                   />
                 )}
             </div>
-          )}
+          {/* )} */}
         </div>
       )}
 
