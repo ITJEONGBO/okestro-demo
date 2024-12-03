@@ -17,6 +17,7 @@ import {
 } from '../../api/RQHook';
 import VmConnectionPlusModal from './VmConnectionPlusModal';
 import VmCreatePlusModal from './VmCreatePlusModal';
+import DiskModal from './DiskModal';
 
 const VmModal = ({ 
   isOpen, 
@@ -828,6 +829,13 @@ return (
                                               onRequestClose={() => setIsConnectionPopupOpen(false)}
                                             />
                                           <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
+                                          {/* <DiskModal
+                                            isOpen={isModalOpen}
+                                            onRequestClose={onRequestClose}
+                                            editMode={action === 'edit'}
+                                            diskId={selectedDisk?.id || null}
+                                            type='vm'
+                                          /> */}
                                           <div className="flex">
                                               <button>+</button>
                                               <button>-</button>

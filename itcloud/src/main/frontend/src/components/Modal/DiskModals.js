@@ -17,6 +17,7 @@ const DiskModals = ({ isModalOpen, action, onRequestClose, selectedDisk }) => {
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}
           diskId={selectedDisk?.id || null}
+          // type='vm'
         />
       ) : action === 'upload' ? (
         <DiskUploadModal
