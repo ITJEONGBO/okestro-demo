@@ -94,7 +94,7 @@ const DiskModal = ({
 
   useEffect(() => {
     if (editMode && disk) {
-      console.log('Setting edit mode state with domain:', disk);
+      console.log('Setting edit mode state with disk:', disk);
       setFormState({
         id: disk.id || '',
         size: disk.virtualSize || '',
@@ -174,14 +174,14 @@ const DiskModal = ({
       return;
     }
 
-    // const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
+    const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedDomain = domains.find((dm) => dm.id === domainVoId);
     const selectedDiskProfile = diskProfiles.find((dp) => dp.id === diskProfileVoId);
 
 
     // 데이터 객체 생성
     const dataToSubmit = {
-      // dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+      dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
       storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
       diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
       ...formState,

@@ -181,7 +181,7 @@ fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 		alias { this@toDiskInfo.alias() }
 		description { this@toDiskInfo.description() }
 		sparse { this@toDiskInfo.sparse() } // 할당정책
-		diskProfileVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
 		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
 		virtualSize { this@toDiskInfo.provisionedSize() }
