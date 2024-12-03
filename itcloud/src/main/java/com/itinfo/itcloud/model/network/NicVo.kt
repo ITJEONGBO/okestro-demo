@@ -278,6 +278,7 @@ fun List<Nic>.toNetworkFromVms(conn: Connection, vmId: String): List<NicVo> =
  * Nic 빌더
  */
 fun NicVo.toNicBuilder(): NicBuilder {
+	log.info("ncvva")
 	val nicBuilder = NicBuilder()
 	nicBuilder
 		.name(this@toNicBuilder.name)
@@ -288,6 +289,7 @@ fun NicVo.toNicBuilder(): NicBuilder {
 	if (this@toNicBuilder.macAddress.isNotEmpty()) {
 		nicBuilder.mac(MacBuilder().address(this@toNicBuilder.macAddress).build())
 	}
+	log.info("nicvo: {}", this)
 	return nicBuilder
 }
 

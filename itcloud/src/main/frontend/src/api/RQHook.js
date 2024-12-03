@@ -1039,15 +1039,15 @@ export const useNetworkInterfaceFromVM = (vmId, mapPredicate) => useQuery({
  * 
  * @see ApiManager.findNicFromVM
  */
-export const useNetworkInterfaceByVMId = (vmId,nicId, mapPredicate) => useQuery({
+export const useNetworkInterfaceByVMId = (vmId,nicId) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['NetworkInterfaceFromVM', vmId], 
+  queryKey: ['NetworkInterfaceByVMId', vmId], 
   queryFn: async () => {
     console.log(`useNetworkInterfaceByVMId ... ${vmId}`);
     console.log(`useNetworkInterfaceByVMId ... ${nicId}`);
     const res = await ApiManager.findNicFromVM(vmId,nicId); 
     console.log('API Response:', res); // 반환된 데이터 구조 확인
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+    return res ?? {}; 
   },
   enabled: !!vmId, 
   staleTime: 0,
@@ -1341,15 +1341,19 @@ export const useExportVM = () => {
  * @returns useMutation 훅
  */
 export const useAddNicFromVM = () => {
-  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  const queryClient = useQueryClient(); // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (vmId) => await ApiManager.addNicFromVM(vmId),
+    mutationFn: async ({ vmId, nicData }) => {
+      console.log('Received vmId:', vmId); // vmId 출력
+      console.log('Received nicData:', nicData); // nicData 출력
+      return await ApiManager.addNicFromVM(vmId, nicData);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries('NetworkInterfaceFromVM');
     },
     onError: (error) => {
       console.error('Error adding data center:', error);
-    },  
+    },
   });
 };
 /** 수정해야됨
@@ -1361,9 +1365,14 @@ export const useAddNicFromVM = () => {
 export const useEditNicFromVM = () => {
   const queryClient = useQueryClient();  
   return useMutation({
-    mutationFn: async ({  vmId,nicId, nicData }) => await ApiManager.editNicFromVM(vmId,  nicId, nicData),
+    mutationFn: async ({ vmId, nicId, nicData }) => {
+      console.log('EDIT NIC 요청 데이터:', { vmId, nicId, nicData });
+      return await ApiManager.editNicFromVM(vmId, nicId, nicData);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries('NetworkInterfaceFromVM');
+      queryClient.invalidateQueries('NetworkInterfaceFromVM'); 
+      queryClient.invalidateQueries(['NetworkInterfaceByVMId']);
+      
     },
     onError: (error) => {
       console.error('Error editing data center:', error);
@@ -1413,6 +1422,23 @@ export const useFindDiskListFromVM = (mapPredicate) => useQuery({
   },
 });
 
+/**
+ * @name useCDFromVM
+ * @description 가상머신 생성창 - CD/DVD 연결할 ISO 목록 useQuery훅
+ * 
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllISO
+ */
+export const useCDFromVM = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['CDFromVM'], 
+  queryFn: async () => {
+    const res = await ApiManager.findAllISO(); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+});
 //endregion: VM
 
 //region: TEMPLATE ----------------템플릿---------------------

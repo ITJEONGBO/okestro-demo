@@ -81,7 +81,7 @@ const VmNetwork = ({vm}) => {
               <div className="header_right_btns">
                 <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
                 <button onClick={() => selectedNics?.id && toggleModal('edit', true)} disabled={!selectedNics?.id}>편집</button>
-                <button className="disabled">제거</button>
+                <button onClick={() => selectedNics?.id && toggleModal('delete', true)} disabled={!selectedNics?.id}>제거</button>
               </div>
             <span>id = {selectedNics?.id || ''}</span>
             <div className='network_interface_outer'>
@@ -218,7 +218,7 @@ const VmNetwork = ({vm}) => {
                     isOpen={modals.delete}
                     type='NetworkInterface'
                     onRequestClose={() => toggleModal('delete', false)}
-                    contentLabel={'NetworkInterface'}
+                    contentLabel={'네트워크 인터페이스'}
                     data={ selectedNics}
                     vmId={vm?.id}
                 />

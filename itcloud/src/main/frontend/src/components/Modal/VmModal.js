@@ -9,6 +9,7 @@ import {
   useAllnicFromVM, 
   useAllTemplates, 
   useAllVMs, 
+  useCDFromVM, 
   useClustersFromDataCenter, 
   useEditVm, 
   useHostFromCluster, 
@@ -69,7 +70,10 @@ const VmModal = ({
   // 부트옵션
   const [firstDevice, setFirstDevice] = useState('hd'); // 첫번째 장치
   const [secDevice, setSecDevice] = useState(''); // 두번째 장치
+  const [connVoId, setConnVoId] = useState(''); // CD/DVD연결
+  const [connVoName, setConnVoName] = useState('');
   const [bootingMenu, setBootingMenu] = useState(false); // 부팅메뉴 활성화
+
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
@@ -156,12 +160,12 @@ const VmModal = ({
     id: e.id,
     name: e.name,
   }));
-
-
 // clusterVoId 값이 변경될 때 콘솔에 출력
 useEffect(() => {
   console.log("Current clusterVoId:", clusterVoId);
 }, [clusterVoId]);
+
+
 
 // NIC 목록 가져오기
 const { data: nicList } = useAllnicFromVM(clusterVoId, (e) => ({
@@ -216,6 +220,44 @@ useEffect(() => {
       setHostsFromCluster(hostsData);
     }
   }, [hostsData]);
+
+
+
+  // CD/DVD 연결
+const [isCdDvdChecked, setIsCdDvdChecked] = useState(false); // 체크박스 상태
+const [selectedCd, setSelectedCd] = useState(''); // 선택된 CD/DVD
+const [cdList, setCdList] = useState([]); // CD/DVD 목록
+
+const { data: cdData } = useCDFromVM((cd) => ({
+  id: cd?.id,
+  name: cd?.name,
+}));
+
+useEffect(() => {
+  if (cdData) {
+    setCdList(cdData || []);
+  }
+}, [cdData]);
+// 체크박스 핸들러
+const handleCdDvdCheckboxChange = (e) => {
+  const isChecked = e.target.checked;
+  setIsCdDvdChecked(isChecked);
+
+  // 체크 해제 시 선택 초기화
+  if (!isChecked) {
+    setConnVoId('');
+    setConnVoName('');
+  }
+};
+// 드롭다운 변경 핸들러
+const handleCdDvdChange = (e) => {
+  const selectedId = e.target.value;
+  const selectedCd = cdList.find((cd) => cd.id === selectedId);
+
+  setConnVoId(selectedId);
+  setConnVoName(selectedCd ? selectedCd.name : '');
+};
+
 
 // 운영 시스템 및 칩셋 옵션 상태
 const [osOptions, setOsOptions] = useState([
@@ -367,6 +409,8 @@ useEffect(() => {
         setFirstDevice(vm?.firstDevice || firstDeviceOptions[0].value);
         setSecDevice(vm?.secDevice || secDeviceOptions[0].value);
         setBootingMenu(vm?.bootingMenu || false);
+        setConnVoId(vm?.connVo?.id);
+        setConnVoName(vm?.connVo?.name);
 
       } else if (!editMode) {
         resetForm();    
@@ -374,7 +418,7 @@ useEffect(() => {
         // 마이그레이션 모드와 정책 기본값 설정
         setMigrationMode(vm?.migrationMode || migrationModeOptions[0].value);
         setMigrationPolicy(vm?.migrationPolicy || migrationPolicyOptions[0].value);
-        
+    
       }
     
   }, [isOpen, editMode, vm, osOptions, chipsetOptions,optimizeOption,vmId]);
@@ -464,7 +508,12 @@ useEffect(() => {
       // 부트옵션
       firstDevice, //string
       secDevice,  // string
-      // connVo, //vo
+      connVo: isCdDvdChecked // CD/DVD 연결 데이터 포함
+      ? {
+          id: connVoId,
+          name: connVoName,
+        }
+      : null,
       bootingMenu // boolean
 
 
@@ -1238,17 +1287,40 @@ return (
                 </div>
               </div>
               <div id="boot_checkboxs">
-                <div>
-                  <div className='checkbox_group'>
-                    <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
-                    <label htmlFor="connectCdDvd">CD/DVD 연결</label>
-                  </div>
-                  <div className='text_icon_box'>
-                    <input type="text" disabled />
-                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }} fixedWidth /> 
-                  </div>
-                </div>
-          
+              <div>
+      <div className="checkbox_group">
+        <input
+          type="checkbox"
+          id="connectCdDvd"
+          name="connectCdDvd"
+          checked={isCdDvdChecked} // 체크박스 상태
+          onChange={handleCdDvdCheckboxChange} // 핸들러 호출
+        />
+        <label htmlFor="connectCdDvd">CD/DVD 연결</label>
+      </div>
+
+      <div className="text_icon_box">
+        <select
+          id="cd_dvd_select"
+          disabled={!isCdDvdChecked || cdList.length === 0} // 체크 여부와 데이터 유무에 따라 비활성화
+          value={connVoId}
+          onChange={handleCdDvdChange} // 핸들러 호출
+        >
+          <option value="">CD/DVD 선택...</option>
+          {cdList.map((cd) => (
+            <option key={cd.id} value={cd.id}>
+              {cd.name}
+            </option>
+          ))}
+        </select>
+        <FontAwesomeIcon
+          icon={faInfoCircle}
+          style={{ color: 'rgb(83, 163, 255)' }}
+          fixedWidth
+        />
+      </div>
+    </div>
+
                 <div className='checkbox_group mb-1.5'>
                   <input
                       className="check_input"

@@ -22,7 +22,8 @@ const DeleteModal = ({
     onRequestClose, 
     contentLabel, 
     data,
-    networkId // 외부에서 전달된 prop TODO 바꿔야함
+    networkId,// 외부에서 전달된 prop TODO 바꿔야함
+    vmId
     
 }) => {
   const [id, setId] = useState('');
@@ -89,7 +90,9 @@ const DeleteModal = ({
       console.log('Deleting Domain');
       handleDelete(deleteDomain);
     }else if (type === 'NetworkInterface') {
-      handleDelete(deleteNetworkInterface);
+      handleDelete(() => deleteNetworkInterface({ vmId, nicId: id }));
+      console.log('Deleting Template');
+      onRequestClose();
     }
   };
 

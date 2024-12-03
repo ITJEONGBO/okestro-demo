@@ -7,7 +7,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import TableInfo from '../table/TableInfo';
 import { useFindDiskListFromVM } from '../../api/RQHook';
 
-const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
+const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => { // 선택한디스크 값을 따로배열에 저장하고 관리하기
   const [activeTab, setActiveTab] = useState('img'); // 현재 선택된 탭 상태 관리
 
   const handleTabClick = (tab) => {
@@ -18,10 +18,17 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
     data: disks,
   } = useFindDiskListFromVM((e) => ({
     ...e,
+    radio: (
+      <input
+        type="radio"
+        name="diskSelection" // 동일한 그룹으로 묶어서 단일 선택 가능
+        value={e.id} // 디스크 ID를 값으로 설정
+        // onChange={() => console.log(`Selected Disk ID: ${e.id}`)} // 선택 시 이벤트 처리
+      />
+    ),
     storageDomainVo: e?.storageDomainVo?.name,
     status: e?.status === 'UNINITIALIZED' ? '초기화되지 않음' : 'UP'
   }));
-
 
   
   return (
@@ -30,8 +37,8 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose }) => {
       onRequestClose={onRequestClose} // 부모에서 전달받은 닫기 함수 호출
       contentLabel="가상 디스크 연결"
       className="Modal"
-      overlayClassName="modalOverlay"
-      shouldCloseOnOverlayClick={true} // 배경 클릭 시 모달 닫기
+      overlayClassName="Overlay newRolePopupOverlay"
+      // shouldCloseOnOverlayClick={true} // 배경 클릭 시 모달 닫기
     >
       <div className="storage_disk_new_popup">
         <div className="popup_header">

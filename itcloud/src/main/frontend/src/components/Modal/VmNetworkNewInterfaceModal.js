@@ -40,28 +40,23 @@ const VmNetworkNewInterfaceModal = ({
   const [selectedInterface, setSelectedInterface] = useState('VIRTIO');
 
   useEffect(() => {
-    console.log('VM ID아아아:', vmId); // vmId 값 확인
-    console.log('nicID아아아:', nicId); // nicId 값 확인
+    console.log('VM ID아아아:', vmId); //잘찍힘
+    console.log('nicID아아아:', nicId); //잘찍힘
   }, [vmId,nicId]);
 
-    // 가상머신 내 네트워크인터페이스 목록
-    // const { 
-    //   data: nics 
-    // } = useNetworkInterfaceFromVM(vmId);
-
-    // 가상머신 내 네트워크인터페이스 상세조회
+   // 가상머신 내 네트워크인터페이스 목록
     const { 
-      data: nics
+      data: nics 
+    } = useNetworkInterfaceFromVM(vmId);
+
+//    가상머신 내 네트워크인터페이스 상세조회
+    const { 
+      data: nicDetail
     } = useNetworkInterfaceByVMId(vmId,nicId);
     useEffect(() => {
-      console.log('nicDetail정보:', nics); // vmId 값 확인
-    }, [nics]);
+        console.log('가상머신 네트워크 인터페이스 상세 정보:', nicDetail);
+    }, [nicDetail]);
 
-
-
-
-
-    
     // 모든 vnic프로파일 목록
     const { 
       data: vnics 
@@ -72,58 +67,59 @@ const VmNetworkNewInterfaceModal = ({
 
       useEffect(() => {
         console.log('useEffect 호출 - nicData 상태:', nicData);
-        if (editMode && nicData) {
+        if (editMode && nicData &&nicDetail) {
           console.log('vnicProfileVo:', nicData.vnicProfileVo?.name);
           setId(nicData.id);
-          setName(nicData.name);
-          setVnicProfileVoId(nicData.vnicProfileVo?.id || '');
-          setVnicProfileVoName(nicData.vnicProfileVo?.name || '');
-          setSelectedInterface(nicData.interface_ || 'VIRTIO');
+          setName(nicDetail.name);
+          setVnicProfileVoId(nicDetail.vnicProfileVo?.id || '');
+          setVnicProfileVoName(nicDetail.vnicProfileVo?.name || '');
+          setSelectedInterface(nicDetail.interface_ || 'VIRTIO');
           setLinked(nicData.linked);
-          setPlugged(nicData.plugged); // 기본값 설정
+          setPlugged(nicDetail.plugged); // 기본값 설정
           setStatus(nicData.status);
           setMacAddress(nicData.macAddress);
         } else {
           resetForm();
         }
-      }, [isOpen, editMode, nicData, vmId, nics]);
+      }, [isOpen, editMode, nicData, vmId, nics,nicDetail]);
 
 
-  const resetForm = () => {
-    setId('');
-    setName('');
-    setSelectedInterface('VIRTIO');
-    setLinked(true);
-    setPlugged(true);
-    setProfile('');
-    setMacAddress('');
-    setStatus('up');
-    setConnectionStatus('connected');
-  };
+      const resetForm = () => {
+        if (!editMode) {
+          setId('');
+          setName('');
+          setSelectedInterface('VIRTIO');
+          setLinked(true);
+          setPlugged(true);
+          setProfile('');
+          setMacAddress('');
+          setStatus('up');
+          setConnectionStatus('connected');
+        }
+      };
+      
 
   const handleSubmit = () => {
+    console.log('Submitting namedddddddd:', name);
     const dataToSubmit = {
       vnicProfileVo: {
-        id: vnicProfileVoId || '', // null이면 서버에서 오류가 발생할 가능성 있음
-        name: vnicProfileVoName || '', // 빈 문자열 처리 필요
+        id: vnicProfileVoId || '',
+        name: vnicProfileVoName || '',
       },
       name,
-      interface_:selectedInterface,
+      interface_: selectedInterface,
       linked,
       plugged,
-      macAddress
-      // profile,
-      // status,
-      // connectionStatus,
+      macAddress,
     };
+  
     console.log('네트워크인터페이스 생성, 편집데이터:', dataToSubmit); 
-
-    if (editMode&&nicData) {
-      console.log('nicData:', nicData); // nicData 전체 출력
-      dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
+  
+    if (editMode && nicData) {
       editNicFromVM({
+        vmId,
         nicId: nicData.id,
-        nicData: dataToSubmit
+        nicData: dataToSubmit,
       }, {
         onSuccess: () => {
           alert('네트워크인터페이스 편집 완료');
@@ -131,20 +127,27 @@ const VmNetworkNewInterfaceModal = ({
         },
         onError: (error) => {
           console.error('Error editing network:', error);
-        }
+        },
       });
     } else {
-      addNicFromVM(dataToSubmit, {
-        onSuccess: () => {
-          alert('네트워크인터페이스 생성 완료');
-          onRequestClose();
+      addNicFromVM(
+        {
+          vmId,
+          nicData: dataToSubmit,
         },
-        onError: (error) => {
-          console.error('Error adding network:', error);
+        {
+          onSuccess: () => {
+            alert('네트워크인터페이스 생성 완료');
+            onRequestClose();
+          },
+          onError: (error) => {
+            console.error('Error adding network:', error);
+          },
         }
-      });
+      );
     }
   };
+  
 
   return (
     <Modal

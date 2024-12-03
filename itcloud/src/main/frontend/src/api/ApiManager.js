@@ -1138,25 +1138,44 @@ const ApiManager = {
    * @returns {Promise<Object>} API 응답 결과
    */
   editNicFromVM: async (vmId, nicId, nicData) => {
-    return makeAPICall({
-      method: "PUT",
-      url: ENDPOINTS.EDIT_NIC_FROM_VM(vmId, nicId),
-      data: nicData, // PUT 요청 시 전송할 데이터
-      // defaultValues: DEFAULT_VALUES.EDIT_NIC_FROM_VM
+    console.log('EDIT NIC API 호출 데이터:', {
+      vmId,
+      nicId,
+      nicData,
     });
+
+    try {
+      const response = await makeAPICall({
+        method: "PUT",
+        url: ENDPOINTS.EDIT_NIC_FROM_VM(vmId, nicId),
+        data: nicData, // PUT 요청 시 전송할 데이터
+      });
+
+      console.log('EDIT NIC API 응답 데이터:', response);
+      return response;
+    } catch (error) {
+      console.error('EDIT NIC API 호출 에러:', error.response?.data || error.message);
+      throw error;
+    }
   },
+
   /**
    * @name ApiManager.deleteNicFromVM
    * @description 가상머신 nic 삭제
    * 
-   * @param {string} vmId
    * @param {string} nicId
    * @returns {Promise<Object>}
    */
   deleteNicFromVM: async (vmId, nicId) => {
+    console.log('DELETE NIC 요청 데이터:', { // 잘찍힘
+      vmId,
+      nicId,
+    });
+  
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_NIC_FROM_VM(vmId, nicId),
+      data: nicId,
       // defaultValues: DEFAULT_VALUES.DELETE_NIC_FROM_VM
     });
   },
