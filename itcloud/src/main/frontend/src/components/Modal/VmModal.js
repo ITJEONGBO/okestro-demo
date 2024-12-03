@@ -354,7 +354,7 @@ const secDeviceOptions = [
 ];
 
 // 선택된 값 상태
-const [selectedOs, setSelectedOs] = useState('Linux'); // 운영 시스템 선택
+const [selectedOs, setSelectedOs] = useState('debian_7'); // 운영 시스템 선택
 const [selectedChipset, setSelectedChipset] = useState('Q35_OVMF'); // 칩셋 선택
 const [selectedOptimizeOption, setSelectedOptimizeOption] = useState('SERVER'); // 칩셋 선택
 
@@ -474,6 +474,9 @@ useEffect(() => {
       templateVo: {
         id: selectedTemplate.id,
         name: selectedTemplate.name
+      },
+      nicVos:{
+        
       },
       name,
       description,
@@ -809,6 +812,13 @@ return (
                                       <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
                                       편집
                                       </button>
+                                      <DiskModal
+                                            isOpen={isEditPopupOpen}
+                                            onRequestClose={() => setIsEditPopupOpen(false)}
+                                            // editMode={action === 'edit'}
+                                            // diskId={selectedDisk?.id || null}
+                                            type='vm'
+                                          />
                                       <div className="flex">
                                           <button>+</button>
                                           <button>-</button>
@@ -829,11 +839,18 @@ return (
                                               onRequestClose={() => setIsConnectionPopupOpen(false)}
                                             />
                                           <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
-                                          {/* <DiskModal
-                                            isOpen={isModalOpen}
-                                            onRequestClose={onRequestClose}
-                                            editMode={action === 'edit'}
-                                            diskId={selectedDisk?.id || null}
+                                          <DiskModal
+                                            isOpen={isCreatePopupOpen}
+                                            onRequestClose={() => setIsCreatePopupOpen(false)}
+                                            // editMode={action === 'edit'}
+                                            // diskId={selectedDisk?.id || null}
+                                            type='vm'
+                                          />
+                                           {/* <DiskModal
+                                            isOpen={isCreatePopupOpen}
+                                            onRequestClose={() => setIsCreatePopupOpen(true)}
+                                            // editMode={action === 'edit'}
+                                            // diskId={selectedDisk?.id || null}
                                             type='vm'
                                           /> */}
                                           <div className="flex">

@@ -66,16 +66,16 @@ const TemplateNics = ({templateId}) => {
                     templateId={templateId}
                 />
             )}
-            {/* {modals.delete && selectedVnicProfiles && (
-            <DeleteModal
-                isOpen={modals.delete}
-                type='NetworkInterface'
-                onRequestClose={() => toggleModal('delete', false)}
-                contentLabel={'NetworkInterface'}
-                data={ selectedVnicProfiles}
-                vmId={vnicProfiles?.id}
-            />
-            )} */}
+            {modals.delete && selectedVnicProfiles && (
+                <DeleteModal
+                    isOpen={modals.delete}
+                    type='NetworkInterface'
+                    onRequestClose={() => toggleModal('delete', false)}
+                    contentLabel={'NetworkInterface'}
+                    data={ selectedVnicProfiles}
+                    vmId={vnicProfiles?.id}
+                />
+            )}
             </Suspense>
 
 
