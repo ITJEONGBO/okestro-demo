@@ -5,33 +5,22 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import TableOuter from "../table/TableOuter";
 import TableColumnsInfo from "../table/TableColumnsInfo";
 import TableInfo from "../table/TableInfo";
-import { useFindDiskListFromVM, useAddDisksFromVM } from "../../api/RQHook";
+import { useFindDiskListFromVM } from "../../api/RQHook";
 
 const VmConnectionPlusModal = ({ isOpen, onRequestClose, vmId, onSelectDisk = () => {} }) => {
   const [activeTab, setActiveTab] = useState("img"); // 현재 선택된 탭 상태 관리
   const [selectedDiskId, setSelectedDiskId] = useState(null); // 선택된 디스크 ID 상태 관리
-  const { mutate: addDisk } = useAddDisksFromVM(); // 디스크 연결 훅 호출
 
   const handleTabClick = (tab) => {
     setActiveTab(tab); // 탭 클릭 시 상태 업데이트
   };
 
+
   const handleOkClick = () => {
     if (selectedDiskId) {
-      const diskData = { diskAttachmentIds: [selectedDiskId] }; // API에 필요한 데이터 형식
-      addDisk(
-        { vmId, diskData },
-        {
-          onSuccess: () => {
-            alert("디스크가 성공적으로 연결되었습니다!");
-            onSelectDisk(selectedDiskId); // 부모 컴포넌트로 선택된 디스크 전달
-            onRequestClose(); // 모달 닫기
-          },
-          onError: (error) => {
-            console.error("디스크 연결 중 오류 발생:", error);
-          },
-        }
-      );
+      const selectedDiskDetails = disks.find(disk => disk.id === selectedDiskId); // 디스크 상세 정보
+      onSelectDisk(selectedDiskId, selectedDiskDetails); // ID와 상세 정보 전달
+      onRequestClose(); // 모달 닫기
     } else {
       alert("디스크를 선택하세요!");
     }

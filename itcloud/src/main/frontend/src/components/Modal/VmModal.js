@@ -29,7 +29,7 @@ const VmModal = ({
   vmdata,
   vmId,
   selectedVm,
-  
+  onDiskSelection
 }) => {
 
   // 일반
@@ -115,9 +115,12 @@ const handleRemoveDisk = (diskId) => {
 const [showAddOptions, setShowAddOptions] = useState(false); // 추가 옵션 토글 상태
 
 // 디스크 연결관련
-const [selectedDiskId, setSelectedDiskId] = useState(null); // 선택된 디스크 ID 관리
 
+const [selectedDisks, setSelectedDisks] = useState([]); // 선택된 디스크 상태
 
+const handleDiskSelection = (diskId, diskDetails) => {
+  setSelectedDisks((prev) => [...prev, { id: diskId, details: diskDetails }]);
+};
 
 
 
@@ -436,9 +439,9 @@ useEffect(() => {
         setDeleteProtected(vm?.deleteProtected || false);
 
         // 시스템
-        setMaxMemory(vm?.memoryMax);
-        setAllocatedMemory(vm?.memoryActual);
-        setMemorySize(vm?.memorySize);
+        setMaxMemory(vm?.memoryMax / 1024 || 1024); // KB -> MB 변환
+        setAllocatedMemory(vm?.memoryActual / 1024 || 1024); // KB -> MB 변환
+        setMemorySize(vm?.memorySize / 1024 || 1024); // KB -> MB 변환
         setCpuTopologyCnt(vm?.cpuTopologyCnt || 1);
         setCpuTopologyCore(vm?.cpuTopologyCore || 1);
         setCpuTopologySocket(vm?.cpuTopologySocket || 1);
@@ -527,9 +530,11 @@ useEffect(() => {
         name: selectedTemplate.name
       },
       nicVos: nicSelections.map((nic) => ({
-        id: nic.id || null, // NIC ID (없을 경우 null)
-        name: nic.name,     // NIC 이름
-
+        name: nic.name, // NIC 이름
+        vnicProfileVo: {
+          id: nic.vnicProfileVo?.id || null, // VNIC ID
+          name: nic.vnicProfileVo?.name || '', // VNIC Name
+        },
       })),
       name,
       description,
@@ -542,9 +547,9 @@ useEffect(() => {
       deleteProtected, //boolean
 
       // 시스템데이터
-      memorySize: memorySize,
-      memoryMax: maxMemory,
-      memoryActual: allocatedMemory,
+      memorySize: memorySize * 1024,
+      memoryMax: maxMemory * 1024,
+      memoryActual: allocatedMemory * 1024,
       cpuTopologyCnt, // 총가상 cpu
       cpuTopologyCore, // 가상 소켓 당 코어
       cpuTopologySocket, // 가상소켓
@@ -571,8 +576,8 @@ useEffect(() => {
           name: connVoName,
         }
       : null,
-      bootingMenu // boolean
-
+      bootingMenu,// boolean
+      diskVos: selectedDisks.map((disk) => ({ id: disk.id, ...disk.details })), // 디스크 정보 추가
 
     };
     console.log('가상머신 생성or편집데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
@@ -884,10 +889,7 @@ return (
           isOpen={isConnectionPopupOpen}
           onRequestClose={() => setIsConnectionPopupOpen(false)}
           vmId={vmId} // vmId를 넘겨줍니다.
-          onSelectDisk={(diskId) => {
-            console.log("Selected Disk ID:", diskId); // 선택된 디스크 ID 처리
-            setSelectedDiskId(diskId); // 상태 저장
-          }}
+          onSelectDisk={handleDiskSelection} 
         />
         <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>
           생성
@@ -913,10 +915,7 @@ return (
         isOpen={isConnectionPopupOpen}
         onRequestClose={() => setIsConnectionPopupOpen(false)}
         vmId={vmId} // vmId를 넘겨줍니다.
-        onSelectDisk={(diskId) => {
-          console.log("Selected Disk ID:", diskId); // 선택된 디스크 ID 처리
-          setSelectedDiskId(diskId); // 상태 저장
-        }}
+        onSelectDisk={handleDiskSelection} 
       />
       <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
       <DiskModal
@@ -952,10 +951,7 @@ return (
                                     isOpen={isConnectionPopupOpen}
                                     onRequestClose={() => setIsConnectionPopupOpen(false)}
                                     vmId={vmId} 
-                                    onSelectDisk={(diskId) => {
-                                      console.log("Selected Disk ID:", diskId); // 선택된 디스크 ID를 처리
-                                      setSelectedDiskId(diskId); // 상태 저장
-                                    }}
+                                    onSelectDisk={handleDiskSelection} 
                                   />
                                   <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
                                   <DiskModal
