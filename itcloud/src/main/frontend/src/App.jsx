@@ -29,6 +29,8 @@ import Templates from './components/Computing/Rutil/Templates';
 import DomainInfo from './components/Storage/domainjs/DomainInfo';
 import TemplateInfo from './components/Computing/templatejs/TemplateInfo';
 import DiskInfo from './components/Storage/diskjs/DiskInfo';
+import AllNetwork from './components/Network/AllNetwork';
+import NetworkInfo from './components/Network/networkjs/NetworkInfo';
 
 
 const App = () => {
@@ -123,10 +125,12 @@ const App = () => {
               <Route path="/networks/rutil-manager" element={<RutilManager />} />
               <Route path="/networks/rutil-manager/:section" element={<RutilManager />} />
 
-              <Route path="/networks" element={<Network />} />
+              {/* <Route path="/networks" element={<Network />} /> */}
+              <Route path="/networks" element={<AllNetwork />} />
               <Route path="/networks/datacenters/:id/:section" element={<DataCenterInfo />} />
-              <Route path="/networks/:id" element={<NetworkDetail />} /> 
-              <Route path="/networks/:id/:section" element={<NetworkDetail />} /> 
+              <Route path="/networks/:id" element={<NetworkInfo />} /> 
+              <Route path="/networks/:id/:section" element={<NetworkInfo />} /> 
+              {/* <Route path="/networks/:id/:section" element={<NetworkDetail />} />  */}
 
               <Route path="/storages/rutil-manager" element={<RutilManager />} />
               <Route path="/storages/rutil-manager/:section" element={<RutilManager />} />
@@ -139,7 +143,6 @@ const App = () => {
               <Route path="/storages/disks" element={<AllDisk />} />
               <Route path="/storages/disks/:id" element={<DiskInfo />} />
               <Route path="/storages/disks/:id/:section" element={<DiskInfo />} />
-              {/* <Route path="/storages/disks/:id/:section" element={<StorageDiskDetail />} /> */}
 
               <Route path="/events" element={<Event />} />
               <Route path="/settings" element={<Setting />} />

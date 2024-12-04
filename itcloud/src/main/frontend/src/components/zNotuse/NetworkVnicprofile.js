@@ -1,13 +1,13 @@
-import { useAllVnicProfilesFromNetwork } from "../../../api/RQHook";
-import TableColumnsInfo from "../../table/TableColumnsInfo";
-import TableOuter from "../../table/TableOuter";
+import { useAllVnicProfilesFromNetwork } from "../../api/RQHook";
+import TableColumnsInfo from "../table/TableColumnsInfo";
+import TableOuter from "../table/TableOuter";
 import { useNavigate} from 'react-router-dom';
 import { Suspense, useState,useEffect } from 'react'; 
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import VnicProfileModal from "../../Modal/VnicProfileModal";
-import DeleteModal from "../../Modal/DeleteModal";
+import VnicProfileModal from "../Modal/VnicProfileModal";
+import DeleteModal from "../Modal/DeleteModal";
 
 // 애플리케이션 섹션
 const NetworkVnicprofile = ({network}) => {

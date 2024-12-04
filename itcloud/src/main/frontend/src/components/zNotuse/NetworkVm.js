@@ -1,11 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useAllVmsFromNetwork } from "../../../api/RQHook";
-import TableColumnsInfo from "../../table/TableColumnsInfo";
-import TableOuter from "../../table/TableOuter";
+import { useAllVmsFromNetwork } from "../../api/RQHook";
+import TableColumnsInfo from "../table/TableColumnsInfo";
+import TableOuter from "../table/TableOuter";
 import { useNavigate } from 'react-router-dom';
 import { Suspense, useState } from 'react';
 import { faChevronDown, faPlay } from "@fortawesome/free-solid-svg-icons";
-import DeleteModal from "../../Modal/DeleteModal";
+import DeleteModal from "../Modal/DeleteModal";
 
 const NetworkVm = ({ network }) => {
   const navigate = useNavigate();

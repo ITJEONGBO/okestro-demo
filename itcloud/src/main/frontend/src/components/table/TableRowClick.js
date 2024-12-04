@@ -14,7 +14,8 @@ const TableRowClick = ({ type, id, children, style }) => {
       host: `/computing/hosts/${id}`,
       vms: `/computing/vms/${id}`,
       domains: `/storages/domains/${id}`,
-      disks: `/storages/disks/${id}`
+      disks: `/storages/disks/${id}`,
+      network: `/networks/${id}`,
     };
 
     const path = paths[type];

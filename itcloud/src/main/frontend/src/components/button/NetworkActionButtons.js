@@ -1,6 +1,12 @@
 import React from 'react';
 
-const NetworkActionButtons = ({ onCreate, onEdit, onDelete, isEditDisabled }) => {
+const NetworkActionButtons = ({ 
+  onCreate, 
+  onEdit, 
+  onDelete, 
+  onImport, 
+  isEditDisabled 
+}) => {
   return (
     <div className="header_right_btns">
       {onCreate && 
@@ -11,6 +17,9 @@ const NetworkActionButtons = ({ onCreate, onEdit, onDelete, isEditDisabled }) =>
       )}
       {onDelete && (
         <button onClick={onDelete} disabled={isEditDisabled}>제거</button>
+      )}
+      {onImport && (
+        <button onClick={onImport}>가져오기</button>
       )}
     </div>
   );

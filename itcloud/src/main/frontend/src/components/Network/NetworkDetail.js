@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
-import NetworkDetailGeneral from './networkjs/NetworkDetailGeneral';
+import NetworkDetailGeneral from '../zNotuse/NetworkDetailGeneral';
 import './css/NetworkDetail.css';
 import { 
   useNetworkById, 
@@ -17,11 +17,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 import Path from '../Header/Path';
-import NetworkVnicprofile from './networkjs/NetworkVnicprofile';
-import NetworkCluster from './networkjs/NetworkCluster';
-import NetworkHost from './networkjs/NetworkHost';
-import NetworkVm from './networkjs/NetworkVm';
-import NetworkTemplate from './networkjs/NetworkTemplate';
+import NetworkVnicprofile from '../zNotuse/NetworkVnicprofile';
+import NetworkCluster from '../zNotuse/NetworkCluster';
+import NetworkHost from '../zNotuse/NetworkHost';
+import NetworkVm from '../zNotuse/NetworkVm';
+import NetworkTemplate from '../zNotuse/NetworkTemplate';
 import LogicalNetworkEdit from '../Modal/LogicalNetworkEdit';
 import DeleteModal from '../Modal/DeleteModal';
 import NetworkNewModal from '../Modal/NetworkNewModal';

@@ -7,7 +7,7 @@ import TableInfo from "../../table/TableInfo";
 import DeleteModal from "../../Modal/DeleteModal";
 
 // 애플리케이션 섹션
-const NetworkTemplate = ({ network }) => {
+const NetworkTemplates = ({ network }) => {
 
     const [activePopup, setActivePopup] = useState(null);
     const openPopup = (popupType) => setActivePopup(popupType);
@@ -70,4 +70,4 @@ const NetworkTemplate = ({ network }) => {
     );
 };
 
-export default NetworkTemplate;
+export default NetworkTemplates;

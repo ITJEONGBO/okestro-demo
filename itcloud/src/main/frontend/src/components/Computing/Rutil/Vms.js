@@ -16,13 +16,6 @@ const Vms = () => {
   } = useAllVMs((e) => {
     return {
       ...e,
-      status: e?.status,
-      host: e?.hostVo?.name, 
-      cluster: e?.clusterVo?.name,        
-      dataCenter: e?.dataCenterVo?.name,
-      memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
-      cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
-      networkUsage: e?.usageDto.networkPercent === null ? '' : e?.usageDto.networkPercent + '%',
     }
   });
 

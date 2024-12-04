@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useAllClustersFromNetwork} from "../../../api/RQHook";
-import TableColumnsInfo from "../../table/TableColumnsInfo";
-import TableOuter from "../../table/TableOuter";
+import { useAllClustersFromNetwork} from "../../api/RQHook";
+import TableColumnsInfo from "../table/TableColumnsInfo";
+import TableOuter from "../table/TableOuter";
 import { useNavigate} from 'react-router-dom';
 import { useState } from 'react'; 
 import Modal from 'react-modal';

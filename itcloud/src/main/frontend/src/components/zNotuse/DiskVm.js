@@ -1,6 +1,6 @@
-import { useAllVmsFromDisk, useAllVnicProfilesFromNetwork } from "../../../api/RQHook";
-import TableColumnsInfo from "../../table/TableColumnsInfo";
-import PagingTableOuter from "../../table/PagingTableOuter";
+import { useAllVmsFromDisk, useAllVnicProfilesFromNetwork } from "../../api/RQHook";
+import TableColumnsInfo from "../table/TableColumnsInfo";
+import PagingTableOuter from "../table/PagingTableOuter";
 
 const DiskVm = ({disk}) => {
 

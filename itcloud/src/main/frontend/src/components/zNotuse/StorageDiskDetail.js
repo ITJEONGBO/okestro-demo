@@ -17,7 +17,7 @@ import { useAllDisk, useAllStorageDomainFromDisk, useAllVmsFromDisk, useDiskById
 import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
 import DiskGeneral from './diskjs/DiskGeneral';
-import DiskVm from './diskjs/DiskVm';
+import DiskVm from '../zNotuse/DiskVm';
 import DiskStorage from './diskjs/DiskStorage';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {

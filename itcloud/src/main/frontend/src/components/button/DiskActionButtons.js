@@ -10,7 +10,7 @@ const DiskActionButtons = ({
   isEditDisabled,
   status
 }) => {
-  const isOk = status == "OK"
+  const isOk = status === "OK"
 
   return (
     <div className="header_right_btns">

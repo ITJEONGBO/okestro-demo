@@ -268,14 +268,13 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun findAllClustersFromNetwork(networkId: String): List<ClusterVo> {
 		log.info("findAllClustersFromNetwork ... networkId: {}", networkId)
-		val res: List<Cluster> =
-			conn.findAllClusters(follow = "networks")
-				.getOrDefault(listOf())
-				.filter {
-					conn.findAllNetworksFromCluster(it.id())
-						.getOrDefault(listOf())
-						.any { n -> n.id() == networkId }
-				}
+		val res: List<Cluster> = conn.findAllClusters(follow = "networks")
+			.getOrDefault(listOf())
+			.filter {
+				conn.findAllNetworksFromCluster(it.id())
+					.getOrDefault(listOf())
+					.any { n -> n.id() == networkId }
+			}
 		return res.toNetworkClusterVos(conn, networkId)
 	}
 
