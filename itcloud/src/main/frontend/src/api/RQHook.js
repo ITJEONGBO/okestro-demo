@@ -1383,7 +1383,7 @@ export const useEditNicFromVM = () => {
  * 
  * @returns useMutation 훅
  */
-export const useNetworkInterface = () => {
+export const useDeleteNetworkInterface = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
     mutationFn: async ({ vmId,nicId}) => {

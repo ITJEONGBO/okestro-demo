@@ -295,7 +295,7 @@ fun DiskImageVo.toAddDiskBuilder(): Disk =
 fun DiskImageVo.toEditDiskBuilder(): Disk =
 	this@toEditDiskBuilder.toDiskBuilder()
 		.id(this@toEditDiskBuilder.id)
-		.provisionedSize(this@toEditDiskBuilder.size + this@toEditDiskBuilder.appendSize )
+		.provisionedSize(this@toEditDiskBuilder.size.add(this@toEditDiskBuilder.appendSize))
 		.build()
 
 /**

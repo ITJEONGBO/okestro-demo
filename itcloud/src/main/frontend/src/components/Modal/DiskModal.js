@@ -97,7 +97,7 @@ const DiskModal = ({
       console.log('Setting edit mode state with disk:', disk);
       setFormState({
         id: disk.id || '',
-        size: disk.virtualSize || '',
+        size: (disk.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
         alias: disk.alias || '',
         description: disk.description || '',
         wipeAfterDelete: disk.wipeAfterDelete || false,
@@ -174,7 +174,8 @@ const DiskModal = ({
       return;
     }
 
-    const sizeToBytes = formState.size * 1024 * 1024 * 1024;
+    const sizeToBytes = parseInt(formState.size, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환
+
 
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedDomain = domains.find((dm) => dm.id === domainVoId);
@@ -193,7 +194,7 @@ const DiskModal = ({
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
     
     if (editMode) {
-      dataToSubmit.appendSize = formState.appendSize * 1024 * 1024 * 1024;   
+      dataToSubmit.appendSize = parseInt(formState.appendSize, 10) * 1024 * 1024 * 1024;   
       editDisk(
         { diskId: formState.id, diskData: dataToSubmit}, 
         {
@@ -258,7 +259,8 @@ const DiskModal = ({
                 <input
                   type="number"
                   min="0"
-                  value={editMode ? (formState.size / (1024 * 1024 * 1024)).toFixed(0) : formState.size}
+                  // value={editMode ? (formState.size / (1024 * 1024 * 1024)).toFixed(0) : formState.size}
+                  value={formState.size}
                   onChange={(e) => setFormState((prev) => ({ ...prev, size: e.target.value }))}
                   disabled={editMode}
                 />
