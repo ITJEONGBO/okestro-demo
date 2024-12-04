@@ -174,6 +174,8 @@ const DiskModal = ({
       return;
     }
 
+    const sizeToBytes = formState.size * 1024 * 1024 * 1024;
+
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedDomain = domains.find((dm) => dm.id === domainVoId);
     const selectedDiskProfile = diskProfiles.find((dp) => dp.id === diskProfileVoId);
@@ -185,12 +187,13 @@ const DiskModal = ({
       storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
       diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
       ...formState,
+      size: sizeToBytes
     };
 
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
     
     if (editMode) {
-      dataToSubmit.appendSize = formState.appendSize;      
+      dataToSubmit.appendSize = formState.appendSize * 1024 * 1024 * 1024;   
       editDisk(
         { diskId: formState.id, diskData: dataToSubmit}, 
         {
@@ -254,6 +257,7 @@ const DiskModal = ({
               <FormGroup label="크기(GB)">
                 <input
                   type="number"
+                  min="0"
                   value={editMode ? (formState.size / (1024 * 1024 * 1024)).toFixed(0) : formState.size}
                   onChange={(e) => setFormState((prev) => ({ ...prev, size: e.target.value }))}
                   disabled={editMode}
@@ -264,6 +268,7 @@ const DiskModal = ({
               <FormGroup label="추가크기(GB)">
                 <input
                   type="number"
+                  min="0"
                   value={formState.appendSize}
                   onChange={(e) => setFormState((prev) => ({ ...prev, appendSize: e.target.value }))}
                 />

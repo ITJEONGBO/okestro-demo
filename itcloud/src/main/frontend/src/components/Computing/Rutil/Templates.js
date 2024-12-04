@@ -18,19 +18,12 @@ const Templates = () => {
   } = useAllTemplates((e) => ({...e,}));
 
   return (
-    <div id="section">
-      <HeaderButton
-        titleIcon={faDesktop}
-        title="템플릿"
-        buttons={[]}
-      />
-      <div className="host_btn_outer">
-        <TemplateDupl
-          templates={templates || []}
-          columns={TableInfo.TEMPLATES}
-        />
-      </div>
-    </div>
+    <>
+      <TemplateDupl
+        templates={templates || []}
+        columns={TableInfo.TEMPLATES}
+      />      
+    </>
   );
 };
 

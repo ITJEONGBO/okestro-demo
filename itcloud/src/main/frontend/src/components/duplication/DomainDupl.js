@@ -6,7 +6,7 @@ import DomainModals from '../Modal/DomainModals';
 const DomainDupl = ({ 
   domains, 
   columns,
-  type,  // 데이터센터, 스토리지 도메인
+  type='domain',  // 데이터센터, 스토리지 도메인, rutil
   onFetchDomains, 
   status
 }) => {
@@ -23,7 +23,7 @@ const DomainDupl = ({
   // 데이터센터: 연결, 분리, 활성, 유지보수
   return (
     <>
-    { type === 'domain' && 
+    { type === 'domain' &&
       <DomainActionButtons
         onCreate={() => handleActionClick('create')}
         onEdit={() => selectedDomain?.id && handleActionClick('edit')}
@@ -32,13 +32,23 @@ const DomainDupl = ({
         isEditDisabled={!selectedDomain?.id}
         status={selectedDomain?.status}
       />
-    } 
+    }
     { type === 'datacenter' &&
       <DomainActionButtons
         onAttach={() => handleActionClick('attach')}
         onSeparate={() => selectedDomain?.id && handleActionClick('separate')}
         onActive={() => selectedDomain?.id && handleActionClick('active')}
         onMaintenance={() => selectedDomain?.id && handleActionClick('maintenance')}
+        status={selectedDomain?.status}
+      />
+    }
+    { type === 'rutil' &&
+      <DomainActionButtons
+        onCreate={() => handleActionClick('create')}
+        onEdit={() => selectedDomain?.id && handleActionClick('edit')}
+        onDelete={() => selectedDomain?.id && handleActionClick('delete')}
+        disk={false}
+        isEditDisabled={!selectedDomain?.id}
         status={selectedDomain?.status}
       />
     }

@@ -42,8 +42,8 @@ import java.math.BigInteger
  */
 class DiskImageVo(
 	val id: String = "",
-	val size: Int = 0,
-	val appendSize: Int = 0,
+	val size: BigInteger = BigInteger.ZERO,
+	val appendSize: BigInteger = BigInteger.ZERO,
 	val alias: String = "",
 	val description: String = "",
 	val dataCenterVo: IdentifiedVo = IdentifiedVo(),
@@ -69,8 +69,8 @@ class DiskImageVo(
 
 	class Builder {
 		private var bId: String = "";fun id(block: () -> String?) { bId = block() ?: "" }
-		private var bSize: Int = 0;fun size(block: () -> Int?) { bSize = block() ?: 0 }
-		private var bAppendSize: Int = 0;fun appendSize(block: () -> Int?) { bAppendSize = block() ?: 0 }
+		private var bSize: BigInteger = BigInteger.ZERO;fun size(block: () -> BigInteger?) { bSize = block() ?: BigInteger.ZERO }
+		private var bAppendSize: BigInteger = BigInteger.ZERO;fun appendSize(block: () -> BigInteger?) { bAppendSize = block() ?: BigInteger.ZERO }
 		private var bAlias: String = "";fun alias(block: () -> String?) { bAlias = block() ?: "" }
 		private var bDescription: String = "";fun description(block: () -> String?) { bDescription = block() ?: "" }
 		private var bDataCenterVo: IdentifiedVo = IdentifiedVo();fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
@@ -210,7 +210,7 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 
 	return DiskImageVo.builder {
 		id { this@toDiskImageVo.id() }
-		size { (this@toDiskImageVo.provisionedSizeAsLong() / 1073741824).toInt() } // 1024^3
+		size { this@toDiskImageVo.provisionedSize() } // 1024^3
 		alias { this@toDiskImageVo.alias() }
 		description { this@toDiskImageVo.description() }
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
@@ -249,7 +249,7 @@ fun Disk.toDiskVo(conn: Connection, vmId: String): DiskImageVo {
 
 	return DiskImageVo.builder {
 		id { this@toDiskVo.id() }
-		size { (this@toDiskVo.provisionedSizeAsLong() / 1073741824).toInt() } // 1024^3
+		size { this@toDiskVo.provisionedSize() } // 1024^3
 		alias { this@toDiskVo.alias() }
 		description { this@toDiskVo.description() }
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
@@ -289,13 +289,13 @@ fun DiskImageVo.toDiskBuilder(): DiskBuilder {
 fun DiskImageVo.toAddDiskBuilder(): Disk =
 	this@toAddDiskBuilder.toDiskBuilder()
 		.storageDomains(*arrayOf(StorageDomainBuilder().id(this@toAddDiskBuilder.storageDomainVo.id).build()))
-		.provisionedSize(BigInteger.valueOf(this@toAddDiskBuilder.size.toLong() * 1024 * 1024 * 1024))
+		.provisionedSize(this@toAddDiskBuilder.size)
 		.build()
 
 fun DiskImageVo.toEditDiskBuilder(): Disk =
 	this@toEditDiskBuilder.toDiskBuilder()
 		.id(this@toEditDiskBuilder.id)
-		.provisionedSize((this@toEditDiskBuilder.size + this@toEditDiskBuilder.appendSize).toLong() * 1024 * 1024 *1024 )
+		.provisionedSize(this@toEditDiskBuilder.size + this@toEditDiskBuilder.appendSize )
 		.build()
 
 /**

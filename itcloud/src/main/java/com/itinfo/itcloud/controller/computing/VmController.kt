@@ -89,39 +89,7 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVm.findAllVnicProfilesFromCluster(clusterId))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 생성창 - 디스크 연결 목록",
-		notes="가상머신 생성시에 필요한 디스크 연결 목록을 조회한다"
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/disks")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun disks(
-	): ResponseEntity<List<DiskImageVo>?> {
-		log.info("/computing/vms/disks ... 가상머신 생성창 - 디스크 연결 목록")
-		return ResponseEntity.ok(iVm.findAllDiskImage())
-	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 생성창 - CD/DVD 연결할 ISO 목록",
-		notes="가상머신 생성시에 필요한 CD/DVD 연결할 ISO 목록을 조회한다"
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/iso")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun iso(
-	): ResponseEntity<List<IdentifiedVo>?> {
-		log.info("/computing/vms/iso ... 가상머신 생성창 - CD/DVD 연결할 ISO 목록")
-		return ResponseEntity.ok(iVm.findAllISO())
-	}
 
 	@ApiOperation(
 		httpMethod="POST",

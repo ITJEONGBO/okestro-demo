@@ -340,7 +340,7 @@ fun Vm.toVmMenu(conn: Connection): VmVo {
             val nics: List<Nic> = conn.findAllNicsFromVm(this@toVmMenu.id()).getOrDefault(listOf())
             val host: Host? = conn.findHost(this@toVmMenu.host().id()).getOrNull()
             fqdn { this@toVmMenu.fqdn() }
-            upTime { statistics.findVmUptime(conn) }
+            upTime { statistics.findVmUptime() }
             hostVo { host?.fromHostToIdentifiedVo() }
             ipv4 { nics.findVmIpv4(conn, this@toVmMenu.id()) }
             ipv6 { nics.findVmIpv6(conn, this@toVmMenu.id()) }
@@ -407,7 +407,7 @@ fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
         timeOffset { this@toVmVoInfo.timeZone().name() }
         status { this@toVmVoInfo.status() }
         hostEngineVm { this@toVmVoInfo.origin() == "managed_hosted_engine" } // 엔진여부
-        upTime { statistics.findVmUptime(conn) }
+        upTime { statistics.findVmUptime() }
         ipv4 { nics.findVmIpv4(conn, this@toVmVoInfo.id()) }
         ipv6 { nics.findVmIpv6(conn, this@toVmVoInfo.id()) }
         fqdn { this@toVmVoInfo.fqdn() }
@@ -443,10 +443,10 @@ fun List<Vm>.toStorageDomainVms(conn: Connection, storageDomainId: String): List
 /**
  * 가상머신 빌더
  */
-fun VmVo.toVmBuilder(conn: Connection): VmBuilder {
+fun VmVo.toVmBuilder(): VmBuilder {
     val vmBuilder = VmBuilder()
     this@toVmBuilder.toVmInfoBuilder(vmBuilder)
-    this@toVmBuilder.toVmSystemBuilder(vmBuilder, conn)
+    this@toVmBuilder.toVmSystemBuilder(vmBuilder)
     this@toVmBuilder.toVmInitBuilder(vmBuilder)
     this@toVmBuilder.toVmHostBuilder(vmBuilder)
 //    this@toVmBuilder.toVmResourceBuilder(vmBuilder)
@@ -459,14 +459,14 @@ fun VmVo.toVmBuilder(conn: Connection): VmBuilder {
 /**
  * 가상머신 생성 빌더
  */
-fun VmVo.toAddVmBuilder(conn: Connection): Vm =
-    this@toAddVmBuilder.toVmBuilder(conn).build()
+fun VmVo.toAddVmBuilder(): Vm =
+    this@toAddVmBuilder.toVmBuilder().build()
 
 /**
  * 가상머신 편집 빌더
  */
-fun VmVo.toEditVmBuilder(conn: Connection): Vm =
-    this@toEditVmBuilder.toVmBuilder(conn).id(this@toEditVmBuilder.id).build()
+fun VmVo.toEditVmBuilder(): Vm =
+    this@toEditVmBuilder.toVmBuilder().id(this@toEditVmBuilder.id).build()
 
 
 
@@ -474,8 +474,6 @@ fun VmVo.toEditVmBuilder(conn: Connection): Vm =
  * vm 일반정보
  */
 fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
-    log.info("cluster {}, {}", this@toVmInfoBuilder.clusterVo.id, this@toVmInfoBuilder.clusterVo.name)
-    log.info("template {}, {}", this@toVmInfoBuilder.templateVo.id, this@toVmInfoBuilder.templateVo.name)
     return vmBuilder
         .cluster(ClusterBuilder().id(this@toVmInfoBuilder.clusterVo.id).build())
         .template(TemplateBuilder().id(this@toVmInfoBuilder.templateVo.id).build()) // template지정된게 있으면
@@ -492,24 +490,18 @@ fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
 /**
  * vm 시스템
  */
-fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder, conn: Connection): VmBuilder {
-	val convertMb = BigInteger.valueOf(1024).pow(2)
-
-    log.info("memoryMax {}", this@toVmSystemBuilder.memoryMax)
-    log.info("memoryMax toMB {}", this@toVmSystemBuilder.memoryMax * convertMb)
-
-    log.info("memoryActual {}", this@toVmSystemBuilder.memoryActual * convertMb)
-
+fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder): VmBuilder {
+//	val convertMb = BigInteger.valueOf(1024).pow(2)
 	// 시스템-일반 하드웨어 클럭의 시간 오프셋
 	vmBuilder.timeZone(TimeZoneBuilder().name(this@toVmSystemBuilder.timeOffset))
 
   // 사용자 정의 값
     vmBuilder
-        .memory(this@toVmSystemBuilder.memorySize * convertMb)
+        .memory(this@toVmSystemBuilder.memorySize/* * convertMb*/)
         .memoryPolicy(
             MemoryPolicyBuilder()
-                .max(this@toVmSystemBuilder.memoryMax * convertMb)
-                .guaranteed(this@toVmSystemBuilder.memoryActual * convertMb)
+                .max(this@toVmSystemBuilder.memoryMax)
+                .guaranteed(this@toVmSystemBuilder.memoryActual)
                 .ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
         )
         .cpu(
@@ -644,8 +636,8 @@ fun VmVo.toVmBootBuilder(vmBuilder: VmBuilder): VmBuilder {
  * @param conn [Connection]
  * @return
  */
-fun Vm.toVmSystem(conn: Connection): VmVo {
-	val convertMb = BigInteger.valueOf(1024).pow(2)
+fun Vm.toVmSystem(): VmVo {
+//	val convertMb = BigInteger.valueOf(1024).pow(2)
 	return VmVo.builder {
 		memorySize { this@toVmSystem.memory() }
 		memoryActual { this@toVmSystem.memoryPolicy().guaranteed() }
@@ -667,7 +659,7 @@ fun Vm.toVmSystem(conn: Connection): VmVo {
 /**
  * 편집 - 초기실행
  */
-fun Vm.toVmInit(conn: Connection): VmVo {
+fun Vm.toVmInit(): VmVo {
     return VmVo.builder {
         cloudInit { this@toVmInit.initializationPresent() }
         hostName { if (this@toVmInit.initializationPresent()) this@toVmInit.initialization().hostName() else "" }
@@ -676,7 +668,7 @@ fun Vm.toVmInit(conn: Connection): VmVo {
 /**
  * 편집 - 호스트
  */
-fun Vm.toVmHost(conn: Connection): VmVo {
+fun Vm.toVmHost(): VmVo {
 	return VmVo.builder {
 		hostInCluster { !this@toVmHost.placementPolicy().hostsPresent() } // 클러스터내 호스트(t)인지 특정호스트(f)인지
         //TODO
@@ -774,14 +766,14 @@ fun List<Vm>.toVmVoFromNetworks(conn: Connection): List<VmVo> =
 
 
 /**
- * [Vm.findVmUptime]
+ * [List<[Statistic]>.findVmUptime]
  * Vm 업타임 구하기
  * 이건 매개변수로 statisticList 안줘도 되는게 vm에서만 사용
  *
  * @param conn
  * @return 일, 시간, 분 형식
  */
-fun List<Statistic>.findVmUptime(conn: Connection): String {
+fun List<Statistic>.findVmUptime(): String {
     val time: Long = this@findVmUptime.filter {
         it.name() == "elapsed.time"
     }.map {
@@ -886,7 +878,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         id { this@toVmVo.id() }
         name { this@toVmVo.name() }
         status { this@toVmVo.status() }
-        upTime { statistics.findVmUptime(conn) }
+        upTime { statistics.findVmUptime() }
         creationTime { ovirtDf.format(this@toVmVo.creationTime()) }
         memoryInstalled { statistics.findMemory("memory.installed") }
         memoryUsed { statistics.findMemory("memory.used") }

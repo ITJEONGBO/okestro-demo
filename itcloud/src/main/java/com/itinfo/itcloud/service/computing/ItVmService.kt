@@ -55,24 +55,6 @@ interface ItVmService {
 	 */
 	@Throws(Error::class)
 	fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo>
-	/**
-	 * [ItVmService.findAllDiskImage]
-	 * 가상머신 생성 - 인스턴스 이미지 - 연결 -> 디스크 목록
-	 * 기준: 아무것도 연결되어 있지 않은 디스크
-	 * 인스턴스 이미지 -> 생성 시 필요한 스토리지 도메인
-	 *
-	 * @return List<[DiskImageVo]> 디스크  목록
-	 */
-	@Throws(Error::class)
-	fun findAllDiskImage(): List<DiskImageVo>
-	/**
-	 * [ItVmService.findAllISO]
-	 * 가상머신 생성 - 부트 옵션 - 생성 시 필요한 CD/DVD 연결할 ISO 목록 (디스크이미지)
-	 *
-	 * @return List<[IdentifiedVo]> ISO 목록
-	 */
-    @Throws(Error::class)
-	fun findAllISO(): List<IdentifiedVo>
 
 	/**
 	 * [ItVmService.add]
@@ -173,20 +155,6 @@ class VmServiceImpl(
 		return res?.toVmVo(conn)
 	}
 
-	@Throws(Error::class)
-	override fun findAllDiskImage(): List<DiskImageVo> {
-		log.info("findAllDiskImage ... ")
-		val attDiskIds =
-			conn.findAllVms().getOrDefault(listOf())
-				.flatMap {
-					conn.findAllDiskAttachmentsFromVm(it.id()).getOrDefault(listOf())
-				}.map { it.id() }
-
-		val res: List<Disk> =
-			conn.findAllDisks().getOrDefault(listOf())
-				.filter { it.format() == DiskFormat.COW &&!attDiskIds.contains(it.id()) && it.quotaPresent() }
-		return res.toDisksInfo(conn)
-	}
 
 	@Throws(Error::class)
 	override fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo> {
@@ -205,14 +173,6 @@ class VmServiceImpl(
 		return res.toVnicProfileToVmVos(conn)
 	}
 
-	@Throws(Error::class)
-	override fun findAllISO(): List<IdentifiedVo> {
-		log.info("findAllISO ... ")
-		val res: List<Disk> =
-			conn.findAllDisks().getOrDefault(listOf())
-				.filter { it.contentType() == DiskContentType.ISO }
-		return res.fromDisksToIdentifiedVos()
-	}
 
 	@Throws(Error::class)
 	override fun add(vmVo: VmVo): VmVo? {
@@ -223,7 +183,7 @@ class VmServiceImpl(
 //		}
 		val res: Vm? =
 			conn.addVm(
-				vmVo.toAddVmBuilder(conn),
+				vmVo.toAddVmBuilder(),
 				vmVo.diskAttachmentVos.toAddDiskAttachmentList(),
 				vmVo.vnicProfileVos.map { it.id },
 				vmVo.connVo.id
@@ -260,7 +220,7 @@ class VmServiceImpl(
 
 		val res: Vm? =
 			conn.updateVm(
-				vmVo.toEditVmBuilder(conn),
+				vmVo.toEditVmBuilder(),
 				diskAttachmentListToAdd,
 				diskAttachmentListToDelete,
 //				vmVo.diskAttachmentVos.toEditDiskAttachmentList(conn, vmVo.id),

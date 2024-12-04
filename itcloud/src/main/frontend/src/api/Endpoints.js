@@ -112,8 +112,6 @@ const ENDPOINTS = {
   FIND_HOST_DEVICES_FROM_VM:(vmId) =>  `/api/v1/computing/vms/${vmId}/hostDevices`, 
   FIND_EVENTS_FROM_VM:(vmId) =>  `/api/v1/computing/vms/${vmId}/events`, 
 
-  FIND_DISK_LIST_FROM_VM:() =>  `/api/v1/computing/vms/disks`, 
-  FIND_ISOS_FROM_VM:() =>  `/api/v1/computing/vms/iso`, 
   FIND_NICS_FROM_CLUSTER:(clusterId) =>  `/api/v1/computing/vms/nic/${clusterId}`, 
 
   ADD_VM: () => `/api/v1/computing/vms`,
@@ -209,7 +207,9 @@ const ENDPOINTS = {
   FIND_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,
   FIND_VMS_FROM_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/vms`,
   FIND_STORAGE_DOMAINS_FROM_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/storageDomains`,
-  
+  FIND_DISK_LIST_FROM_VM:() =>  `/api/v1/storages/disks/attachImage`, 
+  FIND_ISOS_FROM_VM:() =>  `/api/v1/storages/disks/iso`, 
+
   ADD_DISK: () =>      `/api/v1/storages/disks`,
   EDIT_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,
   DELETE_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,

@@ -2,10 +2,13 @@ package com.itinfo.itcloud.controller.storage
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
+import com.itinfo.itcloud.controller.computing.VmController
+import com.itinfo.itcloud.controller.computing.VmController.Companion
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.error.IdNotFoundException
 import com.itinfo.itcloud.error.InvalidRequestException
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.setting.PermissionVo
@@ -367,6 +370,40 @@ class DiskController: BaseController() {
 			throw ErrorPattern.DISK_ID_NOT_FOUND.toException()
 		log.info("/storages/disks/{}/storageDomains ... ", diskId)
 		return ResponseEntity.ok(iDisk.findAllStorageDomainsFromDisk(diskId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - 디스크 연결 목록",
+		notes="가상머신 생성시에 필요한 디스크 연결 목록을 조회한다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/attachImage")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun attachImage(
+	): ResponseEntity<List<DiskImageVo>?> {
+		log.info("/storages/disks/attachImage ... 가상머신 생성창 - 디스크 연결 목록")
+		return ResponseEntity.ok(iDisk.findAttachDiskImage())
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - CD/DVD 연결할 ISO 목록",
+		notes="가상머신 생성시에 필요한 CD/DVD 연결할 ISO 목록을 조회한다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/iso")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun iso(
+	): ResponseEntity<List<IdentifiedVo>?> {
+		log.info("/storages/disks/iso ... 가상머신 생성창 - CD/DVD 연결할 ISO 목록")
+		return ResponseEntity.ok(iDisk.findAllISO())
 	}
 
 

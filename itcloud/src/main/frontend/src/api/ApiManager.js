@@ -524,13 +524,13 @@ const ApiManager = {
    * @param {Object} clusterData - 추가할 클러스터 정보
    * @returns {Promise<Object>} API 응답 결과
    */
-    editCluster: async (clusterId, clusterData) => {
-      return makeAPICall({
-        method: "PUT",
-        url: ENDPOINTS.EDIT_CLUSTER(clusterId),
-        data: clusterData, // PUT 요청 시 전송할 데이터
-      });
-    },
+  editCluster: async (clusterId, clusterData) => {
+    return makeAPICall({
+      method: "PUT",
+      url: ENDPOINTS.EDIT_CLUSTER(clusterId),
+      data: clusterData, // PUT 요청 시 전송할 데이터
+    });
+  },
   /**
    * @name ApiManager.deleteCluster
    * @description 클러스터 삭제
@@ -2243,14 +2243,13 @@ const ApiManager = {
    * @param {Object} diskData 
    * @returns {Promise<Object>}
    */
-    editDisk: async (diskId, diskData) => {
-      return makeAPICall({
-        method: "PUT",
-        url: ENDPOINTS.EDIT_DISK(diskId),
-        data: diskData, 
-        // defaultValues: DEFAULT_VALUES.EDIT_DISK
-      });
-    },
+  editDisk: async (diskId, diskData) => {
+    return makeAPICall({
+      method: "PUT",
+      url: ENDPOINTS.EDIT_DISK(diskId),
+      data: diskData
+    });
+  },
   /**
    * @name ApiManager.deleteDisk
    * @description 디스크 삭제

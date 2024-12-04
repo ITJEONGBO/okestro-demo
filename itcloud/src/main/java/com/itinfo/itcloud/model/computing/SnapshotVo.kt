@@ -92,7 +92,7 @@ fun Snapshot.toSnapshotVo(conn: Connection, vmId: String): SnapshotVo {
         date { if (this@toSnapshotVo.vmPresent()) ovirtDf.format(this@toSnapshotVo.date().time) else "현재" }
         status { this@toSnapshotVo.snapshotStatus().value() }
         persistMemory { this@toSnapshotVo.persistMemorystate() }
-        vmVo { vm.toVmSystem(conn) }
+        vmVo { vm.toVmSystem() }
         snapshotDiskVos { disks.toSnapshotDiskVos(conn) }
         nicVos { nics.toNicVosFromSnapshot(conn, vmId) }
         applicationVos { applications.fromApplicationsToIdentifiedVos() }

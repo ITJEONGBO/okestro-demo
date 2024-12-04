@@ -302,9 +302,11 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun findAllIscsiFromHost(hostId: String): List<HostStorageVo> {
 		log.info("findAllIscsiFromHost... hostId: {}", hostId)
-		val res: List<HostStorage> =
-			conn.findAllStoragesFromHost(hostId).getOrDefault(listOf())
-				.filter { it.type() == StorageType.ISCSI }
+		conn.findHost(hostId)
+			.getOrNull() ?: return listOf()
+		val res: List<HostStorage> = conn.findAllStoragesFromHost(hostId)
+			.getOrDefault(listOf())
+			.filter { it.type() == StorageType.ISCSI }
 		return res.toIscsiHostStorageVos()
 	}
 
