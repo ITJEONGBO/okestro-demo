@@ -25,6 +25,7 @@ const VnicProfileTable = ({
                 {vnic?.dataCenterVo.name}
               </TableRowClick>
             ),
+            portMirroring: vnic?.portMirroring === true ? '예': '아니요',
             // version: vnic?.compatVersion,
             networkFilter: vnic?.networkFilterVo.name
           };

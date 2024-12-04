@@ -8,8 +8,9 @@ import { useNetworkById } from '../../../api/RQHook';
 import Path from '../../Header/Path';
 import NetworkGeneral from './NetworkGeneral.js';
 import NetworkVnicProfiles from './NetworkVnicProfiles.js';
-
+// import NetworkHost from '../../zNotuse/NetworkHost.js'
 import NetworkHosts from './NetworkHosts.js';
+
 import NetworkVms from './NetworkVms.js'
 import NetworkTemplates from './NetworkTemplates.js'
 import NetworkClusters from './NetworkClusters.js';
@@ -68,6 +69,7 @@ const NetworkInfo = () => {
       general: NetworkGeneral,
       vnicProfiles: NetworkVnicProfiles,
       clusters: NetworkClusters,
+      // hosts: NetworkHost,
       hosts: NetworkHosts,
       vms: NetworkVms,
       templates: NetworkTemplates,

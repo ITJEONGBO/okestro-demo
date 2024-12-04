@@ -186,6 +186,12 @@ const TableInfo = {
     { header: '총 Rx', accessor: 'totalRx', clickable: false },
     { header: '총 Tx', accessor: 'totalTx', clickable: false },
   ],
+  HOSTS_DISCONNECT_FROM_NETWORK: [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: false },
+    { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
+  ],
+
   VMS_FROM_NETWORK: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
