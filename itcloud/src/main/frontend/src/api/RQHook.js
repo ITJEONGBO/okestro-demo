@@ -1018,14 +1018,11 @@ export const useNetworkInterfaceFromVM = (vmId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['NetworkInterfaceFromVM', vmId], 
   queryFn: async () => {
-    console.log(`useNetworkInterfaceFromVM ... ${vmId}`);
+    console.log(`useNetworkInterfaceFromVM ㅇㄻㄴㄴㅇㅁㄹㄴㄹ... ${vmId}`);
     const res = await ApiManager.findNicsFromVM(vmId); 
-    console.log('API Response:', res); // 반환된 데이터 구조 확인
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
   enabled: !!vmId, 
-  staleTime: 0,
-  cacheTime: 0,
 });
 
 /**
@@ -1405,7 +1402,7 @@ export const useNetworkInterface = () => {
 };
 
 /**
- * @name useDisksFromVM
+ * @name useFindDiskListFromVM
  * @description 가상머신 연결할 수 있는 디스크 useQuery훅
  * 
  * @param {function} mapPredicate 목록객체 변형 처리
@@ -1421,6 +1418,55 @@ export const useFindDiskListFromVM = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
 });
+
+/**
+ * @name useAddDataCenter
+ * @description 가상머신 디스크 연결 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddDisksFromVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({ vmId, diskData }) => {
+      return await ApiManager.attachDisksFromVM(vmId, diskData);
+    },
+    onSuccess: () => {
+      // 'DisksFromVM' 키를 배열로 수정
+      queryClient.invalidateQueries(['DisksFromVM']); 
+    },
+    onError: (error) => {
+      console.error('Error attaching disks to VM:', error);
+    },  
+  });
+};
+
+
+// 보류
+// /**
+//  * @name useFindDiskFromVM
+//  * @description 가상머신 연결한 디스크 useQuery훅
+//  * 
+//  * @param {string} vmId 가상머신ID
+//  *  * @param {string} diskId 디스크 ID
+//  * @param {function} mapPredicate 목록객체 변형 처리
+//  * @returns useQuery훅
+//  * 
+//  * @see ApiManager.findNicFromVM
+//  */
+// export const useFindDiskFromVM = (vmId,diskId) => useQuery({
+//   refetchOnWindowFocus: true,
+//   queryKey: ['FindDiskFromVM', vmId], 
+//   queryFn: async () => {
+//     console.log(`useFindDiskFromVM vm아이디... ${vmId}`);
+//     console.log(`useFindDiskFromVM 디스크아이디 ... ${diskId}`);
+//     const res = await ApiManager.findDiskFromVM(vmId,diskId); 
+//     console.log('API Response:', res); // 반환된 데이터 구조 확인
+//     return res ?? {}; 
+//   },
+
+// });
+
 
 /**
  * @name useCDFromVM
@@ -1439,6 +1485,8 @@ export const useCDFromVM = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
 });
+
+
 //endregion: VM
 
 //region: TEMPLATE ----------------템플릿---------------------

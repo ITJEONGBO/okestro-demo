@@ -11,8 +11,11 @@ import {
   useAllVMs, 
   useCDFromVM, 
   useClustersFromDataCenter, 
+  useDisksFromVM, 
   useEditVm, 
+  useFindDiskFromVM, 
   useHostFromCluster, 
+  useNetworkInterfaceFromVM, 
   useVmById,
 } from '../../api/RQHook';
 import VmConnectionPlusModal from './VmConnectionPlusModal';
@@ -98,13 +101,23 @@ const VmModal = ({
     refetch: refetchvms, 
   } = useVmById(vmId); 
 
-  // vm 데이터 변경 시 콘솔에 출력
-  useEffect(() => {
-    if (vm) {
-      console.log('가져온 가상머신 데이터아이디:', vmId);
-      console.log('변경된 가상머신 데이터:', vm);
-    }
-  }, [vm,vmId]);
+
+// 가상머신에 연결되어있는 디스크
+const { data: disks } = useDisksFromVM(vmId, (e) => ({
+  ...e
+}));
+// 디스크제거(고쳐야함)
+const handleRemoveDisk = (diskId) => {
+  if (window.confirm("정말 이 디스크를 삭제하시겠습니까?")) {
+
+  }
+};
+const [showAddOptions, setShowAddOptions] = useState(false); // 추가 옵션 토글 상태
+
+// 디스크 연결관련
+const [selectedDiskId, setSelectedDiskId] = useState(null); // 선택된 디스크 ID 관리
+
+
 
 
 
@@ -161,30 +174,59 @@ const VmModal = ({
     id: e.id,
     name: e.name,
   }));
-// clusterVoId 값이 변경될 때 콘솔에 출력
+
+
+  // nic옵션리스트
+  const { data: nicList } = useAllnicFromVM(clusterVoId, (e) => ({
+    id: e?.id,
+    name: e?.name,
+    networkVoName: e?.networkVo?.name,
+  }));
+   // 가상머신 내 네트워크인터페이스 목록
+   const { 
+    data: nics 
+  } = useNetworkInterfaceFromVM(vmId, (e) => ({
+    ...e
+  }));
+// NIC 상태 초기화
+const [nicSelections, setNicSelections] = useState([]);
+
+// NIC 데이터 로드 (편집 모드용)
 useEffect(() => {
-  console.log("Current clusterVoId:", clusterVoId);
-}, [clusterVoId]);
-
-
-
-// NIC 목록 가져오기
-const { data: nicList } = useAllnicFromVM(clusterVoId, (e) => ({
-  id: e?.id,
-  name: e?.name,
-  networkVoName:e?.networkVo?.name
-}));
-// NIC 목록 출력 (이미 포함된 코드 유지)
-useEffect(() => {
-  if (nicList) {
-    console.log("Fetched NIC List:", nicList);
-  } else {
-    console.log("NIC List is empty or undefined.");
+  if (editMode && nics?.length > 0) {
+    // 기존 NIC 데이터를 상태로 설정
+    const existingNics = nics.map((nic, index) => ({
+      id: nic.id || '',
+      name: nic.name || `NIC${index + 1}`,
+      vnicProfileVo: nic.vnicProfileVo || {},
+    }));
+    setNicSelections(existingNics);
+  } else if (!editMode) {
+    // 생성 모드: 기본 NIC 초기화
+    setNicSelections([{ id: '', name: 'NIC1', vnicProfileVo: {} }]);
   }
-}, [nicList]);
+}, [editMode, nics]);
+// NIC 추가 핸들러
+const handleAddNic = () => {
+  setNicSelections((prev) => [
+    ...prev,
+    { id: '', name: `NIC${prev.length + 1}`, vnicProfileVo: {} },
+  ]);
+};
 
+// NIC 삭제 핸들러
+const handleRemoveNic = (index) => {
+  setNicSelections((prev) => prev.filter((_, i) => i !== index));
+};
 
-
+// NIC 변경 핸들러
+const handleNicChange = (index, field, value) => {
+  setNicSelections((prev) =>
+    prev.map((nic, i) =>
+      i === index ? { ...nic, [field]: value } : nic
+    )
+  );
+};
 
   // 템플릿 가져오기
   const {
@@ -258,6 +300,15 @@ const handleCdDvdChange = (e) => {
   setConnVoId(selectedId);
   setConnVoName(selectedCd ? selectedCd.name : '');
 };
+
+const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
+const [action, setAction] = useState(null); // 현재 동작
+const handleActionClick = (actionType) => {
+  setAction(actionType); // 동작 설정
+  setIsModalOpen(true); // 모달 열기
+};
+
+
 
 
 // 운영 시스템 및 칩셋 옵션 상태
@@ -449,7 +500,7 @@ useEffect(() => {
   };
 
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = () => { // 디스크  연결은 id값 보내기 생성은 객체로 보내기
     if (maxMemory > 9223372036854775807 ||  memorySize > 9223372036854775807) {
       alert('메모리 값이 너무 큽니다. 다시 확인해주세요.');
       return;
@@ -475,9 +526,11 @@ useEffect(() => {
         id: selectedTemplate.id,
         name: selectedTemplate.name
       },
-      nicVos:{
-        
-      },
+      nicVos: nicSelections.map((nic) => ({
+        id: nic.id || null, // NIC ID (없을 경우 null)
+        name: nic.name,     // NIC 이름
+
+      })),
       name,
       description,
       comment,
@@ -571,25 +624,8 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   };
 
   
-// 초기 NIC 리스트 상태
-const [nicSelections, setNicSelections] = useState([{ id: '', networkVoName: '' }]);
 
-// NIC 선택 변경 핸들러
-const handleNicChange = (index, field, value) => {
-  setNicSelections((prev) =>
-    prev.map((nic, i) => (i === index ? { ...nic, [field]: value } : nic))
-  );
-};
 
-// NIC 추가 핸들러
-const handleAddNic = () => {
-  setNicSelections((prev) => [...prev, { id: '', networkVoName: '' }]);
-};
-
-// NIC 삭제 핸들러
-const handleRemoveNic = (index) => {
-  setNicSelections((prev) => prev.filter((_, i) => i !== index));
-};
 return (
   <Modal
     isOpen={isOpen}
@@ -804,102 +840,274 @@ return (
                           >
                           {editMode ? (
                               // 편집 모드일 때
-                              <div className='vm_plus_btn_outer'>
+                              
+                              
                         
+                              <div className='vm_plus_btn_outer'>
                               <div className='vm_plus_btn'>
-                                  <div >#</div>
-                                  <div className='flex'>
-                                      <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
-                                      편집
-                                      </button>
-                                      <DiskModal
-                                            isOpen={isEditPopupOpen}
-                                            onRequestClose={() => setIsEditPopupOpen(false)}
-                                            // editMode={action === 'edit'}
-                                            // diskId={selectedDisk?.id || null}
-                                            type='vm'
-                                          />
-                                      <div className="flex">
-                                          <button>+</button>
-                                          <button>-</button>
-                                      </div>
-                                  </div>
-                              </div>
-                              </div>
+  {disks && disks.length > 0 ? (
+    // 디스크가 있는 경우
+    disks.map((disk, index) => (
+      <div key={index} style={{ marginBottom: '10px' }}>
+        <span>
+          {disk.diskImageVo?.alias || '이름 없음'}: ({disk.diskImageVo?.virtualSize || '0'} GB){" "}
+          {disk.bootable ? "(부팅)" : "(기본)"}
+        </span>
+        <div>-디스크아이디: {disk.id} {/* 디스크 ID 표시 */}</div>
+        <div className='flex'>
+          <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
+            편집
+          </button>
+          <DiskModal
+            isOpen={isEditPopupOpen}
+            onRequestClose={() => setIsEditPopupOpen(false)}
+            editMode={action === 'edit'}
+            diskId={disk.id} // 디스크 ID 전달
+            type='vm'
+          />
+          <div className="flex">
+            {/* 마지막 디스크에만 + 버튼 추가 */}
+            {index === disks.length - 1 && (
+              <button onClick={() => setShowAddOptions(!showAddOptions)}>+</button>
+            )}
+            <button onClick={() => handleRemoveDisk(disk.id)}>-</button>
+          </div>
+        </div>
+      </div>
+    ))
+  ) : (
+    // 디스크가 없는 경우
+    <div style={{ marginBottom: '10px' }}>
+      <div className='flex'>
+        <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+        <VmConnectionPlusModal
+          isOpen={isConnectionPopupOpen}
+          onRequestClose={() => setIsConnectionPopupOpen(false)}
+          vmId={vmId} // vmId를 넘겨줍니다.
+          onSelectDisk={(diskId) => {
+            console.log("Selected Disk ID:", diskId); // 선택된 디스크 ID 처리
+            setSelectedDiskId(diskId); // 상태 저장
+          }}
+        />
+        <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>
+          생성
+        </button>
+        <DiskModal
+          isOpen={isCreatePopupOpen}
+          onRequestClose={() => setIsCreatePopupOpen(false)}
+          editMode={false}
+          type='vm'
+        />
+        <div className="flex">
+          <button disabled>+</button>
+          <button disabled>-</button>
+        </div>
+      </div>
+    </div>
+  )}
+  {/* 추가 옵션 */}
+  {showAddOptions && (
+    <div style={{ marginTop: '10px' }}>
+      <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+      <VmConnectionPlusModal
+        isOpen={isConnectionPopupOpen}
+        onRequestClose={() => setIsConnectionPopupOpen(false)}
+        vmId={vmId} // vmId를 넘겨줍니다.
+        onSelectDisk={(diskId) => {
+          console.log("Selected Disk ID:", diskId); // 선택된 디스크 ID 처리
+          setSelectedDiskId(diskId); // 상태 저장
+        }}
+      />
+      <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
+      <DiskModal
+        isOpen={isCreatePopupOpen}
+        onRequestClose={() => setIsCreatePopupOpen(false)}
+        editMode={false}
+        type='vm'
+      />
+      <div className="flex">
+        <button disabled>+</button>
+        <button disabled>-</button>
+      </div>
+    </div>
+  )}
+</div>
+
+                            </div>
+                            
+
+
+
+
+
+                              
                           ) : (
                               // 생성 모드일 때
                               <div className='vm_plus_btn_outer'>
-                            
                               <div className='vm_plus_btn'>
-                                      <div style={{color:'white'}}>.</div>
-                                      <div className='flex'>
-                                          <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>      
-                                          <VmConnectionPlusModal
-                                              isOpen={isConnectionPopupOpen}
-                                              onRequestClose={() => setIsConnectionPopupOpen(false)}
-                                            />
-                                          <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
-                                          <DiskModal
-                                            isOpen={isCreatePopupOpen}
-                                            onRequestClose={() => setIsCreatePopupOpen(false)}
-                                            // editMode={action === 'edit'}
-                                            // diskId={selectedDisk?.id || null}
-                                            type='vm'
-                                          />
-                                           {/* <DiskModal
-                                            isOpen={isCreatePopupOpen}
-                                            onRequestClose={() => setIsCreatePopupOpen(true)}
-                                            // editMode={action === 'edit'}
-                                            // diskId={selectedDisk?.id || null}
-                                            type='vm'
-                                          /> */}
-                                          <div className="flex">
-                                              <button>+</button>
-                                              <button>-</button>
-                                          </div>
-                                      </div>
+                                <div style={{ color: 'white' }}>.</div>
+                                <div className='flex'>
+                                  <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>      
+                                  <VmConnectionPlusModal
+                                    isOpen={isConnectionPopupOpen}
+                                    onRequestClose={() => setIsConnectionPopupOpen(false)}
+                                    vmId={vmId} 
+                                    onSelectDisk={(diskId) => {
+                                      console.log("Selected Disk ID:", diskId); // 선택된 디스크 ID를 처리
+                                      setSelectedDiskId(diskId); // 상태 저장
+                                    }}
+                                  />
+                                  <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
+                                  <DiskModal
+                                    isOpen={isCreatePopupOpen}
+                                    onRequestClose={() => setIsCreatePopupOpen(false)}
+                                    editMode={true}
+                                    type='vm'
+                                  />
+                                  <div className="flex">
+                                    {/* 디스크가 없는 경우 버튼 비활성화 */}
+                                    <button disabled>+</button>
+                                    <button disabled>-</button>
+                                  </div>
+                                </div>
                               </div>
-                              </div>
+                            </div>
+                            
                           )}
                           </div>
 
                         
                           <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
-                            {nicSelections.map((nic, index) => (
-                              <div key={index} className="edit_fourth_content_row" style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                <div className="edit_fourth_content_select" style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-                                  <label htmlFor={`network_adapter_${index}`} style={{ marginRight: '10px', width: '100px' }}>NIC {index + 1}</label>
-                                  <select
-                                    id={`network_adapter_${index}`}
-                                    style={{ flex: 1 }}
-                                    value={nic.id}
-                                    onChange={(e) => handleNicChange(index, 'id', e.target.value)}
-                                  >
-                                    <option value="">항목을 선택하십시오...</option>
-                                    {nicList && nicList.length > 0 ? (
-                                      nicList.map((nicOption) => (
-                                        <option key={nicOption.id} value={nicOption.id}>
-                                          {nicOption.name} ({nicOption.networkVoName})
-                                        </option>
-                                      ))
-                                    ) : (
-                                      <option value="">NIC 없음</option>
-                                    )}
-                                  </select>
-                                </div>
-                                <div style={{ display: 'flex', marginLeft: '10px' }}>
-                                  
-                                  <button onClick={handleAddNic} style={{ marginRight: '5px' }}>+</button>
-                                  {nicSelections.length > 1 && (
-                                    <button onClick={() => handleRemoveNic(index)}>-</button>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+  {/* NIC이 없을 경우 기본 NIC1 추가 */}
+  {nicSelections.length === 0 ? (
+    <div
+      className="edit_fourth_content_row"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '10px',
+      }}
+    >
+      <div
+        className="edit_fourth_content_select"
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        {/* 기본 NIC 이름 표시 */}
+        <label
+          htmlFor="network_adapter_0"
+          style={{
+            marginRight: '10px',
+            width: '100px',
+          }}
+        >
+          NIC1
+        </label>
 
-                                          
-                      
+        {/* 기본 NIC 옵션 */}
+        <select
+          id="network_adapter_0"
+          style={{ flex: 1 }}
+          value="" // 기본적으로 선택되지 않음
+          onChange={(e) =>
+            setNicSelections([
+              {
+                id: '',
+                name: 'NIC1',
+                vnicProfileVo: { id: e.target.value },
+              },
+            ])
+          }
+        >
+          <option value="">항목을 선택하세요</option>
+          {nicList?.length > 0 &&
+            nicList.map((nicOption) => (
+              <option key={nicOption.id} value={nicOption.id}>
+                {nicOption.name}/{nicOption.networkVoName}
+              </option>
+            ))}
+        </select>
+      </div>
+
+      {/* + 버튼만 활성화 */}
+      <div style={{ display: 'flex', marginLeft: '10px' }}>
+        <button onClick={handleAddNic} style={{ marginRight: '5px' }}>
+          +
+        </button>
+      </div>
+    </div>
+  ) : (
+    // NIC이 있는 경우 기존 로직 유지
+    nicSelections.map((nic, index) => (
+      <div
+        key={index}
+        className="edit_fourth_content_row"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          marginBottom: '10px',
+        }}
+      >
+        <div
+          className="edit_fourth_content_select"
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          {/* NIC 이름 표시 */}
+          <label
+            htmlFor={`network_adapter_${index}`}
+            style={{
+              marginRight: '10px',
+              width: '100px',
+            }}
+          >
+            {nic.name || `NIC ${index + 1}`}
+          </label>
+
+          {/* NIC 선택 */}
+          <select
+            id={`network_adapter_${index}`}
+            style={{ flex: 1 }}
+            value={nic.vnicProfileVo?.id || ''}
+            onChange={(e) =>
+              handleNicChange(index, 'vnicProfileVo', {
+                ...nic.vnicProfileVo,
+                id: e.target.value,
+              })
+            }
+          >
+            <option value="">항목을 선택하세요</option>
+            {nicList?.length > 0 &&
+              nicList.map((nicOption) => (
+                <option key={nicOption.id} value={nicOption.id}>
+                  {nicOption.name}/{nicOption.networkVoName}
+                </option>
+              ))}
+          </select>
+        </div>
+
+        {/* NIC 추가 및 삭제 버튼 */}
+        <div style={{ display: 'flex', marginLeft: '10px' }}>
+          {index === nicSelections.length - 1 && (
+            <button onClick={handleAddNic} style={{ marginRight: '5px' }}>
+              +
+            </button>
+          )}
+          {nicSelections.length > 1 && (
+            <button onClick={() => handleRemoveNic(index)}>-</button>
+          )}
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
                 </>
               }
               {selectedModalTab === 'system' && 
