@@ -8,8 +8,12 @@ import '../css/Vm.css';
 import { useVm } from '../../../api/RQHook';
 import Path from '../../Header/Path';
 import VmGenerals from './VmGenerals';
-import VmNetworks from './VmNetworks';
-import VmEvents from './VmEvents';
+import VmDisk from './VmDisk';
+import VmSnapshot from './VmSnapshot';
+import VmApplication from './VmApplication';
+import VmHostDevice from './VmHostDevice';
+import VmNetwork from './VmNetwork';
+import VmEvent from './VmEvent';
 
 const VmModal = React.lazy(() => import('../../Modal/VmModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -19,12 +23,6 @@ const VmInfo = () => {
   const { id: vmId, section } = useParams();
   const {
     data: vm,
-    status: vmStatus,
-    isRefetching: isVmRefetching,
-    refetch: vmRefetch,
-    isError: isVmError,
-    error: vmError,
-    isLoading: isVmLoading,
   } = useVm(vmId, (e) => ({
     ...e,
   }));
@@ -61,12 +59,12 @@ const VmInfo = () => {
 
   const sectionComponents = {
     general: VmGenerals,
-    disks: VmDisks,
-    snapshots: VmSnapshots,
-    nics: VmNics,
-    applications: VmApplications,
-    hostDevices: VmHostDevies,
-    events: VmEvents
+    disks: VmDisk,
+    snapshots: VmSnapshot,
+    nics: VmNetwork,
+    applications: VmApplication,
+    hostDevices: VmHostDevice,
+    events: VmEvent
   };
 
   const renderSectionContent = () => {

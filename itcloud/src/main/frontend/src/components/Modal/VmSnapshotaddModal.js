@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import { useAddSnapshotFromVM } from '../../api/RQHook';
+import { useAddSnapshotFromVM, useDisksFromVM } from '../../api/RQHook';
 
 const VmSnapshotAddModal = ({ 
     isOpen, 
@@ -19,10 +19,24 @@ const VmSnapshotAddModal = ({
  
     const { mutate: addSnapshotFromVM } = useAddSnapshotFromVM();
 
-    const {
-      data: snapshot,
-    } = useAddSnapshotFromVM(vmId);
 
+
+  // 가상머신에 연결되어있는 디스크(왜실행안됨??)
+  const { data: disks } = useDisksFromVM(vmId, (e) => ({
+    alias: e?.diskImageVo?.alias,
+    description: e?.diskImageVo?.description,
+  }));
+  console.log('가상머신 id:', vmId);
+  useEffect(() => {
+    if (disks) {
+      console.log('모든 가상머신 데이터:', disks);
+    }
+  }, [disks]);
+
+  const {
+    data: snapshot,
+  } = useAddSnapshotFromVM(vmId);
+  
     // useEffect(() => {
     //   if (isOpen && snapshotData ) {
     //     setId(snapshotData.id);
@@ -88,7 +102,7 @@ const VmSnapshotAddModal = ({
             <div className="snapshot_new_table">
               <TableOuter
                 columns={TableColumnsInfo.SNAPSHOT_NEW}
-                data={[]} // 디스크 데이터 삽입
+                data={[disks]} // 디스크 데이터 삽입
                 onRowClick={() => console.log('Row clicked')}
               />
             </div>

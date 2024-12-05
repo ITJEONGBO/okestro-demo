@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import TemplateTable from '../table/TemplateTable';
 import TemplateActionButtons from '../button/TemplateActionButtons';
 import TemplateModals from '../Modal/TemplateModals';
+import HeaderButton from '../button/HeaderButton';
+import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 
 const TemplateDupl = ({
   templates, 
@@ -22,6 +24,13 @@ const TemplateDupl = ({
 
   return (
     <>
+    <div id="section">
+      <HeaderButton
+        titleIcon={faDesktop}
+        title={'템플릿'}
+        buttons={[]}
+      />
+      <div className="host_btn_outer">
       <TemplateActionButtons
         onEdit={() => selectedTemplate?.id && handleActionClick('edit')} 
         onDelete={() => selectedTemplate?.id && handleActionClick('delete')} 
@@ -42,6 +51,8 @@ const TemplateDupl = ({
         onRequestClose={() => setIsModalOpen(false)}
         selectedTemplate={selectedTemplate}
       />
+      </div>
+    </div>
     </>
   );
 };

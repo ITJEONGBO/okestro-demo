@@ -1,6 +1,6 @@
 import { faCamera, faChevronRight, faExclamationTriangle, faEye, faNewspaper, faServer, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import Modal from 'react-modal';
 import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
@@ -55,6 +55,7 @@ const VmSnapshot = ({vm}) => {
     };
   }
 
+  
     return (
       <>
         <div className="header_right_btns">
@@ -207,11 +208,13 @@ const VmSnapshot = ({vm}) => {
 </div>
 
 
-
+<Suspense>
         <VmSnapshotAddModal
         isOpen={activePopup === 'new'}
         onRequestClose={closePopup}
+        vmId={vm.id}
       />
+</Suspense>
           {/*생성 팝업 */}
           {/* <Modal
         isOpen={activePopup === 'new'}

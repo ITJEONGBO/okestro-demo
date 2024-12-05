@@ -22,7 +22,7 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
           vmId={selectedVm?.id || null}
           selectedVm={selectedVm} // 데이터센터 ID 포함
         />
-      ) : action === 'delete' ? ( // 삭제오류고치기
+      ) : action === 'delete' ? ( 
         <DeleteVmModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}

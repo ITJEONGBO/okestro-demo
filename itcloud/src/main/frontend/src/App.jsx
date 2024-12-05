@@ -119,7 +119,7 @@ const App = () => {
               <Route path="/computing/vms/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateInfo />} />
               <Route path="/computing/templates/:id/:section" element={<TemplateInfo />} />
-              <Route path="/computing/vms/templatesdetail" element={<TemplateDetail />} />
+              {/* <Route path="/computing/vms/templatesdetail" element={<TemplateDetail />} /> */}
 
               
               <Route path="/networks/rutil-manager" element={<RutilManager />} />
