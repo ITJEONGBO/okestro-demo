@@ -149,11 +149,10 @@ const DomainModal = ({
         return ['NFS', 'ISCSI', 'FCP'];
     }
   };
-  
+
   useEffect(() => {
     if (editMode && domain) {
-      console.log('Setting edit mode state with domain:', domain); // 디버깅 로그
-      setFormState({
+      const updatedState = {
         id: domain.id || '',
         domainType: domain.domainType || '',
         storageType: domain.storageType || '',
@@ -162,53 +161,21 @@ const DomainModal = ({
         description: domain.description || '',
         warning: domain.warning || '',
         spaceBlocker: domain.spaceBlocker || '',
-      });
+      };
+      setFormState(updatedState);
       setDataCenterVoId(domain?.datacenterVo?.id);
       setHostVoName(domain?.hostVo?.name);
       setHostVoId(domain?.hostVo?.id);
-      if(formState.storageType === 'NFS'){
-        setFormState({
-          id: domain.id || '',
-          domainType: domain.domainType || '',
-          storageType: domain.storageType || '',
-          name: domain.name || '',    
-          comment: domain.comment || '',
-          description: domain.description || '',
-          warning: domain.warning || '',
-          spaceBlocker: domain.spaceBlocker || '',
-        });
-        setDataCenterVoId(domain?.datacenterVo?.id);
-        setHostVoName(domain?.hostVo?.name);
-        setHostVoId(domain?.hostVo?.id);
+  
+      if (updatedState.storageType === 'NFS') {
         setStoragePath(domain?.storagePath);
         setStorageAddress(domain?.storageAddress);
-      }else if(formState.storageType === 'ISCSI' || formState.storageType === 'FCP'){
-        setFormState({
-          id: domain.id || '',
-          domainType: domain.domainType || '',
-          storageType: domain.storageType || '',
-          name: domain.name || '',    
-          comment: domain.comment || '',
-          description: domain.description || '',
-          warning: domain.warning || '',
-          spaceBlocker: domain.spaceBlocker || '',
-        });
-        setDataCenterVoId(domain?.datacenterVo?.id);
-        setHostVoName(domain?.hostVo?.name);
-        setHostVoId(domain?.hostVo?.id);
-        setLunId(domain.logicalUnits[0].id);
+      } else if (updatedState.storageType === 'ISCSI' || updatedState.storageType === 'FCP') {
+        setLunId(domain.logicalUnits[0]?.id);
       }
-    } else if (!editMode && !isDatacentersLoading) {
-      resetForm();
-      setDataCenterVoId(datacenterId);
-      setFormState((prev) => ({
-        ...prev,
-        domainType: 'DATA', // 도메인 유형 기본값 설정
-        storageType: 'NFS', // 스토리지 유형 기본값 설정
-      }));
     }
-  }, [editMode, domain, datacenterId, isDatacentersLoading]);
-
+  }, [editMode, domain]);
+  
   
   useEffect(() => {
     if (!editMode && dataCenters && dataCenters.length > 0) {
@@ -233,6 +200,8 @@ const DomainModal = ({
       }));
     } 
   }, [formState.domainType, editMode]);
+
+  
 
   const resetForm = () => {
     setFormState({
@@ -347,7 +316,14 @@ const DomainModal = ({
       <div className="storage_domain_administer_popup">
 
         <div className="popup_header">
-          <h1>{editMode ? '도메인 관리' : '새로운 도메인(가져오기)'}</h1>
+          <h1>
+          {action === "create"
+            ? "새로운 도메인 생성"
+            : action === "edit"
+            ? "도메인 편집"
+            : "도메인 가져오기"
+          }
+          </h1>
           <button onClick={onRequestClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
 
@@ -452,6 +428,7 @@ const DomainModal = ({
         <div className="storage_popup_iSCSI">
           <div className="network_form_group">
             <label htmlFor="nfsPath">NFS 서버 경로</label>
+            
             <input
               type="text"
               placeholder="예: myserver.mydomain.com"
@@ -470,21 +447,6 @@ const DomainModal = ({
       
       {formState.storageType === 'ISCSI' && (
         <div className="storage_popup_iSCSI">
-          {/* <div className="iscsi_buttons">
-            <button
-              className={`tab_button ${activeTab === 'target_lun' ? 'active' : ''}`}
-              onClick={() => setActiveTab('target_lun')}
-            >
-              대상 - LUN
-            </button>
-            <button
-              className={`tab_button ${activeTab === 'lun_target' ? 'active' : ''}`}
-              onClick={() => setActiveTab('lun_target')}
-            >
-              LUN - 대상
-            </button>
-          </div> */}
-
           {/* {activeTab === 'target_lun' && (
             <div className="tab_content">
               {isIscsisLoading ? (
@@ -502,7 +464,6 @@ const DomainModal = ({
             </div>
           )} */}
 
-          {/* {activeTab === 'lun_target' && ( */}
             <div className="tab_content">
               {isFibresLoading ? (
                   <div className="loading-message">로딩 중...</div>

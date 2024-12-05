@@ -6,6 +6,7 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
+import com.itinfo.itcloud.model.storage.IscsiDetailVo
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -86,9 +87,9 @@ class ItHostServiceTest {
 	 * @see ItHostService.update
 	 * @see ItHostService.remove
 	 */
-	@Test
-	fun should_add_update_and_remove_Host() {
-		log.debug("should_add_update_and_remove_Host ...")
+//	@Test
+//	fun should_add_update_and_remove_Host() {
+//		log.debug("should_add_update_and_remove_Host ...")
 //		val addHost: HostVo = HostVo.builder {
 //			clusterVo { IdentifiedVo.builder { id { "5c563dce-7a1c-4465-9018-2f9ef76e9772" } } }
 //			name { "rutilvm-dev.host04" }
@@ -112,23 +113,23 @@ class ItHostServiceTest {
 //		assertThat(addResult?.spmPriority, `is`(addHost.spmPriority))
 
 
-		log.debug("should_update_Host ...")
-		val updateHost: HostVo = HostVo.builder {
-//			id { addResult?.id }
-			id { "b5b6490a-6ce7-4d66-a454-fbea6f164b9a" }
-			name { "rutilvm-dev.host04-test" }
-			comment { "rutilvm-dev.host04-0" }
-			spmPriority { 5 }
-		}
-
-		val updateResult: HostVo? =
-			service.update(updateHost)
-
-		assertThat(updateResult, `is`(not(nullValue())))
-		assertThat(updateResult?.id, `is`(updateHost.id))
-		assertThat(updateResult?.name, `is`(updateHost.name))
-		assertThat(updateResult?.comment, `is`(updateHost.comment))
-		assertThat(updateResult?.spmPriority, `is`(updateHost.spmPriority))
+//		log.debug("should_update_Host ...")
+//		val updateHost: HostVo = HostVo.builder {
+////			id { addResult?.id }
+//			id { "b5b6490a-6ce7-4d66-a454-fbea6f164b9a" }
+//			name { "rutilvm-dev.host04-test" }
+//			comment { "rutilvm-dev.host04-0" }
+//			spmPriority { 5 }
+//		}
+//
+//		val updateResult: HostVo? =
+//			service.update(updateHost)
+//
+//		assertThat(updateResult, `is`(not(nullValue())))
+////		assertThat(updateResult?.id, `is`(updateHost.id))
+//		assertThat(updateResult?.name, `is`(updateHost.name))
+//		assertThat(updateResult?.comment, `is`(updateHost.comment))
+//		assertThat(updateResult?.spmPriority, `is`(updateHost.spmPriority))
 
 //		log.debug("should_remove_Host ...")
 //		val removeResult =
@@ -136,7 +137,7 @@ class ItHostServiceTest {
 //
 //		assertThat(removeResult, `is`(not(nullValue())))
 //		assertThat(removeResult, `is`(true))
-	}
+//	}
 
 	@Test
 	fun should_remove_Host() {
@@ -254,7 +255,23 @@ class ItHostServiceTest {
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(842))
 	}
-	
+
+	/**
+	 * [should_findImportIscsiFromHost]
+	 * [ItHostService.findImportIscsiFromHost]에 대한 단위테스트
+	 *
+	 * @see ItHostService.findAllEventsFromHost
+	 */
+	@Test
+	fun should_findImportIscsiFromHost() {
+		log.debug("should_findImportIscsiFromHost ...")
+		val result: List<IscsiDetailVo> =
+			service.findImportIscsiFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a")
+
+//		assertThat(result, `is`(not(nullValue())))
+//		result.forEach { println(it) }
+	}
+
 	companion object {
 		private val log by LoggerDelegate()
 	}

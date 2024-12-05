@@ -49,7 +49,7 @@ const DomainActionButtons = ({
         <button onClick={onCreate}>생성</button>
       }
       {onImport && (
-        <button onClick={onImport} disabled={isEditDisabled}>가져오기</button>
+        <button onClick={onImport}>가져오기</button>
       )}
       {onEdit && (
         <button onClick={onEdit} disabled={isEditDisabled}>편집(도메인 관리)</button>

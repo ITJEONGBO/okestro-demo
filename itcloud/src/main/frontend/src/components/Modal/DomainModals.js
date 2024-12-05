@@ -10,14 +10,23 @@ const DomainModals = ({ isModalOpen, action, onRequestClose, selectedDomain }) =
   return (
     <>
     <Suspense>
-      {action === 'create' || action === 'edit' || action === 'import'? (
+      {/* 편집일때는 설명, 그 한도제한? 그거만 할수 있음 */}
+      { action === 'create' || action === 'import'? (
+        <DomainModal
+          isOpen={isModalOpen}
+          onRequestClose={onRequestClose}
+          // editMode={action === 'edit'}
+          action={action}
+          domainId={selectedDomain?.id || null}
+        />
+      ): action === 'edit' ? (
         <DomainModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}
           action={action}
           domainId={selectedDomain?.id || null}
-        />
+        />      
       ) : action === 'delete' ? (
         <DeleteModal
           isOpen={isModalOpen}
