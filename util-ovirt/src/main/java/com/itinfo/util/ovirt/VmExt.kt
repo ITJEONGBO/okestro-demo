@@ -235,9 +235,8 @@ fun Connection.updateVm(
 }
 
 fun Connection.removeVm(vmId: String, diskDelete: Boolean = false): Result<Boolean> = runCatching {
-	val vm: Vm =
-		this.findVm(vmId).getOrNull()
-			?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	val vm: Vm = this.findVm(vmId)
+		.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
 	if (vm.deleteProtected())
 		throw ErrorPattern.VM_PROTECTED.toError()

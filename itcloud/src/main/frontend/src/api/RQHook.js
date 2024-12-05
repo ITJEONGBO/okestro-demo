@@ -1187,9 +1187,9 @@ export const useEditVm = () => {
 export const useDeleteVm = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({ 
-    mutationFn: async (vmId, diskDelete) => {
-      console.log(`vm: ${vmId}....  ${diskDelete}`)
-      return await ApiManager.deleteVM(vmId, diskDelete)
+    mutationFn: async ({vmId, detachOnly}) => {
+      console.log(`Hook vm: ${vmId}....  ${detachOnly}`)
+      return await ApiManager.deleteVM(vmId, detachOnly)
     },
     onSuccess: () => {
       queryClient.invalidateQueries('allVMs');

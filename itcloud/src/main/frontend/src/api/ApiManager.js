@@ -21,9 +21,8 @@ const makeAPICall = async ({method = "GET", url, data}) => {
       : await axios({
         method: method,
         url: url,
-        headers: { 
-          // TODO: access_token으로 모든 API 처리하기
-        },
+        headers: { },
+        // TODO: access_token으로 모든 API 처리하기
         data: method === "GET" || method === "DELETE" ? null : data,
     }); 
     res.headers.get(`access_token`) && localStorage.setItem('token', res.headers.get(`access_token`)) // 로그인이 처음으로 성공했을 때 진행
@@ -1288,14 +1287,14 @@ const ApiManager = {
    * @description 가상머신 삭제
    * 
    * @param {String} vmId 
+   * @param {String} detachOnly 
    * @returns {Promise<Object>}
    */
-  deleteVM: async (vmId, diskDelete) => {
+  deleteVM: async (vmId, detachOnly) => {
     return makeAPICall({
       method: "DELETE",
-      url: ENDPOINTS.DELETE_VM(vmId),
-      data: vmId
-      // defaultValues: DEFAULT_VALUES.DELETE_VM
+      url: ENDPOINTS.DELETE_VM(vmId, detachOnly),
+      data: vmId,
     });
   },
 
@@ -1624,7 +1623,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_TEMPLATE(templateId), 
-      data: templateId
+      // data: templateId
       // defaultValues: DEFAULT_VALUES.DELETE_TEMPLATE
     });
   },
@@ -2261,7 +2260,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_DISK(diskId), 
-      data: diskId
+      // data: diskId
     });
   },
   /**

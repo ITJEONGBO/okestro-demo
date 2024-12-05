@@ -158,15 +158,15 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun remove(
 		@PathVariable vmId: String? = null,
-		@RequestBody diskDelete: Boolean? = null // disk 삭제여부
+		@RequestParam detachOnly: Boolean? = null // disk 삭제여부
 	): ResponseEntity<Boolean> {
-		log.info("vm 삭제 $vmId, $diskDelete")
+		log.info("vm 삭제 $vmId, $detachOnly")
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		if (diskDelete == null)
+		if (detachOnly == null)
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException() // TODO
 		log.info("/computing/vms/{} ... 가상머신 삭제", vmId)
-		return ResponseEntity.ok(iVm.remove(vmId, diskDelete))
+		return ResponseEntity.ok(iVm.remove(vmId, detachOnly))
 	}
 
 	@ApiOperation(

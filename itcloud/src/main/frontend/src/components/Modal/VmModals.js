@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react';
 import VmAddTemplateModal from './VmAddTemplateModal';
 import VmMigrationModal from './VmMigrationModal';
-import DeleteVmModal from './DeleteVmModal';
 // import VmExportOVAModal from './VmExportOVAModal';
 
 const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
