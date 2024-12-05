@@ -4,9 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const DomainActionButtons = ({ 
-  onCreate, 
+  onCreate,
+  onImport, 
   onEdit, 
-  onImport,
   onDelete, 
   onDestory,
   // connection,
@@ -48,11 +48,11 @@ const DomainActionButtons = ({
       {onCreate && 
         <button onClick={onCreate}>생성</button>
       }
-      {onEdit && (
-        <button onClick={onEdit} disabled={isEditDisabled}>편집(도메인 관리)</button>
-      )}
       {onImport && (
         <button onClick={onImport} disabled={isEditDisabled}>가져오기</button>
+      )}
+      {onEdit && (
+        <button onClick={onEdit} disabled={isEditDisabled}>편집(도메인 관리)</button>
       )}
       {onDelete && (
         <button onClick={onDelete} disabled={isEditDisabled || isUp }>제거</button>
@@ -91,7 +91,7 @@ const DomainActionButtons = ({
         )}
       </div>
 
-      {disk == true && (
+      {disk === true && (
         <button onClick={() => navigate('/storages/disks')}>디스크</button>
       )}
     </div>

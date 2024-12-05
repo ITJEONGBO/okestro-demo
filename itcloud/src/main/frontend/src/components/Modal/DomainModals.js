@@ -10,11 +10,12 @@ const DomainModals = ({ isModalOpen, action, onRequestClose, selectedDomain }) =
   return (
     <>
     <Suspense>
-      {action === 'create' || action === 'edit' ? (
+      {action === 'create' || action === 'edit' || action === 'import'? (
         <DomainModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}
+          action={action}
           domainId={selectedDomain?.id || null}
         />
       ) : action === 'delete' ? (

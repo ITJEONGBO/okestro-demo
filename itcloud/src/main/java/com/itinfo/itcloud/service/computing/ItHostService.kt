@@ -10,21 +10,15 @@ import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.model.network.toSetHostNicVos
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
-import com.itinfo.itcloud.model.storage.HostStorageVo
-import com.itinfo.itcloud.model.storage.toFibreHostStorageVos
-import com.itinfo.itcloud.model.storage.toIscsiHostStorageVos
+import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.repository.*
 import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.storage.ItStorageService
-import com.itinfo.itcloud.service.storage.StorageServiceImpl
-import com.itinfo.itcloud.service.storage.StorageServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
-import org.ovirt.engine.sdk4.builders.HostNicBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -141,7 +135,7 @@ interface ItHostService {
 
 	/**
 	 * [ItHostService.findAllIscsiFromHost]
-	 * 도메인 생성(가져오기?) - iSCSI 유형 대상 LUN 목록
+	 * 도메인 생성 - iSCSI 유형 대상 LUN 목록
 	 *
 	 * @param hostId [String] 호스트 Id
 	 * @return List<[HostStorageVo]>
@@ -150,7 +144,7 @@ interface ItHostService {
 	fun findAllIscsiFromHost(hostId: String): List<HostStorageVo>
 	/**
 	 * [ItHostService.findAllFibreFromHost]
-	 * 도메인 생성(가져오기?) - Fibre Channel 유형 대상 LUN 목록
+	 * 도메인 생성 - Fibre Channel 유형 대상 LUN 목록
 	 * 타입이 tcp로 뜸
 	 *
 	 * @param hostId [String] 호스트 Id
@@ -158,6 +152,16 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllFibreFromHost(hostId: String): List<HostStorageVo>
+
+	/**
+	 * [ItHostService.findImportIscsiFromHost]
+	 * 도메인 가져오기 - iSCSI 유형 대상 LUN 목록
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[HostStorageVo]>
+	 */
+	@Throws(Error::class)
+	fun findImportIscsiFromHost(hostId: String): List<IscsiDetailVo>
 
 	/**
 	 * [ItHostService.findAllPermissionsFromHost]
@@ -317,6 +321,15 @@ class HostServiceImpl(
 			conn.findAllStoragesFromHost(hostId).getOrDefault(listOf())
 				.filter { it.type() == StorageType.FCP }
 		return res.toFibreHostStorageVos()
+	}
+
+	@Throws(Error::class)
+	override fun findImportIscsiFromHost(hostId: String): List<IscsiDetailVo> {
+		log.info("findImportIscsiFromHost... hostId: {}", hostId)
+		conn.findHost(hostId).getOrNull() ?: return listOf()
+		val res: List<IscsiDetails> = conn.discoverIscsiFromHost(hostId)
+			.getOrDefault(listOf())
+		return res.toIscsiDetailVos()
 	}
 
 

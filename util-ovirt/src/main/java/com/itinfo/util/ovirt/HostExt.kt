@@ -117,9 +117,8 @@ fun Connection.updateHost(host: Host): Result<Host?> = runCatching {
 }
 
 fun Connection.removeHost(hostId: String): Result<Boolean> = runCatching {
-	val host: Host =
-		this.findHost(hostId)
-			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+	val host: Host = this.findHost(hostId)
+		.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 
 	if(this.findAllVmsFromHost("", hostId)
 			.getOrDefault(listOf())
@@ -507,8 +506,14 @@ fun Connection.findAllStoragesFromHost(hostId: String): Result<List<HostStorage>
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-
-
+fun Connection.discoverIscsiFromHost(hostId: String): Result<List<IscsiDetails>> = runCatching {
+	this.srvHost(hostId).discoverIscsi().send().discoveredTargets()
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.STORAGE,"목록조회", hostId)
+}.onFailure {
+	Term.HOST.logFailWithin(Term.STORAGE,"목록조회", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 
 

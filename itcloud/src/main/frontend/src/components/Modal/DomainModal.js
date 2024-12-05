@@ -29,6 +29,7 @@ const DomainModal = ({
   isOpen,
   onRequestClose,
   editMode = false,
+  action,
   domainId,
   datacenterId,  // 데이터센터
   hostId,  // 호스트
