@@ -68,7 +68,7 @@ const ClusterInfo = () => {
 
   const renderSectionContent = () => {
     const SectionComponent = sectionComponents[activeTab];
-    return SectionComponent ? <SectionComponent cId={clusterId} /> : null;
+    return SectionComponent ? <SectionComponent clusterId={clusterId} /> : null;
   };
 
   const toggleModal = (type, isOpen) => {

@@ -15,10 +15,10 @@ const DomainDisks = ({ domainId }) => {
 
   return (
     <>
-      {/* <DiskDupl
+      <DiskDupl
         columns={TableInfo.DISKS_FROM_STORAGE_DOMAIN}
-        data={disks || []}
-      /> */}
+        disks={disks || []}
+      />
     </>
   );
 };

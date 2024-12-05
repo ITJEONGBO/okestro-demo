@@ -2,13 +2,13 @@ import React from 'react';
 import {useEventFromCluster} from "../../../api/RQHook";
 import EventTable from '../../table/EventTable';
 
-const ClusterEvents = ({ cId }) => {
+const ClusterEvents = ({ clusterId }) => {
   const { 
     data: events, 
     status: eventsStatus, 
     isLoading: isEventsLoading, 
     isError: isEventsError 
-  } = useEventFromCluster(cId, (e) => ({ ...e }));
+  } = useEventFromCluster(clusterId, (e) => ({ ...e }));
   console.log('ClusterEvents:', events);
   return (
     <>

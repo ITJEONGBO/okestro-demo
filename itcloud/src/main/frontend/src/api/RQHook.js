@@ -2250,6 +2250,7 @@ export const useAllEventFromDomain = (storageDomainId, mapPredicate) => useQuery
   refetchOnWindowFocus: true,
   queryKey: ['AllEventFromDomain', storageDomainId], 
   queryFn: async () => {
+    if(storageDomainId === '') return [];
     console.log(`useAllEventFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllEventsFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 

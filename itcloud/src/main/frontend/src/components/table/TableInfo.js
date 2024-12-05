@@ -245,11 +245,11 @@ const TableInfo = {
     { header: '데이터 센터 내의 도메인 상태', accessor: 'status', clickable: false },
   ],
   TEMPLATES_FROM_STORAGE_DOMAIN: [
-    { header: '별칭', accessor: 'alias', clickable: false },
+    { header: '별칭', accessor: 'name', clickable: false },
     { header: '디스크', accessor: 'disk', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
-    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '생성 일자', accessor: 'creationTime', clickable: false },
   ],
 
   TARGETS_LUNS: [
@@ -283,8 +283,8 @@ const TableInfo = {
       { header: '', accessor: 'icon', clickable: false, width: '7%' },
       { header: '이름', accessor: 'name', clickable: false },
       { header: '연결됨', accessor: 'linked', clickable: true},
-      { header: '네트워크 이름', accessor: 'networkVo', clickable: false },
-      { header: '프로파일 이름', accessor: 'vnicProfileVo', clickable: false },
+      { header: '네트워크 이름', accessor: 'network', clickable: false },
+      { header: '프로파일 이름', accessor: 'vnicProfile', clickable: false },
       { header: '링크 상태', accessor: 'status', clickable: false },
       { header: '유형', accessor: 'interface_', clickable: false },
     ],
@@ -294,6 +294,15 @@ const TableInfo = {
     { header: '별칭', accessor: 'alias', clickable: false },
     { header: '', accessor: 'icon1', clickable: false },
     { header: '', accessor: 'icon2', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '실제 크기', accessor: 'actualSize', clickable: false },
+    { header: '할당 정책', accessor: 'policy', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '연결 대상', accessor: 'target', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '유형', accessor: 'storageType', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
   ],
 
 
@@ -305,7 +314,7 @@ const TableInfo = {
     { header: '스냅샷 설명', accessor: 'description', clickable: false },
     { header: '연결 대상', accessor: 'target', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
+    { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false },
   ],
   TEMPLATE_VMS:[
     { header: '', accessor: 'icon', clickable: false, width: '10%' },

@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 
+function sizeToGB(data) {
+  return data / Math.pow(1024, 3);
+}
+
 const DiskTable = ({
   columns,
   disks,
@@ -30,7 +34,6 @@ const DiskTable = ({
       <TablesOuter
         columns={columns}
         data={disks.map((disk) => {
-          const sizeInGB = disk?.virtualSize / Math.pow(1024, 3);
           return {
             ...disk,
             icon: renderStatusIcon(disk.status),
@@ -44,7 +47,8 @@ const DiskTable = ({
                 {disk?.connectVm.name}
               </TableRowClick>
             ),
-            virtualSize: sizeInGB < 1 ? "< 1 GB" : `${sizeInGB.toFixed(0)} GB`,
+            virtualSize: sizeToGB(disk?.virtualSize) < 1 ? "< 1 GB" : `${sizeToGB(disk?.virtualSize).toFixed(0)} GB`,
+            actualSize: sizeToGB(disk?.actualSize) < 1 ? "< 1 GB" : `${sizeToGB(disk?.actualSize).toFixed(0)} GB`,
           };
         })}
         shouldHighlight1stCol={true}

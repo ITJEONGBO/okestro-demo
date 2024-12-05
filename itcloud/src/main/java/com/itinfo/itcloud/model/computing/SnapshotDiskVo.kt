@@ -92,8 +92,9 @@ fun List<Disk>.toSnapshotDisksIdName(): List<SnapshotDiskVo> =
     this@toSnapshotDisksIdName.map { it.toSnapshotDiskIdName() }
 
 
-fun Disk.toSnapshotDiskVo(conn: Connection): SnapshotDiskVo {
+fun Disk.toSnapshotDiskVo(): SnapshotDiskVo {
     return SnapshotDiskVo.builder {
+        id { this@toSnapshotDiskVo.id() }
         name { this@toSnapshotDiskVo.name() }
         description { this@toSnapshotDiskVo.description() }
         alias { this@toSnapshotDiskVo.alias() }
@@ -111,5 +112,5 @@ fun Disk.toSnapshotDiskVo(conn: Connection): SnapshotDiskVo {
         wipeAfterDelete { this@toSnapshotDiskVo.wipeAfterDelete() }
     }
 }
-fun List<Disk>.toSnapshotDiskVos(conn: Connection): List<SnapshotDiskVo> =
-    this@toSnapshotDiskVos.map { it.toSnapshotDiskVo(conn) }
+fun List<Disk>.toSnapshotDiskVos(): List<SnapshotDiskVo> =
+    this@toSnapshotDiskVos.map { it.toSnapshotDiskVo() }

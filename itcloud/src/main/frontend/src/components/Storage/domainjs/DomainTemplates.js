@@ -1,6 +1,6 @@
 import React from 'react';
 import TableInfo from "../../table/TableInfo";
-import TableOuter from "../../table/TableOuter";
+import TablesOuter from "../../table/TablesOuter";
 import {useAllTemplateFromDomain} from "../../../api/RQHook";
 
 const DomainTemplates = ({ domainId }) => {
@@ -10,13 +10,13 @@ const DomainTemplates = ({ domainId }) => {
     isLoading: isTemplatesLoading, 
     isError: isTemplatesError,
   } = useAllTemplateFromDomain(domainId, (e) => ({
-    
+    ...e,
   }));
   
   return (
     <>
-      <TableOuter 
-        columns={TableInfo.TEMPLATE_FROM_DOMAIN}
+      <TablesOuter 
+        columns={TableInfo.TEMPLATES_FROM_STORAGE_DOMAIN}
         data={templates} 
       />
     </>

@@ -93,7 +93,7 @@ fun Snapshot.toSnapshotVo(conn: Connection, vmId: String): SnapshotVo {
         status { this@toSnapshotVo.snapshotStatus().value() }
         persistMemory { this@toSnapshotVo.persistMemorystate() }
         vmVo { vm.toVmSystem() }
-        snapshotDiskVos { disks.toSnapshotDiskVos(conn) }
+        snapshotDiskVos { disks.toSnapshotDiskVos() }
         nicVos { nics.toNicVosFromSnapshot(conn, vmId) }
         applicationVos { applications.fromApplicationsToIdentifiedVos() }
     }

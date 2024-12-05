@@ -3,13 +3,13 @@ import TableInfo from '../../table/TableInfo';
 import { useHostFromCluster } from "../../../api/RQHook";
 import HostDupl from '../../duplication/HostDupl';
 
-const ClusterHosts = ({ cId }) => {
+const ClusterHosts = ({ clusterId }) => {
   const { 
     data: hosts, 
     status: hostsStatus, 
     isLoading: isHostsLoading, 
     isError: isHostsError 
-  } = useHostFromCluster(cId, (e) => ({ ...e }));
+  } = useHostFromCluster(clusterId, (e) => ({ ...e }));
 
   return (
     <>

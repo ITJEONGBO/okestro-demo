@@ -397,10 +397,10 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<SnapshotDiskVo> {
 		log.info("findAllDiskSnapshotsFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<DiskSnapshot> =
-			conn.findAllDiskSnapshotsFromStorageDomain(storageDomainId).getOrDefault(listOf())
+		val res: List<DiskSnapshot> = conn.findAllDiskSnapshotsFromStorageDomain(storageDomainId)
+			.getOrDefault(listOf())
 		// TODO 연결대상
-		return res.toSnapshotDiskVos(conn)
+		return res.toSnapshotDiskVos()
 	}
 
 	@Throws(Error::class)

@@ -23,17 +23,17 @@ const EventTable = ({ events } ) => {
     }
   };
 
-  // events 배열의 각 항목을 변환
-  // const transformedEvents = events.map((e) => ({
-  //   ...e,
-  //   severity: renderSeverityIcon(e?.severity),
-  // }));
+  // 데이터를 변환
+  const transformedEvents = events?.map((event) => ({
+    ...event,
+    severity: renderSeverityIcon(event.severity),
+  }));
 
   return (
     <>
       <PagingTableOuter
         columns={TableInfo.EVENTS}
-        data={events}
+        data={transformedEvents}
         showSearchBox={true}
       />
     </>

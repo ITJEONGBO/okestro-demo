@@ -12,7 +12,7 @@ import { Suspense } from "react";
 import NetworkNewModal from "../../Modal/NetworkNewModal";
 import DeleteModal from "../../Modal/DeleteModal";
 
-const ClusterNetworks = ({ cluster }) => {
+const ClusterNetworks = ({ clusterId }) => {
     const navigate = useNavigate();
     const [activePopup, setActivePopup] = useState(null);
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
@@ -38,7 +38,7 @@ const ClusterNetworks = ({ cluster }) => {
       status: networksStatus, 
       isLoading: isNetworksLoading, 
       isError: isNetworksError 
-    } = useLogicalFromCluster(cluster?.id, (network) => {
+    } = useLogicalFromCluster(clusterId, (network) => {
     return {
         id: network?.id ?? '', 
         name: network?.name ?? 'Unknown',            

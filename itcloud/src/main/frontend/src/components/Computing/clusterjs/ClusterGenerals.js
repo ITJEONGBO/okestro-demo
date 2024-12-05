@@ -2,8 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { useCluster } from '../../../api/RQHook';
 
-const ClusterGenerals = ({ cId  }) => {
-  const { data: cluster } = useCluster(cId);
+const ClusterGenerals = ({ clusterId  }) => {
+  const { data: cluster } = useCluster(clusterId);
   console.log("Cluster structure: ", cluster);
 
   return (

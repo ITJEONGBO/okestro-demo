@@ -159,7 +159,7 @@ const DomainInfo = () => {
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
-        <div className="domain_btn_outer">
+        <div className="host_btn_outer">
           <Path pathElements={pathData} />
           {renderSectionContent()}
         </div>

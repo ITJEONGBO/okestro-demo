@@ -161,6 +161,7 @@ fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 		description { this@toDiskMenu.description() }
 		connectVm { vmIdentifiedVo }
 		connectTemplate { templateIdentifiedVo }
+
 	}
 }
 
