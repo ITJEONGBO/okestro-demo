@@ -7,38 +7,47 @@ import TableColumnsInfo from "../table/TableColumnsInfo";
 import TableInfo from "../table/TableInfo";
 import { useFindDiskListFromVM } from "../../api/RQHook";
 
-const VmConnectionPlusModal = ({ isOpen, onRequestClose, vmId, onSelectDisk = () => {} }) => {
-  const [activeTab, setActiveTab] = useState("img"); // 현재 선택된 탭 상태 관리
-  const [selectedDiskId, setSelectedDiskId] = useState(null); // 선택된 디스크 ID 상태 관리
+const VmConnectionPlusModal = ({
+  isOpen,
+  onRequestClose,
+  vmId,
+  onSelectDisk = () => {},
+  excludedDiskIds = [], // 제외할 디스크 ID 목록을 부모로부터 전달받음
+}) => {
+  const [activeTab, setActiveTab] = useState("img");
+  const [selectedDiskId, setSelectedDiskId] = useState(null);
 
   const handleTabClick = (tab) => {
-    setActiveTab(tab); // 탭 클릭 시 상태 업데이트
+    setActiveTab(tab);
   };
-
 
   const handleOkClick = () => {
     if (selectedDiskId) {
-      const selectedDiskDetails = disks.find(disk => disk.id === selectedDiskId); // 디스크 상세 정보
-      onSelectDisk(selectedDiskId, selectedDiskDetails); // ID와 상세 정보 전달
-      onRequestClose(); // 모달 닫기
+      const selectedDiskDetails = disks.find((disk) => disk.id === selectedDiskId);
+      onSelectDisk(selectedDiskId, selectedDiskDetails);
+      onRequestClose();
     } else {
       alert("디스크를 선택하세요!");
     }
   };
 
-  const { data: disks } = useFindDiskListFromVM((e) => ({
+  // 제외된 디스크 ID를 필터링
+  const { data: rawDisks } = useFindDiskListFromVM((e) => ({
     ...e,
     radio: (
       <input
         type="radio"
         name="diskSelection"
-        value={e.id} // 각 디스크의 ID를 값으로 설정
-        onChange={() => setSelectedDiskId(e.id)} // 선택한 디스크 ID 업데이트
+        value={e.id}
+        onChange={() => setSelectedDiskId(e.id)}
       />
     ),
     storageDomainVo: e?.storageDomainVo?.name,
     status: e?.status === "UNINITIALIZED" ? "초기화되지 않음" : "UP",
   }));
+
+  // 제외된 디스크 ID를 필터링
+  const disks = rawDisks?.filter((disk) => !excludedDiskIds.includes(disk.id)) || [];
 
   return (
     <Modal
@@ -74,7 +83,7 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose, vmId, onSelectDisk = ()
         {activeTab === "img" && (
           <TableOuter
             columns={TableInfo.VIRTUAL_DISK}
-            data={disks || []}
+            data={disks}
             onRowClick={() => console.log("Row clicked in 이미지 탭")}
           />
         )}
@@ -85,10 +94,7 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose, vmId, onSelectDisk = ()
             onRowClick={() => console.log("Row clicked in 직접 LUN 탭")}
           />
         )}
-
-        {/* 선택한 디스크 ID 출력 */}
         <span>선택된 디스크 ID: {selectedDiskId || "없음"}</span>
-
         <div className="edit_footer">
           <button onClick={handleOkClick}>OK</button>
           <button onClick={onRequestClose}>취소</button>
@@ -99,3 +105,4 @@ const VmConnectionPlusModal = ({ isOpen, onRequestClose, vmId, onSelectDisk = ()
 };
 
 export default VmConnectionPlusModal;
+

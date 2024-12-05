@@ -1290,7 +1290,7 @@ const ApiManager = {
    * @param {String} vmId 
    * @returns {Promise<Object>}
    */
-  deleteVM: async (vmId) => {
+  deleteVM: async (vmId, diskDelete) => {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_VM(vmId),

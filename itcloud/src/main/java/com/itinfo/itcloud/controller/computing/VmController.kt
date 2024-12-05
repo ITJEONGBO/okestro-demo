@@ -158,12 +158,13 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun remove(
 		@PathVariable vmId: String? = null,
-		@PathVariable diskDelete: Boolean? = null // disk 삭제여부
+		@RequestBody diskDelete: Boolean? = null // disk 삭제여부
 	): ResponseEntity<Boolean> {
+		log.info("vm 삭제 $vmId, $diskDelete")
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (diskDelete == null)
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException() // TODO
 		log.info("/computing/vms/{} ... 가상머신 삭제", vmId)
 		return ResponseEntity.ok(iVm.remove(vmId, diskDelete))
 	}
@@ -212,6 +213,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/hostDevices ... 가상머신 호스트 장치 목록", vmId)
 		return ResponseEntity.ok(iVm.findAllHostDevicesFromVm(vmId))
+
 	}
 
 	@ApiOperation(

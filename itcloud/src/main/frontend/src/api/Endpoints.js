@@ -116,7 +116,7 @@ const ENDPOINTS = {
 
   ADD_VM: () => `/api/v1/computing/vms`,
   EDIT_VM: (vmId) => `/api/v1/computing/vms/${vmId}`, 
-  DELETE_VM: (vmId) => `/api/v1/computing/vms/${vmId}`, 
+  DELETE_VM: (vmId, diskDelete) => `/api/v1/computing/vms/${vmId}`, 
   
   START_VM: (vmId) => `/api/v1/computing/vms/${vmId}/start`, 
   PAUSE_VM: (vmId) => `/api/v1/computing/vms/${vmId}/pause`, 

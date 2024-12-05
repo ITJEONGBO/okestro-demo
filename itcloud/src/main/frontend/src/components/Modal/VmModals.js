@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react';
 import VmAddTemplateModal from './VmAddTemplateModal';
 import VmMigrationModal from './VmMigrationModal';
+import DeleteVmModal from './DeleteVmModal';
 // import VmExportOVAModal from './VmExportOVAModal';
 
 const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
   const VmModal = React.lazy(() => import('../Modal/VmModal'));
-  const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
+  const DeleteVmModal = React.lazy(() => import('../Modal/DeleteVmModal'));
   const VmActionModal = React.lazy(() => import('../Modal/VmActionModal'));
   const VmonExportModal = React.lazy(() => import('../Modal/VmonExportModal'));
   const VmExportOVAModal = React.lazy(() => import('../Modal/VmExportOVAModal'));
@@ -23,11 +24,9 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
           selectedVm={selectedVm} // 데이터센터 ID 포함
         />
       ) : action === 'delete' ? ( // 삭제오류고치기
-        <DeleteModal
+        <DeleteVmModal
           isOpen={isModalOpen}
-          type="Vm"
           onRequestClose={onRequestClose}
-          contentLabel={"가상머신"}
           data={selectedVm}
         />
       ):  action === 'migration' ? ( // 마이그레이션

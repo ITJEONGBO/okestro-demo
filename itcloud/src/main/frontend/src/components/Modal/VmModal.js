@@ -11,6 +11,7 @@ import {
   useAllVMs, 
   useCDFromVM, 
   useClustersFromDataCenter, 
+  useDiskById, 
   useDisksFromVM, 
   useEditVm, 
   useFindDiskFromVM, 
@@ -115,13 +116,41 @@ const handleRemoveDisk = (diskId) => {
 const [showAddOptions, setShowAddOptions] = useState(false); // 추가 옵션 토글 상태
 
 // 디스크 연결관련
-
-const [selectedDisks, setSelectedDisks] = useState([]); // 선택된 디스크 상태
-
+// 선택된 디스크 상태 선언
+const [selectedDisks, setSelectedDisks] = useState([]);
+const [selectedDiskId, setSelectedDiskId] = useState(null);
+// 디스크 상세정보 가져오기
+const { data: selectedDiskInfo, isLoading: isDiskLoading } = useDiskById(selectedDiskId);
+// 디스크 선택 핸들러
 const handleDiskSelection = (diskId, diskDetails) => {
+  console.log("선택된 디스크 ID:", diskId);
+  console.log("선택된 디스크 세부 정보:", diskDetails);
+
+  setSelectedDiskId(diskId); // 선택한 디스크 ID를 상태로 저장
   setSelectedDisks((prev) => [...prev, { id: diskId, details: diskDetails }]);
 };
-
+const mapSelectedDisksToAttachments = (selectedDisks) =>
+  selectedDisks.map((disk) => ({
+    diskImageVo: {
+      id: disk.id, // 디스크 ID
+      alias: disk.details.alias || "", // 디스크 이름
+      size: disk.details.size || 0, // 크기
+      appendSize: disk.details.appendSize || 0,
+      description: disk.details.description || "",
+      dataCenterVo: {
+        id: disk.details.dataCenterVo?.id || "",
+        name: disk.details.dataCenterVo?.name || "",
+      },
+     
+      diskProfileVos: disk.details.diskProfileVos || [],
+    },
+    active: disk.details.active, // 활성화 여부
+    bootable: disk.details.bootable, // 부팅 가능 여부
+    passDiscard: disk.details.passDiscard, // PassDiscard 설정
+    readOnly: disk.details.readOnly, // 읽기 전용 여부
+    interface_: disk.details.interface_, // 인터페이스 유형 (e.g., VIRTIO, IDE)
+    logicalName: disk.details.logicalName, // 논리 이름
+  }));
 
 
   // 데이터센터 ID 가져오기
@@ -519,8 +548,9 @@ useEffect(() => {
         alert("네트워크를 선택해주세요.");
         return;
       }
-
+      const diskAttachmentVos = mapSelectedDisksToAttachments(selectedDisks);
     const dataToSubmit = {
+     
       clusterVo:{
         id: selectedCluster.id,
         name: selectedCluster.name,
@@ -577,7 +607,7 @@ useEffect(() => {
         }
       : null,
       bootingMenu,// boolean
-      diskVos: selectedDisks.map((disk) => ({ id: disk.id, ...disk.details })), // 디스크 정보 추가
+      diskAttachmentVos
 
     };
     console.log('가상머신 생성or편집데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
@@ -850,6 +880,36 @@ return (
                         
                               <div className='vm_plus_btn_outer'>
                               <div className='vm_plus_btn'>
+
+
+<div
+  className="selected_disk_info"
+  style={{
+    border: "1px solid gray",
+    padding: "0.5rem",
+    borderRadius: "5px",
+    marginBottom: "1rem",
+  }}
+>
+  {selectedDiskId ? (
+    <>
+      <p>디스크 ID: {selectedDiskId}</p>
+      {selectedDiskInfo ? (
+        <>
+          <p>디스크 이름: {selectedDiskInfo?.alias || "정보 없음"}</p>
+          <p>크기: {selectedDiskInfo?.virtualSize || "정보 없음"} GB</p>
+          <p>상태: {selectedDiskInfo?.status || "정보 없음"}</p>
+        </>
+      ) : (
+        <p>디스크 정보를 불러오는 중...</p>
+      )}
+    </>
+  ) : (
+    <p>선택된 디스크가 없습니다.</p>
+  )}
+</div>
+
+
   {disks && disks.length > 0 ? (
     // 디스크가 있는 경우
     disks.map((disk, index) => (
@@ -883,13 +943,16 @@ return (
   ) : (
     // 디스크가 없는 경우
     <div style={{ marginBottom: '10px' }}>
+      
       <div className='flex'>
+        <div>디스크 연결: </div>
         <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
         <VmConnectionPlusModal
           isOpen={isConnectionPopupOpen}
           onRequestClose={() => setIsConnectionPopupOpen(false)}
           vmId={vmId} // vmId를 넘겨줍니다.
           onSelectDisk={handleDiskSelection} 
+          excludedDiskIds={selectedDisks.map((disk) => disk.id)} 
         />
         <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>
           생성
@@ -909,13 +972,16 @@ return (
   )}
   {/* 추가 옵션 */}
   {showAddOptions && (
+    
     <div style={{ marginTop: '10px' }}>
+      
       <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
       <VmConnectionPlusModal
         isOpen={isConnectionPopupOpen}
         onRequestClose={() => setIsConnectionPopupOpen(false)}
         vmId={vmId} // vmId를 넘겨줍니다.
         onSelectDisk={handleDiskSelection} 
+        excludedDiskIds={selectedDisks.map((disk) => disk.id)} 
       />
       <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
       <DiskModal
@@ -944,6 +1010,32 @@ return (
                               // 생성 모드일 때
                               <div className='vm_plus_btn_outer'>
                               <div className='vm_plus_btn'>
+                              <div
+  className="selected_disk_info"
+  style={{
+    border: "1px solid gray",
+    padding: "0.5rem",
+    borderRadius: "5px",
+    marginBottom: "1rem",
+  }}
+>
+  {selectedDiskId ? (
+    <>
+      <p>디스크 ID: {selectedDiskId}</p>
+      {selectedDiskInfo ? (
+        <>
+          <p>디스크 이름: {selectedDiskInfo?.alias || "정보 없음"}</p>
+          <p>크기: {selectedDiskInfo?.virtualSize || "정보 없음"} GB</p>
+          <p>상태: {selectedDiskInfo?.status || "정보 없음"}</p>
+        </>
+      ) : (
+        <p>디스크 정보를 불러오는 중...</p>
+      )}
+    </>
+  ) : (
+    <p>선택된 디스크가 없습니다.</p>
+  )}
+</div>
                                 <div style={{ color: 'white' }}>.</div>
                                 <div className='flex'>
                                   <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>      
@@ -952,6 +1044,7 @@ return (
                                     onRequestClose={() => setIsConnectionPopupOpen(false)}
                                     vmId={vmId} 
                                     onSelectDisk={handleDiskSelection} 
+                                    excludedDiskIds={selectedDisks.map((disk) => disk.id)} 
                                   />
                                   <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
                                   <DiskModal
