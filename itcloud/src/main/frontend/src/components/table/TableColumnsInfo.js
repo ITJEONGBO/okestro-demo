@@ -413,7 +413,7 @@ const TableColumnsInfo = {
     { header: 'vNic', accessor: 'nicName', clickable: false },
   ],
   SNAPSHOT_NEW:[
-
+    { header: '', accessor: 'snapshot_check', clickable: false },
     { header: '이름', accessor: 'alias', clickable: false },
     { header: '설명', accessor: 'description', clickable: false }
   ],

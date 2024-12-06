@@ -1,10 +1,10 @@
 import { faCamera, faChevronRight, faExclamationTriangle, faEye, faNewspaper, faServer, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
-import { useSnapshotFromVM } from '../../../api/RQHook';
+import { useDisksFromVM, useSnapshotFromVM } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';
 import VmSnapshotAddModal from '../../Modal/VmSnapshotaddModal';
 
@@ -12,7 +12,7 @@ import VmSnapshotAddModal from '../../Modal/VmSnapshotaddModal';
 const VmSnapshot = ({vm}) => {
   const [activePopup, setActivePopup] = useState(null);
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
-
+  const [bootable, setBootable] = useState(true);
 
   const openPopup = (popupType) => {
       setActivePopup(popupType);
@@ -27,9 +27,6 @@ const VmSnapshot = ({vm}) => {
   };
     const { 
     data: snapshots, 
-    status: snapshotsStatus, 
-    isLoading: isSnapshotsLoading, 
-    isError: isSnapshotsError 
   } = useSnapshotFromVM(vm?.id, toTableItemPredicateSnapshots);  
   
   function toTableItemPredicateSnapshots(snapshot) {
@@ -55,7 +52,24 @@ const VmSnapshot = ({vm}) => {
     };
   }
 
-  
+    // 가상머신에 연결되어있는 디스크(왜실행안됨??)
+    const { data: disks } = useDisksFromVM(vm?.id, (e) => ({
+      ...e,
+      snapshot_check: (
+        <input
+          type="checkbox"
+          name="diskSelection"
+          onChange={(e) => setBootable(e.target.checked)} 
+        />
+      ),
+      alias: e?.diskImageVo?.alias,
+      description: e?.diskImageVo?.description,
+    }));
+    useEffect(() => {
+      if (disks) {
+        console.log('모든 가상머신 데이터:', disks);
+      }
+    }, [disks]);
     return (
       <>
         <div className="header_right_btns">
@@ -212,7 +226,8 @@ const VmSnapshot = ({vm}) => {
         <VmSnapshotAddModal
         isOpen={activePopup === 'new'}
         onRequestClose={closePopup}
-        vmId={vm.id}
+        vmId={vm?.id}
+        diskData={disks}
       />
 </Suspense>
           {/*생성 팝업 */}

@@ -5,61 +5,41 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAddSnapshotFromVM, useDisksFromVM } from '../../api/RQHook';
+import TableInfo from '../table/TableInfo';
 
 const VmSnapshotAddModal = ({ 
     isOpen, 
     onRequestClose,
     snapshotData,
-    vmId
+    vmId,
+    diskData
 }) => {
     const [id, setId] = useState(''); // 스냅샷 ID
-    const [name, setName] = useState(''); // 스냅샷 ID
+    const [alias, setAlias] = useState(''); // 스냅샷 ID
     const [description, setDescription] = useState(''); // 스냅샷 설명
     const [persistMemory, setPersistMemory] = useState(false); // 메모리 저장 여부
  
     const { mutate: addSnapshotFromVM } = useAddSnapshotFromVM();
 
 
-
-  // 가상머신에 연결되어있는 디스크(왜실행안됨??)
-  const { data: disks } = useDisksFromVM(vmId, (e) => ({
-    alias: e?.diskImageVo?.alias,
-    description: e?.diskImageVo?.description,
-  }));
-  console.log('가상머신 id:', vmId);
-  useEffect(() => {
-    if (disks) {
-      console.log('모든 가상머신 데이터:', disks);
-    }
-  }, [disks]);
-
   const {
     data: snapshot,
   } = useAddSnapshotFromVM(vmId);
-  
-    // useEffect(() => {
-    //   if (isOpen && snapshotData ) {
-    //     setId(snapshotData.id);
-    //     setName(datacenter.name);
-    //     setComment(datacenter.comment);
-    //     setDescription(datacenter.description);
-    //     setStorageType(datacenter.storageType);
-    //     setVersion(datacenter.version);
-    //     setQuotaMode(datacenter.quotaMode);
-    //   }
-    // }, [snapshotData]);
+
 
     const handleFormSubmit = () => {
       // 데이터 객체 생성
       const dataToSubmit = {
-        name,
-        description,
+        alias,
+        description: description || "Default description", 
         persistMemory
       };
     
       console.log("snapshot Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
 
-      addSnapshotFromVM(dataToSubmit, {
+      addSnapshotFromVM(   
+        { vmId, snapshotData: dataToSubmit },
+        {
         onSuccess: () => {
           alert("스냅샷 생성 완료(alert기능구현)")
           onRequestClose();
@@ -93,16 +73,16 @@ const VmSnapshotAddModal = ({
             <input
               type="text"
               id="user_name"
-              value={name}
-              onChange={(e) => setName(e.target.value)} // 사용자 입력 관리
+              value={alias}
+              onChange={(e) => setAlias(e.target.value)} // 사용자 입력 관리
             />
           </div>
           <div>
             <div className="font-bold">포함할 디스크 :</div>
             <div className="snapshot_new_table">
               <TableOuter
-                columns={TableColumnsInfo.SNAPSHOT_NEW}
-                data={[disks]} // 디스크 데이터 삽입
+                columns={TableInfo.SNAPSHOT_NEW}
+                data={diskData} // 디스크 데이터 삽입
                 onRowClick={() => console.log('Row clicked')}
               />
             </div>

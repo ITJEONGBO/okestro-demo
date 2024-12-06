@@ -972,7 +972,11 @@ export const useSnapshotFromVM = (vmId, mapPredicate) => useQuery({
 export const useAddSnapshotFromVM = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (snapshotData) => await ApiManager.addSnapshotFromVM(snapshotData),
+    // mutationFn: async ({vmId,snapshotData}) => await ApiManager.addSnapshotFromVM(vmId,snapshotData),
+    mutationFn: async ({vmId, snapshotData}) => {
+      console.log(`Hook vm: ${vmId}....  ${snapshotData}`)
+      return await ApiManager.addSnapshotFromVM(vmId, snapshotData)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries('SnapshotFromVM'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
     },

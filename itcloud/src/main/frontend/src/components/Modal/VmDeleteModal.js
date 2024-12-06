@@ -7,7 +7,7 @@ import {
 } from '../../api/RQHook';
 import ENDPOINTS from '../../api/Endpoints';
 
-const DeleteVmModal = ({ 
+const VmDeleteModal = ({ 
     isOpen, 
     onRequestClose, 
     data
@@ -108,5 +108,5 @@ const DeleteVmModal = ({
   );
 };
 
-export default DeleteVmModal;
+export default VmDeleteModal;
 

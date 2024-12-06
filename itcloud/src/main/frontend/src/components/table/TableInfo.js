@@ -571,7 +571,8 @@ HOST_NETWORK_INTERFACE: [
   ],
   
   SNAPSHOT_NEW:[
-    { header: '이름', accessor: 'name', clickable: false },
+    { header: '', accessor: 'snapshot_check', clickable: false,width:'6%'},
+    { header: '이름', accessor: 'alias', clickable: false },
     { header: '설명', accessor: 'description', clickable: false }
   ],
   PERMISSIONS: [
