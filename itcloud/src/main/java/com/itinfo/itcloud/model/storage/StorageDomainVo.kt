@@ -292,7 +292,7 @@ fun StorageDomainVo.toStorageDomainBuilder(): StorageDomainBuilder {
 
 fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
 
-	return this@toAddStorageDomainBuilder.toStorageDomainBuilder().build();
+	return this@toAddStorageDomainBuilder.toStorageDomainBuilder().build()
 }
 
 /**
@@ -313,9 +313,9 @@ fun StorageDomainVo.toAddNFSBuilder(): HostStorage {
 fun StorageDomainVo.toAddEtcBuilder(): HostStorage {
 	return HostStorageBuilder()
 		.type(StorageType.fromValue(this@toAddEtcBuilder.storageType))
-			.logicalUnits(this@toAddEtcBuilder.logicalUnits.map {
-				LogicalUnitBuilder().id(it).build()
-			})
+		.logicalUnits(this@toAddEtcBuilder.logicalUnits.map {
+			LogicalUnitBuilder().id(it).build()
+		})
 	.build()
 }
 

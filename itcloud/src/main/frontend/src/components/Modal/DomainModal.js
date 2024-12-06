@@ -28,7 +28,6 @@ const FormGroup = ({ label, children }) => (
 const DomainModal = ({
   isOpen,
   onRequestClose,
-  editMode = false,
   action,
   domainId,
   datacenterId,  // 데이터센터
@@ -151,7 +150,7 @@ const DomainModal = ({
   };
 
   useEffect(() => {
-    if (editMode && domain) {
+    if (action === 'edit' && domain) {
       const updatedState = {
         id: domain.id || '',
         domainType: domain.domainType || '',
@@ -174,33 +173,32 @@ const DomainModal = ({
         setLunId(domain.logicalUnits[0]?.id);
       }
     }
-  }, [editMode, domain]);
+  }, [action, domain]);
   
   
   useEffect(() => {
-    if (!editMode && dataCenters && dataCenters.length > 0) {
+    if (!(action === 'edit') && dataCenters && dataCenters.length > 0) {
       setDataCenterVoId(dataCenters[0].id);
     }
-  }, [dataCenters, editMode]);
+  }, [dataCenters, action]);
   
   useEffect(() => {
-    if (!editMode && hosts && hosts.length > 0) {
+    if (!(action === 'edit') && hosts && hosts.length > 0) {
       setHostVoName(hosts[0].name);
       setHostVoId(hosts[0].id);
     }
-  }, [hosts, editMode]);
+  }, [hosts, action]);
 
   useEffect(() => {
     const options = storageTypeOptions(formState.domainType);
     setStorageTypes(options);
-    if (!editMode) {
+    if (!(action === 'edit')) {
       setFormState((prev) => ({
         ...prev,
         storageType: 'NFS',
       }));
     } 
-  }, [formState.domainType, editMode]);
-
+  }, [formState.domainType, action]);
   
 
   const resetForm = () => {
@@ -283,7 +281,7 @@ const DomainModal = ({
 
     console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
-    if (editMode) {
+    if (action === 'edit') {
       editDomain(
         { domainId: formState.id, domainData: dataToSubmit }, 
         {
@@ -293,13 +291,15 @@ const DomainModal = ({
           },
         }
       );
-    } else {
+    } else if (action === 'create'){
       addDomain(dataToSubmit, {
         onSuccess: () => {
           alert('도메인 생성 완료');
           onRequestClose();
         },
-      });
+      }); 
+    } else { // action === 'import'
+
     }
   };
 
@@ -341,7 +341,7 @@ const DomainModal = ({
               <select
                 value={dataCenterVoId}
                 onChange={(e) => setDataCenterVoId(e.target.value)}
-                disabled={editMode}
+                disabled={action === 'edit'}
               >
                 {dataCenters && dataCenters.map((dc) => (
                   <option key={dc.id} value={dc.id}>
@@ -356,7 +356,7 @@ const DomainModal = ({
             <select
               value={formState.domainType}
               onChange={(e) => setFormState((prev) => ({ ...prev, domainType: e.target.value }))}
-              disabled={editMode}
+              disabled={action === 'edit'}
             >
               {domainTypes.map((type) => (
                 <option key={type.value} value={type.value}>
@@ -370,7 +370,7 @@ const DomainModal = ({
             <select
               value={formState.storageType}
               onChange={(e) =>setFormState((prev) => ({ ...prev, storageType: e.target.value }))}
-              disabled={editMode}
+              disabled={action === 'edit'}
             >
               {storageTypes.map((opt) => (
                 <option key={opt} value={opt}>
@@ -384,7 +384,7 @@ const DomainModal = ({
             <select
               value={hostVoName}
               onChange={(e) => setHostVoName(e.target.value)}
-              disabled={editMode}
+              disabled={action === 'edit'}
             >
               {hosts && hosts.map((h) => (
                 <option key={h.name} value={h.name}>
@@ -470,17 +470,23 @@ const DomainModal = ({
                 ) : isFibresError ? (
                   <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
                 ) : (
+                  <>
                   <Table
                     columns={TableInfo.LUNS_TARGETS}
                     data={iscsis}
                     onRowClick={handleRowClick}
                     shouldHighlight1stCol={true}
                   />
+                  <div>
+                    <span>${lunId}</span>
+                  </div>
+                  </>
                 )}
             </div>
           {/* )} */}
         </div>
       )}
+      
 
       {formState.storageType === 'FCP' && (
         <div className="tab_content">
@@ -520,7 +526,7 @@ const DomainModal = ({
 
       <div className="edit_footer">
         <button style={{ display: 'none' }}></button>
-        <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
+        <button onClick={handleFormSubmit}>{action === 'edit' ? '편집' : '완료'}</button>
         <button onClick={onRequestClose}>취소</button>
       </div>
     </div>

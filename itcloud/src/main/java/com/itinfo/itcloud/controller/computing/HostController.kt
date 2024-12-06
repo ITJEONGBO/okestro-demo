@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.HostStorageVo
+import com.itinfo.itcloud.model.storage.IscsiDetailVo
 import com.itinfo.itcloud.service.computing.ItHostOperationService
 import com.itinfo.itcloud.service.computing.ItHostService
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -300,6 +301,49 @@ class HostController {
 		log.info("/computing/hosts/{}/iscsis ... 호스트 iscsis 목록", hostId)
 		return ResponseEntity.ok(iHost.findAllIscsiFromHost(hostId))
 	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="도메인 가져오기에 필요한 iSCSI 요청",
+		notes="도메인 가져오기 - iSCSI 요쳥"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//		ApiImplicitParam(name="address", value="호스트", dataTypeClass=String::class, paramType="body")
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{hostId}/importISCSIs/{address}")
+	@ResponseBody
+	fun importISCSIs(
+		@PathVariable("hostId") hostId: String? = null,
+		@PathVariable address: String? = null
+//		@RequestBody address: String? = null
+	): ResponseEntity<List<IscsiDetailVo>> {
+		if (hostId == null)
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		if (address == null)
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/importISCSIs ... 호스트 iscsis 가져오기 목록", hostId)
+		return ResponseEntity.ok(iHost.findImportIscsiFromHost(hostId, address))
+	}
+
+//	@ApiOperation(
+//		httpMethod = "GET",
+//		value = "iSCSI 목록 가져오기",
+//		notes = "호스트의 iSCSI 목록 가져오기"
+//	)
+//	@ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass = String::class, required = true, paramType = "path")
+//	@ApiResponses(ApiResponse(code = 200, message = "OK"))
+//	@GetMapping("/{hostId}/getISCSIs")
+//	@ResponseBody
+//	fun getISCSIs(@PathVariable("hostId") hostId: String): ResponseEntity<List<IscsiDetailVo>> {
+//		log.info("GET /computing/hosts/{}/getISCSIs 호출됨", hostId)
+//		val iscsiDetails = iscsiService.getIscsiDetails(hostId)
+//		return ResponseEntity.ok(iscsiDetails)
+//	}
+
 
 	@ApiOperation(
 		httpMethod="GET",

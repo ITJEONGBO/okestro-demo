@@ -15,16 +15,14 @@ const DomainModals = ({ isModalOpen, action, onRequestClose, selectedDomain }) =
         <DomainModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
-          // editMode={action === 'edit'}
           action={action}
-          domainId={selectedDomain?.id || null}
+          // domainId={selectedDomain?.id || null}
         />
       ): action === 'edit' ? (
         <DomainModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
-          editMode={action === 'edit'}
-          action={action}
+          action={'edit'}
           domainId={selectedDomain?.id || null}
         />      
       ) : action === 'delete' ? (
