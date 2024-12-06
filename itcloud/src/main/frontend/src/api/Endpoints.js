@@ -21,7 +21,7 @@ const ENDPOINTS = {
   GET_PER_VM_NETWORK: () =>      `/api/v1/dashboard/vmNetworkPerList`,
 
   GET_METRIC_VM: () =>          `/api/v1/dashboard/vmMetricList`,
-  GET_METRIC_STORAGE: () =>          `/api/v1/dashboard/storageMetricList`,
+  GET_METRIC_STORAGE: () =>      `/api/v1/dashboard/storageMetricList`,
   //endregion: Dashboard
   
   //region: DataCenter

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TablesOuter from './TablesOuter';
 import TableRowClick from './TableRowClick';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faFire } from '@fortawesome/free-solid-svg-icons';
 
 const HostTable = ({
   columns,
@@ -33,6 +33,7 @@ const HostTable = ({
         data={hosts.map((host) => ({
           ...host,
           icon: renderStatusIcon(host.status),
+          engine: <FontAwesomeIcon icon={faFire} fixedWidth style={{ color: 'yellow', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />,
           status: host?.status,
           spmStatus: host?.spmStatus === 'NONE' ? '보통' : host?.spmStatus,
           vmCnt: host?.vmSizeVo.allCnt,

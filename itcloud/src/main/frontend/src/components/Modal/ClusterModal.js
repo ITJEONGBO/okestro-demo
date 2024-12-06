@@ -219,7 +219,6 @@ const ClusterModal = ({
       // 현재 CPU 유형이 새 옵션 리스트에 없으면 초기화
       setFormState((prev) => ({
         ...prev,
-        cpuType: '',
       }));
     }
   }, [formState.cpuArc, editMode]);
@@ -388,7 +387,7 @@ const ClusterModal = ({
               id="biosType"
               value={formState.biosType}
               onChange={(e) => setFormState((prev) => ({ ...prev, biosType: e.target.value }))}
-              disabled={editMode || formState.cpuArc === "PPC64" || formState.cpuArc === "S390X"}
+              disabled={formState.cpuArc === "PPC64" || formState.cpuArc === "S390X"}
             >
               {biosTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>

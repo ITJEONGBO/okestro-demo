@@ -1,6 +1,8 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllDataCenters } from '../../../api/RQHook';
@@ -20,6 +22,9 @@ const DataCenters = () => {
     isLoading: isDatacentersLoading
   } = useAllDataCenters((e) => ({
     ...e,
+    icon: e?.status === 'UP' ? 
+      <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />
+      : <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />,
     storageType: e?.storageType ? '로컬' : '공유됨',
     status: e?.status === 'UNINITIALIZED' ? '초기화되지 않음' : 'UP'
   }));
@@ -54,7 +59,7 @@ const DataCenters = () => {
         data={datacenters || []}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedDataCenter(row)}
-        clickableColumnIndex={[0]} // "이름" 열의 인덱스 설정
+        clickableColumnIndex={[1]} // "이름" 열의 인덱스 설정
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
 

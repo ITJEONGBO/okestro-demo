@@ -7,19 +7,16 @@ import HostDupl from '../../duplication/HostDupl';
 const Hosts = () => {
   const {
       data: hosts,
-      status: hostsStatus,
       isRefetching: isHostsRefetching,
       refetch: refetchHosts,
-      isError: isHostsError,
-      error: hostsError,
       isLoading: isHostsLoading
   } = useAllHosts((e) => ({ ...e }));
 
   return (
     <>
       <HostDupl
-        hosts={hosts || []}
         columns={TableInfo.HOSTS}
+        hosts={hosts || []}        
       />
     </>
   );

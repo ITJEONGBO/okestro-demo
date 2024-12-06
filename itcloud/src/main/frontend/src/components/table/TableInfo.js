@@ -6,9 +6,10 @@ import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
  */
 const TableInfo = {
   DATACENTERS: [
+    { header: '', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: true }, 
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '스토리지 유형', accessor: 'storageType', clickable: false },
+    { header: '스토리지 유형', accessor: 'storageType', clickable: false },    
     { header: '상태', accessor: 'status', clickable: false },
     { header: '호스트 수', accessor: 'hostCnt', clickable: false }, 
     { header: '클러스터 수', accessor: 'clusterCnt', clickable: false }, 
@@ -58,8 +59,7 @@ const TableInfo = {
 
   HOSTS: [
     { header: '', accessor: 'icon', clickable: false },
-    // { header: '', accessor: 'warn', clickable: false },
-    // { header: '', accessor: 'spm', clickable: false },
+    { header: '', accessor: 'engine', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '호스트 이름/IP', accessor: 'address', clickable: false },

@@ -191,7 +191,7 @@ fun Template.toTemplateInfo(conn: Connection): TemplateVo {
 					this@toTemplateInfo.cpu().topology().socketsAsInteger() *
 					this@toTemplateInfo.cpu().topology().threadsAsInteger()
 		}
-		monitor { this@toTemplateInfo.display().monitorsAsInteger() }
+		monitor { if(this@toTemplateInfo.displayPresent()) this@toTemplateInfo.display().monitorsAsInteger() else 0 }
 		ha { this@toTemplateInfo.highAvailability().enabled() }
 		priority { this@toTemplateInfo.highAvailability().priorityAsInteger() }
 		usb { this@toTemplateInfo.usb().enabled() }

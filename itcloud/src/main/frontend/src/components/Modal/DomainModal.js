@@ -498,12 +498,16 @@ const DomainModal = ({
               <Table
                 columns={TableInfo.FIBRE}
                 data={fibres}
-                onRowClick={(row) => console.log('선택한 행 데이터:', row)}
+                onRowClick={handleRowClick}
                 shouldHighlight1stCol={true}
               />
             )}
+            <div>
+              <span>${lunId}</span>
+            </div>
         </div>
       )}
+      
       <div><br/></div>
 
       <div className="domain_new_select">

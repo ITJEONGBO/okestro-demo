@@ -17,18 +17,17 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 const makeAPICall = async ({method = "GET", url, data}) => {
   try {
     const res = 
-      (data == null || data === undefined) ? await axios.get(url) 
+      (data === null || data === undefined) ? await axios.get(url) 
       : await axios({
         method: method,
         url: url,
         headers: { },
         // TODO: access_token으로 모든 API 처리하기
-        data: method === "GET" || method === "DELETE" ? null : data,
+        data: method === "GET" ? null : data,
     }); 
     res.headers.get(`access_token`) && localStorage.setItem('token', res.headers.get(`access_token`)) // 로그인이 처음으로 성공했을 때 진행
     return res.data?.body
   } catch(e) {
-    
     console.error(`Error fetching '${url}':`, e);
     toast.error(`Error fetching '${url}'\n${e.message}`)
   }
@@ -363,7 +362,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_DATA_CENTER(dataCenterId),  // ID를 URL에 포함
-      // data: dataCenterId
+      data: dataCenterId
     });
   },
   //endregion: DataCenter

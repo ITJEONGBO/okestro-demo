@@ -245,7 +245,7 @@ fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
 		warning { this@toStorageDomainVo.warningLowSpaceIndicatorAsInteger() }
 		spaceBlocker { this@toStorageDomainVo.criticalSpaceActionBlockerAsInteger() }
 		storageAddress { this@toStorageDomainVo.storage().address() + this@toStorageDomainVo.storage().path() } // 경로
-		nfsVersion { this@toStorageDomainVo.storage().nfsVersion().value() }
+//		nfsVersion { this@toStorageDomainVo.storage().nfsVersion().value() }
 
 	}
 }
@@ -282,12 +282,14 @@ fun StorageDomainVo.toStorageDomainBuilder(): StorageDomainBuilder {
 		.dataCenters(*arrayOf(DataCenterBuilder().id(this@toStorageDomainBuilder.dataCenterVo.id).build()))
 		.host(HostBuilder().name(this@toStorageDomainBuilder.hostVo.name).build())
 		.storage(
-			if(StorageType.fromValue(this@toStorageDomainBuilder.storageType) == StorageType.NFS) {
-				this@toStorageDomainBuilder.toAddNFSBuilder()
-			} else { // ISCSI, Fibre Channel
-				this@toStorageDomainBuilder.toAddEtcBuilder()
+			when (StorageType.fromValue(this@toStorageDomainBuilder.storageType)) {
+				StorageType.NFS -> this@toStorageDomainBuilder.toAddNFSBuilder()
+				StorageType.ISCSI -> this@toStorageDomainBuilder.toAddISCSIBuilder()
+				StorageType.FCP -> this@toStorageDomainBuilder.toAddFCPBuilder()
+				else -> throw IllegalArgumentException("Unsupported storage type")
 			}
 		)
+
 }
 
 fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
@@ -308,14 +310,33 @@ fun StorageDomainVo.toAddNFSBuilder(): HostStorage {
 }
 
 /**
- * ISCSI, Fibre Channel
+ * ISCSI
  */
-fun StorageDomainVo.toAddEtcBuilder(): HostStorage {
+fun StorageDomainVo.toAddISCSIBuilder(): HostStorage {
 	return HostStorageBuilder()
-		.type(StorageType.fromValue(this@toAddEtcBuilder.storageType))
-		.logicalUnits(this@toAddEtcBuilder.logicalUnits.map {
+		.type(StorageType.fromValue(this@toAddISCSIBuilder.storageType))
+		.logicalUnits(this@toAddISCSIBuilder.logicalUnits.map {
 			LogicalUnitBuilder().id(it).build()
 		})
+	.build()
+}
+
+/**
+ * Fibre Channel
+ */
+fun StorageDomainVo.toAddFCPBuilder(): HostStorage {
+	return HostStorageBuilder()
+		.type(StorageType.fromValue(this@toAddFCPBuilder.storageType))
+//		.logicalUnits(this@toAddFCPBuilder.logicalUnits.map {
+//			LogicalUnitBuilder().id(it).build()
+//		})
+		.volumeGroup(
+			VolumeGroupBuilder().logicalUnits(
+				this@toAddFCPBuilder.logicalUnits.map {
+					LogicalUnitBuilder().id(it).build()
+				}
+			)
+		)
 	.build()
 }
 
