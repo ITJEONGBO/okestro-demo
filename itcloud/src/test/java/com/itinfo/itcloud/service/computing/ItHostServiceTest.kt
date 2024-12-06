@@ -266,10 +266,10 @@ class ItHostServiceTest {
 	fun should_findImportIscsiFromHost() {
 		log.debug("should_findImportIscsiFromHost ...")
 		val result: List<IscsiDetailVo> =
-			service.findImportIscsiFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a")
+			service.findImportIscsiFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a", "192.168.0.160")
 
-//		assertThat(result, `is`(not(nullValue())))
-//		result.forEach { println(it) }
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
 	}
 
 	companion object {

@@ -8,6 +8,7 @@ import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
+import org.ovirt.engine.sdk4.builders.IscsiDetailsBuilder
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.InetAddress
@@ -506,8 +507,11 @@ fun Connection.findAllStoragesFromHost(hostId: String): Result<List<HostStorage>
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.discoverIscsiFromHost(hostId: String): Result<List<IscsiDetails>> = runCatching {
-	this.srvHost(hostId).discoverIscsi().send().discoveredTargets()
+fun Connection.discoverIscsiFromHost(hostId: String, address: String): Result<List<IscsiDetails>> = runCatching {
+	val iscsi: IscsiDetails = IscsiDetailsBuilder().address(address).build()
+	val result: List<IscsiDetails> =
+			this.srvHost(hostId).discoverIscsi().iscsi(iscsi).send().discoveredTargets()
+	result
 }.onSuccess {
 	Term.HOST.logSuccessWithin(Term.STORAGE,"목록조회", hostId)
 }.onFailure {

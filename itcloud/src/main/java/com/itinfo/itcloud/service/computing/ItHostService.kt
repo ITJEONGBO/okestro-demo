@@ -161,7 +161,7 @@ interface ItHostService {
 	 * @return List<[HostStorageVo]>
 	 */
 	@Throws(Error::class)
-	fun findImportIscsiFromHost(hostId: String): List<IscsiDetailVo>
+	fun findImportIscsiFromHost(hostId: String, address:String): List<IscsiDetailVo>
 
 	/**
 	 * [ItHostService.findAllPermissionsFromHost]
@@ -324,13 +324,16 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findImportIscsiFromHost(hostId: String): List<IscsiDetailVo> {
-		log.info("findImportIscsiFromHost... hostId: {}", hostId)
+	override fun findImportIscsiFromHost(hostId: String, address: String): List<IscsiDetailVo> {
+		log.info("findImportIscsiFromHost... hostId: {}, address : {}", hostId, address)
 		conn.findHost(hostId).getOrNull() ?: return listOf()
-		val res: List<IscsiDetails> = conn.discoverIscsiFromHost(hostId)
+		val res: List<IscsiDetails> = conn.discoverIscsiFromHost(hostId, address)
 			.getOrDefault(listOf())
 		return res.toIscsiDetailVos()
 	}
+
+
+
 
 
 	@Deprecated("필요없음")
