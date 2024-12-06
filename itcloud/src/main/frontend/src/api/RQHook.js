@@ -1170,9 +1170,11 @@ export const useAddVm = () => {
 export const useEditVm = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ vmId, vmData }) => await ApiManager.editVM(vmId, vmData),
-    onSuccess: () => {
+    mutationFn: async ({ vmId, vmdata }) => await ApiManager.editVM(vmId, vmdata),
+    onSuccess: (data,{vmId}) => {
+      console.log('VM 편집한데이터:', data);
       queryClient.invalidateQueries('allVMs');
+      queryClient.invalidateQueries(['vmId', vmId]); // 수정된 네트워크 상세 정보 업데이트
     },
     onError: (error) => {
       console.error('Error editing VM:', error);

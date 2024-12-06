@@ -32,9 +32,9 @@ const TemplateEditModal = ({
 // ]); 셋
   // 최적화옵션(영어로 값바꿔야됨)
   const [optimizeOption, setOptimizeOption] = useState([
-    { value: 'DESKTOP', label: '데스크톱' },
+    { value: 'desktop', label: '데스크톱' },
     { value: 'HIGH_PERFORMANCE', label: '고성능' },
-    { value: 'SERVER', label: '서버' }
+    { value: 'server', label: '서버' }
   ]);
 
   
@@ -50,7 +50,7 @@ const TemplateEditModal = ({
     if (isOpen) {
       if (editMode && templateData) {
         setId(templateData?.id);
-        setName(templateData?.name);
+        setName(templateData?.name || '');
         setDescription(templateData?.description);
         setComment(templateData?.comment || '');
         setOsSystem(templateData?.osSystem || '');
@@ -145,18 +145,18 @@ const TemplateEditModal = ({
           <div className="backup_edit_content">
             <div className="vnic_new_box" style={{ borderBottom: '1px solid gray', paddingBottom: '0.3rem' }}>
                 <label htmlFor="optimization">최적화 옵션</label>
-                              <select
-                                id="optimization"
-                                value={selectedOptimizeOption} // 선택된 값과 동기화
-                                onChange={(e) => setSelectedOptimizeOption(e.target.value)} // 값 변경 핸들러
-                              >
-                                {optimizeOption.map((option) => (
-                                  <option key={option.value} value={option.value}>
-                                    {option.label} {/* UI에 표시되는 값 */}
-                                  </option>
-                                ))}
-                              </select>
-                              <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span>
+                  <select
+                    id="optimization"
+                    value={selectedOptimizeOption} // 선택된 값과 동기화
+                    onChange={(e) => setSelectedOptimizeOption(e.target.value)} // 값 변경 핸들러
+                  >
+                    {optimizeOption.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label} {/* UI에 표시되는 값 */}
+                      </option>
+                    ))}
+                  </select>
+                  <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span>
             </div>
             {selectedModalTab === 'general' && (
               <>
@@ -238,13 +238,7 @@ const TemplateEditModal = ({
         </div>
 
         <div className="edit_footer">
-          <button
-            onClick={() => {
-              handleFormSubmit();
-            }}
-          >
-            OK
-          </button>
+          <button onClick={() => {handleFormSubmit();}}>OK</button>
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>

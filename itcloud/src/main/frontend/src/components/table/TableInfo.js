@@ -414,11 +414,22 @@ HOST_NETWORK_INTERFACE: [
     { header: '설명', accessor: 'description' },
   ],
 
-  
+  ALL_DISK:  [
+    { header: '이름', accessor: 'alias', clickable: true,width:'10%' },
+    { header: 'ID', accessor: 'id', clickable: false ,width:'12%'},
+    { header: '', accessor: 'icon1', clickable: false,width:'4%' },
+    { header: '', accessor: 'icon2', clickable: false ,width:'4%'},
+    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '유형', accessor: 'storageType', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ],
   DISKS_FROM_:  [
-    { header: '이름', accessor: 'alias', clickable: true },
+    { header: '이름', accessor: 'alias', clickable: true ,width:'10%'},
     { header: 'ID', accessor: 'id', clickable: false },
-    { header: '', accessor: 'icon1', clickable: false },
+    { header: '', accessor: 'icon1', clickable: false,width:'4%' },
     { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
     { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
@@ -430,9 +441,9 @@ HOST_NETWORK_INTERFACE: [
     { header: '설명', accessor: 'description', clickable: false },
   ],
   LUN_DISK:  [
-    { header: '이름', accessor: 'alias', clickable: true },
+    { header: '이름', accessor: 'alias', clickable: true,width:'10%' },
     { header: 'ID', accessor: 'id', clickable: false },
-    { header: '', accessor: 'icon1', clickable: false },
+    { header: '', accessor: 'icon1', clickable: false,width:'4%' },
     { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
     { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },

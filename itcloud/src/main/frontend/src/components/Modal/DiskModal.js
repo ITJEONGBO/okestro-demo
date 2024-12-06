@@ -376,7 +376,7 @@ const DiskModal = ({
                   ))}
                 </select>
               </FormGroup>
-
+              </div>
             
             <div className="disk_new_img_right">
 
@@ -396,6 +396,15 @@ const DiskModal = ({
                   <input 
                     type="checkbox" 
                     id="backup" 
+                    checked={formState.active}
+                    onChange={(e) => setFormState((prev) => ({ ...prev, bootable: e.target.checked }))}
+                  />
+                  <label htmlFor="backup">디스크 활성화</label>
+                </div>
+                <div>
+                  <input 
+                    type="checkbox" 
+                    id="backup" 
                     checked={formState.bootable}
                     onChange={(e) => setFormState((prev) => ({ ...prev, bootable: e.target.checked }))}
                   />
@@ -410,7 +419,7 @@ const DiskModal = ({
                   />
                   <label htmlFor="backup">읽기전용</label>
                 </div>
-                <div>
+                {/* <div>
                   <input 
                     type="checkbox" 
                     id="backup" 
@@ -418,7 +427,7 @@ const DiskModal = ({
                     onChange={(e) => setFormState((prev) => ({ ...prev, cancelActive: e.target.checked }))}
                   />
                   <label htmlFor="backup">취소 활성화</label>
-                </div>
+                </div> */}
                 </>
               )}
  
@@ -443,7 +452,7 @@ const DiskModal = ({
               </div>
 
             </div>
-          </div>
+         
         </div>
         {/* )} */}
         {/* 직접LUN

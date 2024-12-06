@@ -195,10 +195,11 @@ class VmServiceImpl(
 	@Throws(Error::class)
 	override fun update(vmVo: VmVo): VmVo? {
 		log.info("update ... {}", vmVo.name)
-		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
-			log.error("디스크 부팅가능은 한개만 가능")
-			throw ErrorPattern.VM_VO_INVALID.toException()
-		}
+		// 나중에 조건풀기
+//		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
+//			log.error("디스크 부팅가능은 한개만 가능")
+//			throw ErrorPattern.VM_VO_INVALID.toException()
+//		}
 
 		val existDiskAttachments: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmVo.id).getOrDefault(listOf())

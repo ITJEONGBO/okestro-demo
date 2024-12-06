@@ -533,10 +533,12 @@ useEffect(() => {
 
 
   const handleFormSubmit = () => { // 디스크  연결은 id값 보내기 생성은 객체로 보내기
+    
     if (maxMemory > 9223372036854775807 ||  memorySize > 9223372036854775807) {
       alert('메모리 값이 너무 큽니다. 다시 확인해주세요.');
       return;
     }
+    
     const selectedCluster = clusters.find((c) => c.id === clusterVoId);
     if (!selectedCluster) {
         alert("클러스터를 선택해주세요.");
@@ -616,6 +618,7 @@ useEffect(() => {
 
     if (editMode) {
       dataToSubmit.id = id; // 수정 모드에서는 id를 추가
+       console.log('Editing VM with data:', dataToSubmit);
       editVM({
         vmId: id,
         vmdata: dataToSubmit

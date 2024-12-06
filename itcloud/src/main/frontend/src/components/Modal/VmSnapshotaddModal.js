@@ -69,12 +69,12 @@ const VmSnapshotAddModal = ({
 
         <div className="p-1">
           <div className="host_textbox mb-1">
-            <label htmlFor="user_name">사용자 이름</label>
+            <label htmlFor="description">설명</label>
             <input
               type="text"
-              id="user_name"
-              value={alias}
-              onChange={(e) => setAlias(e.target.value)} // 사용자 입력 관리
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)} // 사용자 입력 관리
             />
           </div>
           <div>
