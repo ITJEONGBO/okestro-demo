@@ -16,7 +16,7 @@ const DataCenterClusters = ({ datacenterId }) => {
   return (
     <>
       <ClusterDupl
-        clusters={clusters}
+        clusters={clusters || []}
         columns={TableInfo.CLUSTERS_FROM_DATACENTER}
         onRowClick={setSelectedCluster}
         onCreate={() => toggleModal('create', true)}

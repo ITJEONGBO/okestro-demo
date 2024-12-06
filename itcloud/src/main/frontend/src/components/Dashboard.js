@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, memo } from 'react';
 import { adjustFontSize } from '../UIEvent';
 import { debounce } from 'lodash'; // 리스너의 호출 빈도를 줄이기 위해 디바운싱을 사용
 import './Dashboard.css'

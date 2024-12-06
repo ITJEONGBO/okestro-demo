@@ -53,7 +53,7 @@ const HostTable = ({
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedHost(row)}
-        clickableColumnIndex={[1]}
+        clickableColumnIndex={[2]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
     </>
