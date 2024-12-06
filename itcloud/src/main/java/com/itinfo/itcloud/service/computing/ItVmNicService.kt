@@ -113,8 +113,7 @@ class VmNicServiceImpl(
 	@Throws(Error::class)
 	override fun removeFromVm(vmId: String, nicId: String): Boolean {
 		log.info("removeFromVm ... ")
-		val res: Result<Boolean> =
-			conn.removeNicFromVm(vmId, nicId)
+		val res: Result<Boolean> = conn.removeNicFromVm(vmId, nicId)
 		return res.isSuccess
 	}
 
