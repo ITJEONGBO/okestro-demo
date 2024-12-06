@@ -518,15 +518,15 @@ fun Connection.updateMultipleNicsFromVm(vmId: String, vnicProfileIds: List<Strin
 
 
 fun Connection.removeNicFromVm(vmId: String, nicId: String): Result<Boolean> = runCatching {
-	if(this.findVm(vmId).isFailure){
-		throw ErrorPattern.VM_NOT_FOUND.toError()
-	}
+	val vm: Vm = this.findVm(vmId)
+		.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+
 	val nic: Nic = this@removeNicFromVm.findNicFromVm(vmId, nicId)
 		.getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
 
-	if (nic.plugged()) {
-		log.error("nic가 plug된 상태")
-		return Result.failure(Error("nic가 plug된 상태"))
+	if (vm.status() == VmStatus.UP && nic.linked()) {
+		log.error("nic 카드 분리필요")
+		return Result.failure(Error("nic 카드 분리필요"))
 	}
 	srvNicFromVm(vmId, nicId).remove().send()
 	true
