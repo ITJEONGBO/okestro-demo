@@ -53,7 +53,7 @@ const TemplateNics = ({templateId}) => {
           columns={TableInfo.NICS_FROM_TEMPLATES} 
           onRowClick={(row) => setSelectedVnicProfiles(row)}
           data={vnicProfiles}
-          clickableColumnIndex={[]} 
+          clickableColumnIndex={[3,4]} 
         />
       {/*vNIC 프로파일(새로만들기)팝업 */}
       <Suspense>
@@ -69,11 +69,11 @@ const TemplateNics = ({templateId}) => {
             {modals.delete && selectedVnicProfiles && (
                 <DeleteModal
                     isOpen={modals.delete}
-                    type='NetworkInterface'
+                    type='NetworkInterfaceFromTemplate'
                     onRequestClose={() => toggleModal('delete', false)}
-                    contentLabel={'NetworkInterface'}
+                    contentLabel={'네트워크 인터페이스'}
                     data={ selectedVnicProfiles}
-                    vmId={vnicProfiles?.id}
+                    templateId={templateId}
                 />
             )}
             </Suspense>

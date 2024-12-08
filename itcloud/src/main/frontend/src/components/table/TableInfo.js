@@ -282,10 +282,10 @@ const TableInfo = {
     NICS_FROM_TEMPLATES: [
       { header: '', accessor: 'icon', clickable: false, width: '7%' },
       { header: '이름', accessor: 'name', clickable: false },
-      { header: '연결됨', accessor: 'linked', clickable: true},
-      { header: '네트워크 이름', accessor: 'network', clickable: false },
-      { header: '프로파일 이름', accessor: 'vnicProfile', clickable: false },
-      { header: '링크 상태', accessor: 'status', clickable: false },
+      { header: '연결됨', accessor: 'checkbox', clickable: true},
+      { header: '네트워크 이름', accessor: 'networkVo', clickable: false },
+      { header: '프로파일 이름', accessor: 'vnicProfileVo', clickable: false },
+      { header: '링크 상태', accessor: 'linked', clickable: false },
       { header: '유형', accessor: 'interface_', clickable: false },
     ],
     

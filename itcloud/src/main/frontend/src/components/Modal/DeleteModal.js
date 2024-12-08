@@ -13,7 +13,8 @@ import {
   useDeleteVnicProfile, // 네트워크 삭제 추가
   useDeleteDomain, // 스토리지도메인 삭제
   useDeleteNetworkInterface,
-  useDeleteDisk
+  useDeleteDisk,
+  useDeleteNetworkFromTemplate
 } from '../../api/RQHook';
 
 const DeleteModal = ({ 
@@ -23,7 +24,8 @@ const DeleteModal = ({
     contentLabel, 
     data,
     networkId,// 외부에서 전달된 prop TODO 바꿔야함
-    vmId
+    vmId,
+    templateId
     
 }) => {
   const [id, setId] = useState('');
@@ -38,6 +40,7 @@ const DeleteModal = ({
   const { mutate: deleteVnicProfile } = useDeleteVnicProfile();
   const { mutate: deleteDomain } = useDeleteDomain();
   const { mutate: deleteNetworkInterface } = useDeleteNetworkInterface();
+  const { mutate: deleteNicFromTemplate } = useDeleteNetworkFromTemplate();
   const { mutate: deleteDisk } = useDeleteDisk();
 
   const navigate = useNavigate();
@@ -92,7 +95,11 @@ const DeleteModal = ({
       handleDelete(deleteDomain);
     } else if (type === 'NetworkInterface') {
       handleDelete(() => deleteNetworkInterface({ vmId, nicId: id }));
-      console.log('Deleting Template');
+      console.log('Deleting NetworkInterface');
+      onRequestClose();
+    }else if (type === 'NetworkInterfaceFromTemplate') {
+      handleDelete(() => deleteNicFromTemplate({ templateId, nicId: id }));
+      console.log('Deleting NicFromTemplate');
       onRequestClose();
     }else if (type === 'Disk') {
       console.log('Deleting Disk');

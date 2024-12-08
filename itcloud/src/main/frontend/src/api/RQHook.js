@@ -1712,7 +1712,7 @@ export const useDeleteTemplate = () => {
 export const useAddNicFromTemplate = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (nicData) => await ApiManager.addNicFromTemplate(nicData),
+    mutationFn: async ({templateId,nicData}) => await ApiManager.addNicFromTemplate(templateId,nicData),
     onSuccess: () => {
       queryClient.invalidateQueries('AllNicsFromTemplate'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
     },
@@ -1741,7 +1741,29 @@ export const useEditNicFromTemplate = () => {
   });
 };
 
-
+/**
+ * @name useNetworkInterface
+ * @description 템플릿 네트워크 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteNetworkFromTemplate = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({ templateId,nicId}) => {
+      // ID들이 제대로 전달되는지 확인하기 위해 로그 추가
+      console.log('Deleting VnicProfile with templateId:', templateId);
+      console.log('Deleting VnicProfile with nicId:', nicId);
+      return await ApiManager.deleteNicFromTemplate(templateId,nicId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries('AllNicsFromTemplate');
+    },
+    onError: (error) => {
+      console.error('Error deleting NetworkInterface:', error);
+    },
+  });
+};
 
 //endregion: TEMPLATE
 
