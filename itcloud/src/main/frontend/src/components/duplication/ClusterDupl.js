@@ -1,69 +1,47 @@
-import React, { Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
-import TablesOuter from '../table/TablesOuter';
+import React, { useState } from 'react';
 import ClusterActionButtons from '../button/ClusterActionButtons';
-
-const ClusterModal = React.lazy(() => import('../Modal/ClusterModal'));
-const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
+import ClusterTable from '../table/ClusterTable';
+import ClusterModals from '../Modal/ClusterModals';
 
 const ClusterDupl = ({
   clusters,
   columns,
-  onRowClick,
-  onCreate,
-  onEdit,
-  onDelete,
-  selectedCluster,
-  toggleModal,
-  modals,
+  onFetchClusters,
+  status,
   datacenterId = null,
 }) => {
-  const navigate = useNavigate();
-
-  const handleNameClick = (id) => {
-    navigate(`/computing/clusters/${id}`);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
+  const [action, setAction] = useState(null); // 현재 동작
+  const [selectedCluster, setSelectedCluster] = useState(null);
+  
+  const handleActionClick = (actionType) => {
+    setAction(actionType); // 동작 설정
+    setIsModalOpen(true); // 모달 열기
   };
 
   return (
   <>
     <ClusterActionButtons
-      onCreate={onCreate}
-      onEdit={onEdit}
-      onDelete={onDelete}
+      onCreate={() => handleActionClick('create')}
+      onEdit={() => selectedCluster?.id && handleActionClick('edit')}
+      onDelete={() => selectedCluster?.id && handleActionClick('delete')}
       isEditDisabled={!selectedCluster?.id}
     />
     <span>id = {selectedCluster?.id || ''}</span>
 
-    <TablesOuter
+    <ClusterTable
       columns={columns}
-      data={clusters}
-      shouldHighlight1stCol={true}
-      onRowClick={onRowClick}
-      clickableColumnIndex={[0]}
-      onClickableColumnClick={(row) => handleNameClick(row.id)}
+      clusters={clusters}
+      selectedCluster={selectedCluster}
+      setSelectedCluster={setSelectedCluster}
     />
 
-    {/* 모달 컴포넌트를 사용할 때만 로딩 */}
-    <Suspense>
-      {(modals.create || (modals.edit && selectedCluster)) && (
-        <ClusterModal
-          isOpen={modals.create || modals.edit}
-          onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
-          editMode={modals.edit}
-          cId={selectedCluster?.id || null}
-          datacenterId={datacenterId}
-        />
-      )}
-      {modals.delete && selectedCluster && (
-        <DeleteModal
-          isOpen={modals.delete}
-          type="Cluster"
-          onRequestClose={() => toggleModal('delete', false)}
-          contentLabel="클러스터"
-          data={selectedCluster}
-        />
-      )}
-    </Suspense>
+    <ClusterModals
+      isModalOpen={isModalOpen}
+      action={action}
+      onRequestClose={() => setIsModalOpen(false)}
+      selectedCluster={selectedCluster}
+    />
   </>
   );
 };

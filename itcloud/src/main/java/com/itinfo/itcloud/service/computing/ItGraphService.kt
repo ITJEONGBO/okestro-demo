@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.auth.RutilProperties
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.*
@@ -114,6 +115,7 @@ interface ItGraphService {
 class GraphServiceImpl(
 
 ): BaseService(), ItGraphService {
+	@Autowired private lateinit var rutil: RutilProperties
 	@Autowired private lateinit var hostSamplesHistoryRepository: HostSamplesHistoryRepository
 	@Autowired private lateinit var hostInterfaceSampleHistoryRepository: HostInterfaceSampleHistoryRepository
 	@Autowired private lateinit var vmSamplesHistoryRepository: VmSamplesHistoryRepository
@@ -128,7 +130,7 @@ class GraphServiceImpl(
 
 	override fun getDashboard(): DashBoardVo {
 		log.info("getDashboard ... ")
-		return conn.toDashboardVo()
+		return conn.toDashboardVo(rutil)
 	}
 
 	override fun totalCpuMemory(): HostUsageDto {

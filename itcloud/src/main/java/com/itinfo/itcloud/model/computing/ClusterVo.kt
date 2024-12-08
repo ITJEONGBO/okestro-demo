@@ -235,7 +235,7 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 		.comment(this@toClusterBuilder.comment)
 		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.networkVo.id).build())
 		.biosType(BiosType.fromValue(this@toClusterBuilder.biosType))
-		.fipsMode(FipsMode.UNDEFINED)
+//		.fipsMode(FipsMode.UNDEFINED)
 		.version(VersionBuilder().major(4).minor(7).build())
 		.switchType(SwitchType.LEGACY)  // 편집에선 선택불가
 		.firewallType(FirewallType.FIREWALLD)
@@ -263,7 +263,7 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
  */
 fun ClusterVo.toAddClusterBuilder(conn: Connection): Cluster =
 	// 생성시 fips 모드, 호환버전, 스위치 유형, 방화벽유형, 기본네트워크 공급자, virt 서비스 활성화, gluster 서비스 활성화 기본설정
-	this@toAddClusterBuilder.toClusterBuilder(conn).build()
+	this@toAddClusterBuilder.toClusterBuilder(conn).fipsMode(FipsMode.UNDEFINED).build()
 
 /**
  * 클러스터 편집 빌더

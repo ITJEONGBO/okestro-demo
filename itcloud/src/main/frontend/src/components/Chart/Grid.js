@@ -18,12 +18,12 @@ const Grid = ({ type, data = [] }) => {
   
 
   const getBackgroundColor = (value) => {
-    if (value === null || value === 0) return 'rgb(219 242 255)';
-    if (value >= 0 && value <= 10) return 'rgb(255 231 163)';
+    if (value === null ) return 'rgb(219 242 255)';
+    if (value >= 0 && value <= 10) return 'rgb(253 255 229)';
     if (value > 10 && value <= 30) return 'rgb(255 185 98)';
     if (value > 30 && value <= 60) return '#fb9f2c';
     if (value > 60 && value <= 75) return 'rgb(255 106 0)';
-    if (value > 75 && value <= 100) return 'rgb(255 97 120)';
+    if (value > 75 && value <= 100) return 'rgb(226,29,29)';
     return 'white';
   };
 
@@ -49,10 +49,12 @@ const Grid = ({ type, data = [] }) => {
           }}
         >
           
-          {item.cpuPercent !== null && item.memoryPercent !== null ? (
-            <div className="percent">{type === 'cpu' ? item.cpuPercent : item.memoryPercent}%</div>
+          {item.cpuPercent !== null || item.memoryPercent !== null ? (
+            <div className="percent">
+                {type === 'cpu' ? item.cpuPercent : item.memoryPercent}%
+            </div>
           ) : (
-            <div className="percent placeholder" style={{ color: 'rgb(219 242 255)' }}>.</div>
+            <div className="percent placeholder" style={{ color: 'rgb(0 0 0)' }}>-</div>
           )}
         </div>
       ))}

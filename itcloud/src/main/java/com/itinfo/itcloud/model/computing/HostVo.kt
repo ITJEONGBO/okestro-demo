@@ -32,9 +32,9 @@ private val log = LoggerFactory.getLogger(HostVo::class.java)
  * @property hostedScore [Int] 점수
  * @property iscsi [String]
  * @property kdump  [KdumpStatus]   kdumpStatus(disabled, enabled, unknown)
- * @property ksm [Boolean] 메모리 페이지 공유
+ * @property ksm [Boolean]  hosted engine ksm enable = 금장
  * @property seLinux [SeLinuxMode] SeLinuxMode(disabled, enforcing, permissive)
- * @property hostedEngine [Boolean] spm Hosted Engine HA [ 금장, 은장, null ]
+ * @property hostedEngine [Boolean] Hosted Engine 여부 [ 금장, 은장, null ]
  * @property spmPriority [Int] spm 우선순위
  * @property spmStatus [SpmStatus] spm 상태
  * @property sshFingerPrint [String] ssh
@@ -190,8 +190,9 @@ fun List<Host>.toHostsIdName(): List<HostVo> =
  * 호스트 목록
  */
 fun Host.toHostMenu(conn: Connection, usageDto: UsageDto?): HostVo {
-    val cluster: Cluster? =
-        conn.findCluster(this@toHostMenu.cluster().id()).getOrNull()
+    val cluster: Cluster? = conn.findCluster(this@toHostMenu.cluster().id())
+        .getOrNull()
+
     val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
         conn.findDataCenter(it).getOrNull()
     }
@@ -201,7 +202,8 @@ fun Host.toHostMenu(conn: Connection, usageDto: UsageDto?): HostVo {
         name { this@toHostMenu.name() }
         comment { this@toHostMenu.comment() }
         status { this@toHostMenu.status() }
-//    hostedEngine {  }
+        ksm { this@toHostMenu.ksm().enabled() }
+        hostedEngine { this@toHostMenu.hostedEnginePresent() }
         address { this@toHostMenu.address() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }

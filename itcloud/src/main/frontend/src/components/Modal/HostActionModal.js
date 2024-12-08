@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate, useLocation } from 'react-router-dom';
 import {
   useDeactivateHost,
   useActivateHost, 
@@ -19,9 +18,6 @@ const HostActionModal = ({
   const { mutate: deactivateHost } = useDeactivateHost();
   const { mutate: activateHost } = useActivateHost();
   const { mutate: restartHost } = useRestartHost();
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -101,7 +97,7 @@ const HostActionModal = ({
     >
       <div className="storage_delete_popup">
         <div className="popup_header">
-          <h1>호스트 {contentLabel} {id}</h1>
+          <h1>호스트 {contentLabel}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>

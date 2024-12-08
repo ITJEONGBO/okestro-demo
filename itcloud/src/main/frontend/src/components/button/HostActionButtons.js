@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './css/HostAction.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -18,16 +18,33 @@ const HostActionButtons = ({
   isEditDisabled,
   status
 }) => {
-  const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-  const [isDropDownOpen2, setIsDropDownOpen2] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null); // 현재 활성화된 드롭다운
+  const dropdownRef = useRef(null);
+  const dropdownRef2 = useRef(null);
 
-  const toggleDropDown = () => {
-    setIsDropDownOpen(!isDropDownOpen);
+  const toggleDropDown = (dropdownName) => {
+    setActiveDropdown((prev) => (prev === dropdownName ? null : dropdownName));
   };
 
-  const toggleDropDown2 = () => {
-    setIsDropDownOpen2(!isDropDownOpen2);
+  const closeDropdowns = () => {
+    setActiveDropdown(null);
   };
+
+  const handleClickOutside = (event) => {
+    if (
+      dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+      dropdownRef2.current && !dropdownRef2.current.contains(event.target)
+    ) {
+      closeDropdowns();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   
   const isUp = status === 'UP';
   const isMaintenance = status === 'MAINTENANCE';
@@ -35,6 +52,7 @@ const HostActionButtons = ({
   const handleClick = (label, action) => {
     console.log(`Button clicked: ${label}`);
     action?.();
+    closeDropdowns(); // 동작 후 드롭다운 닫기
   };
 
   const manageActions = [
@@ -62,14 +80,14 @@ const HostActionButtons = ({
         <button onClick={onDelete} disabled={isEditDisabled || isUp || !isMaintenance }>삭제</button>
       } 
       {/* 관리 버튼 */}
-      <div className="dropdown-container">
-        <button onClick={toggleDropDown} className="manage-button">
+      <div ref={dropdownRef} className="dropdown-container">
+        <button onClick={() => toggleDropDown('manage')} className="manage-button">
           관리
-          <FontAwesomeIcon icon={isDropDownOpen ? faChevronUp : faChevronDown} />
+          <FontAwesomeIcon icon={activeDropdown === 'manage' ? faChevronUp : faChevronDown} />
         </button>
-        {isDropDownOpen && (
+        {activeDropdown === 'manage' && (
           <div className="dropdown-menu">
-            { manageActions.map(({ onClick, label, disabled }, index) => (
+            {manageActions.map(({ onClick, label, disabled }, index) => (
               <button
                 key={index}
                 onClick={() => handleClick(label, onClick)}
@@ -83,12 +101,12 @@ const HostActionButtons = ({
         )}
       </div>
 
-      <div className="dropdown-container">
-        <button onClick={toggleDropDown2} className="manage-button">
+      <div ref={dropdownRef2} className="dropdown-container">
+        <button onClick={() => toggleDropDown('settings')} className="manage-button">
           :
-          <FontAwesomeIcon icon={isDropDownOpen2 ? faChevronUp : faChevronDown} />
+          <FontAwesomeIcon icon={activeDropdown === 'settings' ? faChevronUp : faChevronDown} />
         </button>
-        {isDropDownOpen2 && (
+        {activeDropdown === 'settings' && (
           <div className="dropdown-menu">
             {settingActions.map(({ onClick, label, disabled }, index) => (
               <button

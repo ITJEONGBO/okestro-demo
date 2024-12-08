@@ -73,7 +73,7 @@ fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false, name: St
 			.nameDuplicateHost(host.name())) {
 		return FailureType.DUPLICATE.toResult(Term.HOST.desc)
 	}
-
+	log.info("why ? ${host.address()}")
 	val address: InetAddress = InetAddress.getByName(host.address())
 	log.info("Resolved address: {}", address)
 	if (address.makeUserHostViaSSH(host.rootPassword(), 22, name, password).isFailure) {

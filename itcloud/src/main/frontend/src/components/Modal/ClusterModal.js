@@ -308,11 +308,15 @@ const ClusterModal = ({
               onChange={(e) => setDataCenterVoId(e.target.value)}
               disabled={editMode}
             >
-              {datacenters && datacenters.map((dc) => (
-                <option key={dc.id} value={dc.id}>
-                  {dc.name} : {dataCenterVoId}
-                </option>
-              ))}
+              {isDataCenterLoading ? (
+                <option>로딩중~</option>
+              ) : (
+                datacenters.map((dc) => (
+                  <option key={dc.id} value={dc.id}>
+                    {dc.name} ({dc.id})
+                  </option>
+                ))
+              )}
             </select>
           </FormGroup>
           <hr/>
@@ -347,11 +351,15 @@ const ClusterModal = ({
               onChange={(e) => setNetworkVoId(e.target.value)}
               disabled={editMode}
             >
-              {networks && networks.map((n) => (
-                <option key={n.id} value={n.id}>
-                  {n.name} : {networkVoId}
-                </option>
-              ))}
+              {isNetworksLoading ? (
+                <option>로딩중~</option>
+              ) : (
+                networks.map((n) => (
+                  <option key={n.id} value={n.id}>
+                    {n.name} ({n.id})
+                  </option>
+                ))
+              )}
             </select>
           </FormGroup>
 

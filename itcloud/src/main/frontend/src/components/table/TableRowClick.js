@@ -1,7 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const TableRowClick = ({ type, id, children, style }) => {
+const TableRowClick = ({ 
+  type, 
+  id, 
+  children, 
+  style 
+}) => {
   const navigate = useNavigate();
 
   const handleClick = (e) => {

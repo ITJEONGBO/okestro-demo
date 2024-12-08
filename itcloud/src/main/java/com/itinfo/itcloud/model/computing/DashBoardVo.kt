@@ -1,13 +1,13 @@
 package com.itinfo.itcloud.model.computing
 
 import com.itinfo.itcloud.gson
+import com.itinfo.itcloud.model.auth.RutilProperties
 import com.itinfo.itcloud.ovirtDf
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
-import java.util.Date
 
 private val log = LoggerFactory.getLogger(DashBoardVo::class.java)
 
@@ -48,6 +48,8 @@ class DashBoardVo (
     val eventsError: Int = 0,
     val eventsWarning: Int = 0,
     val bootTime: String = "",
+    val version: String = "",
+    val releaseDate: String = "",
 
 ): Serializable {
     override fun toString(): String =
@@ -69,8 +71,11 @@ class DashBoardVo (
         private var bEventAlert: Int = 0; fun eventsAlert(block: () -> Int?) { bEventAlert = block() ?: 0}
         private var bEventError: Int = 0; fun eventsError(block: () -> Int?) { bEventError = block() ?: 0}
         private var bEventsWarning: Int = 0; fun eventsWarning(block: () -> Int?) { bEventsWarning = block() ?: 0}
-        private var bBootTime: String = ""; fun bootTime(block: () -> String?) {bBootTime=block()?:""}
-        fun build(): DashBoardVo = DashBoardVo(bDatacenters, bDatacentersUp, bDatacentersDown, bClusters, bHosts, bHostsUp, bHostsDown, bVms, bVmsUp, bVmsDown, bStorageDomains, bEvents, bEventAlert, bEventError, bEventsWarning, bBootTime)
+        private var bBootTime: String = ""; fun bootTime(block: () -> String?) {bBootTime = block() ?: ""}
+        private var bVersion: String = ""; fun version(block: () -> String?) { bVersion = block() ?: "" }
+        private var bReleaseDate: String = ""; fun releaseDate(block: () -> String?) { bReleaseDate = block() ?: "" }
+
+        fun build(): DashBoardVo = DashBoardVo(bDatacenters, bDatacentersUp, bDatacentersDown, bClusters, bHosts, bHostsUp, bHostsDown, bVms, bVmsUp, bVmsDown, bStorageDomains, bEvents, bEventAlert, bEventError, bEventsWarning, bBootTime, bVersion, bReleaseDate)
     }
 
     companion object {
@@ -78,7 +83,7 @@ class DashBoardVo (
     }
 }
 
-fun Connection.toDashboardVo(): DashBoardVo {
+fun Connection.toDashboardVo(rutilProperties: RutilProperties): DashBoardVo {
     val allDataCenters = this@toDashboardVo.findAllDataCenters().getOrDefault(listOf())
     val allHosts = this@toDashboardVo.findAllHosts().getOrDefault(listOf())
     val allVms = this@toDashboardVo.findAllVms().getOrDefault(listOf())
@@ -130,5 +135,7 @@ fun Connection.toDashboardVo(): DashBoardVo {
         eventsError { eventsError }
         eventsWarning { eventsWarning }
         bootTime { date?.let { ovirtDf.format(it) } }
+        version { rutilProperties.version }
+        releaseDate { rutilProperties.releaseDate }
     }
 }

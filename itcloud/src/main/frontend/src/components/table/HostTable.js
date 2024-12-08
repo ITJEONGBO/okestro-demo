@@ -3,7 +3,7 @@ import TablesOuter from './TablesOuter';
 import TableRowClick from './TableRowClick';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faFire } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil, faWrench } from '@fortawesome/free-solid-svg-icons';
 
 const HostTable = ({
   columns,
@@ -18,12 +18,15 @@ const HostTable = ({
 
   const renderStatusIcon = (status) => {
     if (status === 'UP') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'green', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
     } else if (status === 'DOWN') {
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+    } else if (status === 'MAINTENANCE') {
+      return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
     }
     return status;
   };
+
 
   return (
     <>
@@ -33,7 +36,21 @@ const HostTable = ({
         data={hosts.map((host) => ({
           ...host,
           icon: renderStatusIcon(host.status),
-          engine: <FontAwesomeIcon icon={faFire} fixedWidth style={{ color: 'yellow', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />,
+          ksm: host?.ksm ? 'o' : 'x',
+          hostedEngine: 
+          host?.hostedEngine && host?.ksm ? (
+              <FontAwesomeIcon 
+                  icon={faPencil} 
+                  fixedWidth 
+                  style={{ color: 'gold', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
+              />
+          ) : host?.hostedEngine ? (
+              <FontAwesomeIcon 
+                  icon={faPencil} 
+                  fixedWidth 
+                  style={{ color: 'grey', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
+              />
+          ) : (''),
           status: host?.status,
           spmStatus: host?.spmStatus === 'NONE' ? '보통' : host?.spmStatus,
           vmCnt: host?.vmSizeVo.allCnt,

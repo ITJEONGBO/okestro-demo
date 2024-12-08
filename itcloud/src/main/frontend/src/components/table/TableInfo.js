@@ -59,7 +59,7 @@ const TableInfo = {
 
   HOSTS: [
     { header: '', accessor: 'icon', clickable: false },
-    { header: '', accessor: 'engine', clickable: false },
+    { header: '', accessor: 'hostedEngine', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '호스트 이름/IP', accessor: 'address', clickable: false },

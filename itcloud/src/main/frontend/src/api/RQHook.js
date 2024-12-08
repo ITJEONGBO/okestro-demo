@@ -819,7 +819,7 @@ export const useDeactivateHost = () => {
     mutationFn: async (hostId) => await ApiManager.deactivateHost(hostId),
     onSuccess: () => {
       console.log(`useDeactivateHost ... `);
-      // queryClient.invalidateQueries('allHosts');
+      queryClient.invalidateQueries('allHosts');
     },
     onError: (error) => {
       console.error('Error deactivate host:', error);
@@ -838,7 +838,7 @@ export const useActivateHost = () => {
   return useMutation({
     mutationFn: async (hostId) => await ApiManager.activateHost(hostId),
     onSuccess: () => {
-      // queryClient.invalidateQueries('allHosts');
+      queryClient.invalidateQueries('allHosts');
     },
     onError: (error) => {
       console.error('Error deactivate host:', error);
@@ -858,7 +858,7 @@ export const useRestartHost = () => {
     mutationFn: async (hostId) => await ApiManager.restartHost(hostId),
     onSuccess: () => {
       console.log(`useRestartHost ... `);
-      // queryClient.invalidateQueries('allHosts');
+      queryClient.invalidateQueries('allHosts');
     },
     onError: (error) => {
       console.error('Error restart host:', error);

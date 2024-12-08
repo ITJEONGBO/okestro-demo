@@ -55,7 +55,6 @@ const HostModal = ({
     isLoading: isClustersLoading,
   } = useAllClusters((e) => ({
     ...e,
-    dataCenterName: e?.datacenterVo.name
   }));
 
   // 데이터센터에서 호스트 생성시
@@ -186,12 +185,16 @@ const HostModal = ({
               onChange={(e) => setClusterVoId(e.target.value)}
               disabled={editMode}
             >
-              {clusters &&
+              {isClustersLoading ? (
+                <option>로딩중~</option>
+              ) : (
                 clusters.map((c) => (
-                  <option value={c.id}>{c.name} </option>
-                ))}
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.id})
+                  </option>
+                ))
+              )}
             </select>
-            <span>{clusterVoId}</span>
           </div>
           <hr/>
 
