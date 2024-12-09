@@ -3,7 +3,7 @@ import TablesOuter from './TablesOuter';
 import TableRowClick from './TableRowClick';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh } from '@fortawesome/free-solid-svg-icons';
 
 const HostTable = ({
   columns,
@@ -23,6 +23,8 @@ const HostTable = ({
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
     } else if (status === 'MAINTENANCE') {
       return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
+    } else if (status === 'REBOOT') {
+      return <FontAwesomeIcon icon={faRefresh} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
     }
     return status;
   };
