@@ -166,7 +166,7 @@ fun Connection.addVm(
 	vm: Vm,
 	diskAttachments: List<DiskAttachment>,
 	vnicIds: List<String>,
-	connId: String
+	connId: String?,
 ): Result<Vm?> = runCatching {
 	if (this.findAllVms()
 			.getOrDefault(listOf())
@@ -184,7 +184,7 @@ fun Connection.addVm(
 	if(vnicIds.isNotEmpty()) {
 		this.addMultipleNicsFromVm(vmAdded.id(), vnicIds)
 	}
-	if(connId.isNotEmpty()) {
+	if(connId != null) {
 		this.selectCdromFromVm(vmAdded.id(), connId)
 	}
 
@@ -206,7 +206,7 @@ fun Connection.updateVm(
 	addDiskAttachments: List<DiskAttachment>,
 	deleteDiskAttachments: List<DiskAttachment>,
 	vnicIds: List<String>,
-	connId: String
+	connId: String?
 ): Result<Vm?> = runCatching {
 	if (this.findAllVms()
 			.getOrDefault(listOf())
@@ -224,7 +224,9 @@ fun Connection.updateVm(
 	this.addMultipleDiskAttachmentsToVm(vmUpdated.id(), addDiskAttachments)
 //	this.removeDiskAttachmentToVm(vmUpdated.id(), deleteDiskAttachments)
 	this.addMultipleNicsFromVm(vmUpdated.id(), vnicIds)
-	this.selectCdromFromVm(vmUpdated.id(), connId)
+	if (connId != null) {
+		this.selectCdromFromVm(vmUpdated.id(), connId)
+	}
 
 	vmUpdated
 }.onSuccess {
