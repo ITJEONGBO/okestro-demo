@@ -123,7 +123,7 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED")
 	)
-	@PostMapping("/{storageDomainId}")
+	@PutMapping("/{storageDomainId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun editStorageDomain(

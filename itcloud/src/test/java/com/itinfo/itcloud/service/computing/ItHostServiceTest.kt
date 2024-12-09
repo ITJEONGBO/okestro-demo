@@ -7,6 +7,7 @@ import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.IscsiDetailVo
+import com.itinfo.itcloud.model.storage.StorageDomainVo
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -267,6 +268,22 @@ class ItHostServiceTest {
 		log.debug("should_findImportIscsiFromHost ...")
 		val result: List<IscsiDetailVo> =
 			service.findImportIscsiFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a", "192.168.0.160")
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+	}
+
+	/**
+	 * [should_findImportIscsiFromHost]
+	 * [ItHostService.findUnregisterDomainFromHost]에 대한 단위테스트
+	 *
+	 * @see ItHostService.findUnregisterDomainFromHost
+	 */
+	@Test
+	fun should_findUnregisterDomainFromHost() {
+		log.debug("should_findUnregisterDomainFromHost ...")
+		val result: List<StorageDomainVo> =
+			service.findUnregisterDomainFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a")
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }

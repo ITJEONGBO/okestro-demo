@@ -35,8 +35,8 @@ const DomainModal = ({
 }) => {
   const [formState, setFormState] = useState({
     id: '',
-    domainType: 'DATA', // 기본값 설정
-    storageType: 'NFS', // 기본값 설정
+    domainType: 'data', // 기본값 설정
+    storageType: 'nfs', // 기본값 설정
     name: '',    
     comment: '',
     description: '',
@@ -98,6 +98,7 @@ const DomainModal = ({
   } = useIscsiFromHost(
     hostVoId ? hostVoId : null, (e) => ({
       ...e,
+      abled: e?.logicalUnits[0].storageDomainId === "" ? 'OK' : 'NO',
       target: e?.logicalUnits[0].target,
       address: e?.logicalUnits[0].address,
       port: e?.logicalUnits[0].port,
@@ -133,19 +134,28 @@ const DomainModal = ({
   // const handleTabChange = (tab) => {setActiveTab(tab);};
 
   const domainTypes = [
-    { value: "DATA", label: "데이터" },
-    { value: "ISO", label: "ISO" },
-    { value: "EXPORT", label: "내보내기" },
+    { value: "data", label: "데이터" },
+    { value: "iso", label: "ISO" },
+    { value: "export", label: "내보내기" },
   ];
 
   const storageTypeOptions = (dType) => {
     switch (dType) {
-      case 'DATA':
-        return ['NFS', 'ISCSI', 'FCP'];
-      case 'ISO' || 'EXPORT':
-        return ['NFS'];
-      default: 
-        return ['NFS', 'ISCSI', 'FCP'];
+      case 'data':
+        return [
+          { value: 'nfs', label: 'NFS' },
+          { value: 'iscsi', label: 'ISCSI' },
+          { value: 'fcp', label: 'Fibre Channel' },
+        ];
+      case 'iso':
+      case 'export':
+        return [{ value: 'nfs', label: 'NFS' }];
+      default:
+        return [
+          { value: 'nfs', label: 'NFS' },
+          { value: 'iscsi', label: 'ISCSI' },
+          { value: 'fcp', label: 'Fibre Channel' },
+        ];
     }
   };
 
@@ -153,8 +163,8 @@ const DomainModal = ({
     if (action === 'edit' && domain) {
       const updatedState = {
         id: domain.id || '',
-        domainType: domain.domainType || '',
-        storageType: domain.storageType || '',
+        domainType: domain.domainType || '', 
+        storageType: domain.storageType || '', 
         name: domain.name || '',    
         comment: domain.comment || '',
         description: domain.description || '',
@@ -162,28 +172,30 @@ const DomainModal = ({
         spaceBlocker: domain.spaceBlocker || '',
       };
       setFormState(updatedState);
-      setDataCenterVoId(domain?.datacenterVo?.id);
-      setHostVoName(domain?.hostVo?.name);
-      setHostVoId(domain?.hostVo?.id);
-  
-      if (updatedState.storageType === 'NFS') {
-        setStoragePath(domain?.storagePath);
-        setStorageAddress(domain?.storageAddress);
-      } else if (updatedState.storageType === 'ISCSI' || updatedState.storageType === 'FCP') {
-        setLunId(domain.logicalUnits[0]?.id);
+      setDataCenterVoId(domain?.dataCenterVo?.id || '');
+      setHostVoId(domain?.hostVo?.id || '');
+      setHostVoName(domain?.hostVo?.name || '');     
+      
+      if (updatedState.storageType === 'nfs') {
+        setStoragePath(domain?.storagePath || '');
+        setStorageAddress(domain?.storageAddress || '');
+      } else if (updatedState.storageType === 'iscsi' || updatedState.storageType === 'fcp') {
+        setLunId(domain?.logicalUnits[0]?.id || '');
       }
+    } else if (action !== 'edit') {
+      resetForm();
     }
-  }, [action, domain]);
+  }, [action, domain]);  
   
   
   useEffect(() => {
-    if (!(action === 'edit') && dataCenters && dataCenters.length > 0) {
+    if (action !== 'edit' && dataCenters && dataCenters.length > 0) {
       setDataCenterVoId(dataCenters[0].id);
     }
   }, [dataCenters, action]);
   
   useEffect(() => {
-    if (!(action === 'edit') && hosts && hosts.length > 0) {
+    if (action !== 'edit' && hosts && hosts.length > 0) {
       setHostVoName(hosts[0].name);
       setHostVoId(hosts[0].id);
     }
@@ -192,30 +204,28 @@ const DomainModal = ({
   useEffect(() => {
     const options = storageTypeOptions(formState.domainType);
     setStorageTypes(options);
-    if (!(action === 'edit')) {
+  
+    // 기본 storageType을 options의 첫 번째 값으로 설정
+    if (action !== 'edit' && options.length > 0) {
       setFormState((prev) => ({
         ...prev,
-        storageType: 'NFS',
+        storageType: options[0].value,
       }));
-    } 
+    }
   }, [formState.domainType, action]);
   
-
   const resetForm = () => {
     setFormState({
       id: '',
-      domainType: 'DATA', // 도메인 유형 기본값 설정
-      storageType: 'NFS', // 스토리지 유형 기본값 설정
+      domainType: 'data', // 도메인 유형 기본값 설정
+      storageType: 'nfs', // 스토리지 유형 기본값 설정
       name: '',
       comment: '',
       description: '',
       warning: '10',
       spaceBlocker: '5',
     });
-    setStorageTypes(['NFS', 'ISCSI', 'FCP']); // 기본 도메인 유형에 따른 스토리지 유형
-    setDataCenterVoId('');
-    setHostVoName('');
-    setHostVoId('');
+    setStorageTypes(['nfs', 'iscsi', 'fcp']); // 기본 도메인 유형에 따른 스토리지 유형
     setStorageAddress('');
     setStoragePath('');
     setLunId('');
@@ -229,8 +239,15 @@ const DomainModal = ({
   const validateForm = () => {
     if (!formState.name) return '이름을 입력해주세요.';
     if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
-    if (!hostVoName) return '호스트를 선택해주세요.';
-    if (formState.storageType === 'NFS' && !storagePath) return '경로를 입력해주세요';
+    if (action === 'create' && !hostVoName) return '호스트를 선택해주세요.';
+    if (formState.storageType === 'NFS' && !storagePath) return '경로를 입력해주세요.';
+    if (action === 'create' && formState.storageType !== 'nfs' && lunId) {
+      const selectedLogicalUnit =
+        formState.storageType === 'iscsi'
+          ? iscsis.find((iLun) => iLun.id === lunId)
+          : fibres.find((fLun) => fLun.id === lunId);
+      if (selectedLogicalUnit?.abled === 'NO') return '선택한 항목은 사용할 수 없습니다.';
+    }
     return null;
   };
 
@@ -240,50 +257,63 @@ const DomainModal = ({
       alert(error);
       return;
     }
-    const selectedDataCenter = dataCenters.find((dc) => dc.id === dataCenterVoId);
-    const selectedHost = hosts.find((h) => h.name === hostVoName);
-    const logicalUnit = 
-      formState.storageType === 'ISCSI'
-        ? iscsis.find((iLun) => iLun.id === lunId)
-        : formState.storageType === 'FCP'
-        ? fibres.find((fLun) => fLun.id === lunId)
-        : null;
-
-    console.log(`lun id: ${lunId}`);
-
-    const dataToSubmit = {
-      ...formState,
-      dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
-      hostVo: { id: selectedHost.id, name: selectedHost.name },
-      logicalUnits: logicalUnit ? [logicalUnit.id] : [], // logicalUnit.id 설정
-      ...(formState.storageType === 'NFS' && { storageAddress, storagePath }),
-    };
-
-    // let dataToSubmit;
-
-    // if (formState.storageType === 'NFS') {
-    //   dataToSubmit = {
-    //     dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
-    //     hostVo: { id: selectedHost.id, name: selectedHost.name },
-    //     storageAddress,
-    //     storagePath,
-    //     ...formState,
-    //   };
-    // } else if (formState.storageType === 'ISCSI' || formState.storageType === 'FCP') {
-    //   dataToSubmit = {
-    //     dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
-    //     hostVo: { id: selectedHost.id, name: selectedHost.name },
-    //     logicalUnits: [logicalUnit.id],
-    //     storageType: formState.storageType === 'ISCSI' ? 'ISCSI' : 'FCP',
-    //     ...formState,
-    //   };
-    // }
-
-    console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
-
+  
+    let dataToSubmit;
+  
+    if (action === 'edit') {
+      // 'edit' 액션에서는 formState 데이터만 제출
+      dataToSubmit = {
+        ...formState,
+      };
+    } else {
+      // 'create' 또는 기타 액션에서는 데이터센터와 호스트 정보를 포함
+      if (!dataCenters || dataCenters.length === 0) {
+        alert("데이터 센터가 로드되지 않았습니다.");
+        console.error("dataCenters is empty or undefined:", dataCenters);
+        return;
+      }
+  
+      if (!hosts || hosts.length === 0) {
+        alert("호스트가 로드되지 않았습니다.");
+        console.error("hosts is empty or undefined:", hosts);
+        return;
+      }
+  
+      const selectedDataCenter = dataCenters.find((dc) => dc.id === dataCenterVoId);
+      if (!selectedDataCenter) {
+        alert("선택된 데이터 센터가 유효하지 않습니다.");
+        console.error("selectedDataCenter is undefined:", { dataCenterVoId, dataCenters });
+        return;
+      }
+  
+      const selectedHost = hosts.find((h) => h.name === hostVoName);
+      if (!selectedHost) {
+        alert("선택된 호스트가 유효하지 않습니다.");
+        console.error("selectedHost is undefined:", { hostVoName, hosts });
+        return;
+      }
+  
+      const logicalUnit =
+        formState.storageType === 'iscsi'
+          ? iscsis.find((iLun) => iLun.id === lunId)
+          : formState.storageType === 'fcp'
+          ? fibres.find((fLun) => fLun.id === lunId)
+          : null;
+  
+      dataToSubmit = {
+        ...formState,
+        dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+        hostVo: { id: selectedHost.id, name: selectedHost.name },
+        logicalUnits: logicalUnit ? [logicalUnit.id] : [],
+        ...(formState.storageType === 'nfs' && { storageAddress, storagePath }),
+      };
+    }
+  
+    console.log('Data to submit:', dataToSubmit);
+  
     if (action === 'edit') {
       editDomain(
-        { domainId: formState.id, domainData: dataToSubmit }, 
+        { domainId: formState.id, domainData: dataToSubmit },
         {
           onSuccess: () => {
             alert('도메인 편집 완료');
@@ -291,15 +321,15 @@ const DomainModal = ({
           },
         }
       );
-    } else if (action === 'create'){
+    } else if (action === 'create') {
       addDomain(dataToSubmit, {
         onSuccess: () => {
           alert('도메인 생성 완료');
           onRequestClose();
         },
-      }); 
-    } else { // action === 'import'
-
+      });
+    } else {
+      // 기타 액션 처리
     }
   };
 
@@ -314,7 +344,6 @@ const DomainModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_domain_administer_popup">
-
         <div className="popup_header">
           <h1>
           {action === "create"
@@ -369,12 +398,14 @@ const DomainModal = ({
           <FormGroup label="스토리지 유형">
             <select
               value={formState.storageType}
-              onChange={(e) =>setFormState((prev) => ({ ...prev, storageType: e.target.value }))}
+              onChange={(e) =>
+                setFormState((prev) => ({ ...prev, storageType: e.target.value }))
+              }
               disabled={action === 'edit'}
             >
               {storageTypes.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
                 </option>
               ))}
             </select>
@@ -424,50 +455,44 @@ const DomainModal = ({
 
     <div className="storage_specific_content">
 
-      {formState.storageType === 'NFS' && (
+      {(formState.storageType === 'nfs' || domain?.storageType === 'nfs') && (
         <div className="storage_popup_iSCSI">
           <div className="network_form_group">
-            <label htmlFor="nfsPath">NFS 서버 경로</label>
-            
-            <input
-              type="text"
-              placeholder="예: myserver.mydomain.com"
-              value={storageAddress}
-              onChange={(e) => setStorageAddress(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="예: /my/local/path"
-              value={storagePath}
-              onChange={(e) => setStoragePath(e.target.value)}
-            />
+            <label htmlFor="NFSPath">NFS 서버 경로</label>
+            {action === 'edit' ? (
+              <input
+                type="text"
+                placeholder="예: myserver.mydomain.com"
+                value={storageAddress}
+                onChange={(e) => setStorageAddress(e.target.value)}
+                readOnly
+              />
+            ) : (
+              <>
+                <input
+                  type="text"
+                  placeholder="예: myserver.mydomain.com"
+                  value={storageAddress}
+                  onChange={(e) => setStorageAddress(e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="예: /my/local/path"
+                  value={storagePath}
+                  onChange={(e) => setStoragePath(e.target.value)}
+                />
+              </>
+            )}
           </div>
         </div>
       )}
       
-      {formState.storageType === 'ISCSI' && (
+      {(formState.storageType === 'iscsi' || domain?.storageType === 'iscsi') && (
         <div className="storage_popup_iSCSI">
-          {/* {activeTab === 'target_lun' && (
-            <div className="tab_content">
+           <div className="tab_content">
               {isIscsisLoading ? (
                   <div className="loading-message">로딩 중...</div>
                 ) : isIscsisError ? (
-                  <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
-                ) : (
-                  <Table
-                    columns={TableInfo.TARGETS_LUNS}
-                    data={iscsis}
-                    onRowClick={handleRowClick}
-                    shouldHighlight1stCol={true}
-                  />
-                )}
-            </div>
-          )} */}
-
-            <div className="tab_content">
-              {isFibresLoading ? (
-                  <div className="loading-message">로딩 중...</div>
-                ) : isFibresError ? (
                   <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
                 ) : (
                   <>
@@ -478,21 +503,19 @@ const DomainModal = ({
                     shouldHighlight1stCol={true}
                   />
                   <div>
-                    <span>${lunId}</span>
+                    <span>id: {lunId}</span>
                   </div>
                   </>
                 )}
             </div>
-          {/* )} */}
         </div>
       )}
       
-
-      {formState.storageType === 'FCP' && (
+      {(formState.storageType === 'fcp' || domain?.storageType === 'fcp') && (
         <div className="tab_content">
-          {isIscsisLoading ? (
+          {isFibresLoading ? (
               <div className="loading-message">로딩 중...</div>
-            ) : isIscsisError ? (
+            ) : isFibresError ? (
               <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
             ) : (
               <Table
@@ -510,22 +533,25 @@ const DomainModal = ({
       
       <div><br/></div>
 
-      <div className="domain_new_select">
-        <label>디스크 공간 부족 경고 표시(%)</label>
-        <input
-          type="number"
-          value={formState.warning}
-          onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
-        />
+      <div className="storage_specific_content">
+        <div className="domain_new_select">
+          <label>디스크 공간 부족 경고 표시(%)</label>
+          <input
+            type="number"
+            value={formState.warning}
+            onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
+          />
+        </div>
+        <div className="domain_new_select">
+          <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+          <input
+            type="number"
+            value={formState.spaceBlocker}
+            onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
+          />
+        </div>
       </div>
-      <div className="domain_new_select">
-        <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-        <input
-          type="number"
-          value={formState.spaceBlocker}
-          onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
-        />
-      </div>
+      
     </div>
 
       <div className="edit_footer">

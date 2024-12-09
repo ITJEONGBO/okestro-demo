@@ -258,6 +258,7 @@ const TableInfo = {
     { header: 'port', accessor: 'port', clickable: true },
   ],
   LUNS_TARGETS: [
+    { header: '여부', accessor: 'abled', clickable: false },
     { header: 'status', accessor: 'status', clickable: false },
     { header: 'Lun ID', accessor: 'id', clickable: false },
     { header: 'size', accessor: 'size', clickable: false },
@@ -265,6 +266,10 @@ const TableInfo = {
     { header: 'vendor ID', accessor: 'vendorId', clickable: false },
     { header: 'product ID', accessor: 'productId', clickable: false },
     { header: 'serial', accessor: 'serial', clickable: false },
+    
+    { header: 'Target Name', accessor: 'target', clickable: true },
+    { header: 'address', accessor: 'address', clickable: true },
+    { header: 'port', accessor: 'port', clickable: true },
   ],
   
   FIBRE: [

@@ -2132,18 +2132,24 @@ const ApiManager = {
    * @name ApiManager.editDomain
    * @description 스토리지도메인 편집
    * 
-   * @param {string} storageDomainId
+   * @param {string} domainId
    * @param {Object} domaineData 
    * @returns {Promise<Object>}
    */
-    editDomain: async (storageDomainId, domaineData) => {
-      return makeAPICall({
-        method: "PUT",
-        url: ENDPOINTS.EDIT_STORAGE_DOMAIN(storageDomainId),
-        data: domaineData, 
-        // defaultValues: DEFAULT_VALUES.EDIT_STORAGE_DOMAIN
-      });
-    },
+  editDomain: async (domainId, domainData) => {
+    return makeAPICall({
+      method: "PUT",
+      url: ENDPOINTS.EDIT_STORAGE_DOMAIN(domainId),
+      data: domainData, 
+    });
+  },
+    // editCluster: async (clusterId, clusterData) => {
+    //   return makeAPICall({
+    //     method: "PUT",
+    //     url: ENDPOINTS.EDIT_CLUSTER(clusterId),
+    //     data: clusterData, // PUT 요청 시 전송할 데이터
+    //   });
+    // },
   /**
    * @name ApiManager.deleteDomain
    * @description 스토리지도메인 삭제

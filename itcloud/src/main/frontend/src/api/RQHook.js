@@ -2374,13 +2374,12 @@ export const useAddDomain = () => {
 export const useEditDomain = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ networkId, networkData }) => await ApiManager.editNetwork(networkId, networkData),
-    onSuccess: (data, { networkId }) => {
-      queryClient.invalidateQueries('allNetworks'); // 전체 네트워크 목록 업데이트
-      queryClient.invalidateQueries(['networkById', networkId]); // 수정된 네트워크 상세 정보 업데이트
+    mutationFn: async ({ domainId, domainData }) => await ApiManager.editDomain(domainId, domainData),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allStorageDomains');
     },
     onError: (error) => {
-      console.error('Error editing network:', error);
+      console.error('Error editing domain:', error);
     },
   });
 };
@@ -2394,7 +2393,7 @@ export const useEditDomain = () => {
 export const useDeleteDomain = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({ 
-    mutationFn: async (storageDomainId) => await ApiManager.deleteDomain(storageDomainId),
+    mutationFn: async (domainId) => await ApiManager.deleteDomain(domainId),
     onSuccess: () => {
       queryClient.invalidateQueries('allStorageDomains');
     },

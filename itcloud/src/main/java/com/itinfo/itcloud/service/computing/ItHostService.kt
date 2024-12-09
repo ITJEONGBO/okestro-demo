@@ -164,6 +164,16 @@ interface ItHostService {
 	fun findImportIscsiFromHost(hostId: String, address:String): List<IscsiDetailVo>
 
 	/**
+	 * [ItHostService.findUnregisterDomainFromHost]
+	 * 도메인 가져오기 - iSCSI 유형 대상 LUN 목록
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[StorageDomainVo]>
+	 */
+	@Throws(Error::class)
+	fun findUnregisterDomainFromHost(hostId: String): List<StorageDomainVo>
+
+	/**
 	 * [ItHostService.findAllPermissionsFromHost]
 	 * 호스트 권한 목록
 	 *
@@ -317,9 +327,9 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun findAllFibreFromHost(hostId: String): List<HostStorageVo> {
 		log.info("findAllFibreFromHost... hostId: {}", hostId)
-		val res: List<HostStorage> =
-			conn.findAllStoragesFromHost(hostId).getOrDefault(listOf())
-				.filter { it.type() == StorageType.FCP }
+		val res: List<HostStorage> = conn.findAllStoragesFromHost(hostId)
+			.getOrDefault(listOf())
+			.filter { it.type() == StorageType.FCP }
 		return res.toFibreHostStorageVos()
 	}
 
@@ -332,8 +342,14 @@ class HostServiceImpl(
 		return res.toIscsiDetailVos()
 	}
 
-
-
+	@Throws(Error::class)
+	override fun findUnregisterDomainFromHost(hostId: String): List<StorageDomainVo> {
+		log.info("findUnregisterDomainFromHost... hostId: {}", hostId)
+		conn.findHost(hostId).getOrNull() ?: return listOf()
+		val res: List<StorageDomain> = conn.unRegisteredStorageDomainsFromHost(hostId)
+			.getOrDefault(listOf())
+		return res.toStorageDomainsMenu(conn)
+	}
 
 
 	@Deprecated("필요없음")

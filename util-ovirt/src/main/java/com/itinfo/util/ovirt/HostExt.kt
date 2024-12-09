@@ -519,6 +519,18 @@ fun Connection.discoverIscsiFromHost(hostId: String, address: String): Result<Li
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.unRegisteredStorageDomainsFromHost(hostId: String): Result<List<StorageDomain>> = runCatching {
+//
+//	val result: List<StorageDomain> =
+	this.srvHost(hostId).unregisteredStorageDomainsDiscover().send().storageDomains()
+//	result
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.STORAGE,"목록조회", hostId)
+}.onFailure {
+	Term.HOST.logFailWithin(Term.STORAGE,"목록조회", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 
 
 

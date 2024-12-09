@@ -348,6 +348,7 @@ fun StorageDomainVo.toEditStorageDomainBuilder(): StorageDomain {
 	return StorageDomainBuilder()
 		.id(this@toEditStorageDomainBuilder.id)
 		.name(this@toEditStorageDomainBuilder.name)
+		.comment(this@toEditStorageDomainBuilder.comment)
 		.description(this@toEditStorageDomainBuilder.description)
 		.warningLowSpaceIndicator(this@toEditStorageDomainBuilder.warning)
 		.criticalSpaceActionBlocker(this@toEditStorageDomainBuilder.spaceBlocker)
