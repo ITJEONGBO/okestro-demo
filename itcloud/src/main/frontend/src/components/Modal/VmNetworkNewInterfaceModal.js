@@ -50,12 +50,14 @@ const VmNetworkNewInterfaceModal = ({
     } = useNetworkInterfaceFromVM(vmId);
 
 //    가상머신 내 네트워크인터페이스 상세조회
-    const { 
-      data: nicDetail
-    } = useNetworkInterfaceByVMId(vmId,nicId);
-    useEffect(() => {
-        console.log('가상머신 네트워크 인터페이스 상세 정보:', nicDetail);
-    }, [nicDetail]);
+    // const { 
+    //   data: nicDetail
+    // } = useNetworkInterfaceByVMId(vmId, editMode && nicId ? nicId : null);
+    // useEffect(() => {
+    //   if (editMode && nicDetail) {
+    //     console.log('가상머신 네트워크 인터페이스 상세 정보:', nicDetail);
+    //   }
+    // }, [editMode, nicDetail]);
 
     // 모든 vnic프로파일 목록
     const { 
@@ -67,26 +69,25 @@ const VmNetworkNewInterfaceModal = ({
 
       useEffect(() => {
         console.log('useEffect 호출 - nicData 상태:', nicData);
-        if (editMode && nicData &&nicDetail) {
+        if (editMode && nicData ) {
           console.log('vnicProfileVo:', nicData.vnicProfileVo?.name);
           setId(nicData.id);
-          setName(nicDetail.name);
-          setVnicProfileVoId(nicDetail.vnicProfileVo?.id || '');
-          setVnicProfileVoName(nicDetail.vnicProfileVo?.name || '');
-          setSelectedInterface(nicDetail.interface_ || 'VIRTIO');
+          setName(nicData.name);
+          setVnicProfileVoId(nicData.vnicProfileVo?.id || '');
+          setVnicProfileVoName(nicData.vnicProfileVo?.name || '');
+          setSelectedInterface(nicData.interface_ || 'VIRTIO');
           setLinked(nicData.linked);
-          setPlugged(nicDetail.plugged); // 기본값 설정
+          setPlugged(nicData.plugged); // 기본값 설정
           setStatus(nicData.status);
           setMacAddress(nicData.macAddress);
         } else {
           resetForm();
         }
-      }, [isOpen, editMode, nicData, vmId, nics,nicDetail]);
+      }, [isOpen, editMode, nicData, vmId, nics,nicData]);
 
 
       const resetForm = () => {
         if (!editMode) {
-          setId('');
           setName('');
           setSelectedInterface('VIRTIO');
           setLinked(true);

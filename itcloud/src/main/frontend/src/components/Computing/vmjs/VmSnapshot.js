@@ -7,13 +7,17 @@ import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useDisksFromVM, useSnapshotFromVM } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';
 import VmSnapshotAddModal from '../../Modal/VmSnapshotaddModal';
+import DeleteModal from '../../Modal/DeleteModal';
 
 // 스냅샷(각각 밑에 열리는 창 만들어야함)
 const VmSnapshot = ({vm}) => {
   const [activePopup, setActivePopup] = useState(null);
+  const [modals, setModals] = useState({ create: false, edit: false, delete: false });
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
   const [bootable, setBootable] = useState(true);
-
+  const toggleModal = (type, isOpen) => {
+    setModals((prev) => ({ ...prev, [type]: isOpen }));
+};
   const openPopup = (popupType) => {
       setActivePopup(popupType);
     };
@@ -79,7 +83,7 @@ const VmSnapshot = ({vm}) => {
           <button className='disabled'>미리보기</button>
           <button className='disabled'>커밋</button>
           <button className='disabled'>되돌리기</button>
-          <button className='disabled'>삭제</button>
+          <button onClick={() => selectedSnapshot?.id && toggleModal('delete', true)} disabled={!selectedSnapshot?.id}>삭제</button>
           <button className='disabled'>복제</button>
 
         </div>
@@ -223,53 +227,26 @@ const VmSnapshot = ({vm}) => {
 
 
 <Suspense>
+    {(modals.create || (modals.edit && selectedSnapshot)) && (
         <VmSnapshotAddModal
-        isOpen={activePopup === 'new'}
-        onRequestClose={closePopup}
-        vmId={vm?.id}
-        diskData={disks}
-      />
+          isOpen={activePopup === 'new'}
+          onRequestClose={closePopup}
+          vmId={vm?.id}
+          diskData={disks}
+        />
+      )}
+      {modals.delete && selectedSnapshot && (
+        <DeleteModal
+          isOpen={modals.delete}
+          type='Snapshot'
+          onRequestClose={() => toggleModal('delete', false)}
+          contentLabel={'스냅샷'}
+          data={ selectedSnapshot}
+          vmId={vm?.id}
+        />
+      )}
 </Suspense>
-          {/*생성 팝업 */}
-          {/* <Modal
-        isOpen={activePopup === 'new'}
-        onRequestClose={closePopup}
-        contentLabel="디스크 업로드"
-        className="Modal"
-        overlayClassName="Overlay"
-        shouldCloseOnOverlayClick={false}
-      >
-        <div className="snapshot_new_popup">
-          <div className="popup_header">
-            <h1>스냅샷 생성</h1>
-            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-          </div>
-         
-          <div className='p-1'>
-            <div className='host_textbox mb-1'>
-                <label htmlFor="user_name">사용자 이름</label>
-                <input type="text" id="user_name" />
-            </div>
-            <div>
-              <div className='font-bold'>포함할 디스크 :</div>
-              <div className='snapshot_new_table'>
-                <TableOuter 
-                    columns={TableColumnsInfo.SNAPSHOT_NEW}
-                    data={[]}
-                    onRowClick={() => console.log('Row clicked')}
-                  />
-              </div>
-            </div>
-          </div>
-
-
-          <div className="edit_footer">
-            <button style={{ display: 'none' }}></button>
-            <button>OK</button>
-            <button onClick={closePopup}>취소</button>
-          </div>
-        </div>
-          </Modal> */}
+      
       </>
     );
   };

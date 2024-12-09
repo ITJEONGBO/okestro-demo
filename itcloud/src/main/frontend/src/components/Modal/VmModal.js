@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle, faChevronCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
 import { 
+  useAddDisksFromVM,
   useAddVm, 
   useAllClusters, 
   useAllnicFromVM, 
@@ -152,6 +153,14 @@ const mapSelectedDisksToAttachments = (selectedDisks) =>
     logicalName: disk.details.logicalName, // 논리 이름
   }));
 
+  // VM에 연결된 디스크
+  const [vmdisks, setVmDisks] = useState([]); 
+  const handleDiskCreated = (createdDisk) => {
+    console.log("새로 생성된 디스크 정보:", createdDisk);
+    setVmDisks((prevDisks) => [...prevDisks, createdDisk]); // 새 디스크를 디스크 목록에 추가
+  };
+  const { data: vmdisk} = useAddDisksFromVM(vmId);
+
 
   // 데이터센터 ID 가져오기
   useEffect(() => {
@@ -299,7 +308,7 @@ useEffect(() => {
 
 
   // CD/DVD 연결
-const [isCdDvdChecked, setIsCdDvdChecked] = useState(false); // 체크박스 상태
+const [isCdDvdChecked, setIsCdDvdChecked] = useState(true); // 체크박스 상태
 const [selectedCd, setSelectedCd] = useState(''); // 선택된 CD/DVD
 const [cdList, setCdList] = useState([]); // CD/DVD 목록
 
@@ -661,7 +670,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     setDomainHiddenBoxVisible(!isDomainHiddenBoxVisible);
   };
 
-  
+
 
 
 return (
@@ -929,7 +938,7 @@ return (
           <DiskModal
             isOpen={isEditPopupOpen}
             onRequestClose={() => setIsEditPopupOpen(false)}
-            editMode={action === 'edit'}
+            editMode={true}
             diskId={disk.id} // 디스크 ID 전달
             type='vm'
           />
@@ -964,7 +973,9 @@ return (
           isOpen={isCreatePopupOpen}
           onRequestClose={() => setIsCreatePopupOpen(false)}
           editMode={false}
+          vmId={vmId}
           type='vm'
+          onDiskCreated={handleDiskCreated}
         />
         <div className="flex">
           <button disabled>+</button>
@@ -991,7 +1002,9 @@ return (
         isOpen={isCreatePopupOpen}
         onRequestClose={() => setIsCreatePopupOpen(false)}
         editMode={false}
+        vmId={vmId}
         type='vm'
+        onDiskCreated={handleDiskCreated}
       />
       <div className="flex">
         <button disabled>+</button>
@@ -1053,8 +1066,10 @@ return (
                                   <DiskModal
                                     isOpen={isCreatePopupOpen}
                                     onRequestClose={() => setIsCreatePopupOpen(false)}
-                                    editMode={true}
+                                    editMode={false}
+                                    vmId={vmId}
                                     type='vm'
+                                    onDiskCreated={handleDiskCreated}
                                   />
                                   <div className="flex">
                                     {/* 디스크가 없는 경우 버튼 비활성화 */}

@@ -985,6 +985,27 @@ export const useAddSnapshotFromVM = () => {
     },  
   });
 };
+
+/**
+ * @name useDeleteNetwork
+ * @description 가상머신 스냅샷 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteSnapshot = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({ 
+    mutationFn: async (vmId) => await ApiManager.deleteSnapshotsFromVM(vmId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allNetworks');
+    },
+    onError: (error) => {
+      console.error('Error deleting cluster:', error);
+    },
+  });
+};
+
+
 /**
  * @name useHostdevicesFromVM
  * @description 가상머신 내 호스트 장치 목록조회 useQuery훅
@@ -1411,6 +1432,28 @@ export const useDeleteNetworkInterface = () => {
 };
 
 /**
+ * @name useAddDataCenter
+ * @description 가상머신 디스크 생성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAddDiskFromVM = () => {
+  const queryClient = useQueryClient(); // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({ vmId, diskData }) => {
+      console.log('Received vmId:', vmId); // vmId 출력
+      console.log('Received diskData:', diskData); // nicData 출력
+      return await ApiManager.addDiskFromVM(vmId, diskData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries('DisksFromVM');
+    },
+    onError: (error) => {
+      console.error('Error adding disk:', error);
+    },
+  });
+};
+/**
  * @name useFindDiskListFromVM
  * @description 가상머신 연결할 수 있는 디스크 useQuery훅
  * 
@@ -1438,7 +1481,7 @@ export const useAddDisksFromVM = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
     mutationFn: async ({ vmId, diskData }) => {
-      return await ApiManager.attachDisksFromVM(vmId, diskData);
+      return await ApiManager.findDiskFromVM(vmId, diskData);
     },
     onSuccess: () => {
       // 'DisksFromVM' 키를 배열로 수정

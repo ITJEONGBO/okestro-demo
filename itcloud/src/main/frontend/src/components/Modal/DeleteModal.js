@@ -14,7 +14,8 @@ import {
   useDeleteDomain, // 스토리지도메인 삭제
   useDeleteNetworkInterface,
   useDeleteDisk,
-  useDeleteNetworkFromTemplate
+  useDeleteNetworkFromTemplate,
+  useDeleteSnapshot
 } from '../../api/RQHook';
 
 const DeleteModal = ({ 
@@ -42,6 +43,7 @@ const DeleteModal = ({
   const { mutate: deleteNetworkInterface } = useDeleteNetworkInterface();
   const { mutate: deleteNicFromTemplate } = useDeleteNetworkFromTemplate();
   const { mutate: deleteDisk } = useDeleteDisk();
+  const { mutate: deleteSnapshot } = useDeleteSnapshot();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -104,6 +106,9 @@ const DeleteModal = ({
     }else if (type === 'Disk') {
       console.log('Deleting Disk');
       handleDelete(deleteDisk);
+    }else if (type === 'Snapshot') {
+      console.log('Deleting Snapshot');
+      handleDelete(deleteSnapshot);
     }
   };
 

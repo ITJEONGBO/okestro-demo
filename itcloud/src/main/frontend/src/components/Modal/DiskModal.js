@@ -10,6 +10,8 @@ import {
   useAllActiveDataCenters,
   useAllActiveDomainFromDataCenter, 
   useAllDiskProfileFromDomain,
+  useAddDiskFromVM,
+  useDisksFromVM,
 } from '../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
@@ -25,7 +27,8 @@ const DiskModal = ({
   editMode = false,
   diskId,
   vmId,
-  type='disk'
+  type='disk',
+  onDiskCreated
 }) => {
   const [formState, setFormState] = useState({
     id: '',
@@ -83,8 +86,12 @@ const DiskModal = ({
     (e) => ({...e,})
   );  
 
+
+
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
+
+  const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 디스크생성
 
   const interfaceList = [
     { value: "VirtIO-SCSI", label: "VirtIO-SCSI" },
@@ -185,25 +192,43 @@ const DiskModal = ({
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
     
     if (editMode) {
-      dataToSubmit.appendSize = parseInt(formState.appendSize, 10) * 1024 * 1024 * 1024;   
+      dataToSubmit.appendSize = parseInt(formState.appendSize, 10) * 1024 * 1024 * 1024;
       editDisk(
-        { diskId: formState.id, diskData: dataToSubmit}, 
+        { diskId: formState.id, diskData: dataToSubmit },
         {
           onSuccess: () => {
-            alert("디스크 편집 완료")
-            onRequestClose();  // 성공 시 모달 닫기
+            alert("디스크 편집 완료");
+            onRequestClose(); // 성공 시 모달 닫기
+          },
+        }
+      );
+    } else if (type === "vm") {
+      // 가상 머신 디스크 생성
+      addDiskVm(
+        { vmId, diskData: dataToSubmit },
+        {
+          onSuccess: (createdDisk) => {
+            alert("가상 머신 디스크 생성 완료");
+            if (onDiskCreated) {
+              onDiskCreated(createdDisk); // 생성된 디스크를 콜백 함수로 전달
+            }
+            onRequestClose();
+          },
+          onError: (error) => {
+            console.error("Error creating VM disk:", error);
           },
         }
       );
     } else {
+      // 일반 디스크 생성
       addDisk(dataToSubmit, {
         onSuccess: () => {
-          alert("디스크 생성 완료")
+          alert("디스크 생성 완료");
           onRequestClose();
         },
       });
     }
-  };
+  }
 
 
   return (
@@ -212,12 +237,12 @@ const DiskModal = ({
       onRequestClose={onRequestClose}
       contentLabel={editMode ? '디스크 편집' : '새로 만들기'}
       className="Modal"
-      overlayClassName="Overlay"
+      overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_disk_new_popup">
         <div className="popup_header">
-          <h1>{editMode ? '디스크 편집' : '새 디스크'}</h1>
+          <h1>{editMode ? '디스크 편집' : '새 디스크 생성'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth/>
           </button>
