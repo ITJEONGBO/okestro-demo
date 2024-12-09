@@ -132,15 +132,6 @@ const DiskModal = ({
   }, [diskProfiles, editMode]);
 
 
-  useEffect(() => {
-    console.log("현재 데이터센터 목록:", datacenters);
-    console.log("현재 선택된 데이터센터 ID:", dataCenterVoId);
-    console.log("현재 도메인 목록:", domains);
-    console.log("현재 선택된 도메인 ID:", domainVoId);
-    console.log("현재 디스크 프로파일 목록:", diskProfiles);
-  }, [datacenters, dataCenterVoId, domains, domainVoId, diskProfiles]);
-  
-  
   const resetForm = () => {
     setFormState({
       id: '',

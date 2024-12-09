@@ -181,12 +181,13 @@ class VmServiceImpl(
 //			log.error("디스크 부팅가능은 한개만 가능")
 //			throw ErrorPattern.VM_VO_INVALID.toException()
 //		}
+
 		val res: Vm? =
 			conn.addVm(
 				vmVo.toAddVmBuilder(),
 				vmVo.diskAttachmentVos.toAddDiskAttachmentList(),
 				vmVo.vnicProfileVos.map { it.id },
-				vmVo.connVo.id
+				vmVo.connVo?.id
 			).getOrNull()
 		return res?.toVmVo(conn)
 	}
