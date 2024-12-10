@@ -208,7 +208,6 @@ fun TemplateVo.toTemplateBuilder(): TemplateBuilder {
 		.description(this@toTemplateBuilder.description)
 		.comment(this@toTemplateBuilder.comment)
 		.cluster(ClusterBuilder().id(this@toTemplateBuilder.clusterVo.id))
-		.cpuProfile(CpuProfileBuilder().id(this@toTemplateBuilder.cpuProfileVo.id))
 }
 
 fun TemplateVo.toAddTemplateBuilder(): Template {
@@ -233,17 +232,13 @@ fun TemplateVo.toAddTemplateBuilder(): Template {
 				.diskAttachments(diskAttachments)
 				.build()
 		)
+		.cpuProfile(CpuProfileBuilder().id(this@toAddTemplateBuilder.cpuProfileVo.id))
 		.build()
 }
 
-fun TemplateVo.toEditTemplateBuilder(): Template {
-	return TemplateBuilder()
-		.id(this@toEditTemplateBuilder.id)
-		.os(OperatingSystemBuilder().type(this@toEditTemplateBuilder.osSystem))
-		.bios(BiosBuilder().type(BiosType.fromValue(this@toEditTemplateBuilder.chipsetFirmwareType)))
-		.type(VmType.fromValue(this@toEditTemplateBuilder.optimizeOption))
-		.build()
-}
+fun TemplateVo.toEditTemplateBuilder(): Template =
+	this@toEditTemplateBuilder.toTemplateBuilder().id(this@toEditTemplateBuilder.id).build()
+
 
 
 /**
