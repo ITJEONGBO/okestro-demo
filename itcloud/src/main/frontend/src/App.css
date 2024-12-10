@@ -733,6 +733,7 @@ textarea{
     box-sizing: border-box;
     border-radius: 4px;
     background: #fff;
+    /* height: 300px; */
     top: 50%;
     height: 22.4vh;
     width: 38%;

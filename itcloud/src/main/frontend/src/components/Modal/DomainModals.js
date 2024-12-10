@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 const DomainModals = ({ isModalOpen, action, onRequestClose, selectedDomain }) => {
   const DomainModal = React.lazy(() => import('../Modal/DomainModal'));
-  const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
+  const DomainDeleteModal = React.lazy(() => import('../Modal/DomainDeleteModal'));
   const DomainActionModal = React.lazy(() => import('../Modal/DomainActionModal'));
 
   if (!isModalOpen || !action) return null;
@@ -26,11 +26,9 @@ const DomainModals = ({ isModalOpen, action, onRequestClose, selectedDomain }) =
           domainId={selectedDomain?.id || null}
         />      
       ) : action === 'delete' ? (
-        <DeleteModal
+        <DomainDeleteModal
           isOpen={isModalOpen}
-          type="Storage Domain"
           onRequestClose={onRequestClose}
-          contentLabel="스토리지 도메인"
           data={selectedDomain}
         />
       ) : (

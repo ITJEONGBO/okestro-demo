@@ -79,10 +79,12 @@ interface ItStorageService {
 	 * 도메인 삭제
 	 *
 	 * @param storageDomainId [String] 스토리지 도메인 Id
+	 * @param format [Boolean]
+	 * @param hostName [String] 호스트 이름이 들어가야 삭제가능
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun remove(storageDomainId: String): Boolean
+	fun remove(storageDomainId: String, format: Boolean, hostName: String?): Boolean
 	/**
 	 * [ItStorageService.destroy]
 	 * 도메인 파괴
@@ -288,7 +290,6 @@ class StorageServiceImpl(
 
 	@Throws(Error::class)
 	override fun import(storageDomainVo: StorageDomainVo): StorageDomainVo? {
-		// TODO add와 다른점을 모르겟음(api측면에서)
 		log.info("import ... storageDomain name: {}", storageDomainVo.name)
 		val res: StorageDomain? =
 			conn.addStorageDomain(
@@ -310,19 +311,17 @@ class StorageServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun remove(storageDomainId: String): Boolean {
+	override fun remove(storageDomainId: String, format: Boolean, hostName: String?): Boolean {
 		log.info("remove ... storageDomainId: {}", storageDomainId)
 		val res: Result<Boolean> =
-			conn.removeStorageDomain(storageDomainId)
+			conn.removeStorageDomain(storageDomainId, format, hostName)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun destroy(storageDomainId: String): Boolean {
-		// TODO: 여쭤보고 바꾸기(만약 삭제창에서 같이 보여주는 방식이라면 함수 필요없음(format으로 처리))
 		log.info("destroy ... storageDomainId: {}", storageDomainId)
-		val res: Result<Boolean> =
-			conn.removeStorageDomain(storageDomainId, true)
+		val res: Result<Boolean> = conn.destroyStorageDomain(storageDomainId)
 		return res.isSuccess
 	}
 

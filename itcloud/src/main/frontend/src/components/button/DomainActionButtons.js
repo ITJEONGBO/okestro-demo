@@ -32,6 +32,7 @@ const DomainActionButtons = ({
 
   const isUp = status === 'UP';
   const isMaintenance = status === 'MAINTENANCE';
+  const isUnknown = status === 'UNKNOWN';
 
   const handleClick = (label, action) => {
     console.log(`Button clicked: ${label}`);
@@ -52,7 +53,7 @@ const DomainActionButtons = ({
         <button onClick={onImport}>가져오기</button>
       )}
       {onEdit && (
-        <button onClick={onEdit} disabled={isEditDisabled}>편집(도메인 관리)</button>
+        <button onClick={onEdit} disabled={isEditDisabled || isUnknown}>편집(도메인 관리)</button>
       )}
       {onDelete && (
         <button onClick={onDelete} disabled={isEditDisabled || isUp }>제거</button>

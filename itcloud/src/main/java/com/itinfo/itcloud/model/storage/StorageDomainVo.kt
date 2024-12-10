@@ -4,13 +4,10 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
 import com.itinfo.itcloud.model.fromDiskProfilesToIdentifiedVos
 import com.itinfo.itcloud.gson
-import com.itinfo.itcloud.model.computing.DataCenterVo
-import com.itinfo.itcloud.model.computing.toDataCenterVoInfo
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
-import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.Arrays
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.math.BigInteger
@@ -56,7 +53,7 @@ class StorageDomainVo(
 	val name: String = "",
 	val description: String = "",
 	val comment: String = "",
-	val status: StorageDomainStatus = StorageDomainStatus.UNKNOWN,
+	val status: StorageDomainStatus = StorageDomainStatus.LOCKED,
 	val domainType: String = "", /*StorageDomainType.IMAGE*/
 	val domainTypeMaster: Boolean = false,
 	val hostedEngine: Boolean = false,
@@ -79,6 +76,7 @@ class StorageDomainVo(
 	val diskImageVos: List<DiskImageVo> = listOf(),
 	val profileVos: List<IdentifiedVo> = listOf(),
 	val nfsVersion: String = "",
+	val hostStorageVo: HostStorageVo = HostStorageVo(),
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -110,8 +108,9 @@ class StorageDomainVo(
 		private var bDiskImageVos: List<DiskImageVo> = listOf();fun diskImageVos(block: () -> List<DiskImageVo>?) { bDiskImageVos = block() ?: listOf() }
 		private var bProfileVos: List<IdentifiedVo> = listOf();fun profileVos(block: () -> List<IdentifiedVo>?) { bProfileVos = block() ?: listOf() }
 		private var bNfsVersion: String = "";fun nfsVersion(block: () -> String?) { bNfsVersion = block() ?: ""}
+		private var bHostStorageVo: HostStorageVo = HostStorageVo(); fun hostStorageVo(block: () -> HostStorageVo?) { bHostStorageVo = block() ?: HostStorageVo() }
 
-		fun build(): StorageDomainVo = StorageDomainVo(bId, bName, bDescription, bComment, bStatus, bDomainType, bDomainTypeMaster, bHostedEngine, bStorageType, bFormat, bActive, bDiskSize, bAvailableSize, bUsedSize, bCommitedSize, bOverCommit, bImage, bStoragePath, bStorageAddress, bLogicalUnits, bWarning, bSpaceBlocker, bDataCenterVo, bHostVo, bDiskImageVos, bProfileVos, bNfsVersion,)
+		fun build(): StorageDomainVo = StorageDomainVo(bId, bName, bDescription, bComment, bStatus, bDomainType, bDomainTypeMaster, bHostedEngine, bStorageType, bFormat, bActive, bDiskSize, bAvailableSize, bUsedSize, bCommitedSize, bOverCommit, bImage, bStoragePath, bStorageAddress, bLogicalUnits, bWarning, bSpaceBlocker, bDataCenterVo, bHostVo, bDiskImageVos, bProfileVos, bNfsVersion, bHostStorageVo)
 	}
 	
 	companion object {
@@ -209,17 +208,16 @@ fun List<StorageDomain>.toActiveDomains(conn: Connection): List<StorageDomainVo>
 
 
 fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
-	val diskProfiles: List<DiskProfile> =
-		conn.findAllDiskProfilesFromStorageDomain(this@toStorageDomainVo.id())
-			.getOrDefault(listOf())
-	val disks: List<Disk> =
-		conn.findAllDisks()
-			.getOrDefault(listOf())
-			.filter { it.storageDomainsPresent() && it.storageDomains().first().id() == this@toStorageDomainVo.id()
+	val diskProfiles: List<DiskProfile> = conn.findAllDiskProfilesFromStorageDomain(this@toStorageDomainVo.id())
+		.getOrDefault(listOf())
+	val disks: List<Disk> = conn.findAllDisks()
+		.getOrDefault(listOf())
+		.filter { it.storageDomainsPresent() && it.storageDomains().first().id() == this@toStorageDomainVo.id()
 	}
 	val dataCenter: DataCenter? =
 		if(this@toStorageDomainVo.dataCentersPresent()) conn.findDataCenter(this@toStorageDomainVo.dataCenters().first().id()).getOrNull()
 		else null
+	val hostStorage: HostStorage = this@toStorageDomainVo.storage()
 
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainVo.id() }
@@ -246,12 +244,19 @@ fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
 		spaceBlocker { this@toStorageDomainVo.criticalSpaceActionBlockerAsInteger() }
 		storageAddress { this@toStorageDomainVo.storage().address() + this@toStorageDomainVo.storage().path() } // 경로
 //		nfsVersion { this@toStorageDomainVo.storage().nfsVersion().value() }
-
+		hostStorageVo { hostStorage.toHostStorageVoByType() }
 	}
 }
 fun List<StorageDomain>.toStorageDomainVos(conn: Connection): List<StorageDomainVo> =
 	this@toStorageDomainVos.map { it.toStorageDomainVo(conn) }
 
+fun HostStorage.toHostStorageVoByType(): HostStorageVo {
+	return when (this.type()) {
+		StorageType.ISCSI -> this.toIscsiStorageVo()
+		StorageType.FCP ->this.toFibreStorageVo()
+		else -> HostStorageVo()
+	}
+}
 
 fun StorageDomain.toStorageDomainSize(): StorageDomainVo {
 	return StorageDomainVo.builder {
@@ -289,11 +294,9 @@ fun StorageDomainVo.toStorageDomainBuilder(): StorageDomainBuilder {
 				else -> throw IllegalArgumentException("Unsupported storage type")
 			}
 		)
-
 }
 
 fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
-
 	return this@toAddStorageDomainBuilder.toStorageDomainBuilder().build()
 }
 

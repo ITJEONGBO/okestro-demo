@@ -4,12 +4,17 @@ import com.itinfo.util.ovirt.error.*
 
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.builders.HostBuilder
 import org.ovirt.engine.sdk4.builders.StorageDomainBuilder
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
 
 private fun Connection.srvStorageDomains(): StorageDomainsService =
 	this.systemService.storageDomainsService()
+
+//private fun Connection.srvAttachStorageDomains(): AttachedStorageDomainsService =
+//	this.systemService.storageDomainsService()
+
 
 fun Connection.findAllStorageDomains(searchQuery: String = ""): Result<List<StorageDomain>> = runCatching {
 	if (searchQuery.isNotEmpty())
@@ -61,10 +66,8 @@ fun Connection.detachStorageDomainsToDataCenter(storageDomainId: String, dataCen
 
 
 fun Connection.addStorageDomain(storageDomain: StorageDomain, dataCenterId: String): Result<StorageDomain?> = runCatching {
-	val storageAdded: StorageDomain? = this.srvStorageDomains().add()
-		.storageDomain(storageDomain)
-		.send()
-		.storageDomain()
+	val storageAdded: StorageDomain? =
+		this.srvStorageDomains().add().storageDomain(storageDomain).send().storageDomain()
 
 	// 스토리지 도메인이 생성되지 않았을 경우 예외 처리
 	storageAdded ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
@@ -95,24 +98,39 @@ fun Connection.updateStorageDomain(storageDomainId: String, storageDomain: Stora
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.removeStorageDomain(storageDomainId: String, format: Boolean = false): Result<Boolean> = runCatching {
+
+fun Connection.removeStorageDomain(storageDomainId: String, format: Boolean, hostName: String?): Result<Boolean> = runCatching {
 	if(this.findStorageDomain(storageDomainId).isFailure) {
 		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 	}
-	//If the destroy parameter is true then the operation will always succeed,
-	// even if the storage is not accessible,
-	// the failure is just ignored and the storage domain is removed from the database anyway.
 
-	//If the format parameter is true then the actual storage is formatted,
-	// and the metadata is removed from the LUN or directory,
-	// so it can no longer be imported to the same or to a different setup.
-
-	this.srvStorageDomain(storageDomainId).remove().destroy(false).format(format).send()
+	if (format) {
+		if (hostName == null) {
+			throw ErrorPattern.STORAGE_DOMAIN_DELETE_INVALID.toError()
+		}
+		this.srvStorageDomain(storageDomainId).remove().destroy(false).format(true).host(hostName).send()
+	} else {
+		this.srvStorageDomain(storageDomainId).remove().destroy(false).format(false).send()
+	}
 	this.expectStorageDomainDeleted(storageDomainId)
 }.onSuccess {
 	Term.STORAGE_DOMAIN.logSuccess("삭제", storageDomainId)
 }.onFailure {
 	Term.STORAGE_DOMAIN.logFail("삭제", it, storageDomainId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.destroyStorageDomain(storageDomainId: String): Result<Boolean> = runCatching {
+	if(this.findStorageDomain(storageDomainId).isFailure) {
+		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+	}
+	
+	this.srvStorageDomain(storageDomainId).remove().destroy(true).send()
+	this.expectStorageDomainDeleted(storageDomainId)
+}.onSuccess {
+	Term.STORAGE_DOMAIN.logSuccess("파괴", storageDomainId)
+}.onFailure {
+	Term.STORAGE_DOMAIN.logFail("파괴", it, storageDomainId)
 	throw if (it is Error) it.toItCloudException() else it
 }
 

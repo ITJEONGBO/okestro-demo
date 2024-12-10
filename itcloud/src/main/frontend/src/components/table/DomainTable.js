@@ -2,7 +2,7 @@ import React from 'react';
 import TablesOuter from './TablesOuter';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil } from '@fortawesome/free-solid-svg-icons';
 
 const DomainTable = ({
   columns,
@@ -24,6 +24,7 @@ const DomainTable = ({
     return status;
   };
 
+
   return (
     <>
       <TablesOuter
@@ -31,15 +32,28 @@ const DomainTable = ({
         data={domains.map((domain) => ({
           ...domain,
           icon: renderStatusIcon(domain.status),
-          domainTypeMaster: domain?.domainTypeMaster == true ? "마스터" : "" ,
-          hostedEngine: domain?.hostedEngine ? 'O' : 'X',
+          master: domain?.domainTypeMaster === true ? 
+            <FontAwesomeIcon 
+                icon={faPencil} 
+                fixedWidth 
+                style={{ color: 'gold', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
+            /> : "" ,
+          domainType: 
+            domain?.domainType === 'data' ? 'DATA' 
+            : domain?.domainType === 'iso' ? 'ISO'
+            : 'EXPORT',
+          storageType: 
+            domain?.storageType === 'nfs' ? 'NFS'
+            : domain?.storageType === 'iscsi' ? 'iSCSI'
+            : 'Fibre Channel',
+          // hostedEngine: domain?.hostedEngine ? 'O' : 'X',
           diskSize: domain?.diskSize/(Math.pow(1024, 3))+" GB",
           availableSize: domain?.availableSize/(Math.pow(1024, 3))+" GB",
           usedSize: domain?.usedSize/(Math.pow(1024, 3))+" GB",
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedDomain(row)}
-        clickableColumnIndex={[1]}
+        clickableColumnIndex={[2]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
     </>

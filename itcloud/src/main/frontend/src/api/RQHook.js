@@ -2393,7 +2393,7 @@ export const useEditDomain = () => {
 export const useDeleteDomain = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({ 
-    mutationFn: async (domainId) => await ApiManager.deleteDomain(domainId),
+    mutationFn: async ({domainId, format, hostName}) => await ApiManager.deleteDomain(domainId, format, hostName),
     onSuccess: () => {
       queryClient.invalidateQueries('allStorageDomains');
     },

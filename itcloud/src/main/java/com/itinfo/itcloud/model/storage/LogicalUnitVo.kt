@@ -79,19 +79,17 @@ class LogicalUnitVo (
 // TODO 밑의 두개가 거의 같음 수정필요
 fun LogicalUnit.toIscsiLogicalUnitVo(): LogicalUnitVo = LogicalUnitVo.builder {
     id { this@toIscsiLogicalUnitVo.id() }
-    address { this@toIscsiLogicalUnitVo.address() }
+    address { this@toIscsiLogicalUnitVo.address() }//
     discardMaxSize { this@toIscsiLogicalUnitVo.discardMaxSizeAsInteger() }
     discardZeroesData { this@toIscsiLogicalUnitVo.discardZeroesData() }
-
-//    lunMapping { this@toLogicalUnitVo.lunMappingAsInteger() }
     paths { this@toIscsiLogicalUnitVo.pathsAsInteger() }
-    port { this@toIscsiLogicalUnitVo.portAsInteger() }
-    portal { this@toIscsiLogicalUnitVo.portal() }
+    port { this@toIscsiLogicalUnitVo.portAsInteger() }//
+    portal { this@toIscsiLogicalUnitVo.portal() }//
     productId { this@toIscsiLogicalUnitVo.productId() }
     size { this@toIscsiLogicalUnitVo.size() }
     status { this@toIscsiLogicalUnitVo.status() }
     storageDomainId { this@toIscsiLogicalUnitVo.storageDomainId() }
-    target { this@toIscsiLogicalUnitVo.target() }
+    target { this@toIscsiLogicalUnitVo.target() }//
     vendorId { this@toIscsiLogicalUnitVo.vendorId() }
     serial { this@toIscsiLogicalUnitVo.serial() }
     volumeGroup { this@toIscsiLogicalUnitVo.volumeGroupId() }
@@ -104,7 +102,7 @@ fun LogicalUnit.toFibreLogicalUnitVo(): LogicalUnitVo = LogicalUnitVo.builder {
     id { this@toFibreLogicalUnitVo.id() }
     discardMaxSize { this@toFibreLogicalUnitVo.discardMaxSizeAsInteger() }
     discardZeroesData { this@toFibreLogicalUnitVo.discardZeroesData() }
-    diskId { this@toFibreLogicalUnitVo.diskId() }
+    diskId { this@toFibreLogicalUnitVo.diskId() } //
     paths { this@toFibreLogicalUnitVo.pathsAsInteger() }
     productId { this@toFibreLogicalUnitVo.productId() }
     size { this@toFibreLogicalUnitVo.size() }

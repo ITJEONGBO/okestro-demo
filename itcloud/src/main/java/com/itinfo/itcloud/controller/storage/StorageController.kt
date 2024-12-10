@@ -154,11 +154,16 @@ class StorageController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun deleteStorageDomain(
 		@PathVariable("storageDomainId") storageDomainId: String? = null,
+		@RequestParam(defaultValue = "false") format: Boolean,
+		@RequestParam hostName: String? = null,
 	): ResponseEntity<Boolean> {
 		if (storageDomainId == null)
 			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
+		if (hostName == null)
+			throw ErrorPattern.STORAGE_DOMAIN_DELETE_INVALID.toException()
 		log.info("/storages/domains/{} ... 스토리지 도메인 삭제", storageDomainId)
-		return ResponseEntity.ok(iDomain.remove(storageDomainId))
+		log.info("${format}, $hostName")
+		return ResponseEntity.ok(iDomain.remove(storageDomainId, format, hostName))
 	}
 	
 	@ApiOperation(

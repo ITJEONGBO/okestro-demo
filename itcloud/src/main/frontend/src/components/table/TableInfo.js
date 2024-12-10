@@ -226,7 +226,7 @@ const TableInfo = {
 
   STORAGE_DOMAINS: [
     { header: '상태', accessor: 'icon' },
-    // { header: '호스트엔진', accessor: 'hostedEngine' },
+    { header: 'master', accessor: 'master' },
     { header: '도메인 이름', accessor: 'name', width: '10%' },
     { header: '코멘트', accessor: 'comment', width: '12%' },
     { header: '도메인 유형', accessor: 'domainType' },

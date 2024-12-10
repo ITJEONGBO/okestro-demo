@@ -7,11 +7,9 @@ import {
   useDeleteDataCenter,
   useDeleteCluster,
   useDeleteHost,
-  useDeleteVm,
   useDeleteTemplate,
   useDeleteNetwork,
   useDeleteVnicProfile, // 네트워크 삭제 추가
-  useDeleteDomain, // 스토리지도메인 삭제
   useDeleteNetworkInterface,
   useDeleteDisk,
   useDeleteNetworkFromTemplate,
@@ -27,7 +25,6 @@ const DeleteModal = ({
     networkId,// 외부에서 전달된 prop TODO 바꿔야함
     vmId,
     templateId
-    
 }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -35,11 +32,9 @@ const DeleteModal = ({
   const { mutate: deleteDataCenter } = useDeleteDataCenter();
   const { mutate: deleteCluster } = useDeleteCluster();
   const { mutate: deleteHost } = useDeleteHost();
-  const { mutate: deleteVm } = useDeleteVm();
   const { mutate: deleteTemplate } = useDeleteTemplate();
   const { mutate: deleteNetwork } = useDeleteNetwork();
   const { mutate: deleteVnicProfile } = useDeleteVnicProfile();
-  const { mutate: deleteDomain } = useDeleteDomain();
   const { mutate: deleteNetworkInterface } = useDeleteNetworkInterface();
   const { mutate: deleteNicFromTemplate } = useDeleteNetworkFromTemplate();
   const { mutate: deleteDisk } = useDeleteDisk();
@@ -57,7 +52,7 @@ const DeleteModal = ({
   }, [data]);
 
   useEffect(() => {
-    console.log('Current data and Id in DeleteModal삭제데이터:', data, '아아'+id);
+    console.log('DeleteModal:', data, +id);
   }, [data, id]);
 
   const handleFormSubmit = () => {
@@ -75,9 +70,6 @@ const DeleteModal = ({
     } else if (type === 'Host') {
       console.log('Deleting Host');
       handleDelete(deleteHost);
-    } else if (type === 'Vm') {
-      console.log('Deleting Vm');
-      handleDelete(deleteVm);
     } else if (type === 'Template') {
       console.log('Deleting Template');
       handleDelete(deleteTemplate);
@@ -92,9 +84,6 @@ const DeleteModal = ({
       }
       handleDelete(() => deleteVnicProfile({ networkId, vnicProfileId: id }));
       onRequestClose();
-    } else if (type === 'Domain') {
-      console.log('Deleting Domain');
-      handleDelete(deleteDomain);
     } else if (type === 'NetworkInterface') {
       handleDelete(() => deleteNetworkInterface({ vmId, nicId: id }));
       console.log('Deleting NetworkInterface');
@@ -126,10 +115,6 @@ const DeleteModal = ({
         } else if (type === 'Host') {
           // Datacenter 삭제 후 특정 경로로 이동
           navigate('/computing/rutil-manager/hosts');
-        } else if (type === 'Vm') {
-          // Datacenter 삭제 후 특정 경로로 이동
-          // navigate('/computing/rutil-manager/vms');
-          navigate('/computing/vms');
         } else {
           // 다른 타입일 경우 기본 동작 수행
           const currentPath = location.pathname;

@@ -2154,14 +2154,14 @@ const ApiManager = {
    * @name ApiManager.deleteDomain
    * @description 스토리지도메인 삭제
    * 
-   * @param {String} storageDomainId 
+   * @param {String} domainId 
    * @returns {Promise<Object>}
    */
-  deleteDomain: async (storageDomainId) => {
+  deleteDomain: async (domainId, format, hostName) => {
     return makeAPICall({
       method: "DELETE",
-      url: ENDPOINTS.DELETE_STORAGE_DOMAIN(storageDomainId), 
-      // defaultValues: DEFAULT_VALUES.DELETE_STORAGE_DOMAIN
+      url: ENDPOINTS.DELETE_STORAGE_DOMAIN(domainId, format, hostName), 
+      data: domainId
     });
   },
 
