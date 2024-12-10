@@ -125,21 +125,6 @@ fun StorageDomain.toStorageDomainIdName(): StorageDomainVo = StorageDomainVo.bui
 fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 	this@toStorageDomainIdNames.map { it.toStorageDomainIdName() }
 
-//
-fun StorageDomain.toStorageDomainDataCenter(conn: Connection): StorageDomainVo {
-	val dataCenter: DataCenter? =
-		if (this@toStorageDomainDataCenter.dataCentersPresent() && this@toStorageDomainDataCenter.dataCenters().isNotEmpty())
-			conn.findDataCenter(this@toStorageDomainDataCenter.dataCenters().first().id(), "storagedomains").getOrNull()
-		else null
-	val s = dataCenter?.storageDomains()?.find { it.id() == this@toStorageDomainDataCenter.id() }
-
-	return StorageDomainVo.builder {
-		id { this@toStorageDomainDataCenter.id() }
-		name { this@toStorageDomainDataCenter.name() }
-		status { s?.status() }
-		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
-	}
-}
 
 
 fun StorageDomain.toDomainStatus(conn: Connection): StorageDomainVo {

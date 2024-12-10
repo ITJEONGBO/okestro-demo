@@ -46,6 +46,7 @@ class DataCenterVo (
 	val storageDomainVos: List<StorageDomainVo> = listOf(),
 	val clusterCnt: Int = 0,
 	val hostCnt: Int = 0,
+	val domainStatus: StorageDomainStatus = StorageDomainStatus.UNKNOWN,
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -64,8 +65,9 @@ class DataCenterVo (
 		private var bStorageDomainVos: List<StorageDomainVo> = listOf();fun storageDomainVos(block: () -> List<StorageDomainVo>?) { bStorageDomainVos = block() ?: listOf() }
 		private var bClusterCnt: Int = 0; fun clusterCnt(block: () -> Int?) { bClusterCnt = block() ?: 0 }
 		private var bHostCnt: Int = 0; fun hostCnt(block: () -> Int?) { bHostCnt = block() ?: 0 }
+		private var bDomainStatus: StorageDomainStatus = StorageDomainStatus.UNKNOWN;fun domainStatus(block: () -> StorageDomainStatus?) { bDomainStatus = block() ?: StorageDomainStatus.UNKNOWN }
 
-		fun build(): DataCenterVo = DataCenterVo(bId, bName, bComment, bDescription, bStorageType, bQuotaMode, bStatus, bVersion, bClusterVos, bNetworkVos, bStorageDomainVos, bClusterCnt, bHostCnt)
+		fun build(): DataCenterVo = DataCenterVo(bId, bName, bComment, bDescription, bStorageType, bQuotaMode, bStatus, bVersion, bClusterVos, bNetworkVos, bStorageDomainVos, bClusterCnt, bHostCnt, bDomainStatus)
 	}
 
 	companion object {
@@ -159,6 +161,26 @@ fun List<DataCenter>.toDataCenterVos(
 	findStorageDomains: Boolean = true
 ): List<DataCenterVo> =
 	this@toDataCenterVos.map { it.toDataCenterVo(conn, findClusters, findNetworks, findStorageDomains) }
+
+fun StorageDomain.toStorageDomainDataCenter(conn: Connection): List<DataCenterVo> {
+	val dataCenterIds =
+		if (this@toStorageDomainDataCenter.dataCentersPresent())
+			this@toStorageDomainDataCenter.dataCenters().map { it.id() }
+		else listOf()
+
+	return dataCenterIds.mapNotNull { dataCenterId ->
+		val dataCenter = conn.findDataCenter(dataCenterId, "storagedomains").getOrNull()
+		val storageDomainStatus = dataCenter?.storageDomains()?.find { it.id() == this@toStorageDomainDataCenter.id() }?.status()
+
+		dataCenter?.let {
+			DataCenterVo.builder {
+				id { dataCenter.id() }
+				name { dataCenter.name() }
+				domainStatus { storageDomainStatus }
+			}
+		}
+	}
+}
 
 
 // region: builder

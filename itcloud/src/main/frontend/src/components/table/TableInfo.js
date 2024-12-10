@@ -240,9 +240,9 @@ const TableInfo = {
   ],
   DATACENTERS_FROM_STORAGE_DOMAIN : [
     { header: '', accessor: 'icon', clickable: false },
-    { header: 'id', accessor: 'id', clickable: false },
+    // { header: 'id', accessor: 'id', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '데이터 센터 내의 도메인 상태', accessor: 'status', clickable: false },
+    { header: '데이터 센터 내의 도메인 상태', accessor: 'domainStatus', clickable: false },
   ],
   TEMPLATES_FROM_STORAGE_DOMAIN: [
     { header: '별칭', accessor: 'name', clickable: false },

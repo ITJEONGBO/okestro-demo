@@ -103,7 +103,7 @@ interface ItStorageService {
 	 * @return List<[DataCenterVo]> 데이터센터 목록
 	 */
 	@Throws(Error::class)
-	fun findAllDataCentersFromStorageDomain(storageDomainId: String): StorageDomainVo
+	fun findAllDataCentersFromStorageDomain(storageDomainId: String): List<DataCenterVo>
 
 	// 데이터센터 연결할 목록 - [ItDataCenterService.findAll] 사용하면 될듯
 	/**
@@ -327,10 +327,10 @@ class StorageServiceImpl(
 
 
 	@Throws(Error::class)
-	override fun findAllDataCentersFromStorageDomain(storageDomainId: String): StorageDomainVo {
+	override fun findAllDataCentersFromStorageDomain(storageDomainId: String): List<DataCenterVo> {
 		log.info("findAllDataCentersFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val storageDomain: StorageDomain = conn.findStorageDomain(storageDomainId).getOrNull()
-				?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
+		val storageDomain: StorageDomain = conn.findStorageDomain(storageDomainId)
+			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
 		return storageDomain.toStorageDomainDataCenter(conn)
 	}
 

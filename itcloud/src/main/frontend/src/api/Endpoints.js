@@ -197,14 +197,16 @@ const ENDPOINTS = {
   
   ADD_STORAGE_DOMAIN: () => `/api/v1/storages/domains`,
   EDIT_STORAGE_DOMAIN: (domainId) => `/api/v1/storages/domains/${domainId}`,
-  DELETE_STORAGE_DOMAIN: (domainId, format, hostName) => `/api/v1/storages/domains/${domainId}?format=${format}&host=${hostName}`,
-  // DELETE_STORAGE_DOMAIN: (domainId, format, hostName) => {
-  //   let url = `/api/v1/storages/domains/${domainId}?format=${format}`;
-  //   if (format && hostName) {
-  //     url += `&host=${hostName}`; // format이 true일 때만 hostName 추가
-  //   }
-  //   return url;
-  // },
+  // DELETE_STORAGE_DOMAIN: (domainId, format, hostName) => `/api/v1/storages/domains/${domainId}?format=${format}&host=${hostName}`,
+  DELETE_STORAGE_DOMAIN: (domainId, format, hostName) => {
+    let url = `/api/v1/storages/domains/${domainId}`;
+    if (format && hostName) {
+      url += `?format=true&host=${hostName}`; // format이 true일 때만 hostName 추가
+    }else if (!format) {
+      url += `?host=${hostName}`;
+    }
+    return url;
+  },
 
   DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destory`, 
   IMPORT_STORAGE_DOMAIN: () => `/api/v1/storages/domains/import`,
