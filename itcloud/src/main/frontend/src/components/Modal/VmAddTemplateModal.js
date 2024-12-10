@@ -2,22 +2,27 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useClustersFromDataCenter } from '../../api/RQHook'; // 클러스터 가져오는 훅
+import { useAddTemplate, useClustersFromDataCenter, useDiskById, useDisksFromVM, useDomainsFromDataCenter } from '../../api/RQHook'; // 클러스터 가져오는 훅
 
-const VmAddTemplateModal = ({ isOpen, onRequestClose, selectedVm }) => {
+const VmAddTemplateModal = ({ 
+  isOpen, 
+  onRequestClose, 
+  selectedVm
+}) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [comment, setComment] = useState('');
-  const [isSubtemplate, setIsSubtemplate] = useState(false);
+  const [isSubtemplate, setIsSubtemplate] = useState(false); 
   const [rootTemplate, setRootTemplate] = useState('');
-  const [subVersionName, setSubVersionName] = useState('');
-  const [allowAllAccess, setAllowAllAccess] = useState(true);
-  const [copyVmPermissions, setCopyVmPermissions] = useState(false);
-  const [sealTemplate, setSealTemplate] = useState(false);
+  const [subVersionName, setSubVersionName] = useState(''); // 서브템플릿 버전 생성
+  const [allowAllAccess, setAllowAllAccess] = useState(true); // 모든 사용자에게 허용
+  const [copyVmPermissions, setCopyVmPermissions] = useState(false); // 권한 복사
+  const [sealTemplate, setSealTemplate] = useState(false); // 템플릿봉인
 
   const [dataCenterId, setDataCenterId] = useState('');
   const [clusters, setClusters] = useState([]); // 클러스터 목록 상태
   const [selectedCluster, setSelectedCluster] = useState(''); // 선택된 클러스터 ID
+  const [forceRender, setForceRender] = useState(false);// 선택된 대상
 
   // 데이터센터 ID 가져오기
   useEffect(() => {
@@ -31,8 +36,6 @@ const VmAddTemplateModal = ({ isOpen, onRequestClose, selectedVm }) => {
     id: cluster.id,
     name: cluster.name,
   }));
-
-  // 클러스터 목록 업데이트
   useEffect(() => {
     if (clustersFromDataCenter) {
       setClusters(clustersFromDataCenter);
@@ -42,21 +45,92 @@ const VmAddTemplateModal = ({ isOpen, onRequestClose, selectedVm }) => {
     }
   }, [clustersFromDataCenter]);
 
-  const handleSave = () => {
-    console.log('Template saved with details:', {
+
+ // 데이터센터 ID 기반으로 스토리지목록 가져오기
+  const {  data: storageFromDataCenter, } = useDomainsFromDataCenter(dataCenterId , (e) =>({
+    ...e,
+  })); 
+  useEffect(() => {
+    console.log("Storage from Data Center:", storageFromDataCenter);
+    console.log("Data Center ID:", dataCenterId);
+}, [storageFromDataCenter]);
+
+
+  // 디스크할당
+  // 가상머신에 연결되어있는 디스크
+  const { data: disks } = useDisksFromVM(selectedVm.id, (e) => ({
+    ...e,
+  }));
+  useEffect(() => {
+    if (disks) {
+      console.log("가상머신에 연결된 디스크 데이터:", disks);
+      console.log("가상머신 id:", selectedVm.id);
+    }
+  }, [disks]);
+
+  const { mutate: addTemplate} = useAddTemplate();
+
+// 포맷
+const format = [
+  { value: 'RAW', label: 'Raw' },
+  { value: 'COW', label: 'cow' },
+];
+const [selectedFormat, setSelectedFormat] = useState('RAW');
+
+
+  const handleFormSubmit = () => {
+    // 디스크가 없을 때 기본값 설정
+    const diskImageVo = disks && disks[0]?.diskImageVo ? disks[0].diskImageVo : {
+      id: '',
+      size: 0,
+      alias: '',
+      description: '',
+      format: 'RAW', // 기본 포맷
+      sparse: false,
+      storageDomainVo: { id: '', name: '' },
+      diskProfileVo: { id: '', name: '' },
+    };
+  
+    const dataToSubmit = {
       name,
       description,
       comment,
-      isSubtemplate,
-      rootTemplate,
-      subVersionName,
-      allowAllAccess,
-      copyVmPermissions,
-      sealTemplate,
-      selectedCluster, // 선택된 클러스터 ID 추가
+      clusterVo: {
+        id: selectedCluster || '', // 기본값 설정
+        name: clusters.find(cluster => cluster.id === selectedCluster)?.name || '',
+      },
+      diskImageVo: {
+        id: diskImageVo.id,
+        size: diskImageVo.size,
+        alias: diskImageVo.alias,
+        description: diskImageVo.description,
+        format: diskImageVo.format,
+        sparse: diskImageVo.sparse,
+      },
+      storageDomainVo: {
+        id: diskImageVo.storageDomainVo.id || '',
+        name: diskImageVo.storageDomainVo.name || '',
+      },
+      diskProfileVo: {
+        id: diskImageVo.diskProfileVo.id || '',
+        name: diskImageVo.diskProfileVo.name || '',
+      },
+    };
+  
+    console.log('템플릿 생성데이터:', dataToSubmit);
+  
+    addTemplate(dataToSubmit, {
+      onSuccess: () => {
+        alert('템플릿 생성 완료');
+        onRequestClose();
+      },
+      onError: (error) => {
+        console.error('Error adding Template:', error);
+      },
     });
-    onRequestClose(); // 모달 닫기
   };
+  
+
 
   return (
     <Modal
@@ -168,44 +242,90 @@ const VmAddTemplateModal = ({ isOpen, onRequestClose, selectedVm }) => {
           </div>
         )}
 
-        <div className="font-bold">디스크 할당:</div>
-        <div className="section_table_outer py-1">
-          <table>
-            <thead>
-              <tr>
-                <th>별칭</th>
-                <th>가상 크기</th>
-                <th>포맷</th>
-                <th>대상</th>
-                <th>디스크 프로파일</th>
+{disks && disks.length > 0 && (
+    <>
+      <div className="font-bold">디스크 할당:</div>
+      <div className="section_table_outer py-1">
+        <table>
+          <thead>
+            <tr>
+              <th>별칭</th>
+              <th>가상 크기</th>
+              <th>포맷</th>
+              <th>대상</th>
+              <th>디스크 프로파일</th>
+            </tr>
+          </thead>
+          <tbody>
+            {disks.map((disk,index) => (
+              <tr key={disk.id}>
+                <td>{disk.diskImageVo?.alias || "없음"}</td>
+                <td>{(disk.diskImageVo?.virtualSize / (1024 ** 3) || 0).toFixed(0)} GiB</td>
+                <td>
+                <select
+                  id={`format-${index}`}
+                  value={disk.diskImageVo?.format || "RAW"} // 기본값 설정
+                  onChange={(e) => {
+                    const newFormat = e.target.value;
+                    disks[index].diskImageVo.format = newFormat; // 디스크 데이터 업데이트
+                    setSelectedFormat(newFormat); // 상태 업데이트 (선택적)
+                  }}
+                >
+                  {format.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label} {/* 화면에 표시될 한글 */}
+                    </option>
+                  ))}
+                </select>
+                <span> 선택된 포맷: {disk.diskImageVo?.format || "RAW"}</span>
+              </td>
+              <td>
+  <select
+    value={disk.diskImageVo?.storageDomainVo?.id || ""}
+    onChange={(e) => {
+      const selectedStorage = storageFromDataCenter.find(
+        (storage) => storage.id === e.target.value
+      );
+      if (selectedStorage) {
+        disk.diskImageVo.storageDomainVo = {
+          id: selectedStorage.id,
+          name: selectedStorage.name,
+        };
+        // 강제 리렌더링 트리거
+        setForceRender((prev) => !prev);
+      }
+    }}
+  >
+    <option value="">선택</option>
+    {storageFromDataCenter &&
+      storageFromDataCenter.map((storage) => (
+        <option key={storage.id} value={storage.id}>
+          {storage.name}
+        </option>
+      ))}
+  </select>
+</td>
+
+
+
+                <td>
+                  <select defaultValue={disk.diskImageVo?.diskProfileVo?.name || "선택"}>
+                    <option value={disk.diskImageVo?.diskProfileVo?.name || ""}>
+                      {disk.diskImageVo?.diskProfileVo?.name || "선택"}
+                    </option>
+                    <option value="Option 2">Option 2</option>
+                  </select>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>he_sanlock</td>
-                <td>1 GiB</td>
-                <td>
-                  <select>
-                    <option>NFS</option>
-                    <option>Option 2</option>
-                  </select>
-                </td>
-                <td>
-                  <select>
-                    <option>NFS (499 GiB)</option>
-                    <option>Option 2</option>
-                  </select>
-                </td>
-                <td>
-                  <select>
-                    <option>NFS</option>
-                    <option>Option 2</option>
-                  </select>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+  {!disks || disks.length === 0 ? (
+    <div className="font-bold">연결된 디스크 데이터가 없습니다.</div>
+  ) : null}
 
         <div className="vnic_new_checkbox">
           <input
@@ -236,7 +356,7 @@ const VmAddTemplateModal = ({ isOpen, onRequestClose, selectedVm }) => {
         </div>
 
         <div className="edit_footer">
-          <button onClick={handleSave}>OK</button>
+          <button onClick={handleFormSubmit}>OK</button>
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>

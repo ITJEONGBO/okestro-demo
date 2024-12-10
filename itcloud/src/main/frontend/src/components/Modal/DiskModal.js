@@ -91,7 +91,7 @@ const DiskModal = ({
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
 
-  const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 디스크생성
+  // const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 디스크생성
 
   const interfaceList = [
     { value: "VirtIO-SCSI", label: "VirtIO-SCSI" },
@@ -202,23 +202,7 @@ const DiskModal = ({
           },
         }
       );
-    } else if (type === "vm") {
-      // 가상 머신 디스크 생성
-      addDiskVm(
-        { vmId, diskData: dataToSubmit },
-        {
-          onSuccess: (createdDisk) => {
-            alert("가상 머신 디스크 생성 완료");
-            if (onDiskCreated) {
-              onDiskCreated(createdDisk); // 생성된 디스크를 콜백 함수로 전달
-            }
-            onRequestClose();
-          },
-          onError: (error) => {
-            console.error("Error creating VM disk:", error);
-          },
-        }
-      );
+    
     } else {
       // 일반 디스크 생성
       addDisk(dataToSubmit, {

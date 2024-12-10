@@ -1644,7 +1644,7 @@ const ApiManager = {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_TEMPLATE(templateId), 
-      // data: templateId
+      data: templateId
       // defaultValues: DEFAULT_VALUES.DELETE_TEMPLATE
     });
   },

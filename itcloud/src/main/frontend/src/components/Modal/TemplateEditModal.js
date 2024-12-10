@@ -50,7 +50,7 @@ const TemplateEditModal = ({
     if (isOpen) {
       if (editMode && templateData) {
         setId(templateData?.id);
-        setName(templateData?.name || '');
+        setName(templateData?.name || 'd');
         setDescription(templateData?.description);
         setComment(templateData?.comment || '');
         setOsSystem(templateData?.osSystem || '');

@@ -1696,7 +1696,7 @@ export const useAllEventFromTemplate = (tId, mapPredicate) => useQuery({
 export const useAddTemplate = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (templateData) => await ApiManager.addTemplate(templateData),
+    mutationFn: async (templateData ) => await ApiManager.addTemplate(templateData),
     onSuccess: () => {
       queryClient.invalidateQueries('allTemplates');
     },
@@ -1745,6 +1745,7 @@ export const useDeleteTemplate = () => {
     },
   });
 };
+
 
 /**
  * @name useAddNicFromTemplate

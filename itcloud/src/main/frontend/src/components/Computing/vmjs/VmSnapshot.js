@@ -227,14 +227,14 @@ const VmSnapshot = ({vm}) => {
 
 
 <Suspense>
-    {(modals.create || (modals.edit && selectedSnapshot)) && (
+ 
         <VmSnapshotAddModal
           isOpen={activePopup === 'new'}
           onRequestClose={closePopup}
           vmId={vm?.id}
           diskData={disks}
         />
-      )}
+      
       {modals.delete && selectedSnapshot && (
         <DeleteModal
           isOpen={modals.delete}

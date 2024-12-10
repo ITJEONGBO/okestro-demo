@@ -143,7 +143,7 @@ const ENDPOINTS = {
   FIND_STORAGE_DOMAINS_FROM_TEMPLATE: (templateId) => `/api/v1/computing/templates/${templateId}/storageDomains`, 
   FIND_EVENTS_FROM_TEMPLATE: (templateId) => `/api/v1/computing/templates/${templateId}/events`, 
 
-  ADD_TEMPLATE: () => `/api/v1/computing/templates`, 
+  ADD_TEMPLATE: (vmId) => `/api/v1/computing/templates/${vmId}`, 
   EDIT_TEMPLATE: (templateId) => `/api/v1/computing/templates/${templateId}`, 
   DELETE_TEMPLATE: (templateId) => `/api/v1/computing/templates/${templateId}`, 
   //endregion: Template

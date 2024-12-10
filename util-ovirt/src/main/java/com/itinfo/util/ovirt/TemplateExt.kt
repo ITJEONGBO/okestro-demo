@@ -91,10 +91,10 @@ fun Connection.addTemplate(
 
 fun Connection.updateTemplate(templateId: String, template: Template): Result<Template?> = runCatching {
 	this@updateTemplate.findTemplate(templateId).getOrNull() ?: throw ErrorPattern.TEMPLATE_NOT_FOUND.toError()
-	if (this@updateTemplate.templateHasDuplicateName(template.name())) {
-		log.error("updateTemplate ... 템플릿 이름 중복")
-		return Result.failure(Error("템플릿 이름 중복"))
-	}
+//	if (this@updateTemplate.templateHasDuplicateName(template.name())) {
+//		log.error("updateTemplate ... 템플릿 이름 중복")
+//		return Result.failure(Error("템플릿 이름 중복"))
+//	}
 	val templateUpdated: Template? = this@updateTemplate.srvTemplate(templateId).update().template(template).send().template()
 	templateUpdated
 }.onSuccess {

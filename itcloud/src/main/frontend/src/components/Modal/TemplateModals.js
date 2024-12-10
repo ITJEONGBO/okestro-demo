@@ -20,7 +20,7 @@ const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate 
         templateId={selectedTemplate?.id}
         />
       ): action === 'delete' ? (
-        <DeleteModal
+        <DeleteModal // 삭제되는데 시간걸림
           isOpen={isModalOpen}
           type="Template"
           onRequestClose={onRequestClose}

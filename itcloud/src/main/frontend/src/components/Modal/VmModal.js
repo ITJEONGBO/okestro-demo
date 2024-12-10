@@ -160,6 +160,9 @@ const mapSelectedDisksToAttachments = (selectedDisks) =>
     setVmDisks((prevDisks) => [...prevDisks, createdDisk]); // 새 디스크를 디스크 목록에 추가
   };
   const { data: vmdisk} = useAddDisksFromVM(vmId);
+const handleAddDiskOptions = () => {
+  setShowAddOptions(true);
+};
 
 
   // 데이터센터 ID 가져오기
@@ -308,7 +311,7 @@ useEffect(() => {
 
 
   // CD/DVD 연결
-const [isCdDvdChecked, setIsCdDvdChecked] = useState(true); // 체크박스 상태
+const [isCdDvdChecked, setIsCdDvdChecked] = useState(false); // 체크박스 상태
 const [selectedCd, setSelectedCd] = useState(''); // 선택된 CD/DVD
 const [cdList, setCdList] = useState([]); // CD/DVD 목록
 
@@ -922,68 +925,69 @@ return (
 </div>
 
 
-  {disks && disks.length > 0 ? (
-    // 디스크가 있는 경우
-    disks.map((disk, index) => (
-      <div key={index} style={{ marginBottom: '10px' }}>
-        <span>
-          {disk.diskImageVo?.alias || '이름 없음'}: ({disk.diskImageVo?.virtualSize || '0'} GB){" "}
-          {disk.bootable ? "(부팅)" : "(기본)"}
-        </span>
-        <div>-디스크아이디: {disk.id} {/* 디스크 ID 표시 */}</div>
-        <div className='flex'>
-          <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
-            편집
-          </button>
-          <DiskModal
-            isOpen={isEditPopupOpen}
-            onRequestClose={() => setIsEditPopupOpen(false)}
-            editMode={true}
-            diskId={disk.id} // 디스크 ID 전달
-            type='vm'
-          />
-          <div className="flex">
-            {/* 마지막 디스크에만 + 버튼 추가 */}
-            {index === disks.length - 1 && (
-              <button onClick={() => setShowAddOptions(!showAddOptions)}>+</button>
-            )}
-            <button onClick={() => handleRemoveDisk(disk.id)}>-</button>
-          </div>
-        </div>
-      </div>
-    ))
-  ) : (
-    // 디스크가 없는 경우
-    <div style={{ marginBottom: '10px' }}>
-      
-      <div className='flex'>
-        <div>디스크 연결: </div>
-        <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
-        <VmConnectionPlusModal
-          isOpen={isConnectionPopupOpen}
-          onRequestClose={() => setIsConnectionPopupOpen(false)}
-          vmId={vmId} // vmId를 넘겨줍니다.
-          onSelectDisk={handleDiskSelection} 
-          excludedDiskIds={selectedDisks.map((disk) => disk.id)} 
-        />
-        <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>
-          생성
+
+{disks && disks.length > 0 ? (
+  // 디스크가 있는 경우
+  disks.map((disk, index) => (
+    <div key={index} style={{ marginBottom: '10px' }}>
+      <span>
+        {disk.diskImageVo?.alias || '이름 없음'}: ({disk.diskImageVo?.virtualSize || '0'} GB){" "}
+        {disk.bootable ? "(부팅)" : "(기본)"}
+      </span>
+      <div>-디스크아이디: {disk.id} {/* 디스크 ID 표시 */}</div>
+      <div className="flex">
+        <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
+          편집
         </button>
         <DiskModal
-          isOpen={isCreatePopupOpen}
-          onRequestClose={() => setIsCreatePopupOpen(false)}
-          editMode={false}
-          vmId={vmId}
-          type='vm'
-          onDiskCreated={handleDiskCreated}
+          isOpen={isEditPopupOpen}
+          onRequestClose={() => setIsEditPopupOpen(false)}
+          editMode={true}
+          diskId={disk.id} // 디스크 ID 전달
+          type="vm"
         />
         <div className="flex">
-          <button disabled>+</button>
-          <button disabled>-</button>
+          {/* 마지막 디스크에만 + 버튼 추가 */}
+          {index === disks.length - 1 && (
+            <button onClick={() => setShowAddOptions(!showAddOptions)}>+</button>
+          )}
+          <button onClick={() => handleRemoveDisk(disk.id)}>-</button>
         </div>
       </div>
     </div>
-  )}
+  ))
+) : (
+  // 디스크가 없는 경우
+  <div style={{ marginBottom: '10px' }}>
+    <div className="flex">
+      <div>디스크 연결: </div>
+      <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+      <VmConnectionPlusModal
+        isOpen={isConnectionPopupOpen}
+        onRequestClose={() => setIsConnectionPopupOpen(false)}
+        vmId={vmId} // vmId를 넘겨줍니다.
+        onSelectDisk={handleDiskSelection}
+        excludedDiskIds={selectedDisks.map((disk) => disk.id)}
+      />
+      <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>
+        생성
+      </button>
+      <DiskModal
+        isOpen={isCreatePopupOpen}
+        onRequestClose={() => setIsCreatePopupOpen(false)}
+        editMode={false}
+        vmId={vmId}
+        type="vm"
+        onDiskCreated={handleDiskCreated}
+      />
+      <div className="flex">
+        <button disabled>+</button>
+        <button disabled>-</button>
+      </div>
+    </div>
+  </div>
+)}
+
   {/* 추가 옵션 */}
   {showAddOptions && (
     
@@ -1024,61 +1028,135 @@ return (
                               
                           ) : (
                               // 생성 모드일 때
-                              <div className='vm_plus_btn_outer'>
-                              <div className='vm_plus_btn'>
-                              <div
-  className="selected_disk_info"
-  style={{
-    border: "1px solid gray",
-    padding: "0.5rem",
-    borderRadius: "5px",
-    marginBottom: "1rem",
-  }}
->
-  {selectedDiskId ? (
-    <>
-      <p>디스크 ID: {selectedDiskId}</p>
-      {selectedDiskInfo ? (
-        <>
-          <p>디스크 이름: {selectedDiskInfo?.alias || "정보 없음"}</p>
-          <p>크기: {selectedDiskInfo?.virtualSize || "정보 없음"} GB</p>
-          <p>상태: {selectedDiskInfo?.status || "정보 없음"}</p>
-        </>
-      ) : (
-        <p>디스크 정보를 불러오는 중...</p>
-      )}
-    </>
-  ) : (
-    <p>선택된 디스크가 없습니다.</p>
-  )}
-</div>
-                                <div style={{ color: 'white' }}>.</div>
-                                <div className='flex'>
-                                  <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>      
-                                  <VmConnectionPlusModal
-                                    isOpen={isConnectionPopupOpen}
-                                    onRequestClose={() => setIsConnectionPopupOpen(false)}
-                                    vmId={vmId} 
-                                    onSelectDisk={handleDiskSelection} 
-                                    excludedDiskIds={selectedDisks.map((disk) => disk.id)} 
-                                  />
-                                  <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
-                                  <DiskModal
-                                    isOpen={isCreatePopupOpen}
-                                    onRequestClose={() => setIsCreatePopupOpen(false)}
-                                    editMode={false}
-                                    vmId={vmId}
-                                    type='vm'
-                                    onDiskCreated={handleDiskCreated}
-                                  />
-                                  <div className="flex">
-                                    {/* 디스크가 없는 경우 버튼 비활성화 */}
-                                    <button disabled>+</button>
-                                    <button disabled>-</button>
-                                  </div>
+                              <div className="vm_plus_btn_outer">
+                              <div className="vm_plus_btn">
+                                <div
+                                  className="selected_disk_info"
+                                  style={{
+                                    border: "1px solid gray",
+                                    padding: "0.5rem",
+                                    borderRadius: "5px",
+                                    marginBottom: "1rem",
+                                  }}
+                                >
+                                  {selectedDiskId ? (
+                                    <>
+                                      <p>디스크 ID: {selectedDiskId}</p>
+                                      {selectedDiskInfo ? (
+                                        <>
+                                          <p>디스크 이름: {selectedDiskInfo?.alias || "정보 없음"}</p>
+                                          <p>크기: {selectedDiskInfo?.virtualSize || "정보 없음"} GB</p>
+                                          <p>상태: {selectedDiskInfo?.status || "정보 없음"}</p>
+                                        </>
+                                      ) : (
+                                        <p>디스크 정보를 불러오는 중...</p>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <p>선택된 디스크가 없습니다.</p>
+                                  )}
                                 </div>
+                            
+                                <div style={{ color: "white" }}>.</div>
+                            
+                                <div className="flex">
+                                  {selectedDiskId ? (
+                                    <>
+                                      <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
+                                        편집
+                                      </button>
+                                      <DiskModal
+                                        isOpen={isEditPopupOpen}
+                                        onRequestClose={() => setIsEditPopupOpen(false)}
+                                        editMode={true}
+                                        diskId={selectedDiskId} // 선택된 디스크 ID 전달
+                                        type="vm"
+                                      />
+                                      <div className="flex">
+                                        <button onClick={() => handleAddDiskOptions()}>+</button>
+                                        <button onClick={() => handleRemoveDisk(selectedDiskId)}>-</button>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+                                      <VmConnectionPlusModal
+                                        isOpen={isConnectionPopupOpen}
+                                        onRequestClose={() => setIsConnectionPopupOpen(false)}
+                                        vmId={vmId}
+                                        onSelectDisk={(diskId, diskDetails) => {
+                                          setSelectedDiskId(diskId); // 선택된 디스크 ID 업데이트
+                                          setSelectedDisks((prev) => [
+                                            ...prev,
+                                            { id: diskId, details: diskDetails },
+                                          ]); // 디스크 추가
+                                        }}
+                                        excludedDiskIds={selectedDisks.map((disk) => disk.id)} // 중복 방지
+                                      />
+                                      <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>
+                                        생성
+                                      </button>
+                                      <DiskModal
+                                        isOpen={isCreatePopupOpen}
+                                        onRequestClose={() => setIsCreatePopupOpen(false)}
+                                        editMode={false}
+                                        vmId={vmId}
+                                        type="vm"
+                                        onDiskCreated={(createdDisk) => {
+                                          setSelectedDiskId(createdDisk.id); // 새로 생성된 디스크 ID 업데이트
+                                          setSelectedDisks((prev) => [...prev, createdDisk]); // 디스크 추가
+                                        }}
+                                      />
+                                      <div className="flex">
+                                        <button disabled>+</button>
+                                        <button disabled>-</button>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                            
+                                {/* 추가된 연결/생성 영역 */}
+                                {showAddOptions && (
+                                  <div className="additional_disk_section">
+                                    <div className="flex">
+                                      <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+                                      <VmConnectionPlusModal
+                                        isOpen={isConnectionPopupOpen}
+                                        onRequestClose={() => setIsConnectionPopupOpen(false)}
+                                        vmId={vmId}
+                                        onSelectDisk={(diskId, diskDetails) => {
+                                          setSelectedDiskId(diskId); // 선택된 디스크 ID 업데이트
+                                          setSelectedDisks((prev) => [
+                                            ...prev,
+                                            { id: diskId, details: diskDetails },
+                                          ]); // 디스크 추가
+                                        }}
+                                        excludedDiskIds={selectedDisks.map((disk) => disk.id)} // 중복 방지
+                                      />
+                                      <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>
+                                        생성
+                                      </button>
+                                      <DiskModal
+                                        isOpen={isCreatePopupOpen}
+                                        onRequestClose={() => setIsCreatePopupOpen(false)}
+                                        editMode={false}
+                                        vmId={vmId}
+                                        type="vm"
+                                        onDiskCreated={(createdDisk) => {
+                                          setSelectedDiskId(createdDisk.id); // 새로 생성된 디스크 ID 업데이트
+                                          setSelectedDisks((prev) => [...prev, createdDisk]); // 디스크 추가
+                                        }}
+                                      />
+                                      <div className="flex">
+                                        <button disabled>+</button>
+                                        <button disabled>-</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
+                            
                             
                           )}
                           </div>

@@ -193,7 +193,7 @@
 }
 .snapshot_content_left{
     color: #4F4F4F;
-    width: 15%;
+    width: 20%;
     display: flex;
 }
 .snapshot_content_left>div{
@@ -622,29 +622,7 @@ input[disabled] {
     background-color: #ebececd8;
     border-left: 2px solid rgb(161, 161, 161);
 }
-.snapshot_content_left{
-    color: #4F4F4F;
-    width: 15%;
-    display: flex;
-}
-.snapshot_content_left>div{
-    border-radius: 50%;
-    padding: 3%;
-    background-color: #dbdbdb;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    margin-right: 10%;
-}
-.snapshot_content_left span{
-    font-weight: 600;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.snapshot_content_left i{
-  margin-top: 1px;
-}
+
 .snapshot_content_right{
     color: #4F4F4F;
     display: flex; 
