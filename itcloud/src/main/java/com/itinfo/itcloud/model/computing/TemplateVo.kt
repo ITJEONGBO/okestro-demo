@@ -236,8 +236,14 @@ fun TemplateVo.toAddTemplateBuilder(): Template {
 		.build()
 }
 
-fun TemplateVo.toEditTemplateBuilder(): Template =
-	this@toEditTemplateBuilder.toTemplateBuilder().id(this@toEditTemplateBuilder.id).build()
+fun TemplateVo.toEditTemplateBuilder(): Template {
+	return this@toEditTemplateBuilder.toTemplateBuilder()
+		.id(this@toEditTemplateBuilder.id)
+		.os(OperatingSystemBuilder().type(this@toEditTemplateBuilder.osSystem))
+		.bios(BiosBuilder().type(BiosType.fromValue(this@toEditTemplateBuilder.chipsetFirmwareType)))
+		.type(VmType.fromValue(this@toEditTemplateBuilder.optimizeOption))
+		.build()
+}
 
 
 
