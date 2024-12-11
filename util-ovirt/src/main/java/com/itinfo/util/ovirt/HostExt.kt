@@ -67,7 +67,7 @@ fun Connection.findAllVmsFromHost(hostId: String, searchQuery: String = ""): Res
 }
 
 
-fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false, name: String, password: String): Result<Host?> = runCatching {
+fun Connection.addHost(host: Host, deployHostedEngine: Boolean, name: String, password: String): Result<Host?> = runCatching {
 	if(this.findAllHosts()
 			.getOrDefault(listOf())
 			.nameDuplicateHost(host.name())) {
@@ -86,7 +86,7 @@ fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false, name: St
 		srvHosts().add().deployHostedEngine(deployHostedEngine).host(host).send().host()
 
 	// 상태 up 될때까지 기다리기
-	this.expectHostStatus(hostAdded.id(), HostStatus.UP)
+//	this.expectHostStatus(hostAdded.id(), HostStatus.UP)
 
 	log.info("Host 생성 끝")
 	hostAdded

@@ -48,6 +48,20 @@ const HostInfo = () => {
     haon: false,
     haoff: false,
   }); 
+
+  const renderStatus = (status) => {
+    if (status === 'UP') {
+      return '실행중';
+    } else if (status === 'DOWN') {
+      return '중지';
+    } else if (status === 'MAINTENANCE') {
+      return '유지보수';
+    } else if (status === 'REBOOT') {
+      return '재부팅중';
+    }
+    return status;
+  };
+
   
   const sections = [
     { id: 'general', label: '일반' },
@@ -97,7 +111,7 @@ const HostInfo = () => {
 
   const sectionHeaderButtons = [
     { id: 'edit_btn', label: '호스트 편집', onClick: () => toggleModal('edit', true),},
-    { id: 'delete_btn', label: '삭제', onClick: () => toggleModal('delete', true), },
+    { id: 'delete_btn', label: '삭제', onClick: () => toggleModal('delete', true)},
   ]
 
   const popupItems = [
@@ -154,6 +168,7 @@ const HostInfo = () => {
       <HeaderButton
         titleIcon={faUser}
         title={host?.name}
+        status={renderStatus(host?.status)}
         buttons={sectionHeaderButtons}
         popupItems={popupItems}
       />

@@ -114,3 +114,24 @@
     text-align: left;
     width: 44%
 }
+
+.host_tabs {
+  display: flex; /* 가로 정렬 */
+  justify-content: flex-start; /* 왼쪽 정렬 (필요에 따라 center, space-around로 변경 가능) */
+  gap: 10px; /* 버튼 간격 */
+  margin-bottom: 20px; /* 아래 여백 */
+}
+
+.tab_button {
+  margin: 5px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.tab_button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}

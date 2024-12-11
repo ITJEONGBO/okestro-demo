@@ -6,7 +6,7 @@ import './HeaderButton.css';
 
 const HeaderButton = ({ 
   title, 
-  subtitle, 
+  status, 
   buttons = [], 
   popupItems = [], 
   titleIcon 
@@ -55,10 +55,12 @@ const HeaderButton = ({
           )}
           <div>{title}</div>
         </div>
-        <div>{subtitle}</div>
       </div>
       <div className="section_header_right">
         <div className="article_nav">
+          <div className="subStatus">
+            <p>{status}</p>
+          </div>
           {buttons.map((button, index) => (
             <IconButton
               id={button.id}

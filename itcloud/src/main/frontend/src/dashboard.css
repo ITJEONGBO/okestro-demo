@@ -332,6 +332,9 @@ body {
 }
 
 /*nav*/
+.subStatus{
+    font-size: 0.3rem;
+}
 
 .article_nav{
     display: flex;

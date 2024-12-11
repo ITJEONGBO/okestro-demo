@@ -228,6 +228,7 @@ fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfiguration
         id { this@toHostInfo.id() }
         name { this@toHostInfo.name() }
         comment { this@toHostInfo.comment() }
+        status { this@toHostInfo.status() }
         clusterVo { if(this@toHostInfo.clusterPresent()) conn.findCluster(this@toHostInfo.cluster().id()).getOrNull()?.fromClusterToIdentifiedVo() else null}
         address { this@toHostInfo.address() }
         hostedActive { if(this@toHostInfo.hostedEnginePresent()) this@toHostInfo.hostedEngine().active() else false }
@@ -253,7 +254,7 @@ fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfiguration
         hugePage2048Free { statistics.findPage("hugepages.2048.free") }
         hugePage1048576Total { statistics.findPage("hugepages.1048576.total") }
         hugePage1048576Free { statistics.findPage("hugepages.1048576.free") }
-        bootingTime { ovirtDf.format(Date(statistics.findBootTime())) }
+        bootingTime { ovirtDf.format(Date(statistics.findBootTime()* 1000)) }
         hostHwVo { this@toHostInfo.toHostHwVo() }
         hostSwVo { this@toHostInfo.toHostSwVo(hostConfigurationEntity) }
     }

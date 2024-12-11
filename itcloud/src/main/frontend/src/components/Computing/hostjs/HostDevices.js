@@ -12,12 +12,12 @@ const HostDevices = ({ hostId }) => {
   } = useHostdeviceFromHost(hostId, (e) => ({ ...e }));
 
   return (
-      <>
-        <PagingTableOuter
-          columns={TableInfo.DEVICE_FROM_HOST} 
-          data={hostDevices} 
-        />
-      </>
+    <>
+      <PagingTableOuter
+        columns={TableInfo.DEVICE_FROM_HOST} 
+        data={hostDevices} 
+      />
+    </>
   );
 };
   
