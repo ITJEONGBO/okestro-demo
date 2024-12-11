@@ -24,13 +24,13 @@ const TemplateDupl = ({
 
   return (
     <>
-    <div id="section">
+    {/* <div id="section">
       <HeaderButton
         titleIcon={faDesktop}
         title={'템플릿'}
         buttons={[]}
       />
-      <div className="host_btn_outer">
+      <div className="host_btn_outer"> */}
       <TemplateActionButtons
         onEdit={() => selectedTemplate?.id && handleActionClick('edit')} 
         onDelete={() => selectedTemplate?.id && handleActionClick('delete')} 
@@ -51,8 +51,8 @@ const TemplateDupl = ({
         onRequestClose={() => setIsModalOpen(false)}
         selectedTemplate={selectedTemplate}
       />
-      </div>
-    </div>
+      {/* </div>
+    </div> */}
     </>
   );
 };

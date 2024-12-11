@@ -16,6 +16,7 @@ const DomainActionModal = ({
     onRequestClose, 
     contentLabel,
     data,
+    type,
     datacenterId
 }) => {
   
@@ -85,7 +86,7 @@ const DomainActionModal = ({
     >
       <div className="storage_delete_popup">
         <div className="popup_header">
-          <h1>스토리지 도메인 {contentLabel}</h1>
+          <h1> 스토리지 도메인 {contentLabel}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>

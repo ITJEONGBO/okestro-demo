@@ -19,12 +19,10 @@ const Templates = () => {
 
   return (
     <>
-   
-        <TemplateDupl
-          templates={templates || []}
-          columns={TableInfo.TEMPLATES}
-        />      
-
+      <TemplateDupl
+        templates={templates || []}
+        columns={TableInfo.TEMPLATES}
+      />      
     </>
   );
 };

@@ -5,7 +5,7 @@ const DomainModals = ({
   action, 
   onRequestClose, 
   selectedDomain,
-  datacenterId
+  datacenterId,
 }) => {
   const DomainModal = React.lazy(() => import('../Modal/DomainModal'));
   const DomainDeleteModal = React.lazy(() => import('../Modal/DomainDeleteModal'));

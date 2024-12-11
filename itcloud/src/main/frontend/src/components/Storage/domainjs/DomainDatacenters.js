@@ -1,11 +1,12 @@
 import React, { useState } from 'react'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil } from '@fortawesome/free-solid-svg-icons';
-import { useAllDataCenterFromDomain } from "../../../api/RQHook";
+import { faPlay, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { useAllDataCenterFromDomain, useDomainById } from "../../../api/RQHook";
 import TablesOuter from '../../table/TablesOuter';
 import TableRowClick from '../../table/TableRowClick';
 import TableInfo from '../../table/TableInfo';
 import DomainActionButtons from '../../button/DomainActionButtons';
+import DomainModals from '../../Modal/DomainModals';
 
 const DomainDatacenters = ({ domainId }) => {
   const {
@@ -16,11 +17,22 @@ const DomainDatacenters = ({ domainId }) => {
     ...e,
   }));  
 
+  const {
+    data: domain,
+    refetch: domainRefetch,
+    error: domainError,
+    isLoading: isDomainLoading,
+  } = useDomainById(domainId, (e) => ({
+    ...e,
+  }));
+
   const renderStatusIcon = (status) => {
     if (status === 'ACTIVE') {
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
     } else if (status === 'DOWN') {
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+    } else if (status === 'MAINTENANCE') {
+      return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
     }
     return status;
   };
@@ -41,19 +53,12 @@ const DomainDatacenters = ({ domainId }) => {
   return (
     <>
       <DomainActionButtons
-        onAttach={() => handleActionClick('attach')}
-        onSeparate={() => selectedDataCenter?.id && handleActionClick('separate')}
-        onActive={() => selectedDataCenter?.id && handleActionClick('active')}
+        onActivate={() => selectedDataCenter?.id && handleActionClick('activate')}
+        onAttach={() => selectedDataCenter?.id && handleActionClick('attach')}
+        onDetach={() => selectedDataCenter?.id && handleActionClick('detach')}
         onMaintenance={() => selectedDataCenter?.id && handleActionClick('maintenance')}
-        status={selectedDataCenter?.status}
+        status={selectedDataCenter?.domainStatus}
       />
-
-      {/* <DomainModals
-        isModalOpen={isModalOpen}
-        action={action}
-        onRequestClose={() => setIsModalOpen(false)}
-        selectedDomain={selectedDomain}
-      /> */}
 
       <span>id = {selectedDataCenter?.id || ''}</span>  
 
@@ -70,6 +75,14 @@ const DomainDatacenters = ({ domainId }) => {
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedDataCenter(row)}
+      />
+
+      <DomainModals
+        isModalOpen={isModalOpen}
+        action={action}
+        onRequestClose={() => setIsModalOpen(false)}
+        selectedDomain={domain}
+        datacenterId={selectedDataCenter?.id}
       />
     </>
   );

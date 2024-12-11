@@ -47,6 +47,11 @@ const DiskTable = ({
                 {disk?.connectVm.name}
               </TableRowClick>
             ),
+            connectTemplate: (
+              <TableRowClick type="templates" id={disk?.connectTemplate.id}>
+                {disk?.connectTemplate.name}
+              </TableRowClick>
+            ),
             virtualSize: sizeToGB(disk?.virtualSize) < 1 ? "< 1 GB" : `${sizeToGB(disk?.virtualSize).toFixed(0)} GB`,
             actualSize: sizeToGB(disk?.actualSize) < 1 ? "< 1 GB" : `${sizeToGB(disk?.actualSize).toFixed(0)} GB`,
           };
