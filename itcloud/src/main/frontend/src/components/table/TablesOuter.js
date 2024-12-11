@@ -13,7 +13,7 @@ const TablesOuter = ({
   onContextMenuItems,
   onClickableColumnClick
 }) => {
-  console.log("Data passed to TablesOuter:", data);
+  // console.log("Data passed to TablesOuter:", data);
 
   return (
     <div className="section_table_outer">

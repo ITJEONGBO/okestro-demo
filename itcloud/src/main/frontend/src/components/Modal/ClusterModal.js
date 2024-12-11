@@ -33,7 +33,7 @@ const ClusterModal = ({
     comment: '',
     cpuArc: '',
     cpuType: '',
-    biosType: '',
+    biosType: 'CLUSTER_DEFAULT',
     errorHandling: 'migrate',
   });
   const [dataCenterVoId, setDataCenterVoId] = useState('');
@@ -77,7 +77,7 @@ const ClusterModal = ({
 
   
   const cpuArcs = [
-    { value: "", label: "정의되지 않음" },
+    { value: "UNDEFINED", label: "정의되지 않음" },
     { value: "X86_64", label: "x86_64" },
     { value: "PPC64", label: "ppc64" },
     { value: "S390X", label: "s390x" },
@@ -135,7 +135,7 @@ const ClusterModal = ({
           'IBM z13s, z13',
           'IBM z14'
         ];
-      default:
+      default: // UNDEFINED
         return [
           '자동 감지',
           'Intel Nehalem Family', 
@@ -213,7 +213,7 @@ const ClusterModal = ({
       setFormState((prev) => ({
         ...prev,
         cpuType: '', // CPU 유형 초기화
-        biosType: '', // BIOS 유형 초기화
+        biosType: 'CLUSTER_DEFAULT', // BIOS 유형 초기화
       }));
     } else if (editMode && options.length > 0 && !options.includes(formState.cpuType)) {
       // 현재 CPU 유형이 새 옵션 리스트에 없으면 초기화
@@ -229,9 +229,9 @@ const ClusterModal = ({
       name: '',
       description: '',
       comment: '',
-      cpuArc: '',
+      cpuArc: 'UNDEFINED',
       cpuType: '',
-      biosType: '',
+      biosType: 'CLUSTER_DEFAULT',
       errorHandling: 'migrate',
     });
     setCpuOptions([]);
@@ -262,6 +262,8 @@ const ClusterModal = ({
       networkVo: { id: selectedNetwork.id, name: selectedNetwork.name },
       ...formState,
     };
+
+    console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
 
     if (editMode) {
       editCluster(
@@ -352,7 +354,7 @@ const ClusterModal = ({
               disabled={editMode}
             >
               {isNetworksLoading ? (
-                <option>로딩중~</option>
+                <option>로딩중...</option>
               ) : (
                 networks.map((n) => (
                   <option key={n.id} value={n.id}>

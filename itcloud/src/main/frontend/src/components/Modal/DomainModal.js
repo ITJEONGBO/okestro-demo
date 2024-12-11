@@ -462,56 +462,97 @@ const DomainModal = ({
         </div>
       )}
       
-      {isIscsi && (
-        // {editMode ? (
-        //   <Table
-        //   columns={TableInfo.LUNS_TARGETS}
-        //   data={iscsis}
-        //   onRowClick={handleRowClick}
-        //   shouldHighlight1stCol={true}
-        // />
-        // ) : (
-          <div className="storage_popup_iSCSI">
-            <div className="tab_content">
-                {isIscsisLoading ? (
-                    <div className="loading-message">로딩 중...</div>
-                  ) : isIscsisError ? (
-                    <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
-                  ) : (
-                    <>
-                      <Table
-                        columns={TableInfo.LUNS_TARGETS}
-                        data={iscsis}
-                        onRowClick={handleRowClick}
-                        shouldHighlight1stCol={true}
-                      />
-                    <div>
-                      <span>id: {lunId}</span>
-                    </div>
-                    </>
-                  )}
-              </div>
+      {isIscsi && (        
+        <div className="storage_popup_iSCSI">
+          <div className="tab_content">
+            {isIscsisLoading ? (
+              <div className="loading-message">로딩 중...</div>
+            ) : isIscsisError ? (
+              <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
+            ) : (
+              <>
+                {editMode ? (
+                  <Table
+                    columns={TableInfo.LUNS_TARGETS}
+                    data={
+                      domain?.hostStorageVo?.logicalUnits?.map((logicalUnit) => ({
+                        abled: logicalUnit.storageDomainId === "" ? "OK" : "NO",
+                        status: logicalUnit.status,
+                        id: logicalUnit.id,
+                        size: logicalUnit.size ? `${(logicalUnit.size / (1024 ** 3)).toFixed(2)} GB` : "N/A",
+                        paths: logicalUnit.paths || 0,
+                        vendorId: logicalUnit.vendorId || "N/A",
+                        productId: logicalUnit.productId || "N/A",
+                        serial: logicalUnit.serial || "N/A",
+                        target: logicalUnit.target || "N/A",
+                        address: logicalUnit.address || "N/A",
+                        port: logicalUnit.port || "N/A",
+                      })) || []
+                    }
+                    // onRowClick={handleRowClick}
+                    // shouldHighlight1stCol={true}
+                  />
+                ): (
+                  <Table
+                    columns={TableInfo.LUNS_TARGETS}
+                    data={iscsis}
+                    onRowClick={handleRowClick}
+                    shouldHighlight1stCol={true}
+                  />
+                )}
+                <div>
+                  <span>id: {lunId}</span>
+                </div>
+              </>
+            )}
           </div>
-        // )}        
+        </div>
       )}
       
       {isFibre && (
-        <div className="tab_content">
-          {isFibresLoading ? (
+        <div className="storage_popup_iSCSI">
+          <div className="tab_content">
+            {isFibresLoading ? (
               <div className="loading-message">로딩 중...</div>
             ) : isFibresError ? (
               <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
             ) : (
-              <Table
-                columns={TableInfo.FIBRE}
-                data={fibres}
-                onRowClick={handleRowClick}
-                shouldHighlight1stCol={true}
-              />
+              <>
+                {editMode ? (
+                  <Table
+                    columns={TableInfo.FIBRE}
+                    data={
+                      domain?.hostStorageVo?.logicalUnits?.map((logicalUnit) => ({
+                        abled: logicalUnit.storageDomainId === "" ? "OK" : "NO",
+                        status: logicalUnit.status,
+                        id: logicalUnit.id,
+                        size: logicalUnit.size ? `${(logicalUnit.size / (1024 ** 3)).toFixed(2)} GB` : "N/A",
+                        paths: logicalUnit.paths || 0,
+                        vendorId: logicalUnit.vendorId || "N/A",
+                        productId: logicalUnit.productId || "N/A",
+                        serial: logicalUnit.serial || "N/A",
+                        target: logicalUnit.target || "N/A",
+                        address: logicalUnit.address || "N/A",
+                        port: logicalUnit.port || "N/A",
+                      })) || []
+                    }
+                    // onRowClick={handleRowClick}
+                    // shouldHighlight1stCol={true}
+                  />
+                ): (
+                  <Table
+                  columns={TableInfo.FIBRE}
+                  data={fibres}
+                  onRowClick={handleRowClick}
+                  shouldHighlight1stCol={true}
+                />
+                )} 
+                <div>
+                  <span>id: {lunId}</span>
+                </div>
+              </> 
             )}
-            <div>
-              <span>${lunId}</span>
-            </div>
+          </div>
         </div>
       )}
       

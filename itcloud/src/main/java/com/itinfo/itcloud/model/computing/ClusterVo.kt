@@ -69,8 +69,8 @@ class ClusterVo(
     val comment: String = "",
     val isConnected: Boolean = false,
     val ballooningEnabled: Boolean = false,
-    val biosType: String = "",
-    val cpuArc: String = "",
+    val biosType: BiosType = BiosType.CLUSTER_DEFAULT,
+    val cpuArc: Architecture = Architecture.UNDEFINED,
     val cpuType: String = "",
     val errorHandling: String/*MigrateOnError*/ = "",
     val fipsMode: FipsMode = FipsMode.UNDEFINED,
@@ -109,8 +109,8 @@ class ClusterVo(
 		private var bComment: String = "";fun comment(block: () -> String?) { bComment = block() ?: "" }
 		private var bIsConnected: Boolean = false; fun isConnected(block: () -> Boolean?) { bIsConnected = block() ?: false }
 		private var bBallooningEnabled: Boolean = false; fun ballooningEnabled(block: () -> Boolean?) { bBallooningEnabled = block() ?: false }
-		private var bBiosType: String = ""; fun biosType(block: () -> String?) { bBiosType = block() ?: "" }
-		private var bCpuArc: String = ""; fun cpuArc(block: () -> String?) { bCpuArc = block() ?: "" }
+		private var bBiosType: BiosType = BiosType.CLUSTER_DEFAULT; fun biosType(block: () -> BiosType?) { bBiosType = block() ?: BiosType.CLUSTER_DEFAULT }
+		private var bCpuArc: Architecture = Architecture.UNDEFINED; fun cpuArc(block: () -> Architecture?) { bCpuArc = block() ?: Architecture.UNDEFINED }
 		private var bCpuType: String = ""; fun cpuType(block: () -> String?) { bCpuType = block() ?: "" }
 		private var bErrorHandling: String = ""; fun errorHandling(block: () -> String?) { bErrorHandling = block() ?: "" }
 		private var bFipsMode: FipsMode = FipsMode.UNDEFINED; fun fipsMode(block: () -> FipsMode?) { bFipsMode = block() ?: FipsMode.UNDEFINED}
@@ -183,8 +183,8 @@ fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
 		name { this@toClusterInfo.name() }
 		description {this@toClusterInfo.description() }
 		comment { this@toClusterInfo.comment() }
-		biosType { if(this@toClusterInfo.biosTypePresent()) this@toClusterInfo.biosType().toString() else null}
-		cpuArc { if(this@toClusterInfo.cpuPresent()) this@toClusterInfo.cpu().architecture().toString() else null}
+		biosType { if(this@toClusterInfo.biosTypePresent()) this@toClusterInfo.biosType() else null}
+		cpuArc { if(this@toClusterInfo.cpuPresent()) this@toClusterInfo.cpu().architecture() else null}
 		cpuType { if (this@toClusterInfo.cpuPresent()) this@toClusterInfo.cpu().type() else null }
 		firewallType { this@toClusterInfo.firewallType() }
 		haReservation { this@toClusterInfo.haReservation() }
@@ -227,14 +227,18 @@ fun List<Cluster>.toNetworkClusterVos(conn: Connection, networkId: String): List
  * 클러스터 빌더
  */
 fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
+//	val builder = ClusterBuilder()
+//	if(this@toClusterBuilder.biosType)
+//	builder
+//		.biosType(this@toClusterBuilder.biosType != null ? BiosType.fromValue(this@toClusterBuilder.biosType.toString()))
 	return ClusterBuilder()
 		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenterVo.id).build()) // 필수
 		.name(this@toClusterBuilder.name) // 필수
-		.cpu(CpuBuilder().architecture(Architecture.fromValue(this@toClusterBuilder.cpuArc)).type(this@toClusterBuilder.cpuType)) // 필수
+		.cpu(CpuBuilder().architecture(Architecture.fromValue(this@toClusterBuilder.cpuArc.toString())).type(this@toClusterBuilder.cpuType))
 		.description(this@toClusterBuilder.description)
 		.comment(this@toClusterBuilder.comment)
 		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.networkVo.id).build())
-		.biosType(BiosType.fromValue(this@toClusterBuilder.biosType))
+		.biosType(BiosType.fromValue(this@toClusterBuilder.biosType.toString()))
 //		.fipsMode(FipsMode.UNDEFINED)
 		.version(VersionBuilder().major(4).minor(7).build())
 		.switchType(SwitchType.LEGACY)  // 편집에선 선택불가
@@ -317,8 +321,8 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 		comment { this@toClusterVo.comment() }
 //		isConnected { this@toClusterVo. }
 		ballooningEnabled { this@toClusterVo.ballooningEnabled() }
-		biosType { this@toClusterVo.biosType().toString() }
-		cpuArc { this@toClusterVo.cpu().architecture().toString() }
+		biosType { if(this@toClusterVo.biosTypePresent()) this@toClusterVo.biosType() else null }
+		cpuArc { this@toClusterVo.cpu().architecture() }
 		cpuType { if (this@toClusterVo.cpuPresent()) this@toClusterVo.cpu().type() else null }
 		errorHandling { this@toClusterVo.errorHandling().onError().toString() }
 		fipsMode { this@toClusterVo.fipsMode() }

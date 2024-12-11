@@ -174,6 +174,7 @@ fun Template.toTemplateInfo(conn: Connection): TemplateVo {
 	return TemplateVo.builder {
 		id { this@toTemplateInfo.id() }
 		name { this@toTemplateInfo.name() }
+		comment { this@toTemplateInfo.comment()}
 		description { this@toTemplateInfo.description() }
 		status { this@toTemplateInfo.status() }
 		versionName { if (this@toTemplateInfo.versionPresent()) this@toTemplateInfo.version().versionName() else "" }

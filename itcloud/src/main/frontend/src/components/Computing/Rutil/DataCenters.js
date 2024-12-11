@@ -76,7 +76,7 @@ const DataCenters = () => {
         {modals.delete && selectedDataCenter && (
           <DeleteModal
             isOpen={modals.delete}
-            type='Datacenter'
+            type='DataCenter'
             onRequestClose={() => toggleModal('delete', false)}
             contentLabel={'데이터센터'}
             data={selectedDataCenter}

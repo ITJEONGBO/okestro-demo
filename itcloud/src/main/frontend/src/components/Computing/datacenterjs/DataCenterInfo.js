@@ -27,9 +27,7 @@ const DataCenterInfo = () => {
     isError: isDataCenterError,
     error: dataCenterError,
     isLoading: isDataCenterLoading,
-  } = useDataCenter(dataCenterId, (e) => ({
-    ...e,
-  }));
+  } = useDataCenter(dataCenterId, (e) => ({...e,}));
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -137,7 +135,7 @@ const DataCenterInfo = () => {
         <Suspense fallback={<div>Loading...</div>}>
           <DeleteModal
             isOpen={modals.delete}
-            type='Datacenter'
+            type='DataCenter'
             onRequestClose={() => toggleModal('delete', false)}
             contentLabel={'데이터센터'}
             data={dataCenter}

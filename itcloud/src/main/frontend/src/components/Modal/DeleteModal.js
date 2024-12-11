@@ -61,8 +61,8 @@ const DeleteModal = ({
       return;
     }
 
-    if (type === 'Datacenter') {
-      console.log('Deleting Data Center');
+    if (type === 'DataCenter') {
+      console.log('Deleting DataCenter');
       handleDelete(deleteDataCenter);
     } else if (type === 'Cluster') {
       console.log('Deleting Cluster');
@@ -106,7 +106,7 @@ const DeleteModal = ({
       onSuccess: () => {
         onRequestClose(); // 삭제 성공 시 모달 닫기
         
-        if (type === 'Datacenter') {
+        if (type === 'DataCenter') {
           // Datacenter 삭제 후 특정 경로로 이동
           navigate('/computing/rutil-manager/datacenters');
         } else if (type === 'Cluster') {
