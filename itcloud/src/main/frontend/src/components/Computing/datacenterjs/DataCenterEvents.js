@@ -13,7 +13,9 @@ const DataCenterEvents = ({datacenterId}) => {
   console.log('DataCenterEvents:', events);
   return (
     <>
-      <EventTable events={events}/>
+      <EventTable 
+        events={events}
+      />
     </>
   );
 };

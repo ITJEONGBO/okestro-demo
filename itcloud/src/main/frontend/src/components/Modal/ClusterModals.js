@@ -1,6 +1,12 @@
 import React, { Suspense } from 'react';
 
-const ClusterModals = ({ isModalOpen, action, onRequestClose, selectedCluster }) => {
+const ClusterModals = ({ 
+  isModalOpen, 
+  action, 
+  onRequestClose, 
+  selectedCluster,
+  datacenterId
+}) => {
   const ClusterModal = React.lazy(() => import('../Modal/ClusterModal'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
 
@@ -14,7 +20,7 @@ const ClusterModals = ({ isModalOpen, action, onRequestClose, selectedCluster })
             onRequestClose={onRequestClose}
             editMode={action === 'edit'}
             cId={selectedCluster?.id || null}
-            // datacenterId={datacenterId}
+            datacenterId={datacenterId}
         />
       )}
       {action === 'delete' && (

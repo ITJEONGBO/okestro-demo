@@ -1,21 +1,10 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-    faArrowUp,
-  faCheckCircle,
-  faListUl,
-  faPencil,
-  faRefresh,
-  faSearch,
-} from '@fortawesome/free-solid-svg-icons'
-import TableOuter from './table/TableOuter';
+import { faListUl, faCheckCircle, faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
 import HeaderButton from './button/HeaderButton';
-import TableColumnsInfo from './table/TableColumnsInfo';
 import Footer from './footer/Footer';
 import { useAllEvents } from '../api/RQHook';
-import PagingTable from './table/PagingTable';
 import PagingTableOuter from './table/PagingTableOuter';
 import TableInfo from './table/TableInfo';
 
@@ -23,8 +12,6 @@ Modal.setAppElement('#root');
 
 const Event = () => {
   const navigate = useNavigate();
-
-
 
   const { 
     data: events, 
@@ -39,16 +26,15 @@ const Event = () => {
     severity: (() => {
       switch (e?.severity) {
         case 'ALERT':
-          return '알림';
-        case 'ERROR':
-          return '에러';
-        case 'NORMAL':
-          return '일반';
-        case 'WARNING':
-          return '위험';
-        default:
-          return e?.severity;
-          // 이모티콕 수정 필요
+        return '알림';
+      case 'NORMAL':
+        return <FontAwesomeIcon icon={faCheckCircle} fixedWidth style={{ color: 'green', fontSize: '0.3rem' }} />;      
+      case 'ERROR':
+        return <> 에러&nbsp; <FontAwesomeIcon icon={faTimesCircle} fixedWidth style={{ color: 'purple', fontSize: '0.3rem' }} /></>;
+      case 'WARNING':
+        return <FontAwesomeIcon icon={faWarning} fixedWidth style={{ color: 'red', fontSize: '0.3rem' }} />;
+      default:
+        return e?.severity;
       }
     })(),
   }));

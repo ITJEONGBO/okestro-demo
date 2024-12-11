@@ -13,6 +13,7 @@ const DataCenterClusters = ({ datacenterId }) => {
       <ClusterDupl
         clusters={clusters || []}
         columns={TableInfo.CLUSTERS_FROM_DATACENTER}
+        datacenterId={datacenterId}
       />
     </>
   );

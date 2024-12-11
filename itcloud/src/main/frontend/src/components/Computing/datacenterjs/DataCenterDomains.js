@@ -21,6 +21,7 @@ const DataCenterDomains = ({datacenterId}) => {
         domains={storageDomains || []}
         columns={TableInfo.STORAGE_DOMAINS}
         type={'datacenter'}
+        datacenterId={datacenterId}
       />
     </>
   );

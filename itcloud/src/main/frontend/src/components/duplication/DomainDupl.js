@@ -8,7 +8,8 @@ const DomainDupl = ({
   columns,
   type='domain',  // 데이터센터, 스토리지 도메인, rutil
   onFetchDomains, 
-  status
+  status,
+  datacenterId
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
   const [action, setAction] = useState(null); // 현재 동작
@@ -36,9 +37,9 @@ const DomainDupl = ({
     }
     { type === 'datacenter' &&
       <DomainActionButtons
-        onAttach={() => handleActionClick('attach')}
-        onSeparate={() => selectedDomain?.id && handleActionClick('separate')}
-        onActive={() => selectedDomain?.id && handleActionClick('active')}
+        onActivate={() => selectedDomain?.id && handleActionClick('activate')}
+        onAttach={() => selectedDomain?.id && handleActionClick('attach')}
+        onDetach={() => selectedDomain?.id && handleActionClick('detach')}
         onMaintenance={() => selectedDomain?.id && handleActionClick('maintenance')}
         status={selectedDomain?.status}
       />
@@ -68,6 +69,7 @@ const DomainDupl = ({
         action={action}
         onRequestClose={() => setIsModalOpen(false)}
         selectedDomain={selectedDomain}
+        datacenterId={datacenterId}
       />
     </>
   );

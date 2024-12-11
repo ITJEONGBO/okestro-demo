@@ -4,8 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  // useSeparateDomain,
   useActivateDomain, 
+  useAttachDomain,
+  useDetachDomain,
+  useMaintenanceDomain
 } from '../../api/RQHook';
 
 const DomainActionModal = ({ 
@@ -13,10 +15,14 @@ const DomainActionModal = ({
     action,
     onRequestClose, 
     contentLabel,
-    data
+    data,
+    datacenterId
 }) => {
-  // const { mutate: separateDomain } = useSeparateDomain();
+  
   const { mutate: activateDomain } = useActivateDomain();
+  const { mutate: attachDomain } = useAttachDomain();
+  const { mutate: detachDomain } = useDetachDomain();
+  const { mutate: maintenanceDomain } = useMaintenanceDomain();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,25 +44,33 @@ const DomainActionModal = ({
       return;
     }
 
-    if (action === 'separate') {
-      console.log('separate ' + id)
-      // handleAction(separateDomain)
-    } else if (action === 'activate') {
-      console.log('activate ' + {id})
+    if (action === 'activate') {
+      console.log(`activate ${id}, dc: ${datacenterId}` )
       handleAction(activateDomain)
-    } 
+    } else if (action === 'attach') {
+      console.log(`attach ${id}, dc: ${datacenterId}` )
+      handleAction(attachDomain)
+    } else if (action === 'detach') {
+      console.log(`detach ${id}, dc: ${datacenterId}` )
+      handleAction(detachDomain)
+    } else if (action === 'maintenance') {
+      console.log(`maintenance ${id}, dc: ${datacenterId}` )
+      handleAction(maintenanceDomain)
+    }
   }
 
   const handleAction = (actionFn) => {
-    actionFn(id, {
-      onSuccess: () => {
-        onRequestClose(); // 삭제 성공 시 모달 닫기
-        
-      },
-      onError: (error) => {
-        console.error(`${contentLabel} ${name} 액션 오류:`, error);
-      },
-    });
+    actionFn(
+      { domainId: id, dataCenterId: datacenterId }, 
+      {
+        onSuccess: () => {
+          onRequestClose(); // 삭제 성공 시 모달 닫기
+        },
+        onError: (error) => {
+          console.error(`${contentLabel} ${name} 액션 오류:`, error);
+        },
+      }
+    );
   };
   
 
@@ -71,7 +85,7 @@ const DomainActionModal = ({
     >
       <div className="storage_delete_popup">
         <div className="popup_header">
-          <h1>스토리지 도메인 {contentLabel} {id}</h1>
+          <h1>스토리지 도메인 {contentLabel}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
@@ -80,7 +94,7 @@ const DomainActionModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data.name} 를(을) {contentLabel}하시겠습니까? </span>
+            <span> {data.name} 를(을) {contentLabel}하시겠습니까? {datacenterId}</span>
           </div>
         </div>
 

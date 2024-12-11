@@ -2440,12 +2440,69 @@ export const useDeleteDomain = () => {
 export const useActivateDomain = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (domainId) => await ApiManager.activateDomin(domainId),
+    mutationFn: async ({domainId, dataCenterId}) => await ApiManager.activateDomain(domainId, dataCenterId),
     onSuccess: () => {
-      // queryClient.invalidateQueries('allHosts');
+      queryClient.invalidateQueries('allStorageDomains');
     },
     onError: (error) => {
       console.error('Error activate domain:', error);
+    },  
+  });
+};
+
+/**
+ * @name useAttachDomain
+ * @description 호스트 연결 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useAttachDomain = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({domainId, dataCenterId}) => await ApiManager.attachDomain(domainId, dataCenterId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allStorageDomains');
+    },
+    onError: (error) => {
+      console.error('Error attach Domain:', error);
+    },  
+  });
+};
+
+/**
+ * @name useDetachDomain
+ * @description 호스트 분리 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDetachDomain = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({domainId, dataCenterId}) => await ApiManager.detachDomain(domainId, dataCenterId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allStorageDomains');
+    },
+    onError: (error) => {
+      console.error('Error detach Domain:', error);
+    },  
+  });
+};
+
+/**
+ * @name useMaintenanceDomain
+ * @description 호스트 유지보수 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useMaintenanceDomain = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({domainId, dataCenterId}) => await ApiManager.maintenanceDomain(domainId, dataCenterId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allStorageDomains');
+    },
+    onError: (error) => {
+      console.error('Error maintenance Domain:', error);
     },  
   });
 };

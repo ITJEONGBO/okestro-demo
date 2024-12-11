@@ -2143,13 +2143,7 @@ const ApiManager = {
       data: domainData, 
     });
   },
-    // editCluster: async (clusterId, clusterData) => {
-    //   return makeAPICall({
-    //     method: "PUT",
-    //     url: ENDPOINTS.EDIT_CLUSTER(clusterId),
-    //     data: clusterData, // PUT 요청 시 전송할 데이터
-    //   });
-    // },
+
   /**
    * @name ApiManager.deleteDomain
    * @description 스토리지도메인 삭제
@@ -2170,13 +2164,62 @@ const ApiManager = {
    * @description 스토리지 도메인 활성
    * 
    * @param {String} domainId - 도메인 ID
+   * @param {String} dataCenterId - 데이터센터 ID
    * @returns {Promise<Object>} API 응답 결과
    */
   activateDomain: async (domainId, dataCenterId) => {
     return makeAPICall({
       method: "POST",
       url: ENDPOINTS.ACTIVATE_FROM_DATACENTER(domainId, dataCenterId), 
-      data: domainId
+      data: {domainId, dataCenterId}
+    });
+  },
+
+  /**
+   * @name ApiManager.attachDomain
+   * @description 스토리지 도메인 연결
+   * 
+   * @param {String} domainId - 도메인 ID
+   * @param {String} dataCenterId - 데이터센터 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  attachDomain: async (domainId, dataCenterId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ATTACH_FROM_DATACENTER(domainId, dataCenterId), 
+      data: {domainId, dataCenterId}
+    });
+  },
+
+  /**
+   * @name ApiManager.detachDomain
+   * @description 스토리지 도메인 분리
+   * 
+   * @param {String} domainId - 도메인 ID
+   * @param {String} dataCenterId - 데이터센터 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  detachDomain: async (domainId, dataCenterId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.DETACH_FROM_DATACENTER(domainId, dataCenterId), 
+      data: {domainId, dataCenterId}
+    });
+  },
+
+  /**
+   * @name ApiManager.maintenanceDomain
+   * @description 스토리지 도메인 유지보수
+   * 
+   * @param {String} domainId - 도메인 ID
+   * @param {String} dataCenterId - 데이터센터 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  maintenanceDomain: async (domainId, dataCenterId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.MAINTENANCE_FROM_DATACENTER(domainId, dataCenterId), 
+      data: {domainId, dataCenterId}
     });
   },
 

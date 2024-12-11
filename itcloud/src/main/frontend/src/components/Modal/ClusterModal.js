@@ -11,6 +11,7 @@ import {
   useDataCenter,
   useNetworksFromDataCenter
 } from '../../api/RQHook';
+import { P } from 'storybook/internal/components';
 
 const FormGroup = ({ label, children }) => (
   <div className="network_form_group">
@@ -36,7 +37,7 @@ const ClusterModal = ({
     biosType: 'CLUSTER_DEFAULT',
     errorHandling: 'migrate',
   });
-  const [dataCenterVoId, setDataCenterVoId] = useState('');
+  const [dataCenterVoId, setDataCenterVoId] = useState(datacenterId || '');
   const [networkVoId, setNetworkVoId] = useState('');
   const [cpuOptions, setCpuOptions] = useState([]);
 
@@ -189,7 +190,6 @@ const ClusterModal = ({
       setNetworkVoId(cluster?.networkVo?.id || '');
     } else if (!editMode && !isDatacentersLoading) {
       resetForm();
-      setDataCenterVoId(datacenterId);
     }
   }, [editMode, cluster, datacenterId]);
 
@@ -199,6 +199,13 @@ const ClusterModal = ({
       setDataCenterVoId(datacenters[0].id);
     }
   }, [datacenters, editMode]);
+  
+  useEffect(() => {
+    if (!editMode && datacenterId) {
+      setDataCenterVoId(datacenterId); // 초기값 설정
+    }
+  }, [datacenterId, editMode]);
+  
   
   useEffect(() => {
     if (!editMode && networks && networks.length > 0) {

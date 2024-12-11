@@ -1,6 +1,12 @@
 import React, { Suspense } from 'react';
 
-const DomainModals = ({ isModalOpen, action, onRequestClose, selectedDomain }) => {
+const DomainModals = ({ 
+  isModalOpen, 
+  action, 
+  onRequestClose, 
+  selectedDomain,
+  datacenterId
+}) => {
   const DomainModal = React.lazy(() => import('../Modal/DomainModal'));
   const DomainDeleteModal = React.lazy(() => import('../Modal/DomainDeleteModal'));
   const DomainActionModal = React.lazy(() => import('../Modal/DomainActionModal'));
@@ -38,6 +44,7 @@ const DomainModals = ({ isModalOpen, action, onRequestClose, selectedDomain }) =
           onRequestClose={onRequestClose}
           contentLabel={getContentLabel(action)}
           data={selectedDomain}
+          datacenterId={datacenterId}
         />
       )}
     </Suspense>
@@ -49,8 +56,9 @@ const DomainModals = ({ isModalOpen, action, onRequestClose, selectedDomain }) =
 const getContentLabel = (action) => {
   switch (action) {
     case 'activate': return '활성';
+    case 'attach': return '연결';
+    case 'detach': return '분리';
     case 'maintenance': return '유지보수';
-    case 'stop': return '중지';
     default: return '';
   }
 };

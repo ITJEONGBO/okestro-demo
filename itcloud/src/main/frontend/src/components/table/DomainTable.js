@@ -2,7 +2,7 @@ import React from 'react';
 import TablesOuter from './TablesOuter';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil, faWrench } from '@fortawesome/free-solid-svg-icons';
 
 const DomainTable = ({
   columns,
@@ -20,6 +20,17 @@ const DomainTable = ({
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
     } else if (status === 'DOWN') {
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+    } else if (status === 'MAINTENANCE') {
+      return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
+    }
+    return status;
+  };
+
+  const renderStatus = (status) => {
+    if (status === 'ACTIVE') {
+      return '활성화';
+    } else if (status === 'DOWN') {
+      return '중지?';
     }
     return status;
   };
@@ -32,6 +43,7 @@ const DomainTable = ({
         data={domains.map((domain) => ({
           ...domain,
           icon: renderStatusIcon(domain.status),
+          status: renderStatus(domain?.status),
           master: domain?.domainTypeMaster === true ? 
             <FontAwesomeIcon 
                 icon={faPencil} 
@@ -39,7 +51,7 @@ const DomainTable = ({
                 style={{ color: 'gold', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
             /> : "" ,
           domainType: 
-            domain?.domainType === 'data' ? 'DATA' 
+            domain?.domainType === 'data' ? '데이터' 
             : domain?.domainType === 'iso' ? 'ISO'
             : 'EXPORT',
           storageType: 

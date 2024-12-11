@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import './css/MHost.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faInfoCircle, faArrowUp, faArrowDown, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
   useAddHost,
   useEditHost,
   useHost, 
   useAllClusters,
-  useClustersFromDataCenter
 } from '../../api/RQHook';
 
 const HostModal = ({ 
@@ -19,134 +18,120 @@ const HostModal = ({
   dataCenterId,
   clusterId,
 }) => {
-  const [id, setId] = useState('');
+  const [formState, setFormState] = useState({
+    id: '',
+    name: '',
+    comment: '',
+    address: '',
+    sshPort: '',
+    sshPassWord: '',
+    vgpu: '',
+    hostEngine: false,
+    // 설치 후 호스트 활성화
+    // 설치 후 호스트 다시시작
+  });
   const [clusterVoId, setClusterVoId] = useState('');
-  const [name, setName] = useState('');
-  const [comment, setComment] = useState('');
-  const [address, setAddress] = useState('');
-  const [sshPort, setSshPort] = useState('');
-  // 설치 후 호스트 활성화
-  // 설치 후 호스트 다시 시작
-  const [sshPassWord, setSshPassWord] = useState('');
-  const [vgpu, setVgpu] = useState('');
-  const [hostEngine, setHostEngine] = useState('');
-  
+
   const { mutate: addHost } = useAddHost();
   const { mutate: editHost } = useEditHost();
 
    // 호스트 데이터 가져오기
    const {
     data: host,
-    status: hostStatus,
-    isRefetching: isHostRefetching,
     refetch: refetchHost,
-    isError: isHostError,
     error: hostError,
     isLoading: isHostLoading
   } = useHost(hId);
 
   const { 
     data: clusters, 
-    status: clustersStatus,
-    isRefetching: isClustersRefetching,
     refetch: refetchClusters, 
-    isError: isClustersError, 
     error: clustersError, 
     isLoading: isClustersLoading,
-  } = useAllClusters((e) => ({
-    ...e,
-  }));
-
-  // 데이터센터에서 호스트 생성시
-  // const {
-  //   data: dcClusters,
-  //   status: dcClustersStatus,
-  //   isLoading: isDcClustersLoading,
-  //   isError: isDcClustersError,
-  // } = useClustersFromDataCenter(dataCenterId, (e) => ({ 
-  //   ...e 
-  // }));
+  } = useAllClusters((e) => ({...e,}));
 
    // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
     if (editMode && host) {
-      setId(host?.id);
-      setClusterVoId(host?.clusterVo?.id || '')
-      setName(host?.name);
-      setComment(host?.comment);
-      setAddress(host?.address);
-      setSshPort(host?.sshPort);
-      setSshPassWord(host?.sshPassWord);
-      setVgpu(host?.vgpu);
-      setHostEngine(host?.hostEngine);
-    } else {
+      console.log('hostModal', host);
+      setFormState({
+        id:host?.id || '',
+        name: host?.name || '',
+        comment: host?.comment || '',
+        address: host?.address || '',
+        sshPort: host?.sshPort || '', 
+        sshPassWord: host?.sshPassWord || '',
+        vgpu: host?.vgpu || '',
+        hostEngine: host?.hostEngine || '',
+      });
+      setClusterVoId(host?.clusterVo?.id || '');   
+    } else if (!editMode && !isClustersLoading) {
       resetForm();
-      if (clusters && clusters.length > 0) {
-        setClusterVoId(clusters[0].id); // 첫 번째를 기본 선택
-      }
     }
-  }, [editMode, host, clusters]);
+  }, [editMode, host, isClustersLoading]);
+
+  useEffect(() => {
+    if (!editMode && clusters && clusters.length > 0) {
+      setClusterVoId(clusters[0].id);
+    }
+  }, [clusters, editMode]);
+
 
   const resetForm = () => {
-    setName('');
+    setFormState({
+      id: '',
+      name: '',
+      comment: '',
+      address: '',
+      sshPort: '22',
+      sshPassWord: '',
+      vgpu: 'consolidated',
+      hostEngine: false,
+    });
     setClusterVoId('');
-    setComment('');
-    setAddress('');
-    setSshPort('22');
-    setSshPassWord('');
-    setVgpu('consolidated');
-    setHostEngine(false);
+  };
+
+  const validateForm = () => {
+    if (!formState.name) return '이름을 입력해주세요.';
+    if (!editMode && !formState.sshPassWord) return '비밀번호를 입력해주세요.';
+    if (!clusterVoId) return '클러스터를 선택해주세요.';
+    return null;
   };
 
   const handleFormSubmit = () => {
+    const error = validateForm();
+    if (error) {
+      alert(error);
+      return;
+    }
+
     const selectedCluster = clusters.find((c) => c.id === clusterVoId);
-    if (!selectedCluster) {
-      alert("클러스터를 선택해주세요.");
-      return;
-    }
-
-    if(name === ''){
-      alert("이름을 입력해주세요.");
-      return;
-    }
-
-    if(!editMode && sshPassWord === ''){
-      alert("비밀번호를 입력해주세요.");
-      return;
-    }
-
+    
     // 데이터 객체 생성
     const dataToSubmit = {
-      clusterVo: {
-        id: selectedCluster.id
-      },
-      name,
-      comment,
-      address,
-      sshPort,
-      sshPassWord,
-      vgpu,
+      clusterVo: { id: selectedCluster.id },
+      ...formState,
     };
   
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
     
     if (editMode) {
-      dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
-      editHost({
-        hostId: id,              // 전달된 id
-        hostData: dataToSubmit   // 수정할 데이터
-      }, {
-        onSuccess: () => {
-          alert("Host 편집 완료")
-          onRequestClose();  // 성공 시 모달 닫기
-        },
-        onError: (error) => {
-          console.error('Error editing Host:', error);
+      dataToSubmit.id = formState.id;  // 수정 모드에서는 id를 추가
+      editHost(
+        { hostId: formState.id, hostData: dataToSubmit }, 
+        {
+          onSuccess: () => {
+            alert("Host 편집 완료")
+            onRequestClose();  // 성공 시 모달 닫기
+          },
+          onError: (error) => {
+            console.error('Error editing Host:', error);
+          }
         }
-      });
+      );
     } else {
-      dataToSubmit.sshPassWord = sshPassWord;  // 생성 모드에서는 ssh 비밀번호 추가
-      dataToSubmit.hostEngine = hostEngine;
+      dataToSubmit.sshPassWord = formState.sshPassWord;  // 생성 모드에서는 ssh 비밀번호 추가
+      dataToSubmit.hostEngine = formState.hostEngine;
       addHost(dataToSubmit, {
         onSuccess: () => {
           alert("Host 생성 완료")
@@ -158,6 +143,7 @@ const HostModal = ({
       });
     }
   };
+
 
   return (
     <Modal
@@ -203,8 +189,8 @@ const HostModal = ({
               <input
                 type="text"
                 id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={formState.name}
+                onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
               />
           </div>
 
@@ -213,8 +199,8 @@ const HostModal = ({
             <input
               type="text"
               id="comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              value={formState.comment}
+              onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
             />
           </div>
           
@@ -223,8 +209,8 @@ const HostModal = ({
             <input
               type="text"
               id="address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              value={formState.address}
+              onChange={(e) => setFormState((prev) => ({ ...prev, address: e.target.value }))}
               disabled={editMode}
             />
           </div>
@@ -234,8 +220,8 @@ const HostModal = ({
             <input
               type="text"
               id="sshPort"
-              value={sshPort}
-              onChange={(e) => setSshPort(e.target.value)}
+              value={formState.sshPort}
+              onChange={(e) => setFormState((prev) => ({ ...prev, sshPort: e.target.value }))}
               disabled={editMode}
             />
           </div>
@@ -268,8 +254,8 @@ const HostModal = ({
               <input
                 type="password"
                 id="sshPassWord"
-                value={sshPassWord}
-                onChange={(e) => setSshPassWord(e.target.value)}
+                value={formState.sshPassWord}
+                onChange={(e) => setFormState((prev) => ({ ...prev, sshPassWord: e.target.value }))}
               />
             </div>
             </>
@@ -283,8 +269,8 @@ const HostModal = ({
                 id="vgpu" 
                 name="consolidated" 
                 value="consolidated"
-                checked={vgpu === 'consolidated'}
-                onChange={(e) => setVgpu(e.target.value)}
+                checked={formState.vgpu === 'consolidated'}
+                onChange={(e) => setFormState((prev) => ({ ...prev, vgpu: e.target.value }))}
               />
               <label htmlFor="consolidated">통합</label>
               <input 
@@ -293,8 +279,8 @@ const HostModal = ({
                 name="separated" 
                 value="separated"
                 
-                checked={vgpu === 'separated'}
-                onChange={(e) => setVgpu(e.target.value)}
+                checked={formState.vgpu === 'separated'}
+                onChange={(e) => setFormState((prev) => ({ ...prev, vgpu: e.target.value }))}
               />
               <label htmlFor="separated">분산</label>
             </div>
@@ -304,13 +290,19 @@ const HostModal = ({
             <label htmlFor="hostEngine">호스트 엔진 배포 작업 선택</label>
             <select
               id="hostEngine"
-              value={hostEngine}
-              onChange={(e) => setHostEngine(e.target.value)}
+              value={formState.hostEngine}
+              onChange={(e) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  hostEngine: e.target.value === "true", // 문자열을 boolean으로 변환
+                }))
+              }
             >
               <option value="false">없음</option>
               <option value="true">배포</option>
             </select>
           </div>
+          
         </div>
 
         <div className="edit_footer">

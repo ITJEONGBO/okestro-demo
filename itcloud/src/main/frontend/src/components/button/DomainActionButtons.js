@@ -13,8 +13,8 @@ const DomainActionButtons = ({
   // onLunRefresh,
   // onMaster,
   onAttach,
-  onSeparate,
-  onActive,
+  onDetach,
+  onActivate,
   onMaintenance,
   isEditDisabled, 
   disk = false,
@@ -61,14 +61,14 @@ const DomainActionButtons = ({
       {onAttach && (
         <button onClick={onAttach} disabled={isEditDisabled}>연결</button>
       )}
-      {onSeparate && (
-        <button onClick={onSeparate} disabled={isEditDisabled}>분리</button>
+      {onDetach && (
+        <button onClick={onDetach} disabled={isEditDisabled || !isMaintenance}>분리</button>
       )}
-      {onActive && (
-        <button onClick={onActive} disabled={isEditDisabled || !isMaintenance }>활성</button>
+      {onActivate && (
+        <button onClick={onActivate} disabled={isEditDisabled || !isMaintenance }>활성</button>
       )}
       {onMaintenance && (
-        <button onClick={onMaintenance} disabled={isEditDisabled || isUp}>유지보수</button>
+        <button onClick={onMaintenance} disabled={isEditDisabled || isMaintenance}>유지보수</button>
       )}
 
       <div className="dropdown-container">

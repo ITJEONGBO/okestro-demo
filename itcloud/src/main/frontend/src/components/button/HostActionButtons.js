@@ -10,7 +10,7 @@ const HostActionButtons = ({
   onDeactivate, 
   onActivate, 
   onRestart,
-  onStop,
+  // onStop,
   onReInstall,
   onRegister,
   onHaOn,
@@ -59,7 +59,7 @@ const HostActionButtons = ({
     { onClick: onDeactivate, label: '유지보수', disabled: !isUp },
     { onClick: onActivate, label: '활성', disabled: isEditDisabled || !isMaintenance },
     { onClick: onRestart, label: '재시작', disabled: isEditDisabled || !isUp },
-    { onClick: onStop, label: '중지', disabled: isEditDisabled || isUp },
+    // { onClick: onStop, label: '중지', disabled: isEditDisabled || isUp },
     { onClick: onReInstall, label: '다시 설치', disabled: isEditDisabled || isUp },
     { onClick: onRegister, label: '인증서 등록', disabled: isEditDisabled || isUp },
   ];
