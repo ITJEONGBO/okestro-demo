@@ -52,6 +52,7 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
         <VmAddTemplateModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
+          vmId={selectedVm?.id || null}
           selectedVm={selectedVm}
         />
       ):  action === 'exportova' ? ( // ova내보내기

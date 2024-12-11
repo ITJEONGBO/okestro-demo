@@ -486,6 +486,30 @@ export const usePermissionFromCluster = (clusterId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
+
+/**
+ * @name useHostFromCluster
+ * @description 클러스터 내 cpuprofile 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useHostFromCluster
+ */
+export const useCpuProfilesFromCluster = (clusterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['cpuProfilesFromCluster', clusterId], 
+  queryFn: async () => {
+    console.log(`useHostFromCluster ... ${clusterId}`);
+    const res = await ApiManager.findCpuProfilesFromCluster(clusterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!clusterId, 
+  staleTime: 0,
+  cacheTime: 0,
+})
+
 /**
  * @name useEventFromCluster
  * @description 클러스터 내 이벤트 목록조회 useQuery훅
@@ -1696,7 +1720,10 @@ export const useAllEventFromTemplate = (tId, mapPredicate) => useQuery({
 export const useAddTemplate = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (templateData ) => await ApiManager.addTemplate(templateData),
+    mutationFn: async ({vmId,templateData} ) =>{
+      console.log(`Hook vm: ${vmId}....  ${templateData}`)
+      return await ApiManager.addTemplate(vmId,templateData)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries('allTemplates');
     },

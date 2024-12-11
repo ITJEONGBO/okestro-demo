@@ -44,7 +44,7 @@ const VmTable = ({
             </TableRowClick>
           ): '',
           dataCenter: vm.dataCenterVo?.id ?(
-            <TableRowClick type="dataCenter" id={vm.dataCenterVo.id}>
+            <TableRowClick type="datacenter" id={vm.dataCenterVo.id}>
               {vm.dataCenterVo.name}
             </TableRowClick>
           ): '',

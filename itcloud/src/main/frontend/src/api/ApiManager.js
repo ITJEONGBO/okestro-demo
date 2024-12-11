@@ -1609,10 +1609,10 @@ const ApiManager = {
    * @param {Object} templateData 
    * @returns {Promise<Object>}
    */
-  addTemplate: async (templateData) => {
+  addTemplate: async (vmId ,templateData) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.ADD_TEMPLATE(),
+      url: ENDPOINTS.ADD_TEMPLATE(vmId),
       data: templateData, 
       // defaultValues: DEFAULT_VALUES.ADD_TEMPLATE
     });

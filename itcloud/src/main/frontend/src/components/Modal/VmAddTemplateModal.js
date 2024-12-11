@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useAddTemplate, useClustersFromDataCenter, useDiskById, useDisksFromVM, useDomainsFromDataCenter } from '../../api/RQHook'; // 클러스터 가져오는 훅
+import { useAddTemplate, useAllDiskProfileFromDomain, useClustersFromDataCenter, useCpuProfilesFromCluster, useDiskById, useDisksFromVM, useDomainsFromDataCenter } from '../../api/RQHook'; // 클러스터 가져오는 훅
 
 const VmAddTemplateModal = ({ 
   isOpen, 
   onRequestClose, 
-  selectedVm
+  selectedVm,
+  vmId
 }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -23,7 +24,16 @@ const VmAddTemplateModal = ({
   const [clusters, setClusters] = useState([]); // 클러스터 목록 상태
   const [selectedCluster, setSelectedCluster] = useState(''); // 선택된 클러스터 ID
   const [forceRender, setForceRender] = useState(false);// 선택된 대상
-
+  const [selectedCpuProfile, setSelectedCpuProfile] = useState(''); // 선택된 CPU 프로파일 ID
+  
+  useEffect(() => {
+    console.log('VM ID아아아:', vmId); //잘찍힘
+  }, [vmId]);
+  console.log('vmId:', vmId);
+  console.log('vmVo:', {
+    id: selectedVm?.id || '',
+    name: selectedVm?.name || '',
+  });
   // 데이터센터 ID 가져오기
   useEffect(() => {
     if (selectedVm?.dataCenterId) {
@@ -39,21 +49,14 @@ const VmAddTemplateModal = ({
   useEffect(() => {
     if (clustersFromDataCenter) {
       setClusters(clustersFromDataCenter);
-      if (clustersFromDataCenter.length > 0) {
-        setSelectedCluster(clustersFromDataCenter[0].id); // 첫 번째 클러스터 기본값 설정
+      if (selectedVm?.clusterVo?.id) {
+        setSelectedCluster(selectedVm.clusterVo.id);
+      } else if (clustersFromDataCenter.length > 0) {
+        // 선택된 VM에 클러스터가 없을 경우, 첫 번째 클러스터를 기본값으로 설정
+        setSelectedCluster(clustersFromDataCenter[0].id);
       }
     }
   }, [clustersFromDataCenter]);
-
-
- // 데이터센터 ID 기반으로 스토리지목록 가져오기
-  const {  data: storageFromDataCenter, } = useDomainsFromDataCenter(dataCenterId , (e) =>({
-    ...e,
-  })); 
-  useEffect(() => {
-    console.log("Storage from Data Center:", storageFromDataCenter);
-    console.log("Data Center ID:", dataCenterId);
-}, [storageFromDataCenter]);
 
 
   // 디스크할당
@@ -68,9 +71,73 @@ const VmAddTemplateModal = ({
     }
   }, [disks]);
 
-  const { mutate: addTemplate} = useAddTemplate();
 
-// 포맷
+
+
+ // 데이터센터 ID 기반으로 스토리지목록 가져오기
+  const {  data: storageFromDataCenter, } = useDomainsFromDataCenter(dataCenterId , (e) =>({
+    ...e,
+  })); 
+  useEffect(() => {
+    console.log("Storage from Data Center:", storageFromDataCenter);
+    console.log("Data Center ID:", dataCenterId);
+  }, [storageFromDataCenter]);
+
+  // 선택한 스토리지 ID에 따라 디스크 프로파일 가져오기
+  const [selectedStorageId, setSelectedStorageId] = useState('');
+  const { data: diskProfiles, refetch: fetchDiskProfiles } = useAllDiskProfileFromDomain(selectedStorageId, (e) =>({
+    ...e,
+  })); 
+  useEffect(() => {
+    if (selectedStorageId) {
+      console.log('Fetching disk profiles for storage ID:', selectedStorageId);
+      console.log("diskProfiles정보:", diskProfiles);
+      fetchDiskProfiles(); // 선택된 스토리지 ID에 따라 훅 실행
+    }
+  }, [selectedStorageId]);
+// 스토리지 도메인 첫 번째 값 기본 설정
+useEffect(() => {
+  if (isOpen && storageFromDataCenter && storageFromDataCenter.length > 0) {
+    setSelectedStorageId(storageFromDataCenter[0].id);
+  }
+}, [isOpen, storageFromDataCenter]);
+
+// 디스크 프로파일 첫 번째 값 기본 설정
+useEffect(() => {
+  if (isOpen && selectedStorageId && diskProfiles && diskProfiles.length > 0) {
+    // 모든 디스크의 디스크 프로파일을 첫 번째 값으로 설정
+    if (disks) {
+      disks.forEach((disk, index) => {
+        if (!disk.diskImageVo?.diskProfileVo?.id) {
+          disks[index].diskImageVo.diskProfileVo = {
+            id: diskProfiles[0].id,
+            name: diskProfiles[0].name,
+          };
+        }
+      });
+      setForceRender((prev) => !prev); // 강제로 상태 업데이트
+    }
+  }
+}, [isOpen, selectedStorageId, diskProfiles, disks]);
+
+  // 클러스터 ID 기반으로 CPU 프로파일 목록 가져오기
+  const { data: cpuProfiles } = useCpuProfilesFromCluster(
+    selectedCluster,
+    (profile) => ({
+      id: profile.id,
+      name: profile.name,
+    })
+  );
+  // CPU 프로파일 첫 번째 값 기본 선택
+  useEffect(() => {
+    if (cpuProfiles && cpuProfiles.length > 0) {
+      setSelectedCpuProfile(cpuProfiles[0].id); // 첫 번째 프로파일 ID를 기본값으로 설정
+    }
+  }, [cpuProfiles]);
+
+const { mutate: addTemplate} = useAddTemplate();
+
+// 포맷옵션
 const format = [
   { value: 'RAW', label: 'Raw' },
   { value: 'COW', label: 'cow' },
@@ -78,57 +145,68 @@ const format = [
 const [selectedFormat, setSelectedFormat] = useState('RAW');
 
 
-  const handleFormSubmit = () => {
-    // 디스크가 없을 때 기본값 설정
-    const diskImageVo = disks && disks[0]?.diskImageVo ? disks[0].diskImageVo : {
-      id: '',
-      size: 0,
-      alias: '',
-      description: '',
-      format: 'RAW', // 기본 포맷
-      sparse: false,
-      storageDomainVo: { id: '', name: '' },
-      diskProfileVo: { id: '', name: '' },
-    };
-  
-    const dataToSubmit = {
-      name,
-      description,
-      comment,
-      clusterVo: {
-        id: selectedCluster || '', // 기본값 설정
-        name: clusters.find(cluster => cluster.id === selectedCluster)?.name || '',
-      },
-      diskImageVo: {
-        id: diskImageVo.id,
-        size: diskImageVo.size,
-        alias: diskImageVo.alias,
-        description: diskImageVo.description,
-        format: diskImageVo.format,
-        sparse: diskImageVo.sparse,
-      },
-      storageDomainVo: {
-        id: diskImageVo.storageDomainVo.id || '',
-        name: diskImageVo.storageDomainVo.name || '',
-      },
-      diskProfileVo: {
-        id: diskImageVo.diskProfileVo.id || '',
-        name: diskImageVo.diskProfileVo.name || '',
-      },
-    };
-  
-    console.log('템플릿 생성데이터:', dataToSubmit);
-  
-    addTemplate(dataToSubmit, {
-      onSuccess: () => {
-        alert('템플릿 생성 완료');
-        onRequestClose();
-      },
-      onError: (error) => {
-        console.error('Error adding Template:', error);
-      },
-    });
+const handleFormSubmit = () => {
+  if (!name) {
+    alert('이름을 입력하세요.');
+    return;
+  }
+  if (!selectedCluster) {
+    alert('클러스터를 선택하세요.');
+    return;
+  }
+
+  // 모든 디스크 데이터를 수집
+  const disksToSubmit = disks.map((disk) => ({
+    id: disk.diskImageVo?.id || '',
+    size: disk.diskImageVo?.size || 0,
+    alias: disk.diskImageVo?.alias || '',
+    description: disk.diskImageVo?.description || '',
+    format: disk.diskImageVo?.format || 'RAW',
+    sparse: disk.diskImageVo?.sparse || false,
+    storageDomainVo: {
+      id: disk.diskImageVo?.storageDomainVo?.id || '',
+      name: disk.diskImageVo?.storageDomainVo?.name || '',
+    },
+    diskProfileVo: {
+      id: disk.diskImageVo?.diskProfileVo?.id || '',
+      name: disk.diskImageVo?.diskProfileVo?.name || '',
+    },
+  }));
+
+  const dataToSubmit = {
+    name,
+    description,
+    comment,
+    clusterVo: {
+      id: selectedCluster || '', // 기본값 설정
+      name: clusters.find((cluster) => cluster.id === selectedCluster)?.name || '',
+    },
+    cpuProfileVo: {
+      id: selectedCpuProfile,
+      name: cpuProfiles?.find((profile) => profile.id === selectedCpuProfile)?.name || '',
+    },
+    vmVo: {
+      id: vmId || '', // 가상머신 ID 추가
+      name: selectedVm?.name || '',
+    },
+    disks: disksToSubmit, // 모든 디스크 데이터를 포함
   };
+
+  console.log('템플릿 생성데이터:', dataToSubmit);
+
+  addTemplate(
+    {vmId, templateData: dataToSubmit},
+    {
+    onSuccess: () => {
+      alert('템플릿 생성 완료');
+      onRequestClose();
+    },
+    onError: (error) => {
+      console.error('Error adding Template:', error);
+    },
+  });
+};
+
   
 
 
@@ -197,10 +275,19 @@ const [selectedFormat, setSelectedFormat] = useState('RAW');
           </div>
           <div className="edit_fourth_content_select flex">
             <label htmlFor="cpu_profile_select">CPU 프로파일</label>
-            <select id="cpu_profile_select">
-              <option value="default">Default</option>
+            <select
+              id="cpu_profile_select"
+              value={selectedCpuProfile}
+              onChange={(e) => setSelectedCpuProfile(e.target.value)}
+            >
+              {cpuProfiles?.map((profile) => (
+                <option key={profile.id} value={profile.id}>
+                  {profile.name}
+                </option>
+              ))}
             </select>
           </div>
+
         </div>
 
         <div>
@@ -291,12 +378,11 @@ const [selectedFormat, setSelectedFormat] = useState('RAW');
           id: selectedStorage.id,
           name: selectedStorage.name,
         };
-        // 강제 리렌더링 트리거
+        setSelectedStorageId(selectedStorage.id);
         setForceRender((prev) => !prev);
       }
     }}
   >
-    <option value="">선택</option>
     {storageFromDataCenter &&
       storageFromDataCenter.map((storage) => (
         <option key={storage.id} value={storage.id}>
@@ -308,14 +394,35 @@ const [selectedFormat, setSelectedFormat] = useState('RAW');
 
 
 
-                <td>
-                  <select defaultValue={disk.diskImageVo?.diskProfileVo?.name || "선택"}>
-                    <option value={disk.diskImageVo?.diskProfileVo?.name || ""}>
-                      {disk.diskImageVo?.diskProfileVo?.name || "선택"}
-                    </option>
-                    <option value="Option 2">Option 2</option>
-                  </select>
-                </td>
+
+<td>
+  {selectedStorageId && diskProfiles ? (
+    <select
+      value={disk.diskImageVo?.diskProfileVo?.id || ""}
+      onChange={(e) => {
+        const selectedProfile = diskProfiles.find(
+          (profile) => profile.id === e.target.value
+        );
+        if (selectedProfile) {
+          disk.diskImageVo.diskProfileVo = {
+            id: selectedProfile.id,
+            name: selectedProfile.name,
+          };
+          setForceRender((prev) => !prev);
+        }
+      }}
+    >
+      {diskProfiles.map((profile) => (
+        <option key={profile.id} value={profile.id}>
+          {profile.name}
+        </option>
+      ))}
+    </select>
+  ) : (
+    <span>디스크 프로파일을 로드 중입니다...</span>
+  )}
+</td>
+
               </tr>
             ))}
           </tbody>

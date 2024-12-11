@@ -43,10 +43,10 @@ const TemplateNeworkNewInterModal = ({
     console.log('template ID아아아:', templateId); // vmId 값 확인
   }, [templateId]);
 
-    // 가상머신 내 네트워크인터페이스 목록
+    // 템플릿 내 네트워크인터페이스 목록
     const { 
       data: nics 
-    } = useAllNicsFromTemplate(templateId);
+    } = useAllNicsFromTemplate(templateId)
 
     // 모든 vnic프로파일 목록
     const { 

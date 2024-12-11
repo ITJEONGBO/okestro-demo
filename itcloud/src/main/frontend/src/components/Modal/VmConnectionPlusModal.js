@@ -42,6 +42,8 @@ const VmConnectionPlusModal = ({
         onChange={() => setSelectedDiskId(e.id)}
       />
     ),
+    virtualSize: e?.virtualSize/(Math.pow(1024, 3))+" GB",
+    actualSize: e?.actualSize/(Math.pow(1024, 3))+" GB",
     storageDomainVo: e?.storageDomainVo?.name,
     status: e?.status === "UNINITIALIZED" ? "초기화되지 않음" : "UP",
   }));

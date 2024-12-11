@@ -19,21 +19,17 @@ const TemplateEditModal = ({
   const [stateless, setStateless] = useState(false); // 상태비저장
   const [startPaused, setStartPaused] = useState(false); // 일시정지상태에서시작
   const [deleteProtected, setDeleteProtected] = useState(false); // 일시정지상태에서시작
-  
+  const [clsuterVoId, setClsuterVoId] = useState(''); 
+  const [clsuterVoName, setClsuterVoName] = useState('');
+
+
   const { mutate: editTemplate } = useEditTemplate();
 
-// // 칩셋 옵션(ui에서안씀)
-// const [chipsetOptions, setChipsetOptions] = useState([
-//   { value: 'CLUSTER_DEFAULT', label: '클러스터 기본값' },
-//   { value: 'I440FX_SEA_BIOS', label: 'BIOS의 I440FX 칩셋' },
-//   { value: 'Q35_OVMF', label: 'UEFI의 Q35 칩셋' },
-//   { value: 'Q35_SEA_BIOS', label: 'BIOS의 Q35 칩셋' },
-//   { value: 'Q35_SECURE_BOOT', label: 'UEFI SecureBoot의 Q35 칩' },
-// ]); 셋
+
   // 최적화옵션(영어로 값바꿔야됨)
   const [optimizeOption, setOptimizeOption] = useState([
     { value: 'desktop', label: '데스크톱' },
-    { value: 'HIGH_PERFORMANCE', label: '고성능' },
+    { value: 'high_performance', label: '고성능' },
     { value: 'server', label: '서버' }
   ]);
 
@@ -42,7 +38,7 @@ const TemplateEditModal = ({
 
   //해당데이터 상세정보 가져오기
   const { data: templateData } = useTemplate(templateId);
-  const [selectedOptimizeOption, setSelectedOptimizeOption] = useState('SERVER'); // 칩셋 선택
+  const [selectedOptimizeOption, setSelectedOptimizeOption] = useState('server'); // 칩셋 선택
   const [selectedChipset, setSelectedChipset] = useState('Q35_OVMF'); // 칩셋 선택
 
   // 초기값설정
@@ -55,9 +51,12 @@ const TemplateEditModal = ({
         setComment(templateData?.comment || '');
         setOsSystem(templateData?.osSystem || '');
         setStateless(templateData?.stateless);
+        setClsuterVoId(templateData.clusterVo?.id || '');
+        setClsuterVoName(templateData.clusterVo?.name || '');
+
         setStartPaused(templateData?.startPaused);
         setDeleteProtected(templateData?.deleteProtected);
-        setSelectedOptimizeOption(templateData?.optimizeOption || 'SERVER'); // 최적화 옵션
+        setSelectedOptimizeOption(templateData?.optimizeOption || 'server'); // 최적화 옵션
         setSelectedChipset(templateData?.chipsetFirmwareType || 'Q35_OVMF');
       }
     }
@@ -73,11 +72,14 @@ const TemplateEditModal = ({
       return;
     }
       const dataToSubmit = {
+        clusterVo: {
+          id : clsuterVoId || '',
+          name : clsuterVoName || '',
+        },
         id,
         name,
         description,
         comment,
-        chipsetFirmwareType:selectedChipset,
         optimizeOption:selectedOptimizeOption,
         osSystem
       };
@@ -156,7 +158,7 @@ const TemplateEditModal = ({
                       </option>
                     ))}
                   </select>
-                  <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.label || ''}</span>
+                  <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.value || ''}</span>
             </div>
             {selectedModalTab === 'general' && (
               <>
