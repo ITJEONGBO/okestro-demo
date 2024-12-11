@@ -7,7 +7,8 @@ const HostDupl = ({
   hosts, 
   columns, 
   onFetchHosts, 
-  status 
+  status,
+  clusterId
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
   const [action, setAction] = useState(null); // 현재 동작
@@ -49,6 +50,7 @@ const HostDupl = ({
         action={action}
         onRequestClose={() => setIsModalOpen(false)}
         selectedHost={selectedHost}
+        clusterId={clusterId}
       />
     </>
   );

@@ -4,11 +4,27 @@ import { useCluster } from '../../../api/RQHook';
 
 const ClusterGenerals = ({ clusterId  }) => {
   const { data: cluster } = useCluster(clusterId);
-  console.log("Cluster structure: ", cluster);
 
+  const renderBiosType = (biosType) => {
+    switch (biosType) {
+      case 'CLUSTER_DEFAULT':
+        return '자동 감지';
+      case 'Q35_OVMF':
+        return 'UEFI의 Q35 칩셋';
+      case 'I440FX_SEA_BIOS':
+        return 'BIOS의 I440FX 칩셋';
+      case 'Q35_SEA_BIOS':
+        return 'BIOS의 Q35 칩셋';
+      case 'Q35_SECURE_BOOT':
+        return 'UEFI SecureBoot의 Q35 칩셋';
+      default:
+        return biosType;
+    }
+  };
+  
   return (
-    <div className="cluster_general">
-      <div className="table_container_center">
+    <div>
+      <div>
         <table className="table">
           <tbody>
             <tr>
@@ -21,7 +37,7 @@ const ClusterGenerals = ({ clusterId  }) => {
             </tr>
             <tr>
               <th>데이터센터:</th>
-              <td>{cluster?.datacenterVo?.name}</td>
+              <td>{cluster?.dataCenterVo?.name}</td>
             </tr>
             <tr>
               <th>호환버전:</th>
@@ -56,14 +72,8 @@ const ClusterGenerals = ({ clusterId  }) => {
             </tr> */}
             <tr>
               <th>칩셋/펌웨어 유형:</th>
-              <td>{cluster?.biosType}</td>
+              <td>{renderBiosType(cluster?.biosType) }</td>
             </tr>
-          </tbody>
-        </table>
-      </div>
-      <div className="table_container_center">
-        <table className="table">
-          <tbody>
             <tr>
               <th>에뮬레이션된 시스템:</th>
               <td></td>

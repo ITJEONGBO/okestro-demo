@@ -20,15 +20,10 @@ const ClusterInfo = () => {
   const { id: clusterId, section } = useParams();
   const {
     data: cluster,
-    status: clusterStatus,
-    isRefetching: isClusterRefetching,
     refetch: clusterRefetch,
-    isError: isClusterError,
     error: clusterError,
     isLoading: isClusterLoading,
-  } = useCluster(clusterId, (e) => ({
-    ...e,
-  }));
+  } = useCluster(clusterId, (e) => ({...e,}));
 
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');

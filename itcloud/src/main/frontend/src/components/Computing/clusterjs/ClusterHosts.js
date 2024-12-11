@@ -16,6 +16,7 @@ const ClusterHosts = ({ clusterId }) => {
       <HostDupl
         hosts={hosts || []}
         columns={TableInfo.HOSTS}
+        clusterId={clusterId}
       />
     </>
   );

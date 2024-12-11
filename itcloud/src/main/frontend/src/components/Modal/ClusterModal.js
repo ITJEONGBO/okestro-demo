@@ -11,7 +11,6 @@ import {
   useDataCenter,
   useNetworksFromDataCenter
 } from '../../api/RQHook';
-import { P } from 'storybook/internal/components';
 
 const FormGroup = ({ label, children }) => (
   <div className="network_form_group">

@@ -14,8 +14,7 @@ const HostModal = ({
   isOpen, 
   onRequestClose, 
   editMode = false, 
-  hId, 
-  dataCenterId,
+  hId,
   clusterId,
 }) => {
   const [formState, setFormState] = useState({
@@ -30,7 +29,7 @@ const HostModal = ({
     // 설치 후 호스트 활성화
     // 설치 후 호스트 다시시작
   });
-  const [clusterVoId, setClusterVoId] = useState('');
+  const [clusterVoId, setClusterVoId] = useState(clusterId || '');
 
   const { mutate: addHost } = useAddHost();
   const { mutate: editHost } = useEditHost();
@@ -62,7 +61,7 @@ const HostModal = ({
         sshPort: host?.sshPort || '', 
         sshPassWord: host?.sshPassWord || '',
         vgpu: host?.vgpu || '',
-        hostEngine: host?.hostEngine || '',
+        hostEngine: host?.hostEngine || false,
       });
       setClusterVoId(host?.clusterVo?.id || '');   
     } else if (!editMode && !isClustersLoading) {
@@ -75,6 +74,12 @@ const HostModal = ({
       setClusterVoId(clusters[0].id);
     }
   }, [clusters, editMode]);
+
+  useEffect(() => {
+    if (!editMode && clusterId) {
+      setClusterVoId(clusterId); // 초기값 설정
+    }
+  }, [clusterId, editMode]);
 
 
   const resetForm = () => {

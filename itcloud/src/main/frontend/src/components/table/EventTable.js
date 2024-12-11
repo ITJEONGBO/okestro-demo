@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle, faWarning, faSmog } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
 import PagingTableOuter from '../table/PagingTableOuter';
 import TableInfo from '../table/TableInfo';
 
@@ -19,10 +19,6 @@ const EventTable = ({ events } ) => {
       default:
         return severity;
     }
-    // ALERT("alert"),
-    // ERROR("error"),
-    // NORMAL("normal"),
-    // WARNING("warning");
   };
 
   // 데이터를 변환

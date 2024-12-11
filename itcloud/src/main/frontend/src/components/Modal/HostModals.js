@@ -1,6 +1,12 @@
 import React, { Suspense } from 'react';
 
-const HostModals = ({ isModalOpen, action, onRequestClose, selectedHost }) => {
+const HostModals = ({ 
+  isModalOpen, 
+  action, 
+  onRequestClose, 
+  selectedHost,
+  clusterId
+}) => {
   const HostModal = React.lazy(() => import('../Modal/HostModal'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
   const HostActionModal = React.lazy(() => import('../Modal/HostActionModal'));
@@ -15,6 +21,7 @@ const HostModals = ({ isModalOpen, action, onRequestClose, selectedHost }) => {
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}
           hId={selectedHost?.id || null}
+          clusterId={clusterId}
         />
       ) : action === 'delete' ? (
         <DeleteModal
