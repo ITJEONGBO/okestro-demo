@@ -201,6 +201,21 @@ fun Template.toTemplateInfo(conn: Connection): TemplateVo {
 	}
 }
 
+fun Template.toStorageTemplate(conn: Connection): TemplateVo {
+
+	return TemplateVo.builder {
+		id { this@toStorageTemplate.id() }
+		name { this@toStorageTemplate.name() }
+		comment { this@toStorageTemplate.comment() }
+		description { this@toStorageTemplate.description() }
+		creationTime { ovirtDf.format(this@toStorageTemplate.creationTime()) }
+		status { this@toStorageTemplate.status() }
+//		diskAttachmentVos {  }
+	}
+}
+fun List<Template>.toStorageTemplates(conn: Connection): List<TemplateVo> =
+	this@toStorageTemplates.map { it.toStorageTemplate(conn) }
+
 /**
  * 템플릿 빌더
  */

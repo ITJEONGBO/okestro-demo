@@ -17,7 +17,7 @@ const calculateTotalActualSize = (diskAttachments) => {
 const VMRow = ({ vm, isExpanded, toggleRow }) => (
   <>
     <tr>
-      <td onClick={() => toggleRow(vm.id)} style={{ cursor: 'pointer' }}>
+      <td onClick={() => toggleRow(vm?.id)} style={{ cursor: 'pointer' }}>
         <FontAwesomeIcon
           icon={isExpanded ? faMinusCircle : faPlusCircle}
           fixedWidth
@@ -27,12 +27,12 @@ const VMRow = ({ vm, isExpanded, toggleRow }) => (
           fixedWidth
           style={{ margin: '0 5px 0 10px' }}
         />
-        {vm.name}
+        {vm?.name || ''}
       </td>
-      <td>{vm.diskAttachments?.length || 0}</td>
-      <td>{vm.virtualSize}</td>
-      <td>{vm.actualSize}</td>
-      <td>{vm.creationTime || ''}</td>
+      <td>{vm?.diskAttachments?.length || 0}</td>
+      <td>{vm?.virtualSize || 0}</td>
+      <td>{vm?.actualSize || 0}</td>
+      <td>{vm?.creationTime || ''}</td>
     </tr>
     {isExpanded &&
       vm.diskAttachments?.map((disk, index) => (
@@ -45,7 +45,7 @@ const DiskRow = ({ disk }) => (
   <tr className="detail_machine_second">
     <td style={{ paddingLeft: '30px' }}>
       <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: '0 5px' }} />
-      {disk.diskImageVo?.alias || 'Unnamed Disk'}
+      {disk.diskImageVo?.alias || ''}
     </td>
     <td></td>
     <td>{formatSize(disk.diskImageVo?.virtualSize || 0)}</td>

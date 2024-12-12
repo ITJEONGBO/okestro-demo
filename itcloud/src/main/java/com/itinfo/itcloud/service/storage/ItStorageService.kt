@@ -406,16 +406,16 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllTemplatesFromStorageDomain(storageDomainId: String): List<TemplateVo> {
 		log.info("findAllTemplatesFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<Template> =
-			conn.findAllTemplatesFromStorageDomain(storageDomainId).getOrDefault(listOf())
+		val res: List<Template> = conn.findAllTemplatesFromStorageDomain(storageDomainId)
+			.getOrDefault(listOf())
 		return res.toTemplatesMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {
 		log.info("findAllDiskProfilesFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<DiskProfile> =
-			conn.findAllDiskProfilesFromStorageDomain(storageDomainId).getOrDefault(listOf())
+		val res: List<DiskProfile> = conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
+			.getOrDefault(listOf())
 		return res.toDiskProfileVos()
 	}
 
@@ -448,14 +448,14 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllEventsFromStorageDomain(storageDomainId: String): List<EventVo> {
 		log.info("findAllEventsFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val storageDomain: StorageDomain =
-			conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
-		val res: List<Event> =
-			conn.findAllEvents().getOrDefault(listOf())
-				.filter {event ->
-					event.storageDomainPresent() &&
-						(event.storageDomain().idPresent() && event.storageDomain().id().equals(storageDomainId) || (event.storageDomain().namePresent() && event.storageDomain().name().equals(storageDomain.name())) )
-				}
+		val storageDomain: StorageDomain = conn.findStorageDomain(storageDomainId)
+			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
+		val res: List<Event> = conn.findAllEvents()
+			.getOrDefault(listOf())
+			.filter {event ->
+				event.storageDomainPresent() &&
+				(event.storageDomain().idPresent() && event.storageDomain().id().equals(storageDomainId) || (event.storageDomain().namePresent() && event.storageDomain().name().equals(storageDomain.name())) )
+			}
 		return res.toEventVos()
 	}
 
@@ -464,20 +464,20 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllPermissionsFromStorageDomain(storageDomainId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<Permission> =
-			conn.findAllPermissionsFromStorageDomain(storageDomainId).getOrDefault(listOf())
+		val res: List<Permission> = conn.findAllPermissionsFromStorageDomain(storageDomainId)
+			.getOrDefault(listOf())
 		return res.toPermissionVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllDataCenterFromStorageDomain(): List<DataCenterVo> {
 		log.info("findAllDataCenterFromStorageDomain ... ")
-		val res: List<DataCenter> =
-			conn.findAllDataCenters(follow = "storagedomains").getOrDefault(listOf()).filter { dataCenter ->
-				dataCenter.storageDomainsPresent() &&
-					dataCenter.storageDomains().any { storageDomain ->
-						storageDomain.status() == StorageDomainStatus.ACTIVE
-					}
+		val res: List<DataCenter> = conn.findAllDataCenters(follow = "storagedomains")
+			.getOrDefault(listOf())
+			.filter { dataCenter -> dataCenter.storageDomainsPresent() &&
+				dataCenter.storageDomains().any { storageDomain ->
+					storageDomain.status() == StorageDomainStatus.ACTIVE
+				}
 			}
 		return res.toDataCenterIdNames()
 	}
