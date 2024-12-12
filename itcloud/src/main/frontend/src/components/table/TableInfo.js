@@ -1,5 +1,3 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
 /**
  * @name TableInfo
  * @description 테이블 컬럼 정보
@@ -284,28 +282,28 @@ const TableInfo = {
 
 //---------------------------
     // 템플릿
-    NICS_FROM_TEMPLATES: [
-      { header: '', accessor: 'icon', clickable: false, width: '7%' },
-      { header: '이름', accessor: 'name', clickable: false },
-      { header: '연결됨', accessor: 'checkbox', clickable: true},
-      { header: '네트워크 이름', accessor: 'networkVo', clickable: false },
-      { header: '프로파일 이름', accessor: 'vnicProfileVo', clickable: false },
-      { header: '링크 상태', accessor: 'linked', clickable: false },
-      { header: '유형', accessor: 'interface_', clickable: false },
-    ],
+  NICS_FROM_TEMPLATES: [
+    { header: '', accessor: 'icon', clickable: false, width: '7%' },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '연결됨', accessor: 'checkbox', clickable: true},
+    { header: '네트워크 이름', accessor: 'networkVo', clickable: false },
+    { header: '프로파일 이름', accessor: 'vnicProfileVo', clickable: false },
+    { header: '링크 상태', accessor: 'linked', clickable: false },
+    { header: '유형', accessor: 'interface_', clickable: false },
+  ],
     
 //------------------------------------------
   DISKS_FROM_STORAGE_DOMAIN: [
     { header: '별칭', accessor: 'alias', clickable: false },
-    { header: '', accessor: 'icon1', clickable: false },
-    { header: '', accessor: 'icon2', clickable: false },
+    { header: '부팅가능', accessor: 'icon1', clickable: false },
+    { header: '공유가능', accessor: 'sharable', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
-    { header: '할당 정책', accessor: 'policy', clickable: false },
-    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
-    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '할당 정책', accessor: 'sparse', clickable: false },
+    // { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    // { header: '생성 일자', accessor: 'creationDate', clickable: false },
     { header: '연결 대상', accessor: 'connectVm', clickable: false },
-    { header: '연결 대상', accessor: 'connectTemplate', clickable: false },
+    // { header: '연결 대상(템플릿)', accessor: 'connectTemplate', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '유형', accessor: 'storageType', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
@@ -588,7 +586,7 @@ HOST_NETWORK_INTERFACE: [
   ],
   
   SNAPSHOT_NEW:[
-    { header: '', accessor: 'snapshot_check', clickable: false,width:'6%'},
+    { header: '', accessor: 'snapshot_check', clickable: false, width:'6%'},
     { header: '이름', accessor: 'alias', clickable: false },
     { header: '설명', accessor: 'description', clickable: false }
   ],
@@ -622,9 +620,9 @@ HOST_NETWORK_INTERFACE: [
   ],
 
   EVENTS: [
-    { header: '시간', accessor: 'time', clickable: false },
-    { header: '알림', accessor: 'severity', clickable: false},    
-    { header: '메세지', accessor: 'description', clickable: false },
+    { header: '시간', accessor: 'time', clickable: false, width:'30%' },
+    { header: '알림', accessor: 'severity', clickable: false, width:'20%'},    
+    { header: '메세지', accessor: 'description', clickable: false,width:'50%' },
     // { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
     // // { header: '소스', accessor: 'source', clickable: false },
     // { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }

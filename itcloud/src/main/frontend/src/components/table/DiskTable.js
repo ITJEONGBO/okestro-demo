@@ -5,9 +5,54 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 
-function sizeToGB(data) {
-  return data / Math.pow(1024, 3);
-}
+const sizeToGB = (data) => (data / Math.pow(1024, 3));
+
+const formatSize = (size) =>
+  sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`;
+
+const renderStatusIcon = (status) => {
+  const styles = {
+    ACTIVE: { color: 'lime', transform: 'rotate(270deg)' },
+    DOWN: { color: 'red', transform: 'rotate(90deg)' },
+  };
+
+  return styles[status] ? (
+    <FontAwesomeIcon
+      icon={faPlay}
+      fixedWidth
+      style={{ ...styles[status], fontSize: '0.3rem' }}
+    />
+  ) : (
+    status
+  );
+};
+
+
+const mapDiskToRow = (disk) => {
+  const connectVmOrTemplate = disk?.connectVm?.name || disk?.connectTemplate?.name ;
+
+  return {
+    ...disk,
+    icon: renderStatusIcon(disk.status),
+    // storageDomain: (
+    //   <TableRowClick type="domains" id={disk?.storageDomainVo.id}>
+    //     {disk?.storageDomainVo.name}
+    //   </TableRowClick>
+    // ),
+    sharable: disk?.sharable ? 'O' : '',
+    sparse: disk?.sparse ? '씬 프로비저닝' : '사전 할당',
+    connectVm: (
+      <TableRowClick
+        type={disk?.connectVm?.id ? "vms" : "templates"}
+        id={disk?.connectVm?.id || disk?.connectTemplate?.id}
+      >
+        {connectVmOrTemplate}
+      </TableRowClick>
+    ),
+    virtualSize: formatSize(disk?.virtualSize),
+    actualSize: formatSize(disk?.actualSize),
+  };
+};
 
 const DiskTable = ({
   columns,
@@ -15,51 +60,18 @@ const DiskTable = ({
   setSelectedDisk,
 }) => {
   const navigate = useNavigate();
-  
-  const handleNameClick = (id) => {
-    navigate(`/storages/disks/${id}`);
-  };
-
-  const renderStatusIcon = (status) => {
-    if (status === 'ACTIVE') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    } else if (status === 'DOWN') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-    }
-    return status;
-  };
+  const handleRowClick = (row) => setSelectedDisk(row);
+  const handleColumnClick = (row) => navigate(`/storages/disks/${row.id}`);
 
   return (
     <>
       <TablesOuter
         columns={columns}
-        data={disks.map((disk) => {
-          return {
-            ...disk,
-            icon: renderStatusIcon(disk.status),
-            storageDomain: (
-              <TableRowClick type="domains" id={disk?.storageDomainVo.id}>
-                {disk?.storageDomainVo.name}
-              </TableRowClick>
-            ),
-            connectVm: (
-              <TableRowClick type="vms" id={disk?.connectVm.id}>
-                {disk?.connectVm.name}
-              </TableRowClick>
-            ),
-            connectTemplate: (
-              <TableRowClick type="templates" id={disk?.connectTemplate.id}>
-                {disk?.connectTemplate.name}
-              </TableRowClick>
-            ),
-            virtualSize: sizeToGB(disk?.virtualSize) < 1 ? "< 1 GB" : `${sizeToGB(disk?.virtualSize).toFixed(0)} GB`,
-            actualSize: sizeToGB(disk?.actualSize) < 1 ? "< 1 GB" : `${sizeToGB(disk?.actualSize).toFixed(0)} GB`,
-          };
-        })}
-        shouldHighlight1stCol={true}
-        onRowClick={(row) => setSelectedDisk(row)}
+        data={disks.map(mapDiskToRow)}
+        shouldHighlight1stCol
+        onRowClick={handleRowClick}
         clickableColumnIndex={[0]}
-        onClickableColumnClick={(row) => handleNameClick(row.id)}
+        onClickableColumnClick={handleColumnClick}
       />
     </>
   );

@@ -1,7 +1,58 @@
 import React, { useState } from 'react';
-import { faDesktop, faMinusCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { faDesktop, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAllVMFromDomain } from '../../../api/RQHook';
+
+const sizeToGB = (data) => (data / Math.pow(1024, 3));
+const formatSize = (size) => (sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`);
+
+const calculateTotalVirtualSize = (diskAttachments) => {
+  return diskAttachments.reduce((total, disk) => total + (disk.diskImageVo?.virtualSize || 0), 0);
+};
+
+const calculateTotalActualSize = (diskAttachments) => {
+  return diskAttachments.reduce((total, disk) => total + (disk.diskImageVo?.actualSize || 0), 0);
+};
+
+const VMRow = ({ vm, isExpanded, toggleRow }) => (
+  <>
+    <tr>
+      <td onClick={() => toggleRow(vm.id)} style={{ cursor: 'pointer' }}>
+        <FontAwesomeIcon
+          icon={isExpanded ? faMinusCircle : faPlusCircle}
+          fixedWidth
+        />
+        <FontAwesomeIcon
+          icon={faDesktop}
+          fixedWidth
+          style={{ margin: '0 5px 0 10px' }}
+        />
+        {vm.name}
+      </td>
+      <td>{vm.diskAttachments?.length || 0}</td>
+      <td>{vm.virtualSize}</td>
+      <td>{vm.actualSize}</td>
+      <td>{vm.creationTime || ''}</td>
+    </tr>
+    {isExpanded &&
+      vm.diskAttachments?.map((disk, index) => (
+        <DiskRow key={`${vm.id}-${index}`} disk={disk} />
+      ))}
+  </>
+);
+
+const DiskRow = ({ disk }) => (
+  <tr className="detail_machine_second">
+    <td style={{ paddingLeft: '30px' }}>
+      <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: '0 5px' }} />
+      {disk.diskImageVo?.alias || 'Unnamed Disk'}
+    </td>
+    <td></td>
+    <td>{formatSize(disk.diskImageVo?.virtualSize || 0)}</td>
+    <td>{formatSize(disk.diskImageVo?.actualSize || 0)}</td>
+    <td>{disk.diskImageVo?.createDate || ''}</td>
+  </tr>
+);
 
 const DomainVms = ({ domainId }) => {
   const [isRowExpanded, setRowExpanded] = useState({});
@@ -13,33 +64,23 @@ const DomainVms = ({ domainId }) => {
     }));
   };
 
-  const { 
-    data: vms = [],  // 기본값을 빈 배열로 설정하여 undefined 방지
-    status: vmsStatus, 
-    isLoading: isVmsLoading, 
-    isError: isVmsError,
-  } = useAllVMFromDomain(domainId, toTableItemPredicateVms);
-
-  function toTableItemPredicateVms(vm) {
-    const firstDisk = vm?.diskAttachmentVos?.[0]?.diskImageVo || {};  // 첫 번째 디스크 정보 가져오기
-
+  const {
+    data: vms = [],
+    isLoading,
+    isError,
+  } = useAllVMFromDomain(domainId, (vm) => {
+    const totalVirtualSize = calculateTotalVirtualSize(vm?.diskAttachmentVos || []);
+    const totalActualSize = calculateTotalActualSize(vm?.diskAttachmentVos || []);
     return {
-      id: vm?.id ?? '',
-      name: vm?.name ?? '',
-      status: vm?.status ?? 'UNKNOWN',
-      creationTime: vm?.creationTime ?? '',
-      memoryInstalled: vm?.memoryInstalled ?? 0,
-      memoryUsed: vm?.memoryUsed ?? 0,
-      clusterName: vm?.clusterVo?.name ?? 'Unknown',
-      templateName: vm?.templateVo?.name ?? 'None',
-      virtualSize: firstDisk.virtualSize ?? 0,  // 첫 번째 디스크의 가상 크기
-      actualSize: firstDisk.actualSize ?? 0,    // 첫 번째 디스크의 실제 크기
-      diskAttachments: vm?.diskAttachmentVos || [], // undefined 방지를 위해 빈 배열 설정
+      ...vm,
+      virtualSize: formatSize(totalVirtualSize),
+      actualSize: formatSize(totalActualSize),
+      diskAttachments: vm?.diskAttachmentVos || [],
     };
-  }
+  });
 
-  if (isVmsLoading) return <div>Loading...</div>;
-  if (isVmsError) return <div>Error loading VMs data.</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading VMs data.</div>;
 
   return (
     <div className="host_empty_outer">
@@ -49,44 +90,19 @@ const DomainVms = ({ domainId }) => {
             <tr>
               <th>별칭</th>
               <th>디스크</th>
-              <th>템플릿</th>
               <th>가상 크기</th>
               <th>실제 크기</th>
               <th>생성 일자</th>
             </tr>
           </thead>
           <tbody>
-            {/*하위는 무슨 api를 넣어야?? 생성일자 컬럼 */}
             {vms.map((vm) => (
-              <React.Fragment key={vm.id}>
-                <tr>
-                  <td onClick={() => toggleRow(vm.id)} style={{ cursor: 'pointer' }}>
-                    <FontAwesomeIcon icon={isRowExpanded[vm.id] ? faMinusCircle : faPlusCircle} fixedWidth />
-                    <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: '0 5px 0 10px' }} />
-                    {vm.name}
-                  </td>
-                  <td>{vm.diskAttachments?.length || 0}</td>
-                  <td>{vm.templateName}</td>
-                  <td>{vm.virtualSize} GIB</td>  {/* 첫 번째 디스크의 가상 크기 */}
-                  <td>{vm.actualSize} GIB</td>  {/* 첫 번째 디스크의 실제 크기 */}
-                  <td>{vm.creationTime || 'N/A'}</td>
-                </tr>
-                
-                {/* 하위 행 디스크 정보 */}
-                {isRowExpanded[vm.id] && vm.diskAttachments && vm.diskAttachments.map((disk, index) => (
-                  <tr key={`${vm.id}-${index}`} className="detail_machine_second">
-                    <td style={{ paddingLeft: '30px' }}>
-                      <FontAwesomeIcon icon={faDesktop} fixedWidth style={{ margin: '0 5px 0 5px' }} />
-                      {disk.diskImageVo?.alias || 'Unnamed Disk'}
-                    </td>
-                    <td>{disk.diskImageVo?.virtualSize || 0} GIB</td>
-                    <td>{disk.diskImageVo?.actualSize || 0} GIB</td>
-                    <td>{disk.diskImageVo?.virtualSize || 0} GIB</td>
-                    <td>{disk.diskImageVo?.actualSize || 0} GIB</td>
-                    <td>{disk.diskImageVo?.createDate || 'N/A'}</td>
-                  </tr>
-                ))}
-              </React.Fragment>
+              <VMRow
+                key={vm.id}
+                vm={vm}
+                isExpanded={isRowExpanded[vm.id]}
+                toggleRow={toggleRow}
+              />
             ))}
           </tbody>
         </table>

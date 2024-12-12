@@ -5,7 +5,6 @@ import PagingTableOuter from '../table/PagingTableOuter';
 import TableInfo from '../table/TableInfo';
 
 const EventTable = ({ events } ) => {  
-
   const renderSeverityIcon = (severity) => {
     switch (severity) {
       case 'ALERT':

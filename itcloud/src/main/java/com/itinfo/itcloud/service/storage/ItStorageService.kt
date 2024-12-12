@@ -263,17 +263,17 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAll(): List<StorageDomainVo> {
 		log.info("findAll ...")
-		val res: List<StorageDomain> =
-			conn.findAllStorageDomains().getOrDefault(listOf())
-				.filter { it.storage().type() != StorageType.GLANCE }
+		val res: List<StorageDomain> = conn.findAllStorageDomains()
+			.getOrDefault(listOf())
+			.filter { it.storage().type() != StorageType.GLANCE }
 		return res.toStorageDomainsMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findOne(storageDomainId: String): StorageDomainVo? {
 		log.info("findOne... ")
-		val res: StorageDomain? =
-			conn.findStorageDomain(storageDomainId).getOrNull()
+		val res: StorageDomain? = conn.findStorageDomain(storageDomainId)
+			.getOrNull()
 		return res?.toStorageDomainVo(conn)
 	}
 
@@ -313,8 +313,7 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun remove(storageDomainId: String, format: Boolean, hostName: String?): Boolean {
 		log.info("remove ... storageDomainId: {}", storageDomainId)
-		val res: Result<Boolean> =
-			conn.removeStorageDomain(storageDomainId, format, hostName)
+		val res: Result<Boolean> = conn.removeStorageDomain(storageDomainId, format, hostName)
 		return res.isSuccess
 	}
 
@@ -337,32 +336,28 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun attachFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
 		log.info("attachFromDataCenter ... storageDomainId: {}, dataCenterId: {}", storageDomainId, dataCenterId)
-		val res: Result<Boolean> =
-			conn.attachStorageDomainsToDataCenter(storageDomainId, dataCenterId)
+		val res: Result<Boolean> = conn.attachStorageDomainsToDataCenter(storageDomainId, dataCenterId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun detachFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
 		log.info("detachFromDataCenter ... storageDomainId: {}, dataCenterId: {}", storageDomainId, dataCenterId)
-		val res: Result<Boolean> =
-			conn.detachStorageDomainsToDataCenter(storageDomainId, dataCenterId)
+		val res: Result<Boolean> = conn.detachStorageDomainsToDataCenter(storageDomainId, dataCenterId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun activateFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
 		log.info("activateFromDataCenter ... storageDomainId: {}, dataCenterId: {}", storageDomainId, dataCenterId)
-		val res: Result<Boolean> =
-			conn.activateAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+		val res: Result<Boolean> = conn.activateAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun maintenanceFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
 		log.info("maintenanceFromDataCenter ... storageDomainId: {}, dataCenterId: {}", storageDomainId, dataCenterId)
-		val res: Result<Boolean> =
-			conn.deactivateAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+		val res: Result<Boolean> = conn.deactivateAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
 		return res.isSuccess
 	}
 
@@ -370,8 +365,8 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllVmsFromStorageDomain(storageDomainId: String): List<VmVo> {
 		log.info("findAllVmsFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<Vm> =
-			conn.findAllVmsFromStorageDomain(storageDomainId).getOrDefault(listOf())
+		val res: List<Vm> = conn.findAllVmsFromStorageDomain(storageDomainId)
+			.getOrDefault(listOf())
 		return res.toStorageDomainVms(conn, storageDomainId)
 	}
 
@@ -379,16 +374,13 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
 		log.info("findAllDisksFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<Disk> =
-			conn.findAllDisksFromStorageDomain(storageDomainId)
-				.getOrDefault(listOf())
+		val res: List<Disk> = conn.findAllDisksFromStorageDomain(storageDomainId)
+			.getOrDefault(listOf())
 
 		return res.map { disk ->
 			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
 				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
-			val vmId: String =
-				diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
-
+			val vmId: String = diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
 			disk.toDiskMenu(conn, vmId)
 		}
 	}
@@ -396,9 +388,18 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<SnapshotDiskVo> {
 		log.info("findAllDiskSnapshotsFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<DiskSnapshot> = conn.findAllDiskSnapshotsFromStorageDomain(storageDomainId)
+
+		val diskSnapshots: List<DiskSnapshot> = conn.findAllDiskSnapshotsFromStorageDomain(storageDomainId)
 			.getOrDefault(listOf())
-		// TODO 연결대상
+
+		val allVms: List<Vm> = conn.findAllVms(follow = "snapshots")
+			.getOrDefault(listOf())
+
+		val res = diskSnapshots.filter { diskSnapshot ->
+			allVms.any { vm ->
+				conn.findSnapshotFromVm(vm.id(), diskSnapshot.snapshot().id()).getOrNull() != null
+			}
+		}
 		return res.toSnapshotDiskVos()
 	}
 

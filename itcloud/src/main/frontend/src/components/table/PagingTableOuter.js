@@ -1,13 +1,18 @@
 import React from 'react';
 import PagingTable from './PagingTable';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
 import './Table.css';
 
-const PagingTableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol = false, clickableColumnIndex , itemsPerPage = 20, showSearchBox = true }) => {
+const PagingTableOuter = ({ 
+  columns, 
+  data, 
+  onRowClick, 
+  shouldHighlight1stCol = false, 
+  clickableColumnIndex, 
+  itemsPerPage = 20, 
+  showSearchBox = true 
+}) => {
   return (
     <div className="section_table_outer">
-
       <PagingTable 
         columns={columns} 
         data={data}

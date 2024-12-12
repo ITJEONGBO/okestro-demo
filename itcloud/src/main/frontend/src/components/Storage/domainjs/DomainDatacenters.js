@@ -13,18 +13,14 @@ const DomainDatacenters = ({ domainId }) => {
     data: datacenters, 
     refetch: refetchDatacenters,
     isLoading: isDatacentersLoading
-  } = useAllDataCenterFromDomain(domainId, (e) => ({
-    ...e,
-  }));  
+  } = useAllDataCenterFromDomain(domainId, (e) => ({...e,}));  
 
   const {
     data: domain,
     refetch: domainRefetch,
     error: domainError,
     isLoading: isDomainLoading,
-  } = useDomainById(domainId, (e) => ({
-    ...e,
-  }));
+  } = useDomainById(domainId, (e) => ({...e,}));
 
   const renderStatusIcon = (status) => {
     if (status === 'ACTIVE') {

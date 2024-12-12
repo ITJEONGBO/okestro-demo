@@ -105,6 +105,7 @@ const DiskModal = ({
       setFormState({
         id: disk.id || '',
         size: (disk.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
+        appendSize: 0,
         alias: disk.alias || '',
         description: disk.description || '',
         wipeAfterDelete: disk.wipeAfterDelete || false,
@@ -143,6 +144,7 @@ const DiskModal = ({
     setFormState({
       id: '',
       size: '',
+      appendSize: 0,
       alias: '',
       description: '',
       wipeAfterDelete: false,
@@ -173,7 +175,7 @@ const DiskModal = ({
     }
 
     const sizeToBytes = parseInt(formState.size, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환
-
+    const appendSizeToBytes = parseInt(formState.appendSize || 0, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환 (기본값 0)
 
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedDomain = domains.find((dm) => dm.id === domainVoId);
@@ -186,13 +188,13 @@ const DiskModal = ({
       storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
       diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
       ...formState,
-      size: sizeToBytes
+      size: sizeToBytes,
+      appendSize: appendSizeToBytes,
     };
 
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
     
     if (editMode) {
-      dataToSubmit.appendSize = parseInt(formState.appendSize, 10) * 1024 * 1024 * 1024;
       editDisk(
         { diskId: formState.id, diskData: dataToSubmit },
         {

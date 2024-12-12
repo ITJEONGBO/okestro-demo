@@ -5,6 +5,11 @@ import TablesOuter from "../../table/TablesOuter";
 import DeleteModal from '../../Modal/DeleteModal';
 
 const DomainDiskSnapshots = ({ domainId }) => {
+  const sizeToGB = (data) => (data / Math.pow(1024, 3));
+
+  const formatSize = (size) =>
+    sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`;
+  
   const { 
       data: diskSnapshots, 
       status: diskSnapshotsStatus, 
@@ -12,7 +17,7 @@ const DomainDiskSnapshots = ({ domainId }) => {
       isError: isDiskSnapshotsError,
   } = useAllDiskSnapshotFromDomain(domainId, (e) => ({
     ...e,
-    actualSize: e?.actualSize/ Math.pow(1024, 3) + " GB",
+    actualSize: formatSize(e?.actualSize)
   }));
   
   const [isModalOpen, setIsModalOpen] = useState(false); 

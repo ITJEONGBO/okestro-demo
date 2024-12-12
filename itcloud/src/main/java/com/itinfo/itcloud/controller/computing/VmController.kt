@@ -436,7 +436,7 @@ class VmController: BaseController() {
 	}
 
 	@ApiOperation(
-		httpMethod="POST",
+		httpMethod="GET",
 		value="가상머신 마이그레이션 호스트 목록",
 		notes="선택된 가상머신의 마이그레이션 가능한 호스트 목록을 조회한다"
 	)
@@ -446,9 +446,9 @@ class VmController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@PostMapping("/{vmId}/migrateHosts")
+	@GetMapping("/{vmId}/migrateHosts")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.CREATED)
+//	@ResponseStatus(HttpStatus.CREATED)
 	fun migrateHosts(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<IdentifiedVo>> {

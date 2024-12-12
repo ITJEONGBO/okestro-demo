@@ -423,8 +423,12 @@ fun List<Vm>.toVmVoInfos(conn: Connection/*, graph: ItGraphService*/): List<VmVo
 
 
 fun Vm.toStorageDomainVm(conn: Connection, storageDomainId: String): VmVo {
-    val diskAttachments: List<DiskAttachment> =
-       this@toStorageDomainVm.diskAttachments()
+    val diskAttachments: List<DiskAttachment> = conn.findAllDiskAttachmentsFromVm(this@toStorageDomainVm.id())
+        .getOrDefault(listOf())
+        .filter { diskAttachment ->
+            val disk = conn.findDisk(diskAttachment.disk().id()).getOrNull()
+            disk?.storageDomains()?.any { it.id() == storageDomainId } == true
+        }
 
     return VmVo.builder {
         id { this@toStorageDomainVm.id() }
@@ -434,7 +438,7 @@ fun Vm.toStorageDomainVm(conn: Connection, storageDomainId: String): VmVo {
     }
 }
 fun List<Vm>.toStorageDomainVms(conn: Connection, storageDomainId: String): List<VmVo> =
-    this@toStorageDomainVms.map { it.toStorageDomainVm(conn,storageDomainId) }
+    this@toStorageDomainVms.map { it.toStorageDomainVm(conn, storageDomainId) }
 
 
 

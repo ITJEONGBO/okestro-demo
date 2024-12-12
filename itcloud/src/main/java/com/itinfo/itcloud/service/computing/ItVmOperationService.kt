@@ -164,13 +164,10 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	@Throws(Error::class)
 	override fun migrateHostList(vmId: String): List<IdentifiedVo> {
 		log.info("migrateHostList ... vmId: {}", vmId)
-		val vm: Vm =
-			conn.findVm(vmId).getOrNull()
-				?: throw ErrorPattern.VM_NOT_FOUND.toException()
-
-		val res: List<Host> =
-			conn.findAllHosts().getOrDefault(listOf())
-				.filter { it.cluster().id() == vm.cluster().id() && it.id() != vm.host().id() }
+		val vm: Vm = conn.findVm(vmId)
+			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+		val res: List<Host> = conn.findAllHosts()
+			.getOrDefault(listOf()).filter { it.cluster().id() == vm.cluster().id() && it.id() != vm.host().id() }
 		return res.fromHostsToIdentifiedVos()
 	}
 
