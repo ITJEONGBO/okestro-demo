@@ -20,8 +20,8 @@ const VmActionModal = ({
     data
 }) => {
   const { mutate: startVM } = useStartVM();
-  const { mutate: pauseVM } = usePauseVM();
-  const { mutate: powerOffVM } = usePowerOffVM();
+  const { mutate: pauseVM } = usePauseVM(); // 일시중지
+  const { mutate: powerOffVM } = usePowerOffVM(); // 종료
   const { mutate: shutdownVM } = useShutdownVM();
   const { mutate: rebootVM } = useRebootVM();
   const { mutate: resetVM } = useResetVM();

@@ -33,9 +33,11 @@ const VmDupl = ({
         onDelete={() => selectedVm?.id && handleActionClick('delete')} 
         onConsole={() => selectedVm?.id && handleActionClick('console')} 
         onStart={() => selectedVm?.id && handleActionClick('start')} 
-        onPause={() => selectedVm?.id && handleActionClick('pause')} 
-        onStop={() => selectedVm?.id && handleActionClick('stop')} 
-        onReboot={() => selectedVm?.id && handleActionClick('reboot')} 
+        onPause={() => selectedVm?.id && handleActionClick('pause')}  // 일시정지
+        onStop={() => selectedVm?.id && handleActionClick('stop')} // 종료
+        onPowerOff={() => selectedVm?.id && handleActionClick('powerOff')} // 전원끔
+        onReboot={() => selectedVm?.id && handleActionClick('reboot')}  // 재부팅
+        onReset={() => selectedVm?.id && handleActionClick('reset')}  // 재설정
         templates={() => handleActionClick('templates')} 
         snapshots={() => selectedVm?.id && handleActionClick('snapshots')} 
         migration={() => selectedVm?.id && handleActionClick('migration')} 

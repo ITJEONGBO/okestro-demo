@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import NetworkNewModal from './NetworkNewModal';
 
 const NetworkModals = ({ 
     isModalOpen, 
@@ -6,7 +7,7 @@ const NetworkModals = ({
     onRequestClose, 
     selectedNetwork 
 }) => {
-  const NetworkModal = React.lazy(() => import('../Modal/NetworkModal'));
+  const NetworkNewModal = React.lazy(() => import('../Modal/NetworkNewModal'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
   const NetworkActionModal = React.lazy(() => import('../Modal/NetworkActionModal'));
 
@@ -15,11 +16,11 @@ const NetworkModals = ({
   return (
     <Suspense>
       {action === 'create' || action === 'edit' ? (
-        <NetworkModal
+        <NetworkNewModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}
-          hId={selectedNetwork?.id || null}
+          networkId={selectedNetwork?.id || null}
         />
       ) : action === 'delete' ? (
         <DeleteModal

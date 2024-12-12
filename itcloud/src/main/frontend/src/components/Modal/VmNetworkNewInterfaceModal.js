@@ -111,7 +111,7 @@ const VmNetworkNewInterfaceModal = ({
       interface_: selectedInterface,
       linked,
       plugged,
-      macAddress,
+   
     };
   
     console.log('네트워크인터페이스 생성, 편집데이터:', dataToSubmit); 

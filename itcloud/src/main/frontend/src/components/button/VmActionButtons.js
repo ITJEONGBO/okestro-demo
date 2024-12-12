@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
@@ -10,7 +10,9 @@ const VmActionButtons = ({
   onStart,
   onPause,
   onStop,
+  onPowerOff,
   onReboot,
+  onReset,
   templates,
   snapshots,
   migration,
@@ -23,13 +25,20 @@ const VmActionButtons = ({
   status,
 }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+  const [isStopDropDownOpen, setIsStopDropDownOpen] = useState(false); // 종료 버튼의 드롭다운 상태
+  const [isRebootDropDownOpen, setIsRebootDropDownOpen] = useState(false); // 재부팅 버튼의 드롭다운 상태
 
   const toggleDropDown = () => {
     setIsDropDownOpen(!isDropDownOpen);
   };
 
+  const toggleStopDropDown = () => {
+    setIsStopDropDownOpen(!isStopDropDownOpen); // 종료 버튼의 드롭다운 토글 함수
+  };
+  const toggleRebootDropDown = () => {
+    setIsRebootDropDownOpen(!isRebootDropDownOpen); // 재부팅 버튼의 드롭다운 토글 함수
+  };
   const isUp = status === 'UP';
-  const isMaintenance = status === 'MAINTENANCE';
 
   const handleClick = (label, action) => {
     console.log(`Button clicked: ${label}`);
@@ -39,30 +48,22 @@ const VmActionButtons = ({
   const manageActions = [
     { onClick: onStart, label: '실행', disabled: isEditDisabled || isUp },
     { onClick: onPause, label: '일시중지', disabled: isEditDisabled || !isUp },
-    { onClick: onStop, label: '종료', disabled: isEditDisabled || !isUp },
     { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || !isUp },
   ];
 
-  const etcActions = [
-    { onClick: onExport, label: '가져오기'},
-    { onClick: onCopy, label: '가상머신 복제', disabled: isEditDisabled },
-    { onClick: onDelete, label: '삭제', disabled: isEditDisabled },
-    { onClick: addTemplate, label: '템플릿 생성', disabled: isEditDisabled},
-    { onClick: exportOva, label: 'OVA로 내보내기', disabled: isEditDisabled}
+  const rebootOptions = [
+    { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || isUp  },
+    { onClick: onReset, label: '재설정', disabled: isEditDisabled || isUp  },
   ];
 
-
+  const stopOptions = [
+    { onClick: onStop, label: '종료', disabled: isEditDisabled || isUp  },
+    { onClick: onPowerOff, label: '전원끔', disabled: isEditDisabled || isUp  },
+  ];
   return (
     <div className="header_right_btns">
-      {onCreate && 
-        <button onClick={onCreate}>새로 만들기</button>
-      }
-      {onEdit && (
-        <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
-      )}
-      {/* {onDelete && (
-        <button onClick={onDelete} disabled={isEditDisabled}>제거</button>
-      )} */}
+      {onCreate && <button onClick={onCreate}>새로 만들기</button>}
+      {onEdit && <button onClick={onEdit} disabled={isEditDisabled}>편집</button>}
       
       {manageActions.map(({ onClick, label, disabled }, index) => (
         <button
@@ -74,19 +75,50 @@ const VmActionButtons = ({
         </button>
       ))}
 
-      {onConsole && (
-        <button onClick={onConsole} disabled={isEditDisabled}>콘솔</button>
+  <div className="dropdown-container">
+      <button onClick={toggleRebootDropDown} disabled={isEditDisabled || !isUp}>
+        재부팅
+        <FontAwesomeIcon icon={isRebootDropDownOpen ? faChevronUp : faChevronDown} />
+      </button>
+      {isRebootDropDownOpen && (
+        <div className="dropdown-menu">
+          {rebootOptions.map(({ onClick, label }, index) => (
+            <button
+              key={index}
+              onClick={onClick}
+              className="dropdown-item"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       )}
+  </div>
 
-      {templates && (
-        <button onClick={templates}>템플릿</button>
+  <div className="dropdown-container">
+      <button onClick={toggleStopDropDown} disabled={isEditDisabled || !isUp}>
+        종료
+        <FontAwesomeIcon icon={isStopDropDownOpen ? faChevronUp : faChevronDown} />
+      </button>
+      {isStopDropDownOpen && (
+        <div className="dropdown-menu">
+          {stopOptions.map(({ onClick, label }, index) => (
+            <button
+              key={index}
+              onClick={onClick}
+              className="dropdown-item"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       )}
-      {snapshots && (
-        <button onClick={snapshots} disabled={isEditDisabled}>스냅샷</button>
-      )}
-      {migration && (
-        <button onClick={migration}  disabled={isMigrationDisabled} >마이그레이션</button>
-      )}
+  </div>
+
+      {onConsole && <button onClick={onConsole} disabled={isEditDisabled}>콘솔</button>}
+      {templates && <button onClick={templates}>템플릿</button>}
+      {snapshots && <button onClick={snapshots} disabled={isEditDisabled}>스냅샷</button>}
+      {migration && <button onClick={migration} disabled={isMigrationDisabled}>마이그레이션</button>}
 
       <div className="dropdown-container">
         <button onClick={toggleDropDown} className="manage-button">
@@ -95,16 +127,11 @@ const VmActionButtons = ({
         </button>
         {isDropDownOpen && (
           <div className="dropdown-menu">
-            {etcActions.map(({ onClick, label, disabled }, index) => (
-              <button
-                key={index}
-                onClick={() => handleClick(label, onClick)}
-                disabled={disabled}
-                className="dropdown-item"
-              > 
-                {label}
-              </button>
-            ))}
+            {onExport && <button onClick={onExport}>가져오기</button>}
+            {onCopy && <button onClick={onCopy} disabled={isEditDisabled}>가상머신 복제</button>}
+            {onDelete && <button onClick={onDelete} disabled={isEditDisabled}>삭제</button>}
+            {addTemplate && <button onClick={addTemplate} disabled={isEditDisabled}>템플릿 생성</button>}
+            {exportOva && <button onClick={exportOva} disabled={isEditDisabled}>OVA로 내보내기</button>}
           </div>
         )}
       </div>

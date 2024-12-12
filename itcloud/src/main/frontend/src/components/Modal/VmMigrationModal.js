@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { useHostsForMigration } from '../../api/RQHook';
 
 const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm }) => {
   const [selectedHost, setSelectedHost] = useState('');
   const [isHaMode, setIsHaMode] = useState(false);
 
+  // 연결가능한 호스트목록
+  const { data: ableHost } = useHostsForMigration(selectedVm.id);
+
+  useEffect(() => {
+    if (ableHost) {
+      console.log('VM id:', selectedVm.id);
+      console.log('연결 가능한 호스트:', ableHost);
+    }
+  }, [ableHost]);
+
   const handleSave = () => {
-    // 마이그레이션 저장 로직 추가
     console.log('Migrating VM:', {
       vm: selectedVm,
       host: selectedHost,
@@ -50,8 +60,9 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm }) => {
                   onChange={(e) => setSelectedHost(e.target.value)}
                 >
                   <option value="">호스트 자동 선택</option>
-                  <option value="php">PHP</option>
-                  <option value="java">Java</option>
+                  {ableHost?.body.map(host => (
+                    <option key={host.id} value={host.id}>{host.name}</option>
+                  ))}
                 </select>
               </div>
             </div>

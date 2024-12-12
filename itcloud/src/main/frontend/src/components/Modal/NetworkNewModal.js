@@ -36,6 +36,31 @@ const NetworkNewModal = ({
         isError 
     } = useNetworkById(networkId);
 
+    useEffect(() => {
+      console.log("네트워크아이디:", networkId);
+      console.log("네트워크 데이터 로딩 에러:", isError);
+    
+      if (network) {
+        console.log("네트워크 데이터:", network);
+        // 네트워크 데이터를 사용하여 폼 상태를 설정
+        setId(network.id);
+        setDatacenterVoId(network.datacenterVo?.id || '');
+        setName(network.name);
+        setDescription(network.description);
+        setComment(network.comment);
+        setPortIsolation(network.portIsolation);
+        setVlan(network.vlan);
+        setVmNetwork(network.vmNetwork);
+        setUsageVm(network.usage?.vm || false);
+        setMtu(network.mtu || '1500');
+        setClusterVoId(network?.clusterVo?.id || '');
+        setClusterVoName(network?.clusterVo?.name || '');
+      } else if (!isLoading && !network) {
+        console.log("네트워크 데이터가 없습니다.");
+      }
+    }, [network, isLoading, isError]);
+    
+    
     // 클러스터 가져오기
     const {
         data: clusters,

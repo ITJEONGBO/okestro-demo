@@ -1,19 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Tooltip } from 'react-tooltip'; // react-tooltip의 Tooltip 컴포넌트 사용
+import { Tooltip } from 'react-tooltip';
 import './Table.css';
-import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
 
-const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColumnIndex = [], itemsPerPage = 20, showSearchBox = true }) => {
+const PagingTable = ({
+  columns, 
+  data = [], 
+  onRowClick = () => {}, 
+  clickableColumnIndex = [], 
+  itemsPerPage = 20, 
+  showSearchBox = true 
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRowIndex, setSelectedRowIndex] = useState(null); // 선택된 행의 인덱스를 관리
-  const [tooltips, setTooltips] = useState({}); // 툴팁 상태 관리
-  const tableRef = useRef(null); // 테이블을 참조하는 ref 생성
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [tooltips, setTooltips] = useState({});
+  const tableRef = useRef(null);
 
-  // data가 undefined 또는 null일 경우 기본값 빈 배열 설정
-  const validData = Array.isArray(data) ? data : [];
+  // 데이터 필터링 로직, 검색 쿼리를 기준으로 데이터 필터링
+  const filteredData = data.filter(item =>
+    columns.some(column => {
+      const value = item[column.accessor];
+      // 문자열을 소문자로 변환하고, startsWith로 검색어가 시작하는지 확인
+      return value && value.toString().toLowerCase().startsWith(searchQuery.toLowerCase());
+    })
+  );
 
   // 현재 페이지의 데이터를 계산
+  const validData = filteredData;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = validData.slice(indexOfFirstItem, indexOfLastItem);
@@ -30,16 +45,16 @@ const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColum
     }
   };
 
+  // 툴팁 관리 함수
   const handleMouseEnter = (e, rowIndex, colIndex, content) => {
     const element = e.target;
-    // 텍스트가 잘려서 overflow가 발생한 경우에만 툴팁을 설정
     if (element.scrollWidth > element.clientWidth) {
-      setTooltips((prevTooltips) => ({
+      setTooltips(prevTooltips => ({
         ...prevTooltips,
         [`${rowIndex}-${colIndex}`]: content
       }));
     } else {
-      setTooltips((prevTooltips) => ({
+      setTooltips(prevTooltips => ({
         ...prevTooltips,
         [`${rowIndex}-${colIndex}`]: null
       }));
@@ -48,15 +63,20 @@ const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColum
 
   return (
     <>
+      {showSearchBox && (
+        <div className="search_box">
+          <input 
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button onClick={() => setSearchQuery('')}><FontAwesomeIcon icon={faRefresh} fixedWidth /></button>
+        </div>
+      )}
+
       <div className="pagination">
         <div className="paging_btns">
-          {showSearchBox && ( // showSearchBox가 true일 때만 렌더링
-            <div className="search_box">
-              <input type="text" />
-              <button><FontAwesomeIcon icon={faSearch} fixedWidth /></button>
-              <button><FontAwesomeIcon icon={faRefresh} fixedWidth /></button>
-            </div>
-          )}
           <div className="paging_arrows">
             <div className="flex">
               <button
@@ -66,7 +86,7 @@ const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColum
               >
                 {'<'}
               </button>
-              <span>{`${indexOfFirstItem + 1} - ${Math.min(indexOfLastItem, validData.length)} `}</span>
+              <span>{`${indexOfFirstItem + 1} - ${Math.min(indexOfLastItem, validData.length)}`}</span>
               <button
                 className="paging_arrow"
                 onClick={() => handlePageChange('next')}
@@ -87,57 +107,42 @@ const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColum
             </tr>
           </thead>
           <tbody>
-            {currentItems && currentItems.map((row, rowIndex) => (
+            {currentItems.map((row, rowIndex) => (
               <tr key={rowIndex}
-                onClick={() => setSelectedRowIndex(rowIndex)} // 클릭한 행의 인덱스를 상태에 저장
+                onClick={() => setSelectedRowIndex(rowIndex)}
                 style={{
-                  backgroundColor: selectedRowIndex === rowIndex ? 'rgb(218, 236, 245)' : 'transparent', // 선택된 행의 배경색을 변경
+                  backgroundColor: selectedRowIndex === rowIndex ? 'rgb(218, 236, 245)' : 'transparent',
                 }}
               >
                 {columns.map((column, colIndex) => (
-                    <td
+                  <td
                     key={colIndex}
-                    data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`} // 각 셀에 고유한 tooltip id 설정
-                    data-tooltip-content={row[column.accessor]} // 툴팁에 표시할 전체 내용
+                    data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
+                    data-tooltip-content={row[column.accessor]}
+                    onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])}
                     style={{
-                      maxWidth: '200px', // 최대 넓이 설정
-                      whiteSpace: 'nowrap', // 한 줄로 표시
-                      overflow: 'hidden', // 넘치는 텍스트 숨기기
-                      textOverflow: 'ellipsis', // 넘치는 텍스트는 ...으로 표시
+                      maxWidth: '200px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
                       textAlign: (typeof row[column.accessor] === 'string' || typeof row[column.accessor] === 'number')
                         ? 'left'
-                        : 'center', // 문자열과 숫자는 왼쪽 정렬, 그 외는 가운데 정렬
-                      cursor: clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default', // clickableColumnIndex에 포함된 열만 pointer로 설정
-                    }}
-                    onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])} // 마우스를 올렸을 때 툴팁 설정
-                    onClick={(e) => {
-                      if (clickableColumnIndex.includes(colIndex)) {
-                        e.stopPropagation();
-                        onRowClick(row, column); // 선택된 행과 해당 컬럼 정보를 전달
-                      }
+                        : 'center',
+                      cursor: clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
                     }}
                   >
                     {typeof row[column.accessor] === 'object' ? (
                       <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        {row[column.accessor]} {/* 객체는 가운데 정렬 */}
+                        {row[column.accessor]}
                       </div>
                     ) : (
-                      row[column.accessor] // 텍스트나 숫자는 그대로 출력
+                      row[column.accessor]
                     )}
                   </td>
-                  
-                  
-                  ))}
-
-
+                ))}
               </tr>
             ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* 각 셀에 대한 Tooltip 컴포넌트 */}
-      {currentItems && currentItems.map((row, rowIndex) =>
+             {data && data.map((row, rowIndex) =>
         columns.map((column, colIndex) => (
           tooltips[`${rowIndex}-${colIndex}`] && (
             <Tooltip
@@ -145,12 +150,15 @@ const PagingTable = ({ columns, data = [], onRowClick = () => {}, clickableColum
               id={`tooltip-${rowIndex}-${colIndex}`}
               place="right"
               effect="solid"
-              delayShow={400} // 700ms 지연 후 툴팁 표시
-              content={tooltips[`${rowIndex}-${colIndex}`]} // 툴팁에 표시할 내용
+              delayShow={400}
+              content={tooltips[`${rowIndex}-${colIndex}`]}
             />
           )
         ))
       )}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 };

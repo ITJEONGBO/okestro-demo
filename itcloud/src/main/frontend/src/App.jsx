@@ -11,7 +11,6 @@ import Error from './components/Error';
 
 import Login from './page/Login';
 import AllDomain from './components/Storage/AllDomain';
-import Network from './components/Network/Network';
 import Setting from './components/Setting/Setting';
 import NetworkDetail from './components/Network/NetworkDetail';
 import TemplateDetail from './components/Computing/TemplateDetail';
@@ -31,6 +30,7 @@ import TemplateInfo from './components/Computing/templatejs/TemplateInfo';
 import DiskInfo from './components/Storage/diskjs/DiskInfo';
 import AllNetwork from './components/Network/AllNetwork';
 import NetworkInfo from './components/Network/networkjs/NetworkInfo';
+import AllTemplates from './components/Computing/templatejs/AllTemplates';
 
 
 const App = () => {
@@ -116,7 +116,7 @@ const App = () => {
               <Route path="/computing/vms/:id" element={<VmDetail />} />
               <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
               
-              <Route path="/computing/vms/templates" element={<Templates />} />
+              <Route path="/computing/vms/templates" element={<AllTemplates />} />
               <Route path="/computing/templates/:id" element={<TemplateInfo />} />
               <Route path="/computing/templates/:id/:section" element={<TemplateInfo />} />
               {/* <Route path="/computing/vms/templatesdetail" element={<TemplateDetail />} /> */}

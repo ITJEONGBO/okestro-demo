@@ -1289,25 +1289,7 @@ export const usePauseVM = () => {
     },  
   });
 };
-/**
- * @name usePowerOffVM
- * @description 가상머신 전원끔 useMutation 훅
- * 
- * @returns useMutation 훅
- */
-export const usePowerOffVM = () => {
-  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
-  return useMutation({
-    mutationFn: async (vmId) => await ApiManager.powerOffVM(vmId),
-    onSuccess: () => {
-      console.log(`usePowerOffVM ... `);
-      queryClient.invalidateQueries('allVMs');
-    },
-    onError: (error) => {
-      console.error('Error powerOff vm:', error);
-    },  
-  });
-};
+
 /**
  * @name useShutdownVM
  * @description 가상머신 종료 useMutation 훅
@@ -1327,6 +1309,26 @@ export const useShutdownVM = () => {
     },  
   });
 };
+/**
+ * @name usePowerOffVM
+ * @description 가상머신 전원끔 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const usePowerOffVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (vmId) => await ApiManager.powerOffVM(vmId),
+    onSuccess: () => {
+      console.log(`usePowerOffVM ... `);
+      queryClient.invalidateQueries('allVMs');
+    },
+    onError: (error) => {
+      console.error('Error powerOff vm:', error);
+    },  
+  });
+};
+
 /**
  * @name useRebootVM
  * @description 가상머신 재부팅 useMutation 훅
@@ -1365,6 +1367,27 @@ export const useResetVM = () => {
     },  
   });
 };
+
+/**
+ * @name useAllVmsFromTemplate
+ * @description 가상머신 마이그레이션 호스트목록  useQuery훅
+ * 
+ * @param {string} vmId vmid
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useHostsForMigration
+ */
+export const useHostsForMigration = (vmId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['HostsForMigration', vmId], 
+  queryFn: async () => {
+    console.log(`useAllVmsFromTemplate ... ${vmId}`);
+    const res = await ApiManager.migrateHostsFromVM(vmId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+
 /**
  * @name useExportVM
  * @description 가상머신 내보내기 useMutation 훅

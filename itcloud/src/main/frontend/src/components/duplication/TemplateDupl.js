@@ -10,51 +10,79 @@ const TemplateDupl = ({
   templates, 
   columns, 
   onFetchTemplates, 
-  status
+  status,
+  type
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
-  const [action, setAction] = useState(null); // 현재 동작
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [action, setAction] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const navigate = useNavigate();
 
   const handleActionClick = (actionType) => {
-    setAction(actionType); // 동작 설정
-    setIsModalOpen(true); // 모달 열기
+    setAction(actionType);
+    setIsModalOpen(true);
   };
 
-  return (
-    <>
-    {/* <div id="section">
+  const renderSection = () => (
+    <div id="section">
       <HeaderButton
         titleIcon={faDesktop}
         title={'템플릿'}
         buttons={[]}
       />
-      <div className="host_btn_outer"> */}
-      <TemplateActionButtons
-        onEdit={() => selectedTemplate?.id && handleActionClick('edit')} 
-        onDelete={() => selectedTemplate?.id && handleActionClick('delete')} 
-        isEditDisabled={!selectedTemplate?.id} 
-      />
-      <span>id = {selectedTemplate?.id || ''}</span>  
-      
-      <TemplateTable
-        columns={columns}
-        templates={templates}
-        selectedTemplate={selectedTemplate}
-        setSelectedTemplate={setSelectedTemplate}
-      />
-      
-      <TemplateModals
-        isModalOpen={isModalOpen}
-        action={action}
-        onRequestClose={() => setIsModalOpen(false)}
-        selectedTemplate={selectedTemplate}
-      />
-      {/* </div>
-    </div> */}
-    </>
+      <div className="host_btn_outer">
+        <TemplateActionButtons
+          onEdit={() => selectedTemplate?.id && handleActionClick('edit')} 
+          onDelete={() => selectedTemplate?.id && handleActionClick('delete')} 
+          isEditDisabled={!selectedTemplate?.id}
+        />
+        <span>id = {selectedTemplate?.id || ''}</span>
+    
+        <TemplateTable
+          columns={columns}
+          templates={templates}
+          selectedTemplate={selectedTemplate}
+          setSelectedTemplate={setSelectedTemplate}
+        />
+        
+        <TemplateModals
+          isModalOpen={isModalOpen}
+          action={action}
+          onRequestClose={() => setIsModalOpen(false)}
+          selectedTemplate={selectedTemplate}
+        />
+      </div>
+    </div>
   );
+
+  if (type === 'rutil') {
+    return renderSection();
+  } else {
+    return (
+      <>
+        <TemplateActionButtons
+          onEdit={() => selectedTemplate?.id && handleActionClick('edit')} 
+          onDelete={() => selectedTemplate?.id && handleActionClick('delete')} 
+          isEditDisabled={!selectedTemplate?.id} 
+        />
+        <span>id = {selectedTemplate?.id || ''}</span>
+    
+        <TemplateTable
+          columns={columns}
+          templates={templates}
+          selectedTemplate={selectedTemplate}
+          setSelectedTemplate={setSelectedTemplate}
+        />
+        
+        <TemplateModals
+          isModalOpen={isModalOpen}
+          action={action}
+          onRequestClose={() => setIsModalOpen(false)}
+          selectedTemplate={selectedTemplate}
+        />
+      </>
+    );
+  }
 };
 
 export default TemplateDupl;

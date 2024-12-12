@@ -2,11 +2,12 @@ import React, { Suspense } from 'react';
 import VmAddTemplateModal from './VmAddTemplateModal';
 import VmMigrationModal from './VmMigrationModal';
 import VmDeleteModal from './VmDeleteModal';
+import VmSnapshotAddModal from './VmSnapshotaddModal';
 // import VmExportOVAModal from './VmExportOVAModal';
 
 const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
   const VmModal = React.lazy(() => import('../Modal/VmModal'));
-  const DeleteVmModal = React.lazy(() => import('./VmDeleteModal'));
+  const VmDeleteModal = React.lazy(() => import('./VmDeleteModal'));
   const VmActionModal = React.lazy(() => import('../Modal/VmActionModal'));
   const VmonExportModal = React.lazy(() => import('../Modal/VmonExportModal'));
   const VmExportOVAModal = React.lazy(() => import('../Modal/VmExportOVAModal'));
@@ -21,9 +22,16 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}
           vmId={selectedVm?.id || null}
-          selectedVm={selectedVm} // 데이터센터 ID 포함
+          selectedVm={selectedVm}
         />
-      ) : action === 'delete' ? ( 
+      ) : action === 'snapshots' ? ( //스냅샷(수정필요)
+        <VmSnapshotAddModal
+          isOpen={isModalOpen}
+          onRequestClose={onRequestClose}
+          snapshotData={selectedVm.snapshotData}
+          vmId={selectedVm.id}
+        />
+      ): action === 'delete' ? ( //삭제
         <VmDeleteModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
@@ -78,9 +86,9 @@ const getContentLabel = (action) => {
   switch (action) {
     case 'start': return '실행';
     case 'pause': return '일시중지';
+    case 'stop': return '종료';
     case 'powerOff': return '전원끔';
-    case 'shutdown': return '종료';
-    case 'reboot': return '재시작';
+    case 'reboot': return '재부팅';
     case 'reset': return '재설정';
     case 'migration': return '마이그레이션';
     case 'exportova': return 'OVA로 내보내기';
