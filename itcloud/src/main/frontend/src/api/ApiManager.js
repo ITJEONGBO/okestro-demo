@@ -1402,21 +1402,23 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.EXPORT_VM
     });
   },
-  /**
-   * @name ApiManager.migrateHostsFromVM
-   * @description 가상머신 migrateHosts
-   * 
-   * @param {String} vmId
-   * @returns {Promise<Object>} 
-   */
-  migrateHostsFromVM: async (vmId) => {
-    return makeAPICall({
-      method: "GET",
-      url: ENDPOINTS.MIGRATE_HOST_LIST_VM(vmId),  // ID를 URL에 포함
-      data: vmId
-      // defaultValues: DEFAULT_VALUES.MIGRATE_HOST_LIST_VM
-    });
-  },
+/**
+ * @name ApiManager.migrateHostsFromVM
+ * @description 가상머신 migrateHosts
+ * 
+ * @param {String} vmId 가상 머신 ID
+ */
+migrateHostsFromVM: async (vmId) => {
+  console.log(`Migrating hosts for VM with ID: ${vmId}`);  // vmId를 사용하는 API 호출 전 로그 출력
+  const response = await makeAPICall({
+    method: "GET",
+    url: ENDPOINTS.MIGRATE_HOST_LIST_VM(vmId),  // ID를 URL에 포함
+  });
+
+  console.log('API call response:', response);  // API 호출 후 응답 로그 출력
+  return response;  // 응답 반환
+},
+
   /**
    * @name ApiManager.migrateVM
    * @description 가상머신 마이그레이션

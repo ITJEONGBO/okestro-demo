@@ -12,11 +12,11 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm }) => {
   const { data: ableHost } = useHostsForMigration(selectedVm.id);
 
   useEffect(() => {
-    if (ableHost) {
+    if (selectedVm.id) {
       console.log('VM id:', selectedVm.id);
-      console.log('연결 가능한 호스트:', ableHost);
+      console.log('ABLEHOST:', ableHost);
     }
-  }, [ableHost]);
+  }, [selectedVm.id]);
 
   const handleSave = () => {
     console.log('Migrating VM:', {
