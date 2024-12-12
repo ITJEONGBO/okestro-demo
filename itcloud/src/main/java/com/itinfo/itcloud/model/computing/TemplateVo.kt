@@ -154,6 +154,7 @@ fun Template.toTemplateMenu(conn: Connection): TemplateVo {
 	return TemplateVo.builder {
 		id { this@toTemplateMenu.id() }
 		name { this@toTemplateMenu.name() }
+		comment { this@toTemplateMenu.comment() }
 		description { this@toTemplateMenu.description() }
 		creationTime { ovirtDf.format(this@toTemplateMenu.creationTime()) }
 		status { this@toTemplateMenu.status() }

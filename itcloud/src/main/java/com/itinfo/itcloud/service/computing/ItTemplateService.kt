@@ -176,8 +176,8 @@ class TemplateServiceImpl(
 	@Throws(Error::class)
 	override fun findAll(): List<TemplateVo> {
 		log.info("findAll ... ")
-		val res: List<Template> =
-			conn.findAllTemplates().getOrDefault(listOf())
+		val res: List<Template> = conn.findAllTemplates()
+			.getOrDefault(listOf())
 		return res.toTemplatesMenu(conn)
 	}
 
