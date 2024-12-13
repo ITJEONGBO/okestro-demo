@@ -17,7 +17,7 @@ const DomainModals = ({
     <>
     <Suspense>
       {/* 편집일때는 설명, 그 한도제한? 그거만 할수 있음 */}
-      { action === 'create' || action === 'import'? (
+      { action === 'create' || action === 'imported'? (
         <DomainModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}

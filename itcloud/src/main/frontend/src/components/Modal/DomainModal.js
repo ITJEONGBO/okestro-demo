@@ -236,9 +236,9 @@ const DomainModal = ({
   const validateForm = () => {
     if (!formState.name) return '이름을 입력해주세요.';
     if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
-    if (action === 'create' && !hostVoName) return '호스트를 선택해주세요.';
+    if ((action === 'create' || action === 'imported') && !hostVoName) return '호스트를 선택해주세요.';
     if (formState.storageType === 'NFS' && !storagePath) return '경로를 입력해주세요.';
-    if (action === 'create' && formState.storageType !== 'nfs' && lunId) {
+    if ((action === 'create' || action === 'imported') && formState.storageType !== 'nfs' && lunId) {
       const selectedLogicalUnit =
         formState.storageType === 'iscsi'
           ? iscsis.find((iLun) => iLun.id === lunId)
@@ -293,13 +293,13 @@ const DomainModal = ({
           },
         }
       );
-    } else if (action === 'import') {
-      // addDomain(dataToSubmit, {
-      //   onSuccess: () => {
-      //     alert('도메인 생성 완료');
-      //     onRequestClose();
-      //   },
-      // });
+    } else if (action === 'imported') {
+      addDomain(dataToSubmit, {
+        onSuccess: () => {
+          alert('도메인 생성 완료');
+          onRequestClose();
+        },
+      });
     } else if (action === 'create') { // create
       addDomain(dataToSubmit, {
         onSuccess: () => {
@@ -429,11 +429,11 @@ const DomainModal = ({
     </div>
 
     <div className="storage_specific_content">
-
+      
       {isNfs && (
         <div className="storage_popup_iSCSI">
           <div className="network_form_group">
-            <label htmlFor="NFSPath">NFS 서버 경로</label>
+            <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
             {editMode ? (
               <input
                 type="text"
@@ -466,12 +466,12 @@ const DomainModal = ({
         <div className="storage_popup_iSCSI">
           <div className="tab_content">
             {isIscsisLoading ? (
-              <div className="loading-message">로딩 중...</div>
+              <div className="label_font_body">로딩 중...</div>
             ) : isIscsisError ? (
-              <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
+              <div className="label_font_body">데이터를 불러오는 중 오류가 발생했습니다.</div>
             ) : (
               <>
-                {editMode ? (
+                { editMode ? (
                   <Table
                     columns={TableInfo.LUNS_TARGETS}
                     data={
@@ -492,20 +492,34 @@ const DomainModal = ({
                     // onRowClick={handleRowClick}
                     // shouldHighlight1stCol={true}
                   />
-                ): (
+                ): action === 'create' ? (
                   <Table
                     columns={TableInfo.LUNS_TARGETS}
                     data={iscsis}
                     onRowClick={handleRowClick}
                     shouldHighlight1stCol={true}
                   />
-                )}
-                <div>
-                  <span>id: {lunId}</span>
-                </div>
+                ): action === 'imported' ? (
+                  <>
+                    <label className='label_font_name'>대상 검색</label>
+
+                    <FormGroup label="디스크 공간 부족 경고 표시(%)">
+                      <input
+                        type="number"
+                        value={formState.warning}
+                        onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
+                      />
+                    </FormGroup>
+                    
+                  </>
+                ) : null }
+                
               </>
             )}
           </div>
+          <div>
+                  <span>id: {lunId}</span>
+                </div>
         </div>
       )}
       
@@ -513,9 +527,9 @@ const DomainModal = ({
         <div className="storage_popup_iSCSI">
           <div className="tab_content">
             {isFibresLoading ? (
-              <div className="loading-message">로딩 중...</div>
+              <div className="label_font_body">로딩 중...</div>
             ) : isFibresError ? (
-              <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
+              <div className="label_font_body">데이터를 불러오는 중 오류가 발생했습니다.</div>
             ) : (
               <>
                 {editMode ? (
@@ -556,27 +570,30 @@ const DomainModal = ({
         </div>
       )}
       
-      <div><br/></div>
+      <div><hr/></div>
 
-      <div className="storage_specific_content">
-        <div className="domain_new_select">
-          <label>디스크 공간 부족 경고 표시(%)</label>
-          <input
-            type="number"
-            value={formState.warning}
-            onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
-          />
-        </div>
-        <div className="domain_new_select">
-          <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-          <input
-            type="number"
-            value={formState.spaceBlocker}
-            onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
-          />
+      <div className="tab_content">
+        <div className="storage_specific_content">
+          <FormGroup>
+            <label className='label_font_body'>디스크 공간 부족 경고 표시(%)</label>
+            <input
+              type="number"
+              value={formState.warning}
+              className='input_number'
+              onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
+            />
+          </FormGroup>
+          <FormGroup>
+            <label className='label_font_body'>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+            <input
+              type="number"
+              value={formState.spaceBlocker}
+              className='input_number'
+              onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
+            />
+          </FormGroup>
         </div>
       </div>
-      
     </div>
 
       <div className="edit_footer">

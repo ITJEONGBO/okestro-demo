@@ -16,7 +16,7 @@ import DomainTemplates from './DomainTemplates';
 import DomainDiskSnapshots from './DomainDiskSnapshots';
 
 const DomainModal = React.lazy(() => import('../../Modal/DomainModal'))
-const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
+const DomainDeleteModal = React.lazy(() => import('../../Modal/DomainDeleteModal'));
 const DomainActionModal = React.lazy(() => import('../../Modal/DomainActionModal'))
 
 const DomainInfo = () => {
@@ -113,16 +113,24 @@ const DomainInfo = () => {
         <DomainModal
           isOpen={modals.edit}
           onRequestClose={() => toggleModal('edit', false)}
+          action={'edit'}
+          editMode={modals.edit}
+          domainId={domainId}
+        />
+      )}
+      {modals.import && (
+        <DomainModal
+          isOpen={modals.edit}
+          onRequestClose={() => toggleModal('import', false)}
+          action={'import'}
           editMode={modals.edit}
           domainId={domainId}
         />
       )}
       {modals.delete && (
-        <DeleteModal
+        <DomainDeleteModal
           isOpen={modals.delete}
-          type="Domain"
           onRequestClose={() => toggleModal('delete', false)}
-          contentLabel="스토리지 도메인"
           data={domain}
         />
       )}

@@ -116,7 +116,7 @@ const DiskModal = ({
       setDataCenterVoId(disk?.dataCenterVo?.id || '');
       setDomainVoId(disk?.storageDomainVo?.id || '');
       setDiskProfileVoId(disk?.diskProfileVo?.id || '');
-    } else if (!editMode && !isDatacentersLoading) {
+    } else if (!editMode) {
       resetForm();
     }
   }, [editMode, disk]);
@@ -328,17 +328,23 @@ const DiskModal = ({
               )}
 
               <FormGroup label="데이터 센터">
-                <select
-                  value={dataCenterVoId}
-                  onChange={(e) => setDataCenterVoId(e.target.value)}
-                  disabled={editMode}
-                >
-                  {datacenters && datacenters.map((dc) => (
-                    <option key={dc.id} value={dc.id}>
-                      {dc.name}: {dataCenterVoId }
-                    </option>
-                  ))}
-                </select>
+                {isDatacentersLoading ? (
+                    <p>데이터 센터를 불러오는 중...</p>
+                  ) : datacenters.length === 0 ? (
+                    <p>사용 가능한 데이터 센터가 없습니다.</p>
+                  ) : (
+                  <select
+                    value={dataCenterVoId}
+                    onChange={(e) => setDataCenterVoId(e.target.value)}
+                    disabled={editMode}
+                  >
+                    {datacenters && datacenters.map((dc) => (
+                      <option key={dc.id} value={dc.id}>
+                        {dc.name}: {dataCenterVoId}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </FormGroup>
 
               <FormGroup label="스토리지 도메인">

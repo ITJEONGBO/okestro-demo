@@ -185,19 +185,6 @@ const HostInfo = () => {
       </div>
 
       <Suspense fallback={<div>Loading...</div>}>{renderModals()}</Suspense>
-
-      {/* {modals2 && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <HostActionModal
-            isOpen={modals2}
-            action={modals2}
-            onRequestClose={() => toggleModal2(modals2, false)}
-            contentLabel={modals2}
-            data={host}
-          />
-        </Suspense>
-      )} */}
-
       <Footer/>
     </div>
   );

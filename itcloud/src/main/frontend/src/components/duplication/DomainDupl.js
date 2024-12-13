@@ -27,7 +27,7 @@ const DomainDupl = ({
       { type === 'domain' &&
         <DomainActionButtons
           onCreate={() => handleActionClick('create')}
-          onImport={() => handleActionClick('import')}
+          onImport={() => handleActionClick('imported')}
           onEdit={() => selectedDomain?.id && handleActionClick('edit')}
           onDelete={() => selectedDomain?.id && handleActionClick('delete')}
           disk={true}
@@ -47,7 +47,7 @@ const DomainDupl = ({
       { type === 'rutil' &&
         <DomainActionButtons
           onCreate={() => handleActionClick('create')}
-          onImport={() => handleActionClick('import')}
+          onImport={() => handleActionClick('imported')}
           onEdit={() => selectedDomain?.id && handleActionClick('edit')}
           onDelete={() => selectedDomain?.id && handleActionClick('delete')}
           disk={false}

@@ -366,7 +366,7 @@
     
 }
 .search_target>div:first-child .network_form_group{
-    padding:0.25rem
+    padding: 0.4rem;
 }
 .search_target>div:nth-child(2)>div{
     padding: 0.07rem 0.25rem;

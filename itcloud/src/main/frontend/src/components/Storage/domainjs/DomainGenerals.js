@@ -60,10 +60,12 @@ const DomainGenerals = ({ domainId }) => {
                 <th>이미지: (약간의 문제)</th>
                 <td>{domain?.diskImageVos?.length || 0}</td>
               </tr>
+              {domain?.storageType === 'nfs' && (
               <tr>
                 <th>경로:</th>
                 <td>{domain?.storageAddress}</td>
               </tr>
+              )}
               {/* <tr>
                 <th>NFS 버전:</th>
                 <td>{domain?.nfsVersion}</td>
