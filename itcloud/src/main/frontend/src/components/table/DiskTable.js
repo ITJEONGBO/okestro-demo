@@ -34,11 +34,11 @@ const mapDiskToRow = (disk) => {
   return {
     ...disk,
     icon: renderStatusIcon(disk.status),
-    // storageDomain: (
-    //   <TableRowClick type="domains" id={disk?.storageDomainVo.id}>
-    //     {disk?.storageDomainVo.name}
-    //   </TableRowClick>
-    // ),
+    storageDomain: (
+      <TableRowClick type="domains" id={disk?.storageDomainVo.id}>
+        {disk?.storageDomainVo.name}
+      </TableRowClick>
+    ),
     sharable: disk?.sharable ? 'O' : '',
     sparse: disk?.sparse ? '씬 프로비저닝' : '사전 할당',
     connectVm: (
