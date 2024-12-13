@@ -130,28 +130,6 @@ const handleDiskSelection = (diskId, diskDetails) => {
   setSelectedDiskId(diskId); // 선택한 디스크 ID를 상태로 저장
   setSelectedDisks((prev) => [...prev, { id: diskId, details: diskDetails }]);
 };
-const mapSelectedDisksToAttachments = (selectedDisks) =>
-  selectedDisks.map((disk) => ({
-    diskImageVo: {
-      id: disk.id, // 디스크 ID
-      alias: disk.details.alias || "", // 디스크 이름
-      size: disk.details.size || 0, // 크기
-      appendSize: disk.details.appendSize || 0,
-      description: disk.details.description || "",
-      dataCenterVo: {
-        id: disk.details.dataCenterVo?.id || "",
-        name: disk.details.dataCenterVo?.name || "",
-      },
-     
-      diskProfileVos: disk.details.diskProfileVos || [],
-    },
-    active: disk.details.active, // 활성화 여부
-    bootable: disk.details.bootable, // 부팅 가능 여부
-    passDiscard: disk.details.passDiscard, // PassDiscard 설정
-    readOnly: disk.details.readOnly, // 읽기 전용 여부
-    interface_: disk.details.interface_, // 인터페이스 유형 (e.g., VIRTIO, IDE)
-    logicalName: disk.details.logicalName, // 논리 이름
-  }));
 
   // VM에 연결된 디스크
   const [vmdisks, setVmDisks] = useState([]); 
@@ -159,6 +137,7 @@ const mapSelectedDisksToAttachments = (selectedDisks) =>
     console.log("새로 생성된 디스크 정보:", createdDisk);
     setVmDisks((prevDisks) => [...prevDisks, createdDisk]); // 새 디스크를 디스크 목록에 추가
   };
+  
   const { data: vmdisk} = useAddDisksFromVM(vmId);
 const handleAddDiskOptions = () => {
   setShowAddOptions(true);
@@ -352,7 +331,14 @@ const handleActionClick = (actionType) => {
   setIsModalOpen(true); // 모달 열기
 };
 
-
+useEffect(() => {
+  if (editMode && vm) {
+    // 서버에서 반환된 디스크 정보를 상태에 저장
+    if (vm?.disks) {
+      setVmDisks(vm.disks);
+    }
+  }
+}, [editMode, vm]);
 
 
 // 운영 시스템 및 칩셋 옵션 상태
@@ -562,7 +548,8 @@ useEffect(() => {
         alert("네트워크를 선택해주세요.");
         return;
       }
-      const diskAttachmentVos = mapSelectedDisksToAttachments(selectedDisks);
+
+     const firstDisk = vmdisks.length > 0 ? vmdisks[0] : null;
     const dataToSubmit = {
      
       clusterVo:{
@@ -621,7 +608,27 @@ useEffect(() => {
         }
       : null,
       bootingMenu,// boolean
-      diskAttachmentVos
+      diskAttachmentVo: firstDisk
+      ? {
+          active: true,
+          bootable: firstDisk.bootable || false,
+          detachOnly: false,
+          diskImageVo: {
+            id: firstDisk.id || "",
+            alias: firstDisk.alias || "Unknown Alias",
+            size: firstDisk.size || 0,
+            description: firstDisk.description || "No Description",
+            backup: firstDisk.backup || false,
+            sharable: firstDisk.sharable || false,
+            sparse: firstDisk.sparse || false,
+            wipeAfterDelete: firstDisk.wipeAfterDelete || false,
+            dataCenterVo: firstDisk.dataCenterVo || { id: "", name: "No Data Center" },
+            diskProfileVo: firstDisk.diskProfileVo || { id: "", name: "No Profile" },
+            storageDomainVo: firstDisk.storageDomainVo || { id: "", name: "No Storage Domain" },
+          },
+        }
+      : null, // 디스크가 없으면 null
+
 
     };
     console.log('가상머신 생성or편집데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
@@ -980,6 +987,16 @@ return (
         type="vm"
         onDiskCreated={handleDiskCreated}
       />
+    {vmdisks.length > 0 ? (
+        vmdisks.map((disk) => (
+          <div key={disk.id}>
+            <p>디스크 이름: {disk.alias}</p>
+            <p>크기: {disk.size} GB</p>
+          </div>
+        ))
+      ) : (
+        <p>디스크가 없습니다.</p>
+      )}
       <div className="flex">
         <button disabled>+</button>
         <button disabled>-</button>
@@ -1102,11 +1119,18 @@ return (
                                         editMode={false}
                                         vmId={vmId}
                                         type="vm"
-                                        onDiskCreated={(createdDisk) => {
-                                          setSelectedDiskId(createdDisk.id); // 새로 생성된 디스크 ID 업데이트
-                                          setSelectedDisks((prev) => [...prev, createdDisk]); // 디스크 추가
-                                        }}
-                                      />
+                                        onDiskCreated={handleDiskCreated}
+                                        />
+                                      {vmdisks.length > 0 ? (
+                                          vmdisks.map((disk) => (
+                                            <div key={disk.id}>
+                                              <p>디스크 이름: {disk.alias}</p>
+                                              <p>크기: {disk.size} GB</p>
+                                            </div>
+                                          ))
+                                        ) : (
+                                          <p>디스크가 없습니다.</p>
+                                        )}
                                       <div className="flex">
                                         <button disabled>+</button>
                                         <button disabled>-</button>
@@ -1142,11 +1166,18 @@ return (
                                         editMode={false}
                                         vmId={vmId}
                                         type="vm"
-                                        onDiskCreated={(createdDisk) => {
-                                          setSelectedDiskId(createdDisk.id); // 새로 생성된 디스크 ID 업데이트
-                                          setSelectedDisks((prev) => [...prev, createdDisk]); // 디스크 추가
-                                        }}
-                                      />
+                                        onDiskCreated={handleDiskCreated}
+                                        />
+                                      {vmdisks.length > 0 ? (
+                                          vmdisks.map((disk) => (
+                                            <div key={disk.id}>
+                                              <p>디스크 이름: {disk.alias}</p>
+                                              <p>크기: {disk.size} GB</p>
+                                            </div>
+                                          ))
+                                        ) : (
+                                          <p>디스크가 없습니다.</p>
+                                        )}
                                       <div className="flex">
                                         <button disabled>+</button>
                                         <button disabled>-</button>

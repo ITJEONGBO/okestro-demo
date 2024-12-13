@@ -108,24 +108,7 @@ const VmDisk = ({vm}) => {
 
   
 
-        // LUN 테이블 컬럼 및 데이터
-  const lunDiskColumns = [
-    { header: 'LUN ID', accessor: 'lunId' },
-    { header: '가상 크기', accessor: 'virtualSize' },
-    { header: '실제 크기', accessor: 'actualSize' },
-    { header: '호스트', accessor: 'host' },
-    { header: '생성 일자', accessor: 'createdDate' },
-  ];
-
-  const lunDiskData = [
-    {
-      lunId: 'LUN1',
-      virtualSize: '500 GiB',
-      actualSize: '480 GiB',
-      host: 'Host1',
-      createdDate: '2023-09-15',
-    },
-  ];
+  
     return (
         <>
                 <div className="disk_type">
@@ -204,7 +187,8 @@ const VmDisk = ({vm}) => {
                           onRequestClose={() => setIsModalOpen(false)}
                           editMode={action === 'edit'}
                           diskId={selectedDisk?.id || null}
-                          type="vm"
+                          vmId={vm?.id || ''}
+                          type="vmDisk"
                         />
                       )}
                       {action === 'delete' && (

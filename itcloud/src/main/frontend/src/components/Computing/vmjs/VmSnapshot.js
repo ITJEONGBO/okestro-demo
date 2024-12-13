@@ -91,13 +91,22 @@ const VmSnapshot = ({vm}) => {
     <div className="snapshot_list">
   {snapshots && snapshots.length > 0 ? (
     snapshots.map((snapshot) => (
-      <div key={snapshot.id}>
-        <div className="snapshot_content">
+      <div>
+      <div 
+        key={snapshot.id}
+        className="snapshot_content"
+        onClick={() => setSelectedSnapshot(snapshot)} // snapshot_content 클릭 시 선택되도록 추가
+        style={{
+        border: selectedSnapshot?.id === snapshot.id ? '1px solid #449bff' : 'none', // 선택된 항목 강조 효과
+        }}
+      >
+
           <div className="snapshot_content_left">
             <div><FontAwesomeIcon icon={faCamera} fixedWidth /></div>
             <span>{snapshot.name || 'Unnamed Snapshot'}</span>
           </div>
 
+        
           <div className="snapshot_content_right">
             {/* 일반 섹션 */}
             <div
@@ -151,8 +160,9 @@ const VmSnapshot = ({vm}) => {
               <FontAwesomeIcon icon={faNewspaper} fixedWidth />
             </div>
           </div>
-        </div>
-
+            </div>
+        
+        
         {/* General Section */}
         {activeSection === 'general' && selectedSnapshot?.id === snapshot.id && (
           <div className="snap_hidden_content active">
@@ -221,7 +231,7 @@ const VmSnapshot = ({vm}) => {
       </div>
     ))
   ) : (
-    <div className="no_snapshots">스냅샷 데이터가 없습니다.</div>
+    <div className="no_snapshots">로딩중...</div>
   )}
 </div>
 

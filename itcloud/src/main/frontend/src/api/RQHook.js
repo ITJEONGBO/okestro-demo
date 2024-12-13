@@ -1488,8 +1488,8 @@ export const useAddDiskFromVM = () => {
   const queryClient = useQueryClient(); // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
     mutationFn: async ({ vmId, diskData }) => {
-      console.log('Received vmId:', vmId); // vmId 출력
-      console.log('Received diskData:', diskData); // nicData 출력
+      console.log('가상머신 vmId:', vmId); // vmId 출력
+      console.log('가상머신생성 디스크데이터 diskData:', diskData); // nicData 출력
       return await ApiManager.addDiskFromVM(vmId, diskData);
     },
     onSuccess: () => {

@@ -90,8 +90,7 @@ const DiskModal = ({
 
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
-
-  // const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 디스크생성
+  const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신안에 디스크생성성
 
   const interfaceList = [
     { value: "VirtIO-SCSI", label: "VirtIO-SCSI" },
@@ -184,16 +183,29 @@ const DiskModal = ({
 
     // 데이터 객체 생성
     const dataToSubmit = {
+      id: formState.id,
+      alias: formState.alias,
+      description: formState.description,
       dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
       storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
       diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
       ...formState,
       size: sizeToBytes,
       appendSize: appendSizeToBytes,
+      backup: formState.backup,
+      sparse: formState.sparse,
+      bootable: formState.bootable,
+      readOnly: formState.readOnly,
     };
 
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
-    
+    if (type === "vm") {
+      if (onDiskCreated) {
+        console.log("DiskModal에서 생성된 디스크 데이터:", dataToSubmit);
+        onDiskCreated(dataToSubmit);
+      }
+      onRequestClose(); // 모달 닫기
+    }
     if (editMode) {
       editDisk(
         { diskId: formState.id, diskData: dataToSubmit },
@@ -204,13 +216,27 @@ const DiskModal = ({
           },
         }
       );
-    
-    } else {
+    }
+    else if (type === 'vmDisk'){
+      addDiskVm(
+        {vmId, diskData: dataToSubmit },
+        {
+          onSuccess: () => {
+            alert("VM 디스크 생성 완료");
+            onRequestClose(); // 성공 시 모달 닫기
+          },
+        }
+      );
+    } 
+    else if(type!=="vm"){
       // 일반 디스크 생성
       addDisk(dataToSubmit, {
-        onSuccess: () => {
+        onSuccess: (createdDisk) => {
           alert("디스크 생성 완료");
           onRequestClose();
+          if (onDiskCreated) {
+            onDiskCreated(createdDisk); // 생성된 디스크 정보를 상위 컴포넌트로 전달
+          }
         },
       });
     }
@@ -297,7 +323,7 @@ const DiskModal = ({
 
               
 
-              {type === 'vm' && (
+              {(type === 'vm' || type === 'vmDisk') && (
                 <FormGroup label="인터페이스">
                 <select
                   value={formState.interfaced}
@@ -398,7 +424,7 @@ const DiskModal = ({
                 <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
               </div>
 
-              {type === 'vm' && (
+              {(type === 'vm' || type === 'vmDisk') && (
                 <>
                 <div>
                   <input 
