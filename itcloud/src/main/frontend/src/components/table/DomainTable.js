@@ -44,7 +44,7 @@ const DomainTable = ({
           ...domain,
           icon: renderStatusIcon(domain.status),
           status: renderStatus(domain?.status),
-          master: domain?.domainTypeMaster === true ? 
+          hostedEngine: domain?.hostedEngine === true ? 
             <FontAwesomeIcon 
                 icon={faPencil} 
                 fixedWidth 

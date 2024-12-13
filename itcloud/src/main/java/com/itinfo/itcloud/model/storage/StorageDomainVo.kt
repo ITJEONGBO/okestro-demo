@@ -1,10 +1,12 @@
 package com.itinfo.itcloud.model.storage
 
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
 import com.itinfo.itcloud.model.fromDiskProfilesToIdentifiedVos
 import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
@@ -143,37 +145,31 @@ fun List<StorageDomain>.toDomainStatuss(conn: Connection): List<StorageDomainVo>
 
 
 fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
-	val dataCenter: DataCenter? =
-		if(this@toStorageDomainMenu.dataCentersPresent())
-			conn.findDataCenter(this@toStorageDomainMenu.dataCenters().first().id()).getOrNull()
-		else null
-	val s: StorageDomain? =
-		dataCenter?.let { conn.findAttachedStorageDomainFromDataCenter(it.id(), this@toStorageDomainMenu.id()).getOrNull() }
-	val hostedVm =
-		conn.findAllVmsFromStorageDomain(this@toStorageDomainMenu.id()).getOrDefault(listOf())
-			.any { it.name() == "HostedEngine" }
+	val dataCenter: DataCenter = conn.findDataCenter(this@toStorageDomainMenu.dataCenters().first().id())
+		.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
+	val storageDomainStatus = conn.findAttachedStorageDomainFromDataCenter(dataCenter.id(), this@toStorageDomainMenu.id())
+		.getOrNull()?.status()
+	val hostedVm = conn.findAllVmsFromStorageDomain(this@toStorageDomainMenu.id())
+		.getOrDefault(listOf())
+		.any { it.origin() == "managed_hosted_engine" }
 
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainMenu.id() }
 		name { this@toStorageDomainMenu.name() }
 		description { this@toStorageDomainMenu.description() }
-		status { s?.status() }
+		status { storageDomainStatus }
 		hostedEngine { hostedVm }
 		comment { this@toStorageDomainMenu.comment() }
 		domainType { this@toStorageDomainMenu.type().value() }
-		domainTypeMaster {
-			if (this@toStorageDomainMenu.masterPresent()) this@toStorageDomainMenu.master()
-			else false
-		}
+		domainTypeMaster { this@toStorageDomainMenu.masterPresent() && this@toStorageDomainMenu.master() }
 		storageType {
-			if (this@toStorageDomainMenu.storagePresent()) this@toStorageDomainMenu.storage().type().value()
-			else null
+			this@toStorageDomainMenu.storagePresent().let { this@toStorageDomainMenu.storage().type().value() }
 		}
 		format { this@toStorageDomainMenu.storageFormat() }
 		usedSize { this@toStorageDomainMenu.used() }
 		availableSize { this@toStorageDomainMenu.available() }
 		diskSize { this@toStorageDomainMenu.available().add(this@toStorageDomainMenu.used()) }
-		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+		dataCenterVo { dataCenter.fromDataCenterToIdentifiedVo() }
 	}
 }
 fun List<StorageDomain>.toStorageDomainsMenu(conn: Connection): List<StorageDomainVo> =

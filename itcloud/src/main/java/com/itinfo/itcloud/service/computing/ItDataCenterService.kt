@@ -248,6 +248,7 @@ class DataCenterServiceImpl(
 		log.debug("findAllHostsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Host> = conn.findAllHostsFromDataCenter(dataCenterId)
 			.getOrDefault(listOf())
+			.filter { it.status() == HostStatus.UP }
 
 		return res.map { host ->
 			val hostNic: HostNic? = conn.findAllNicsFromHost(host.id())

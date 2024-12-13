@@ -24,37 +24,37 @@ const DomainDupl = ({
   // 데이터센터: 연결, 분리, 활성, 유지보수
   return (
     <>
-    { type === 'domain' &&
-      <DomainActionButtons
-        onCreate={() => handleActionClick('create')}
-        onImport={() => handleActionClick('import')}
-        onEdit={() => selectedDomain?.id && handleActionClick('edit')}
-        onDelete={() => selectedDomain?.id && handleActionClick('delete')}
-        disk={true}
-        isEditDisabled={!selectedDomain?.id}
-        status={selectedDomain?.status}
-      />
-    }
-    { type === 'datacenter' &&
-      <DomainActionButtons
-        onActivate={() => selectedDomain?.id && handleActionClick('activate')}
-        onAttach={() => selectedDomain?.id && handleActionClick('attach')}
-        onDetach={() => selectedDomain?.id && handleActionClick('detach')}
-        onMaintenance={() => selectedDomain?.id && handleActionClick('maintenance')}
-        status={selectedDomain?.status}
-      />
-    }
-    { type === 'rutil' &&
-      <DomainActionButtons
-        onCreate={() => handleActionClick('create')}
-        onImport={() => handleActionClick('import')}
-        onEdit={() => selectedDomain?.id && handleActionClick('edit')}
-        onDelete={() => selectedDomain?.id && handleActionClick('delete')}
-        disk={false}
-        isEditDisabled={!selectedDomain?.id}
-        status={selectedDomain?.status}
-      />
-    }
+      { type === 'domain' &&
+        <DomainActionButtons
+          onCreate={() => handleActionClick('create')}
+          onImport={() => handleActionClick('import')}
+          onEdit={() => selectedDomain?.id && handleActionClick('edit')}
+          onDelete={() => selectedDomain?.id && handleActionClick('delete')}
+          disk={true}
+          isEditDisabled={!selectedDomain?.id}
+          status={selectedDomain?.status}
+        />
+      }
+      { type === 'datacenter' &&
+        <DomainActionButtons
+          onActivate={() => selectedDomain?.id && handleActionClick('activate')}
+          onAttach={() => selectedDomain?.id && handleActionClick('attach')}
+          onDetach={() => selectedDomain?.id && handleActionClick('detach')}
+          onMaintenance={() => selectedDomain?.id && handleActionClick('maintenance')}
+          status={selectedDomain?.status}
+        />
+      }
+      { type === 'rutil' &&
+        <DomainActionButtons
+          onCreate={() => handleActionClick('create')}
+          onImport={() => handleActionClick('import')}
+          onEdit={() => selectedDomain?.id && handleActionClick('edit')}
+          onDelete={() => selectedDomain?.id && handleActionClick('delete')}
+          disk={false}
+          isEditDisabled={!selectedDomain?.id}
+          status={selectedDomain?.status}
+        />
+      }
       <span>id = {selectedDomain?.id || ''}</span>
 
       <DomainTable

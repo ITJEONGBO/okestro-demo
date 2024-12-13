@@ -43,6 +43,15 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun findOne(hostId: String): HostVo?
 
+//	/**
+//	 * [ItHostService.findStatusUp]
+//	 * 호스트 목록 ( status)
+//	 *
+//	 * @return List<[HostVo]> 호스트 목록
+//	 */
+//	@Throws(Error::class)
+//	fun findStatusUp(): List<HostVo>
+
 	// 호스트 생성창
 	// 		클러스터 목록 [ItClusterService.findAll]
 
