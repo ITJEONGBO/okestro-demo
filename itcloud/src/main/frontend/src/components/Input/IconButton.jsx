@@ -1,18 +1,23 @@
-import './IconButton.css'
+import './IconButton.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const IconButton = ({id, key, label, icon, onClick}) => {
-
+const IconButton = ({
+  id, 
+  key, 
+  label, 
+  icon, 
+  onClick
+}) => {
   return (
-    <>
-    <button id={id} key={key} onClick={onClick} className="icon-button-conatiner">
-      <span className="icon-button-conatiner">
-        <FontAwesomeIcon icon={icon} className="input-icon" fixedWidth/>
-      </span>
+    <button id={id} key={key} onClick={onClick} className="icon-button-container">
+      {icon && ( // icon이 존재할 경우에만 span과 FontAwesomeIcon 렌더링
+        <span className="icon-button-container">
+          <FontAwesomeIcon icon={icon} className="input-icon" fixedWidth />
+        </span>
+      )}
       <p>{label}</p>
-      </button>
-    </>
-  )
+    </button>
+  );
 }
 
-export default IconButton
+export default IconButton;
