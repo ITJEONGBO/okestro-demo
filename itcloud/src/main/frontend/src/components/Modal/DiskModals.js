@@ -1,6 +1,11 @@
 import React, { Suspense } from 'react';
 
-const DiskModals = ({ isModalOpen, action, onRequestClose, selectedDisk }) => {
+const DiskModals = ({ 
+  isModalOpen, 
+  action, 
+  onRequestClose, 
+  selectedDisk 
+}) => {
   const DiskModal = React.lazy(() => import('./DiskModal.js'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
   const DiskActionModal = React.lazy(() => import('../Modal/DiskActionModal'));
@@ -9,7 +14,6 @@ const DiskModals = ({ isModalOpen, action, onRequestClose, selectedDisk }) => {
   if (!isModalOpen || !action) return null;
 
   return (
-    <>
     <Suspense>
       {action === 'create' || action === 'edit' ? (
         <DiskModal
@@ -23,8 +27,6 @@ const DiskModals = ({ isModalOpen, action, onRequestClose, selectedDisk }) => {
         <DiskUploadModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
-          editMode={action === 'edit'}
-          diskId={selectedDisk?.id || null}
         />
       ) : action === 'delete' ? (
         <DeleteModal
@@ -45,8 +47,6 @@ const DiskModals = ({ isModalOpen, action, onRequestClose, selectedDisk }) => {
         />
       )}
     </Suspense>
-
-    </>
   );
 };
 

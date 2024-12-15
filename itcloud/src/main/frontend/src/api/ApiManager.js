@@ -2336,6 +2336,21 @@ migrateHostsFromVM: async (vmId) => {
     });
   },
   /**
+   * @name ApiManager.uploadDisk
+   * @description 디스크 업로드
+   * 
+   * @param {Object} diskData 
+   * @returns {Promise<Object>}
+   */
+  addDisk: async (diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.UPLOAD_DISK(),
+      data: diskData, 
+      // defaultValues: DEFAULT_VALUES.ADD_DISK
+    });
+  },
+  /**
    * @name ApiManager.copyDisk
    * @description 디스크 복제
    * 

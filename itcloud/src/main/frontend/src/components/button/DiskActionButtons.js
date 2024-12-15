@@ -30,7 +30,7 @@ const DiskActionButtons = ({
         <button onClick={onCopy} disabled={isEditDisabled}>복사</button>
       )}
       {onUpload && (
-        <button onClick={onUpload} disabled={isEditDisabled}>업로드</button>
+        <button onClick={onUpload}>업로드</button>
       )}
     </div>
   );

@@ -228,7 +228,7 @@ const ENDPOINTS = {
   FIND_STORAGE_DOMAINS_TO_MOVE_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/move`,
   MOVE_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/move`,
   REFRESH_LUN_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/refreshLun`,
-  UPLOAD_DISK: (diskId) =>      `/api/v1/storages/disks/upload`,
+  UPLOAD_DISK: () =>      `/api/v1/storages/disks/upload`,
   //endregion: Disk
   
 

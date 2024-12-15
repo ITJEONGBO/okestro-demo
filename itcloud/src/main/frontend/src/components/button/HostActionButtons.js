@@ -10,7 +10,6 @@ const HostActionButtons = ({
   onDeactivate, 
   onActivate, 
   onRestart,
-  // onStop,
   onReInstall,
   onRegister,
   onHaOn,

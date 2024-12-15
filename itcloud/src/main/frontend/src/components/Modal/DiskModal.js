@@ -413,7 +413,6 @@ const DiskModal = ({
               </div>
             
             <div className="disk_new_img_right">
-
               <div>
                 <input
                   type="checkbox"
@@ -535,7 +534,7 @@ const DiskModal = ({
           <button onClick={onRequestClose}>취소</button>
         </div>
       </div>
-      </Modal>
+    </Modal>
   );
 };
 

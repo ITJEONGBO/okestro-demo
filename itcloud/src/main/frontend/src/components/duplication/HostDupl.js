@@ -28,7 +28,6 @@ const HostDupl = ({
         onDeactivate={() => selectedHost?.id && handleActionClick('deactivate')}
         onActivate={() => selectedHost?.id && handleActionClick('activate')}
         onRestart={() => selectedHost?.id && handleActionClick('restart')}
-        // onStop={() => selectedHost?.id && handleActionClick('stop')}
         onReInstall={() => selectedHost?.id && handleActionClick('reinstall')}
         onRegister={() => selectedHost?.id && handleActionClick('register')}
         onHaOn={() => selectedHost?.id && handleActionClick('haon')}

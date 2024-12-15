@@ -49,7 +49,6 @@ const getContentLabel = (action) => {
     case 'deactivate': return '유지보수';
     case 'activate': return '활성';
     case 'restart': return '재시작';
-    // case 'stop': return '중지';
     case 'reinstall': return '다시 설치';
     case 'register': return '인증서 등록';
     case 'haon': return 'HA 활성화';

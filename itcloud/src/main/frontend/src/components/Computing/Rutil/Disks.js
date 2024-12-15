@@ -6,11 +6,8 @@ import DiskDupl from '../../duplication/DiskDupl';
 
 const Disks = () => {
   const { 
-    data: disks, 
-    status: disksStatus,
-    isRefetching: isDisksRefetching,
+    data: disks,
     refetch: refetchDisks, 
-    isError: isDisksError, 
     error: disksError, 
     isLoading: isDisksLoading,
   } = useAllDisks((e) => ({ ...e }));
@@ -18,8 +15,8 @@ const Disks = () => {
   return (
     <>
       <DiskDupl 
-        disks={disks || []}
         columns={TableInfo.DISKS}
+        disks={disks || []}
       />
     </>
   );
