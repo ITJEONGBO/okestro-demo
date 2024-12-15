@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle, faChevronCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
+import '../Modal/css/MVm.css';
 import { 
   useAddDisksFromVM,
   useAddVm, 
