@@ -48,7 +48,7 @@ const VmActionButtons = ({
   const manageActions = [
     { onClick: onStart, label: '실행', disabled: isEditDisabled || isUp },
     { onClick: onPause, label: '일시중지', disabled: isEditDisabled || !isUp },
-    { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || !isUp },
+    // { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || !isUp },
   ];
 
   const rebootOptions = [
