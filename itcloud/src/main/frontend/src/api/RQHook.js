@@ -1415,6 +1415,26 @@ export const useHostsForMigration = (vmId, mapPredicate) => useQuery({
 })
 
 /**
+ * @name useRebootVM
+ * @description 가상머신 마이그레이션 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useMigration = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({vmId,hostId}) => await ApiManager.migrateVM(vmId,hostId),
+    onSuccess: () => {
+      console.log(`useMigration ... `);
+      queryClient.invalidateQueries('HostsForMigration');
+    },
+    onError: (error) => {
+      console.error('Error Migration :', error);
+    },  
+  });
+};
+
+/**
  * @name useExportVM
  * @description 가상머신 내보내기 useMutation 훅
  * 

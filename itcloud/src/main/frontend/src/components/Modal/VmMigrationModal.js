@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { useHostsForMigration } from '../../api/RQHook';
+import { useHostsForMigration, useMigration } from '../../api/RQHook';
 
 const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm }) => {
-  const [selectedHost, setSelectedHost] = useState('');
+  const [selectedHost, setSelectedHost] = useState();
   const [isHaMode, setIsHaMode] = useState(false);
+
 
   // 연결가능한 호스트목록
   const { data: ableHost } = useHostsForMigration(selectedVm.id);
@@ -14,18 +15,32 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm }) => {
   useEffect(() => {
     if (selectedVm.id) {
       console.log('VM id:', selectedVm.id);
-      console.log('ABLEHOST:', ableHost);
+      console.log('ABLEHOST:', ableHost);  // 이 로그를 통해 ableHost의 구조를 확인
     }
-  }, [selectedVm.id]);
+  }, [selectedVm.id, ableHost]);
+  
+  
+  const { mutate: migration } = useMigration();
 
+
+  // 되는지 안되는지모름
   const handleSave = () => {
-    console.log('Migrating VM:', {
-      vm: selectedVm,
-      host: selectedHost,
-      haMode: isHaMode,
+    // 마이그레이션 실행: 선택된 VM ID와 호스트 ID를 사용
+    migration({
+      vmId: selectedVm.id,
+      hostId: selectedHost,
+    }, {
+      onSuccess: () => {
+        console.log('Migration successful');
+        onRequestClose(); // 모달 닫기
+      },
+      onError: (error) => {
+        console.error('Migration error:', error);
+      }
     });
-    onRequestClose(); // 모달 닫기
   };
+
+ 
 
   return (
     <Modal
@@ -54,15 +69,18 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm }) => {
                 </label>
 
                 <select
-                  name="host_dropdown"
                   id="host"
                   value={selectedHost}
                   onChange={(e) => setSelectedHost(e.target.value)}
+                  disabled={!ableHost || ableHost.length === 0}
                 >
-                  <option value="">호스트 자동 선택</option>
-                  {ableHost?.body.map(host => (
-                    <option key={host.id} value={host.id}>{host.name}</option>
-                  ))}
+                  {ableHost && ableHost.length > 0 ? (
+                    ableHost.map(host => (
+                      <option key={host.id} value={host.id}>{host.name}</option>
+                    ))
+                  ) : (
+                    <option value="">사용 가능한 호스트가 없습니다</option>
+                  )}
                 </select>
               </div>
             </div>

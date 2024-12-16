@@ -1404,7 +1404,7 @@ const ApiManager = {
   },
 /**
  * @name ApiManager.migrateHostsFromVM
- * @description 가상머신 migrateHosts
+ * @description 가상머신 마이그레이션 호스트목록
  * 
  * @param {String} vmId 가상 머신 ID
  */
@@ -1415,7 +1415,7 @@ migrateHostsFromVM: async (vmId) => {
     url: ENDPOINTS.MIGRATE_HOST_LIST_VM(vmId),  // ID를 URL에 포함
   });
 
-  console.log('API call response:', response);  // API 호출 후 응답 로그 출력
+  console.log('API call response아아:', response);  // API 호출 후 응답 로그 출력
   return response;  // 응답 반환
 },
 

@@ -17,8 +17,8 @@ const VmNetworkNewInterfaceModal = ({
   const [profile, setProfile] = useState(''); 
   const [vnicProfileVoId, setVnicProfileVoId] = useState(''); 
   const [vnicProfileVoName, setVnicProfileVoName] = useState(''); 
-  const [linked, setLinked] = useState(false); //링크상태(link state) t(up)/f(down) -> nic 상태도 같이 변함
-  const [plugged, setPlugged] = useState(false); 
+  const [linked, setLinked] = useState(true); //링크상태(link state) t(up)/f(down) -> nic 상태도 같이 변함
+  const [plugged, setPlugged] = useState(true); 
   const [status, setStatus] = useState('up');
   const [macAddress, setMacAddress] = useState('');
   const [connectionStatus, setConnectionStatus] = useState('connected');
@@ -49,6 +49,15 @@ const VmNetworkNewInterfaceModal = ({
       data: nics 
     } = useNetworkInterfaceFromVM(vmId);
 
+    // 가상머신 내 네트워크인터페이스 상세
+      const { 
+      data: nicsdetail
+    } = useNetworkInterfaceByVMId(vmId,nicId);
+
+    useEffect(() => {
+      console.log('nics 데이터:', nicsdetail);
+    }, [nicsdetail]); // nics 데이터가 변경될 때마다 실행
+    
 //    가상머신 내 네트워크인터페이스 상세조회
     // const { 
     //   data: nicDetail
@@ -69,21 +78,21 @@ const VmNetworkNewInterfaceModal = ({
 
       useEffect(() => {
         console.log('useEffect 호출 - nicData 상태:', nicData);
-        if (editMode && nicData ) {
+        if (editMode && nicData && nicsdetail) {
           console.log('vnicProfileVo:', nicData.vnicProfileVo?.name);
           setId(nicData.id);
           setName(nicData.name);
-          setVnicProfileVoId(nicData.vnicProfileVo?.id || '');
-          setVnicProfileVoName(nicData.vnicProfileVo?.name || '');
+          setVnicProfileVoId(nicsdetail.vnicProfileVo?.id || '');
+          setVnicProfileVoName(nicsdetail.vnicProfileVo?.name || '');
           setSelectedInterface(nicData.interface_ || 'VIRTIO');
-          setLinked(nicData.linked);
-          setPlugged(nicData.plugged); // 기본값 설정
+          setLinked(nicsdetail.linked);
+          setPlugged(nicsdetail.plugged); // 기본값 설정
           setStatus(nicData.status);
           setMacAddress(nicData.macAddress);
         } else {
           resetForm();
         }
-      }, [isOpen, editMode, nicData, vmId, nics,nicData]);
+      }, [isOpen, editMode, nicData, vmId, nics,nicData,nicsdetail]);
 
 
       const resetForm = () => {
@@ -117,6 +126,7 @@ const VmNetworkNewInterfaceModal = ({
     console.log('네트워크인터페이스 생성, 편집데이터:', dataToSubmit); 
   
     if (editMode && nicData) {
+      dataToSubmit.id = id;
       editNicFromVM({
         vmId,
         nicId: nicData.id,
@@ -253,20 +263,20 @@ const VmNetworkNewInterfaceModal = ({
           type="radio"
           name="plugged_status"
           id="plugged"
-          checked={plugged === true} // plugged가 true일 때 선택
-          onChange={() => setPlugged(true)} // true로 설정
+          checked={plugged === true}
+          onChange={() => setPlugged(true)}
         />
         <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
         <label htmlFor="plugged">연결됨</label>
       </div>
       <div>
-        <input
-          type="radio"
-          name="plugged_status"
-          id="unplugged"
-          checked={plugged === false} // plugged가 false일 때 선택
-          onChange={() => setPlugged(false)} // false로 설정
-        />
+          <input
+            type="radio"
+            name="plugged_status"
+            id="unplugged"
+            checked={plugged === false}
+            onChange={() => setPlugged(false)}
+          />
         <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
         <label htmlFor="unplugged">분리</label>
       </div>
