@@ -70,6 +70,10 @@ const ENDPOINTS = {
   FIND_HOSTDEVICES_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/devices`, 
   FIND_EVENTS_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/events`, 
 
+  FIND_FIBRES_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/fibres`,
+  FIND_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsis`,
+  FIND_IMPORT_ISCSIS_FROM_HOST: (hostId, address) => `/api/v1/computing/hosts/${hostId}/iscsis/${address}`,
+
   ADD_HOST: () => `/api/v1/computing/hosts`,
   EDIT_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}`, 
   DELETE_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}`, 
@@ -192,21 +196,20 @@ const ENDPOINTS = {
   FIND_EVENTS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/events`,
   FIND_ACTIVE_DATA_CENTERS: () => `/api/v1/storages/domains/dataCenters`,
   
-  FIND_FIBRES_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/fibres`,
-  FIND_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsis`,
   
   ADD_STORAGE_DOMAIN: () => `/api/v1/storages/domains`,
   EDIT_STORAGE_DOMAIN: (domainId) => `/api/v1/storages/domains/${domainId}`,
   // DELETE_STORAGE_DOMAIN: (domainId, format, hostName) => `/api/v1/storages/domains/${domainId}?format=${format}&host=${hostName}`,
   DELETE_STORAGE_DOMAIN: (domainId, format, hostName) => {
     let url = `/api/v1/storages/domains/${domainId}`;
-    if (format && hostName) {
-      url += `?format=true&host=${hostName}`; // format이 true일 때만 hostName 추가
-    }else if (!format) {
+    if (format) {
+      url += `?format=true&host=${hostName}`;
+    } else {
       url += `?host=${hostName}`;
     }
+    console.log('Generated URL:', url); // URL 확인
     return url;
-  },
+  },  
 
   DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destory`, 
   IMPORT_STORAGE_DOMAIN: () => `/api/v1/storages/domains/import`,

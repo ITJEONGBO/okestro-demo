@@ -284,7 +284,7 @@ class DataCenterServiceImpl(
 		log.info("findAllFromDataCenter ... dcId: $dataCenterId")
 		val res: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf()).filter { it.status() == StorageDomainStatus.ACTIVE }
-		return res.toActiveDomains(conn)
+		return res.toActiveDomains()
 	}
 
 

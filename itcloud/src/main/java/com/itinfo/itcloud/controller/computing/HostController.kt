@@ -282,8 +282,8 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="도메인 생성(가져오기)시 필요한 iSCSI 목록",
-		notes="도메인 생성(가져오기) - iSCSI 유형 대상 LUN 목록"
+		value="도메인 생성시 필요한 iSCSI 목록",
+		notes="도메인 생성 - iSCSI 유형 대상 LUN 목록"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -314,12 +314,11 @@ class HostController {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/{hostId}/importISCSIs/{address}")
+	@GetMapping("/{hostId}/iscsis/{address}")
 	@ResponseBody
 	fun importISCSIs(
 		@PathVariable("hostId") hostId: String? = null,
 		@PathVariable address: String? = null
-//		@RequestBody address: String? = null
 	): ResponseEntity<List<IscsiDetailVo>> {
 		if (hostId == null)
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
@@ -347,8 +346,8 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="도메인 생성(가져오기)시 필요한 Fibre Channel ",
-		notes="도메인 생성(가져오기?) - Fibre Channel 유형 대상 LUN 목록"
+		value="도메인 생성시 필요한 Fibre Channel ",
+		notes="도메인 생성 - Fibre Channel 유형 대상 LUN 목록"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),

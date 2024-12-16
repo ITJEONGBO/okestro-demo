@@ -103,14 +103,14 @@ fun Connection.removeStorageDomain(storageDomainId: String, format: Boolean, hos
 	if(this.findStorageDomain(storageDomainId).isFailure) {
 		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 	}
-
+	log.info("hostName: $hostName")
 	if (format) {
 		if (hostName == null) {
 			throw ErrorPattern.STORAGE_DOMAIN_DELETE_INVALID.toError()
 		}
 		this.srvStorageDomain(storageDomainId).remove().destroy(false).format(true).host(hostName).send()
 	} else {
-		this.srvStorageDomain(storageDomainId).remove().destroy(false).format(false).send()
+		this.srvStorageDomain(storageDomainId).remove().destroy(false).format(false).host(hostName).send()
 	}
 	this.expectStorageDomainDeleted(storageDomainId)
 }.onSuccess {

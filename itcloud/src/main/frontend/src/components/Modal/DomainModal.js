@@ -13,7 +13,8 @@ import {
   useHostsFromDataCenter,
   useDataCenter,
   useIscsiFromHost,
-  useFibreFromHost
+  useFibreFromHost,
+  useImportIscsiFromHost,
 } from '../../api/RQHook';
 
 Modal.setAppElement('#root');
@@ -128,6 +129,21 @@ const DomainModal = ({
       productId: e?.logicalUnits[0].productId,   
       vendorId: e?.logicalUnits[0].vendorId,   
       serial: e?.logicalUnits[0].serial,   
+    })
+  );
+  
+  // iscsi 목록 가져오기
+  const {
+    data: iscsi = [],
+    refetch: refetchIscsi,
+    error: isIscsiError,
+    isLoading: isIscsiLoading,
+  } = useImportIscsiFromHost(
+    hostVoId ? hostVoId : null, (e) => ({
+      ...e,
+      target: e?.logicalUnits[0].target,
+      address: e?.logicalUnits[0].address,
+      port: e?.logicalUnits[0].port,
     })
   );
 

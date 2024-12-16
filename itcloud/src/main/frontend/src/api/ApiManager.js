@@ -2111,6 +2111,19 @@ migrateHostsFromVM: async (vmId) => {
     method: "GET", 
     url: ENDPOINTS.FIND_ISCSIS_FROM_HOST(hostId)
   }),
+  /**
+   * @name ApiManager.findImportIscsiFromHost
+   * @description iSCSI 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findImportIscsiFromHost: async (hostId, address) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_IMPORT_ISCSIS_FROM_HOST(hostId, address)
+  }),
 
 
 
@@ -2157,7 +2170,7 @@ migrateHostsFromVM: async (vmId) => {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_STORAGE_DOMAIN(domainId, format, hostName), 
-      data: domainId
+      data: domainId,
     });
   },
 

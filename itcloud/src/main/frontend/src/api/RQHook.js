@@ -764,8 +764,34 @@ export const useFibreFromHost = (hostId, mapPredicate) => useQuery({
   queryKey: ['fibreFromHost', hostId], 
   queryFn: async () => {
     if(hostId === null) return [];
-    console.log(`febreFromHost ... ${hostId}`);
+    console.log(`fibreFromHost ... ${hostId}`);
     const res = await ApiManager.findAllFibreFromHost(hostId); 
+    const processedData = res?.map((e) => mapPredicate(e)) ?? [];
+    console.log('Processed Fibre data:', processedData);
+    return processedData; // 데이터 가공 후 반환
+  },
+  onSuccess: (data) => {
+    console.log('Fibre data:', data);
+  },
+})
+
+/**
+ * @name useImportIscsiFromHost
+ * @description 호스트 가져오기 iscsi 목록조회 useQuery훅
+ * 
+ * @param {string} hostId
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useImportIscsiFromHost
+ */
+export const useImportIscsiFromHost = (hostId, address, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['iscsiFromHost', hostId], 
+  queryFn: async () => {
+    if(hostId === null) return [];
+    console.log(`useImportIscsiFromHost ... ${hostId}`);
+    const res = await ApiManager.findImportIscsiFromHost(hostId, address); 
     const processedData = res?.map((e) => mapPredicate(e)) ?? [];
     console.log('Processed Fibre data:', processedData);
     return processedData; // 데이터 가공 후 반환
@@ -2443,9 +2469,13 @@ export const useEditDomain = () => {
  */
 export const useDeleteDomain = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+
   return useMutation({ 
-    mutationFn: async ({domainId, format, hostName}) => await ApiManager.deleteDomain(domainId, format, hostName),
-    onSuccess: () => {
+    mutationFn: async ({domainId, format, hostName}) => {
+      console.log(` domainId: ${domainId}, format: ${format}, host: ${hostName}`);
+      await ApiManager.deleteDomain(domainId, format, hostName)
+    },
+    onSuccess: () => {      
       queryClient.invalidateQueries('allStorageDomains');
     },
     onError: (error) => {

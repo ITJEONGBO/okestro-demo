@@ -145,10 +145,12 @@ fun List<StorageDomain>.toDomainStatuss(conn: Connection): List<StorageDomainVo>
 
 
 fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
-	val dataCenter: DataCenter = conn.findDataCenter(this@toStorageDomainMenu.dataCenters().first().id())
-		.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
-	val storageDomainStatus = conn.findAttachedStorageDomainFromDataCenter(dataCenter.id(), this@toStorageDomainMenu.id())
-		.getOrNull()?.status()
+	val dataCenter: DataCenter? = if(this@toStorageDomainMenu.dataCentersPresent()) conn.findDataCenter(this@toStorageDomainMenu.dataCenters().first().id())
+		.getOrNull() else null
+	val storageDomainStatus = dataCenter?.let {
+		conn.findAttachedStorageDomainFromDataCenter(it.id(), this@toStorageDomainMenu.id())
+			.getOrNull()?.status()
+	}
 	val hostedVm = conn.findAllVmsFromStorageDomain(this@toStorageDomainMenu.id())
 		.getOrDefault(listOf())
 		.any { it.origin() == "managed_hosted_engine" }
@@ -169,13 +171,13 @@ fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
 		usedSize { this@toStorageDomainMenu.used() }
 		availableSize { this@toStorageDomainMenu.available() }
 		diskSize { this@toStorageDomainMenu.available().add(this@toStorageDomainMenu.used()) }
-		dataCenterVo { dataCenter.fromDataCenterToIdentifiedVo() }
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }
 fun List<StorageDomain>.toStorageDomainsMenu(conn: Connection): List<StorageDomainVo> =
 	this@toStorageDomainsMenu.map { it.toStorageDomainMenu(conn) }
 
-fun StorageDomain.toActiveDomain(conn: Connection): StorageDomainVo {
+fun StorageDomain.toActiveDomain(): StorageDomainVo {
 	return StorageDomainVo.builder {
 		id { this@toActiveDomain.id() }
 		name { this@toActiveDomain.name() }
@@ -184,8 +186,8 @@ fun StorageDomain.toActiveDomain(conn: Connection): StorageDomainVo {
 		diskSize { this@toActiveDomain.available().add(this@toActiveDomain.used()) }
 	}
 }
-fun List<StorageDomain>.toActiveDomains(conn: Connection): List<StorageDomainVo> =
-	this@toActiveDomains.map { it.toActiveDomain(conn)}
+fun List<StorageDomain>.toActiveDomains(): List<StorageDomainVo> =
+	this@toActiveDomains.map { it.toActiveDomain()}
 
 
 fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {

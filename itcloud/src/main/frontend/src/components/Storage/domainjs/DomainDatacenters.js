@@ -10,7 +10,7 @@ import DomainModals from '../../Modal/DomainModals';
 
 const DomainDatacenters = ({ domainId }) => {
   const {
-    data: datacenters, 
+    data: datacenters = [], 
     refetch: refetchDatacenters,
     isLoading: isDatacentersLoading
   } = useAllDataCenterFromDomain(domainId, (e) => ({...e,}));  
@@ -36,11 +36,7 @@ const DomainDatacenters = ({ domainId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
   const [action, setAction] = useState(null); // 현재 동작
   const [selectedDataCenter, setSelectedDataCenter] = useState(null);
-
-  if (!datacenters || datacenters.length === 0) {
-    return <p>No data centers found.</p>;
-  }
-
+  
   const handleActionClick = (actionType) => {
     setAction(actionType); // 동작 설정
     setIsModalOpen(true); // 모달 열기

@@ -900,7 +900,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         nicVos { nics.toNicIdNames() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
-//        templateVo { this@toVmVo. }
+        templateVo { template?.fromTemplateToIdentifiedVo() }
         description { this@toVmVo.description() }
         comment { this@toVmVo.comment() }
         osSystem { this@toVmVo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()

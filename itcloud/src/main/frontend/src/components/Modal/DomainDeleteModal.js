@@ -58,17 +58,16 @@ const DomainDeleteModal = ({
       {
         onSuccess: () => {
           console.log(`스토리지 도메인 삭제: ${id}, ${format}, ${hostName}`);
-          onRequestClose(); // 삭제 성공 시 모달 닫기
+          onRequestClose();
         },
         onError: (error) => {
           console.error(`스토리지 도메인 ${name} 삭제 오류:`, error);
         },
       }
-    );
+    );    
   };
 
   
-
   return (
     <Modal
       isOpen={isOpen}
