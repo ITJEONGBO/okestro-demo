@@ -48,6 +48,7 @@ const VmModal = ({
   const [startPaused, setStartPaused] = useState(false); // 일시중지상태로시작
   const [deleteProtected, setDeleteProtected] = useState(false); //삭제보호
   const [templateId, setTemplateId] = useState('');
+  const [templateName, setTemplateName] = useState('');
 
   //시스템
   const [memorySize, setMemorySize] = useState(1024);
@@ -259,24 +260,10 @@ const handleNicChange = (index, field, value) => {
     ...e,
   }));
   useEffect(() => {
-    if (templates && templates.length > 0 && !templateId) {
-      setTemplateId(templates[0].id); // 기본값 설정
+    if (!editMode && templates && templates.length > 0) {
+      setTemplateId(templates[0].id); // 첫 번째 템플릿의 ID를 templateId 상태로 설정
     }
-  }, [templates]);
-  useEffect(() => {
-    // editMode가 아닐 때만 첫 번째 데이터센터 ID를 기본값으로 설정
-    if (!editMode && clusters && clusters.length > 0) {
-      setClusterVoId(clusters[0].id);
-    }
-  }, [editMode, clusters]);
-useEffect(() => {
-  if (editMode && vmdata?.templateId) {
-    setTemplateId(vmdata.templateId); // 편집 모드: 기존 템플릿 ID
-  } else if (!editMode && templates && templates.length > 0) {
-    setTemplateId(templates[0].id); // 생성 모드: 첫 번째 템플릿 ID 설정
-  }
-}, [editMode, vmdata, templates]);
-
+  }, [editMode, templates]);
   // 특정 호스트 라디오 버튼 클릭 핸들러
   const handleSpecificHostSelection = (e) => {
     setIsSpecificHostSelected(e.target.checked); // 상태 업데이트
@@ -460,6 +447,8 @@ useEffect(() => {
         setSelectedOs(vm?.osSystem || 'Linux'); // 운영 체제
         setSelectedChipset(vm?.chipsetFirmwareType || 'Q35_OVMF'); // 칩셋
         setSelectedOptimizeOption(vm?.optimizeOption || 'SERVER'); // 최적화 옵션
+        setTemplateId(vm?.templateVo?.id || '');
+        setTemplateName(vm?.templateVo?.name || '');
 
         setComment(vm?.comment || '');
         setStateless(vm?.stateless || false);

@@ -11,7 +11,6 @@ import {
   useAllActiveDomainFromDataCenter, 
   useAllDiskProfileFromDomain,
   useAddDiskFromVM,
-  useDisksFromVM,
 } from '../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
@@ -90,7 +89,7 @@ const DiskModal = ({
 
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
-  const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신안에 디스크생성성
+  const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 세부페이지 안에 디스크생성성
 
   const interfaceList = [
     { value: "VirtIO-SCSI", label: "VirtIO-SCSI" },
@@ -183,7 +182,7 @@ const DiskModal = ({
 
     // 데이터 객체 생성
     const dataToSubmit = {
-      id: formState.id,
+ 
       alias: formState.alias,
       description: formState.description,
       dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
@@ -207,7 +206,7 @@ const DiskModal = ({
       onRequestClose(); // 모달 닫기
     }
     if (editMode) {
-      editDisk(
+      editDisk( 
         { diskId: formState.id, diskData: dataToSubmit },
         {
           onSuccess: () => {
@@ -221,13 +220,17 @@ const DiskModal = ({
       addDiskVm(
         {vmId, diskData: dataToSubmit },
         {
-          onSuccess: () => {
-            alert("VM 디스크 생성 완료");
-            onRequestClose(); // 성공 시 모달 닫기
-          },
-        }
-      );
-    } 
+        onSuccess: () => {
+          alert("VM 디스크 생성 완료");
+          onRequestClose(); // 성공 시 모달 닫기
+        },
+        onError: (error) => {
+          console.error('vNIC 프로파일 추가 중 오류 발생:', error);
+        },
+        });
+  }
+      
+     
     else if(type!=="vm"){
       // 일반 디스크 생성
       addDisk(dataToSubmit, {
