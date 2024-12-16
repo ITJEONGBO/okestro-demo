@@ -75,7 +75,7 @@ fun DiskAttachment.toDiskAttachMenu(conn: Connection): DiskAttachmentVo {
 		diskImageVo { disk?.toDiskIdName() }
 	}
 }
-log.info("vmvo: {}", this)
+
 
 fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
 	val disk: Disk? = conn.findDisk(this@toDiskAttachmentVo.disk().id())
