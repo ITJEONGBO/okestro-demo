@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAddNetwork, useAllClusters, useAllDataCenters, useDataCenter, useEditNetwork, useNetworkById } from '../../api/RQHook';
 import { Tooltip } from 'react-tooltip';
-
+import '../Modal/css/MNetwork.css';
 const NetworkNewModal = ({ 
     isOpen, 
     onRequestClose, 

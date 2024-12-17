@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import NetworkNewModal from './NetworkNewModal';
+import '../Modal/css/MNetwork.css';
 
 const NetworkModals = ({ 
     isModalOpen, 

@@ -527,7 +527,7 @@ const toggleDataCenter = (dataCenterId) => {
       <div
           className="aside_popup_content"
           id="aside_popup_first"
-          style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
+          style={{ backgroundColor: getBackgroundColor('rutil-manager') }}
           onClick={() => {
               setSelectedDiv('rutil-manager');
               navigate('/networks/rutil-manager');
@@ -608,7 +608,7 @@ const toggleDataCenter = (dataCenterId) => {
       <div
           className="aside_popup_content"
           id="aside_popup_first"
-          style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
+          style={{ backgroundColor: getBackgroundColor('rutil-manager') }}
           onClick={() => {
               if (selectedDiv !== 'rutil-manager') {
                   setSelectedDiv('rutil-manager');

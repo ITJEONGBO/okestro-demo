@@ -15,7 +15,7 @@ import NetworkVms from './NetworkVms.js'
 import NetworkTemplates from './NetworkTemplates.js'
 import NetworkClusters from './NetworkClusters.js';
 
-const NetworkModal = React.lazy(() => import('../../Modal/NetworkModal'))
+const NetworkNewModal = React.lazy(() => import('../../Modal/NetworkNewModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
 const NetworkInfo = () => {
@@ -92,11 +92,11 @@ const NetworkInfo = () => {
   const renderModals = () => (
     <>
       {modals.edit && (
-        <NetworkModal
+        <NetworkNewModal
           isOpen={modals.edit}
           onRequestClose={() => toggleModal('edit', false)}
-          editMode={modals.edit}
-          hId={networkId}
+          editMode={true}
+          networkId={networkId}
         />
       )}
       {modals.delete && (
