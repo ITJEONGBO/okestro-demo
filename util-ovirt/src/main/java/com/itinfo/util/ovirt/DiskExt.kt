@@ -27,6 +27,7 @@ fun Connection.findAllDisks(searchQuery: String = ""): Result<List<Disk>> = runC
 
 fun Connection.srvDisk(diskId: String): DiskService =
 	srvAllDisks().diskService(diskId)
+
 fun Connection.findDisk(diskId: String): Result<Disk?> = runCatching {
 	this.srvDisk(diskId).get().send().disk()
 }.onSuccess {
@@ -171,35 +172,19 @@ fun Connection.refreshLunDisk(diskId: String, hostId: String): Result<Boolean> =
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-
+// 디스크 이미지 업로드하기 위해 하는 세팅
 fun Connection.uploadSetDisk(disk: Disk): Result<String> = runCatching {
 	// 디스크 생성
-	val diskUpload: Disk =
-		this.addDisk(disk)
-			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+	val diskUpload: Disk = this.addDisk(disk)
+		.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 
-	this.expectDiskStatus(diskUpload.id()) // 디스크 ok 상태 -> 이미지 업로드 가능
+	// 디스크 ok 상태여야 이미지 업로드 가능
+	this.expectDiskStatus(diskUpload.id())
 
-	val imageContainer = ImageContainer()
-	imageContainer.id(diskUpload.id())
+	val imageTransfer = preparedImageTransfer(diskUpload.id())
+	checkImageTransferReady(imageTransfer)
 
-	val imageTransferContainer = ImageTransferContainer()
-	imageTransferContainer.direction(ImageTransferDirection.UPLOAD)
-	imageTransferContainer.image(imageContainer)
-
-	val imageTransfer: ImageTransfer =
-		addImageTransfer(imageTransferContainer)
-			.getOrNull() ?: throw ErrorPattern.IMAGE_TRANSFER_NOT_FOUND.toError()
-
-	while(imageTransfer.phasePresent() && imageTransfer.phase() == ImageTransferPhase.INITIALIZING){
-		log.debug("이미지 업로드 상태확인 ... {}", imageTransfer.phase())
-		Thread.sleep(1000)
-	}
-
-	if(imageTransfer.transferUrl().isNullOrEmpty())
-		throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toError()
-	else
-		imageTransfer.id()
+	imageTransfer.id()
 }.onSuccess {
 	Term.DISK.logSuccess("파일 업로드 준비완")
 }.onFailure {
@@ -208,8 +193,48 @@ fun Connection.uploadSetDisk(disk: Disk): Result<String> = runCatching {
 }
 
 
+private fun Connection.preparedImageTransfer(diskId: String): ImageTransfer {
+	val imageTransferContainer = ImageTransferContainer().apply {
+		direction(ImageTransferDirection.UPLOAD)
+		image(ImageContainer().apply { id(diskId) })
+	}
+
+	return addImageTransfer(imageTransferContainer)
+		.getOrNull() ?: throw ErrorPattern.IMAGE_TRANSFER_NOT_FOUND.toError()
+}
+
+private fun checkImageTransferReady(imageTransfer: ImageTransfer) {
+	val startTime = System.currentTimeMillis()
+	val timeout = 60_000L
+
+	while (imageTransfer.phasePresent() && imageTransfer.phase() == ImageTransferPhase.INITIALIZING) {
+		log.info("이미지 업로드 상태확인 ... {}", imageTransfer.phase())
+		if (System.currentTimeMillis() - startTime > timeout) {
+			throw ErrorPattern.IMAGE_TRANSFER_NOT_FOUND.toError()
+		}
+		Thread.sleep(1000)
+	}
+
+	if (imageTransfer.transferUrl().isNullOrEmpty()) {
+		throw ErrorPattern.TRANSFER_URL_EMPTY.toError()
+	}
+}
+
+
 private fun Connection.srvAllImageTransfer(): ImageTransfersService =
 	systemService.imageTransfersService()
+
+private fun Connection.addImageTransfer(imageTransferContainer: ImageTransferContainer): Result<ImageTransfer?> = runCatching {
+	this.srvAllImageTransfer().add().imageTransfer(imageTransferContainer).send().imageTransfer()
+}.onSuccess {
+	Term.IMAGE_TRANSFER.logSuccess("업로드")
+}.onFailure {
+	Term.IMAGE_TRANSFER.logFail("업로드")
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.srvImageTransfer(imageId: String): ImageTransferService =
+	this.srvAllImageTransfer().imageTransferService(imageId)
 
 private fun Connection.findAllImageTransfers(): Result<List<ImageTransfer>> = runCatching {
 	this.srvAllImageTransfer().list().send().imageTransfer()
@@ -220,24 +245,12 @@ private fun Connection.findAllImageTransfers(): Result<List<ImageTransfer>> = ru
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.srvImageTransfer(imageId: String): ImageTransferService =
-	this.srvAllImageTransfer().imageTransferService(imageId)
-
 private fun Connection.findImageTransfer(imageId: String): Result<ImageTransfer?> = runCatching {
 	this.srvImageTransfer(imageId).get().send().imageTransfer()
 }.onSuccess {
 	Term.IMAGE_TRANSFER.logSuccess("상세조회")
 }.onFailure {
 	Term.IMAGE_TRANSFER.logFail("상세조회")
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-private fun Connection.addImageTransfer(imageTransferContainer: ImageTransferContainer): Result<ImageTransfer?> = runCatching {
-	this.srvAllImageTransfer().add().imageTransfer(imageTransferContainer).send().imageTransfer()
-}.onSuccess {
-	Term.IMAGE_TRANSFER.logSuccess("업로드")
-}.onFailure {
-	Term.IMAGE_TRANSFER.logFail("업로드")
 	throw if (it is Error) it.toItCloudException() else it
 }
 

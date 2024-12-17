@@ -113,14 +113,14 @@ interface ItDataCenterService {
 	@Throws(Error::class)
 	fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	/**
-	 * [ItDataCenterService.findAllAcitveStorageDomainsFromDataCenter]
+	 * [ItDataCenterService.findAllActiveStorageDomainsFromDataCenter]
 	 * 데이터센터가 가지고있는 활성화 된 스토리지 도메인 목록
 	 *
 	 * @param dataCenterId [String] 데이터센터 Id
 	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
 	 */
 	@Throws(Error::class)
-	fun findAllAcitveStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	fun findAllActiveStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	// 생성, 분리, 활성, 유지보수
 	/**
 	 * [ItDataCenterService.findAllDisksFromDataCenter]
@@ -280,10 +280,11 @@ class DataCenterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllAcitveStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+	override fun findAllActiveStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.info("findAllFromDataCenter ... dcId: $dataCenterId")
-		val res: List<StorageDomain> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf()).filter { it.status() == StorageDomainStatus.ACTIVE }
+		val res: List<StorageDomain> = conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
+			.getOrDefault(listOf())
+			.filter { it.status() == StorageDomainStatus.ACTIVE }
 		return res.toActiveDomains()
 	}
 

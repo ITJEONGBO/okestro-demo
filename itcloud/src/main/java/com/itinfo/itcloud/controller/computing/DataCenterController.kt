@@ -256,7 +256,7 @@ class DataCenterController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/dataCenters/{}/activeDomains ... Domain(s) 목록", dataCenterId)
-		return ResponseEntity.ok(iDataCenter.findAllAcitveStorageDomainsFromDataCenter(dataCenterId))
+		return ResponseEntity.ok(iDataCenter.findAllActiveStorageDomainsFromDataCenter(dataCenterId))
 	}
 
 
