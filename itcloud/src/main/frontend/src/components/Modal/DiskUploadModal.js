@@ -11,8 +11,6 @@ import {
   useUploadDisk,
 } from '../../api/RQHook';
 
-Modal.setAppElement('#root');
-
 const FormGroup = ({ label, children }) => (
   <div className="img_input_box">
     <label>{label}</label>
@@ -142,17 +140,11 @@ const DiskUploadModal = ({
 
     // 파일데이터를 비동기로 보내기 위해 사용하는 객체
     const diskData = new FormData();
-    diskData.append('file', file, { type: "application/json" }); // 파일 추가
-
-    // JSON 데이터를 Blob으로 변환 후 추가
-    const jsonBlob = new Blob([JSON.stringify(dataToSubmit)]);
-    diskData.append('diskImage', jsonBlob);
-
-    console.log("FormData 내용:");
-    for (let [key, value] of diskData.entries()) {
-      console.log(`${key}:`, value);
-    }
+    diskData.append("file", file); // file 추가
+    diskData.append("diskImage", new Blob([JSON.stringify(dataToSubmit)], { type: "application/json" })); // JSON 데이터 추가
     
+    console.log(`데이터 ${dataToSubmit}`)
+
     uploadDisk(
       diskData,
       {
