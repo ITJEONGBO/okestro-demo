@@ -2711,20 +2711,20 @@ export const useDeleteDisk = () => {
 };
 
 /**
- * @name useUpladDisk
+ * @name useUploadDisk
  * @description Disk 업로드 useMutation 훅
  * 
  * @returns useMutation 훅
  */
-export const useUpladDisk = () => {
+export const useUploadDisk = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (diskData) => await ApiManager.addDisk(diskData),
+    mutationFn: async (diskData) => await ApiManager.uploadDisk(diskData),
     onSuccess: () => {
       queryClient.invalidateQueries('allDisks'); // 호스트 추가 성공 시 'allDHosts' 쿼리를 리패칭하여 목록을 최신화
     },
     onError: (error) => {
-      console.error('Error adding disk:', error);
+      console.error('Error uploading disk:', error);
     },  
   });
 };

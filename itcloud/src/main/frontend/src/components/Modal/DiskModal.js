@@ -290,7 +290,6 @@ const DiskModal = ({
                 <input
                   type="number"
                   min="0"
-                  // value={editMode ? (formState.size / (1024 * 1024 * 1024)).toFixed(0) : formState.size}
                   value={formState.size}
                   onChange={(e) => setFormState((prev) => ({ ...prev, size: e.target.value }))}
                   disabled={editMode}

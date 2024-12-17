@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import './css/MDomain.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faChevronCircleRight, faGlassWhiskey } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { 
   useAllActiveDataCenters,
   useAllActiveDomainFromDataCenter, 
   useAllDiskProfileFromDomain,
   useHostsFromDataCenter,
+  useUploadDisk,
 } from '../../api/RQHook';
+
+Modal.setAppElement('#root');
 
 const FormGroup = ({ label, children }) => (
   <div className="img_input_box">
@@ -17,26 +20,29 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
+const sizeToGB = (data) => Math.ceil(data / Math.pow(1024, 3));
+
+const onlyFileName = (fileName) => {
+  const lastDotIndex = fileName.lastIndexOf('.');
+  return lastDotIndex > 0 ? fileName.slice(0, lastDotIndex) : fileName;
+};
+
 const DiskUploadModal = ({
   isOpen,
   onRequestClose,
 }) => {
-  const [formState, setFormState] = useState({
-    id: '',
-    size: '',
-    alias: '',
-    description: '',
-    wipeAfterDelete: false,
-    sharable: false,
-    backup: true,
-    sparse: true,
-  });
+  const [file, setFile] = useState(null);
+  const [alias, setAlias] = useState('');
+  const [size, setSize] = useState('');
+  const [description, setdescription] = useState('');
   const [dataCenterVoId, setDataCenterVoId] = useState('');
   const [domainVoId, setDomainVoId] = useState('');
   const [diskProfileVoId, setDiskProfileVoId] = useState('');
   const [hostVoId, setHostVoId] = useState('');
-
-  // const { mutate: addDomain } = useAddDomain();
+  const [wipeAfterDelete, setWipeAfterDelete] = useState(false);
+  const [sharable, setSharable] = useState(false);
+  
+  const { mutate: uploadDisk } = useUploadDisk();
 
   // 전체 데이터센터 가져오기
   const {
@@ -98,15 +104,13 @@ const DiskUploadModal = ({
       setHostVoId(hosts[0].id);
     }
   }, [hosts]);
-  
 
   const validateForm = () => {
-    if (!formState.alias) return '별칭을 입력해주세요.';
-    if (!formState.size) return '크기를 입력해주세요.';
+    if (!alias) return '별칭을 입력해주세요.';
+    if (!size) return '크기를 입력해주세요.';
     if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
     if (!domainVoId) return '스토리지 도메인을 선택해주세요.';
     if (!diskProfileVoId) return '디스크 프로파일을 선택해주세요.';
-    if (!hostVoId) return '호스트를 선택해주세요.';
     return null;
   };
 
@@ -117,42 +121,50 @@ const DiskUploadModal = ({
       return;
     }
 
-    const sizeToBytes = parseInt(formState.size, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환
+    // const sizeToBytes = parseInt(formState.size, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환
 
-    const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
+    // const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedDomain = domains.find((dm) => dm.id === domainVoId);
     const selectedDiskProfile = diskProfiles.find((dp) => dp.id === diskProfileVoId);
-    const selectedHost = hosts.find((h) => h.id === hostVoId);
+    // const selectedHost = hosts.find((h) => h.id === hostVoId);
 
     
-    // 데이터 객체 생성
     const dataToSubmit = {
-      alias: formState.alias,
-      description: formState.description,
-      dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+      alias,
+      size,
+      description,
       storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
       diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
-      hostVo: {id: selectedHost.id, name: selectedHost.name},
-      ...formState,
-      size: sizeToBytes,
-      backup: formState.backup,
-      bootable: formState.bootable,
+      // hostVo: { id: selectedHost.id, name: selectedHost.name },
+      wipeAfterDelete,
+      sharable
     };
-  
-    console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
+
+    // 파일데이터를 비동기로 보내기 위해 사용하는 객체
+    const diskData = new FormData();
+    diskData.append('file', file, { type: "application/json" }); // 파일 추가
+
+    // JSON 데이터를 Blob으로 변환 후 추가
+    const jsonBlob = new Blob([JSON.stringify(dataToSubmit)]);
+    diskData.append('diskImage', jsonBlob);
+
+    console.log("FormData 내용:");
+    for (let [key, value] of diskData.entries()) {
+      console.log(`${key}:`, value);
+    }
     
-    // editHost(
-    //   { hostId: formState.id, hostData: dataToSubmit }, 
-    //   {
-    //     onSuccess: () => {
-    //       alert("Host 편집 완료")
-    //       onRequestClose();  // 성공 시 모달 닫기
-    //     },
-    //     onError: (error) => {
-    //       console.error('Error editing Host:', error);
-    //     }
-    //   }
-    // );
+    uploadDisk(
+      diskData,
+      {
+        onSuccess: () => {
+          alert("디스크 업로드 완료")
+          onRequestClose();  // 성공 시 모달 닫기
+        },
+        onError: (error) => {
+          console.error('Error editing Host:', error);
+        }
+      }
+    );
   };
 
   return (
@@ -175,6 +187,15 @@ const DiskUploadModal = ({
         <input 
           type="file" 
           id="file"
+          accept=".iso"
+          onChange={(e) => {
+            const uploadedFile = e.target.files[0];
+            if (uploadedFile) {
+              setFile(uploadedFile); // 파일 저장
+              setAlias(uploadedFile.name);
+              setSize(Math.ceil(uploadedFile.size));
+            }
+          }}
         />
       </div>
 
@@ -187,8 +208,8 @@ const DiskUploadModal = ({
                 <input
                   type="number"
                   min="0"
-                  value={formState.size}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, size: e.target.value }))}
+                  value={sizeToGB(size)}
+                  onChange={(e) => setSize(e.target.value)}
                   disabled
                 />
               </FormGroup>
@@ -196,16 +217,18 @@ const DiskUploadModal = ({
               <FormGroup label="별칭">
                 <input
                   type="text"
-                  value={formState.alias}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, alias: e.target.value }))}
+                  value={onlyFileName(alias)}
+                  onChange={(e) => {
+                    setAlias(e.target.value)
+                  }}
                 />
               </FormGroup>
 
               <FormGroup label="설명">
                 <input
                   type="text"
-                  value={formState.description}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
+                  value={description}
+                  onChange={(e) => setdescription(e.target.value )}
                 />
               </FormGroup>
 
@@ -221,7 +244,7 @@ const DiskUploadModal = ({
                   >
                     {datacenters && datacenters.map((dc) => (
                       <option key={dc.id} value={dc.id}>
-                        {dc.name}: {dataCenterVoId}
+                        {dc.name}
                       </option>
                     ))}
                   </select>
@@ -235,7 +258,7 @@ const DiskUploadModal = ({
                 >
                   {domains && domains.map((dm) => (
                     <option key={dm.id} value={dm.id}>
-                      {dm.name}: {domainVoId}
+                      {dm.name} (USED {sizeToGB(dm.availableSize)}/ TOTAL {sizeToGB(dm.diskSize)})
                     </option>
                   ))}
                 </select>
@@ -248,7 +271,7 @@ const DiskUploadModal = ({
                 >
                   {diskProfiles && diskProfiles.map((dp) => (
                     <option key={dp.id} value={dp.id}>
-                      {dp.name}: {diskProfileVoId}
+                      {dp.name}
                     </option>
                   ))}
                 </select>
@@ -261,43 +284,32 @@ const DiskUploadModal = ({
                 >
                   {hosts && hosts.map((h) => (
                     <option key={h.id} value={h.id}>
-                      {h.name}: {hostVoId}
+                      {h.name}
                     </option>
                   ))}
                 </select>
               </FormGroup>
-
             </div>
+
             <div className="disk_new_img_right">
-            <div>
-              <input
-                type="checkbox"
-                id="wipeAfterDelete"
-                checked={formState.wipeAfterDelete}
-                onChange={(e) => setFormState((prev) => ({ ...prev, wipeAfterDelete: e.target.checked }))}
-              />
-              <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
-            </div>
-            <div>
-              <input 
-                type="checkbox" 
-                className="sharable"
-                checked={formState.sharable}
-                onChange={(e) => setFormState((prev) => ({ ...prev, sharable: e.target.checked }))}
-              />
-              <label htmlFor="sharable">공유 가능</label>
-            </div>
-
-            <div>
-              <input 
-                type="checkbox" 
-                id="backup" 
-                checked={formState.backup}
-                onChange={(e) => setFormState((prev) => ({ ...prev, backup: e.target.checked }))}
-              />
-              <label htmlFor="backup">중복 백업 사용</label>
-            </div>
-
+              <div>
+                <input
+                  type="checkbox"
+                  id="wipeAfterDelete"
+                  checked={wipeAfterDelete}
+                  onChange={(e) => setWipeAfterDelete(e.target.checked)}
+                />
+                <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
+              </div>
+              <div>
+                <input 
+                  type="checkbox" 
+                  className="sharable"
+                  checked={sharable}
+                  onChange={(e) => setSharable(e.target.checked)}
+                />
+                <label htmlFor="sharable">공유 가능</label>
+              </div>
             </div>
           </div>
         </div>

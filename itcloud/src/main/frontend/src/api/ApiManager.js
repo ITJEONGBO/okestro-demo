@@ -2,6 +2,7 @@ import ENDPOINTS from "./Endpoints"
 import DEFAULT_VALUES from "./DefaultValues"
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { data } from "jquery";
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -2349,21 +2350,6 @@ migrateHostsFromVM: async (vmId) => {
     });
   },
   /**
-   * @name ApiManager.uploadDisk
-   * @description 디스크 업로드
-   * 
-   * @param {Object} diskData 
-   * @returns {Promise<Object>}
-   */
-  addDisk: async (diskData) => {
-    return makeAPICall({
-      method: "POST",
-      url: ENDPOINTS.UPLOAD_DISK(),
-      data: diskData, 
-      // defaultValues: DEFAULT_VALUES.ADD_DISK
-    });
-  },
-  /**
    * @name ApiManager.copyDisk
    * @description 디스크 복제
    * 
@@ -2411,7 +2397,23 @@ migrateHostsFromVM: async (vmId) => {
       // defaultValues: DEFAULT_VALUES.REFRESH_LUN_DISK
     });
   },
-  // uploadDisk
+  
+  /**
+   * @name ApiManager.uploadDisk
+   * @description 디스크 업로드
+   * 
+   * @param {Object} diskData 
+   * @returns {Promise<Object>}
+   */
+  uploadDisk: async (diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.UPLOAD_DISK(),
+      data: diskData, 
+    });
+  },
+
+
   //endregion: Disk
 
 
