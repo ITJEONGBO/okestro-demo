@@ -167,10 +167,11 @@ interface ItHostService {
 	 * 도메인 가져오기 - iSCSI 유형 대상 LUN 목록
 	 *
 	 * @param hostId [String] 호스트 Id
-	 * @return List<[HostStorageVo]>
+	 * @param iscsiDetailVo [IscsiDetailVo]
+	 * @return List<[IscsiDetailVo]>
 	 */
 	@Throws(Error::class)
-	fun findImportIscsiFromHost(hostId: String, address:String): List<IscsiDetailVo>
+	fun findImportIscsiFromHost(hostId: String, iscsiDetailVo: IscsiDetailVo): List<IscsiDetailVo>
 
 	/**
 	 * [ItHostService.findUnregisterDomainFromHost]
@@ -343,10 +344,10 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findImportIscsiFromHost(hostId: String, address: String): List<IscsiDetailVo> {
-		log.info("findImportIscsiFromHost... hostId: {}, address : {}", hostId, address)
+	override fun findImportIscsiFromHost(hostId: String, iscsiDetailVo: IscsiDetailVo): List<IscsiDetailVo> {
+		log.info("findImportIscsiFromHost... hostId: {}, iscsiDetailVo : {}", hostId, iscsiDetailVo)
 		conn.findHost(hostId).getOrNull() ?: return listOf()
-		val res: List<IscsiDetails> = conn.discoverIscsiFromHost(hostId, address)
+		val res: List<IscsiDetails> = conn.discoverIscsiFromHost(hostId, iscsiDetailVo.toDiscoverIscsiDetailVo())
 			.getOrDefault(listOf())
 		return res.toIscsiDetailVos()
 	}

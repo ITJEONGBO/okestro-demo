@@ -44,8 +44,9 @@ fun IscsiDetails.toIscsiDetailVo(): IscsiDetailVo {
 fun List<IscsiDetails>.toIscsiDetailVos(): List<IscsiDetailVo> =
     this@toIscsiDetailVos.map { it.toIscsiDetailVo() }
 
-fun IscsiDetailVo.toDiscoverIscsiDetailVo(): IscsiDetailsBuilder {
+fun IscsiDetailVo.toDiscoverIscsiDetailVo(): IscsiDetails {
     return IscsiDetailsBuilder()
         .address(this@toDiscoverIscsiDetailVo.address)
         .port(this@toDiscoverIscsiDetailVo.port)
+        .build()
 }

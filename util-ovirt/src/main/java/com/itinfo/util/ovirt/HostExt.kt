@@ -508,11 +508,8 @@ fun Connection.findAllStoragesFromHost(hostId: String): Result<List<HostStorage>
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.discoverIscsiFromHost(hostId: String, address: String): Result<List<IscsiDetails>> = runCatching {
-	val iscsi: IscsiDetails = IscsiDetailsBuilder().address(address).build()
-	val result: List<IscsiDetails> =
-			this.srvHost(hostId).discoverIscsi().iscsi(iscsi).send().discoveredTargets()
-	result
+fun Connection.discoverIscsiFromHost(hostId: String, iscsiDetails: IscsiDetails): Result<List<IscsiDetails>> = runCatching {
+	this.srvHost(hostId).discoverIscsi().iscsi(iscsiDetails).send().discoveredTargets()
 }.onSuccess {
 	Term.HOST.logSuccessWithin(Term.STORAGE,"목록조회", hostId)
 }.onFailure {
@@ -521,8 +518,6 @@ fun Connection.discoverIscsiFromHost(hostId: String, address: String): Result<Li
 }
 
 fun Connection.unRegisteredStorageDomainsFromHost(hostId: String): Result<List<StorageDomain>> = runCatching {
-//
-//	val result: List<StorageDomain> =
 	this.srvHost(hostId).unregisteredStorageDomainsDiscover().send().storageDomains()
 //	result
 }.onSuccess {

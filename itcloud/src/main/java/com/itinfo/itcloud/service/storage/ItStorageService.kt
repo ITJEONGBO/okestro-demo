@@ -43,9 +43,10 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun findOne(storageDomainId: String): StorageDomainVo?
 
-	// 도메인 생성 - 호스트 목록 [ItDataCenterService.findAllHostsFromDataCenter]
-	// iscis 목록 - 호스트 목록
-	// fibre 목록 - 호스트 목록
+	// 도메인 생성 [ItDataCenterService.findAllHostsFromDataCenter]
+	// iscsi 목록  [ItHostService.findAllIscsiFromHost]
+	// fibre 목록  [ItHostService.findAllFibreFromHost]
+	// 도메인 가져오는 목록 iscsi - [ItHostService.findImportIscsiFromHost]
 
 	/**
 	 * [ItStorageService.add]

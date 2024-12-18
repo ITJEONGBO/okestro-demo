@@ -304,48 +304,6 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="도메인 가져오기에 필요한 iSCSI 요청",
-		notes="도메인 가져오기 - iSCSI 요쳥"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//		ApiImplicitParam(name="address", value="호스트", dataTypeClass=String::class, paramType="body")
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{hostId}/iscsis/{address}")
-	@ResponseBody
-	fun importISCSIs(
-		@PathVariable("hostId") hostId: String? = null,
-		@PathVariable address: String? = null  // address 뿐만 아니라 chap 이름, 암호도 들어가야함, 로그인은 나중에
-	): ResponseEntity<List<IscsiDetailVo>> {
-		if (hostId == null)
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		if (address == null)
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/importISCSIs ... 호스트 iscsis 가져오기 목록", hostId)
-		return ResponseEntity.ok(iHost.findImportIscsiFromHost(hostId, address))
-	}
-
-//	@ApiOperation(
-//		httpMethod = "GET",
-//		value = "iSCSI 목록 가져오기",
-//		notes = "호스트의 iSCSI 목록 가져오기"
-//	)
-//	@ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass = String::class, required = true, paramType = "path")
-//	@ApiResponses(ApiResponse(code = 200, message = "OK"))
-//	@GetMapping("/{hostId}/getISCSIs")
-//	@ResponseBody
-//	fun getISCSIs(@PathVariable("hostId") hostId: String): ResponseEntity<List<IscsiDetailVo>> {
-//		log.info("GET /computing/hosts/{}/getISCSIs 호출됨", hostId)
-//		val iscsiDetails = iscsiService.getIscsiDetails(hostId)
-//		return ResponseEntity.ok(iscsiDetails)
-//	}
-
-
-	@ApiOperation(
-		httpMethod="GET",
 		value="도메인 생성시 필요한 Fibre Channel ",
 		notes="도메인 생성 - Fibre Channel 유형 대상 LUN 목록"
 	)
@@ -367,6 +325,37 @@ class HostController {
 	}
 
 
+	@ApiOperation(
+		httpMethod="GET",
+		value="도메인 가져오기에 필요한 iSCSI 요청",
+		notes="도메인 가져오기 - iSCSI 요쳥"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name= "iscsiDetailVo", value="address, port", dataTypeClass=IscsiDetailVo::class, paramType="body")
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{hostId}/iscsisToImport")
+	@ResponseBody
+	fun importISCSIs(
+		@PathVariable("hostId") hostId: String? = null,
+		@RequestBody iscsiDetailVo: IscsiDetailVo? = null  // 로그인은 나중에(chap 이름, 암호도 들어가야함)
+	): ResponseEntity<List<IscsiDetailVo>> {
+		if (hostId == null)
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		if(iscsiDetailVo == null)
+			throw ErrorPattern.DISCOVER_TARGET_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/iscsisToImport ... 호스트 iscsis 가져오기 목록", hostId)
+		log.info("iscsi import {}", iscsiDetailVo)
+		return ResponseEntity.ok(iHost.findImportIscsiFromHost(hostId, iscsiDetailVo))
+	}
+
+
+
+
+	// ------------------------------------------
 	@Deprecated("필요없음")
 	@ApiOperation(
 		httpMethod="GET",

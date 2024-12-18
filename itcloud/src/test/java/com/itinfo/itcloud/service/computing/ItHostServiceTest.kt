@@ -266,8 +266,13 @@ class ItHostServiceTest {
 	@Test
 	fun should_findImportIscsiFromHost() {
 		log.debug("should_findImportIscsiFromHost ...")
+		val iscsi: IscsiDetailVo =
+			IscsiDetailVo.builder {
+				address { "192.168.0.160" }
+				port { 3260 }
+			}
 		val result: List<IscsiDetailVo> =
-			service.findImportIscsiFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a", "192.168.0.160")
+			service.findImportIscsiFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a", iscsi)
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
