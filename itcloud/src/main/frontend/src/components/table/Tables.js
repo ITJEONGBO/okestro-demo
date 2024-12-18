@@ -126,7 +126,7 @@ const Tables = ({
                   data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
                   data-tooltip-content={row[column.accessor]}
                   style={{
-                    maxWidth: '200px',
+                    // maxWidth: '200px',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

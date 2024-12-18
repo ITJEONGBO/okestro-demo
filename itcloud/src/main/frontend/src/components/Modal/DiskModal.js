@@ -11,6 +11,7 @@ import {
   useAllActiveDomainFromDataCenter, 
   useAllDiskProfileFromDomain,
   useAddDiskFromVM,
+  useDisksFromVM,
 } from '../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
@@ -39,14 +40,16 @@ const DiskModal = ({
     sharable: false,
     backup: true,
     sparse: true, //할당정책: 씬
-    interfaced: '', // vm 인터페이스 
-    bootable: true, // vm 부팅가능
+    // interface_: '', // vm 인터페이스 
+    bootable: false, // vm 부팅가능
+    logicalName:'',
     readOnly: false, // vm 읽기전용
     cancelActive: false, // vm 취소 활성화
   });
   const [dataCenterVoId, setDataCenterVoId] = useState('');
   const [domainVoId, setDomainVoId] = useState('');
   const [diskProfileVoId, setDiskProfileVoId] = useState('');
+  const [interface_, setInterface_] = useState('');
 
   const [activeTab, setActiveTab] = useState('img');
   const handleTabClick = (tab) => { setActiveTab(tab); };
@@ -57,6 +60,11 @@ const DiskModal = ({
     refetch: refetchDisk,
     isLoading: isDiskLoading
   } = useDiskById(diskId);
+
+  // 가상머신 디스크목록
+  const {
+    data: vmdisk,
+  } = useDisksFromVM(vmId);
 
   // 전체 데이터센터 가져오기
   const {
@@ -92,13 +100,13 @@ const DiskModal = ({
   const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 세부페이지 안에 디스크생성성
 
   const interfaceList = [
-    { value: "VirtIO-SCSI", label: "VirtIO-SCSI" },
-    { value: "VirtIO", label: "VirtIO" },
+    { value: "VIRTIO_SCSI", label: "VirtIO-SCSI" },
+    { value: "VIRTIO", label: "VirtIO" },
     { value: "SATA", label: "SATA" },
   ];
 
   useEffect(() => {
-    if (editMode && disk) {
+    if (editMode && disk && vmdisk) {
       console.log('Setting edit mode state with disk:', disk);
       setFormState({
         id: disk.id || '',
@@ -110,10 +118,12 @@ const DiskModal = ({
         sharable: disk.sharable || false,
         backup: disk.backup || false,
         sparse: disk.sparse || false,
+        readOnly:vmdisk.readOnly || false
       });
       setDataCenterVoId(disk?.dataCenterVo?.id || '');
       setDomainVoId(disk?.storageDomainVo?.id || '');
       setDiskProfileVoId(disk?.diskProfileVo?.id || '');
+      // 
     } else if (!editMode) {
       resetForm();
     }
@@ -137,6 +147,12 @@ const DiskModal = ({
     }
   }, [diskProfiles, editMode]);
 
+  useEffect(() => {
+    if (!editMode && interfaceList.length > 0) {
+      setInterface_(interfaceList[0].value);
+    }
+  }, [editMode, interfaceList]);
+  
 
   const resetForm = () => {
     setFormState({
@@ -146,10 +162,15 @@ const DiskModal = ({
       alias: '',
       description: '',
       wipeAfterDelete: false,
+      bootable: false,
       sharable: false,
       backup: true,
       sparse: true,
+      readOnly: false,
+      logicalName:'',
+      passDiscard:true
     });
+    setInterface_('');
     setDataCenterVoId('');
     setDomainVoId('');
     setDiskProfileVoId('');
@@ -182,7 +203,6 @@ const DiskModal = ({
 
     // 데이터 객체 생성
     const dataToSubmit = {
- 
       alias: formState.alias,
       description: formState.description,
       dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
@@ -197,7 +217,29 @@ const DiskModal = ({
       readOnly: formState.readOnly,
     };
 
-    console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
+    //가상머신  디스크
+    const vmDataToSubmit ={
+        bootable: formState.bootable,
+        readOnly: formState.readOnly,
+        passDiscard:formState.passDiscard,
+        interface_:interface_,
+        logicalName:formState.logicalName,
+        diskImageVo: { 
+          alias: formState.alias,
+          size: sizeToBytes,
+          description: formState.description,
+          wipeAfterDelete:formState.wipeAfterDelete,
+          backup:formState.backup,
+          sparse:formState.sparse,
+          dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+          storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
+          diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
+        }
+    }
+
+    // console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
+    console.log("Form vmDataToSubmit: ", vmDataToSubmit); // 데이터를 확인하기 위한 로그
+
     if (type === "vm") {
       if (onDiskCreated) {
         console.log("DiskModal에서 생성된 디스크 데이터:", dataToSubmit);
@@ -205,6 +247,7 @@ const DiskModal = ({
       }
       onRequestClose(); // 모달 닫기
     }
+    
     if (editMode) {
       editDisk( 
         { diskId: formState.id, diskData: dataToSubmit },
@@ -215,10 +258,9 @@ const DiskModal = ({
           },
         }
       );
-    }
-    else if (type === 'vmDisk'){
+    }else if (type === 'vmDisk'){
       addDiskVm(
-        {vmId, diskData: dataToSubmit },
+        {vmId:vmId, diskData: vmDataToSubmit },
         {
         onSuccess: () => {
           alert("VM 디스크 생성 완료");
@@ -228,20 +270,13 @@ const DiskModal = ({
           console.error('vNIC 프로파일 추가 중 오류 발생:', error);
         },
         });
-  }
-      
-     
-    else if(type!=="vm"){
-      // 일반 디스크 생성
-      addDisk(dataToSubmit, {
-        onSuccess: (createdDisk) => {
-          alert("디스크 생성 완료");
-          onRequestClose();
-          if (onDiskCreated) {
-            onDiskCreated(createdDisk); // 생성된 디스크 정보를 상위 컴포넌트로 전달
-          }
-        },
-      });
+    }
+    else if(type==='vm'){
+      if (onDiskCreated) {
+        onDiskCreated(dataToSubmit);
+      }
+      onRequestClose();
+      return;
     }
   }
 
@@ -328,12 +363,12 @@ const DiskModal = ({
               {(type === 'vm' || type === 'vmDisk') && (
                 <FormGroup label="인터페이스">
                 <select
-                  value={formState.interfaced}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, cpuArc: e.target.value }))}
+                  value={interface_}
+                  onChange={(e) => setInterface_(e.target.value)}
                 >
                   {interfaceList.map((inter) => (
                     <option key={inter.value} value={inter.value}>
-                      {inter.label}
+                      {inter.label} :{inter.value}
                     </option>
                   ))}
                 </select>

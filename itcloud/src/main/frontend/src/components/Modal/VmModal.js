@@ -25,6 +25,8 @@ import VmConnectionPlusModal from './VmConnectionPlusModal';
 import VmCreatePlusModal from './VmCreatePlusModal';
 import DiskModal from './DiskModal';
 
+const sizeToBytes = (data) => parseInt(data, 10) * 1024 * 1024; //  MB-> Bytes 변환
+
 const VmModal = ({ 
   isOpen, 
   onRequestClose, 
@@ -456,9 +458,9 @@ useEffect(() => {
         setDeleteProtected(vm?.deleteProtected || false);
 
         // 시스템
-        setMaxMemory(vm?.memoryMax / 1024 || 1024); // KB -> MB 변환
-        setAllocatedMemory(vm?.memoryActual / 1024 || 1024); // KB -> MB 변환
-        setMemorySize(vm?.memorySize / 1024 || 1024); // KB -> MB 변환
+        setMemorySize(vm.memorySize / (1024 * 1024)); // B -> MB 변환
+        setMaxMemory(vm.memoryMax / (1024 * 1024) || 0); // B -> MB 변환
+        setAllocatedMemory(vm.memoryActual / (1024 * 1024)); // B -> MB 변환
         setCpuTopologyCnt(vm?.cpuTopologyCnt || 1);
         setCpuTopologyCore(vm?.cpuTopologyCore || 1);
         setCpuTopologySocket(vm?.cpuTopologySocket || 1);
@@ -568,9 +570,9 @@ useEffect(() => {
       deleteProtected, //boolean
 
       // 시스템데이터
-      memorySize: memorySize * 1024,
-      memoryMax: maxMemory * 1024,
-      memoryActual: allocatedMemory * 1024,
+      memorySize: memorySize * 1024 * 1024, // MB -> B 변환
+      memoryMax: maxMemory * 1024 * 1024, // MB -> B 변환
+      memoryActual: allocatedMemory * 1024 * 1024, // MB -> B 변환
       cpuTopologyCnt, // 총가상 cpu
       cpuTopologyCore, // 가상 소켓 당 코어
       cpuTopologySocket, // 가상소켓
@@ -623,7 +625,7 @@ useEffect(() => {
     };
     console.log('가상머신 생성or편집데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
-
+    
 
     if (editMode) {
       dataToSubmit.id = id; // 수정 모드에서는 id를 추가
@@ -1782,7 +1784,7 @@ return (
           </div>
 
       <div className="edit_footer">
-          <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
+        <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
         <button onClick={onRequestClose}>취소</button>
       </div>
 

@@ -1214,7 +1214,7 @@ export const useVmConsole = () => {
 
 /**
  * @name useAddVm
- * @description 가상머신 생성 useMutation 훅(수정해야됨)
+ * @description 가상머신 생성 
  * 
  * @returns useMutation 훅
  */
@@ -1234,7 +1234,7 @@ export const useAddVm = () => {
 
 /**
  * @name useEditVm
- * @description 가상머신 수정 useMutation 훅(수정해야됨)
+ * @description 가상머신 수정 
  * 
  * @returns useMutation 훅
  */
@@ -1546,6 +1546,10 @@ export const useAddDiskFromVM = () => {
     },
   });
 };
+
+
+
+
 /**
  * @name useFindDiskListFromVM
  * @description 가상머신 연결할 수 있는 디스크 useQuery훅

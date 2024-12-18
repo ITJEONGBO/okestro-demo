@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSearch, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import TableOuter from '../table/TableOuter';
-import './css/TemplateDu.css';
+import '../Modal/css/MTemplate.css';
 import { useAllTemplates } from '../../api/RQHook';
 
 const TemplateDu = ({ columns, handleRowClick }) => {

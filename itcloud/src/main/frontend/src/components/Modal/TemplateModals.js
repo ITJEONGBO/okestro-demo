@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import TemplateEditModal from './TemplateEditModal';
+import '../Modal/css/MTemplate.css';
 
 const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate }) => {
   const TemplateEditModal = React.lazy(() => import('../Modal/TemplateEditModal'));

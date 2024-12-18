@@ -123,22 +123,26 @@ fun List<DiskAttachment>.toDiskAttachmentsToTemplate(conn: Connection): List<Dis
 /**
  * DiskAttachmentBuilder
  */
-fun DiskAttachmentVo.toDiskAttachment(): DiskAttachmentBuilder =
-	DiskAttachmentBuilder()
+fun DiskAttachmentVo.toDiskAttachment(): DiskAttachmentBuilder {
+	log.info("interface ${this@toDiskAttachment.interface_}")
+	return DiskAttachmentBuilder()
 		.active(this@toDiskAttachment.active)
 		.bootable(this@toDiskAttachment.bootable)
 		.passDiscard(this@toDiskAttachment.passDiscard)
 		.readOnly(this@toDiskAttachment.readOnly)
-		.interface_(this@toDiskAttachment.interface_)
+		.interface_(DiskInterface.fromValue(this@toDiskAttachment.interface_.toString()))
 		.logicalName(this@toDiskAttachment.logicalName)
+}
 
 /**
  * DiskAttachmentBuilder 에서 디스크를 생성해서 붙이는 방식
  */
-fun DiskAttachmentVo.toAddDiskAttachment(): DiskAttachment =
-	this@toAddDiskAttachment.toDiskAttachment()
+fun DiskAttachmentVo.toAddDiskAttachment(): DiskAttachment {
+	log.info("diskAtt: $this")
+	return this@toAddDiskAttachment.toDiskAttachment()
 		.disk(this@toAddDiskAttachment.diskImageVo.toAddDiskBuilder())
 		.build()
+}
 
 /**
  * DiskAttachmentBuilder 에서 생성된 디스크를 연결해서 붙이는 방식
@@ -172,6 +176,7 @@ fun List<DiskAttachmentVo>.toAddDiskAttachmentList(): List<DiskAttachment> {
 			diskAttachmentList.add(diskAttachmentVo.toAttachDisk())
 		}
 	}
+	log.info("disk: {}", this)
 	return diskAttachmentList
 }
 
