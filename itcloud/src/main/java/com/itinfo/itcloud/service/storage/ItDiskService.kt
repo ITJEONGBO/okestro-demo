@@ -328,7 +328,7 @@ class DiskServiceImpl(
         if (file.isEmpty) throw ErrorPattern.FILE_NOT_FOUND.toException()
 
         // 이미지 업로드해서 imageTransfer.id()를 알아낸다
-		val imageTransferId: String = conn.uploadSetDisk(image.toUploadDiskBuilder(file.size))
+		val imageTransferId: String = conn.uploadSetDisk(image.toUploadDiskBuilder(conn, file.size))
             .getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
 
         return uploadFileToTransferUrl(file, imageTransferId)
@@ -355,7 +355,9 @@ class DiskServiceImpl(
         https.setDoOutput(true)
         https.connect()
 
-        val bufferSize = if (file.size > 10_000_000) 524288 else 131072  // 10MB 이상은 512KB 버퍼 사용
+        val bufferSize = calculateOptimalBufferSize(file.size)
+//        if (file.size > 10_000_000) 524288 else 131072  // 10MB 이상은 512KB 버퍼 사용
+
         val bufferedInputStream = BufferedInputStream(file.inputStream, bufferSize)
         val bufferedOutputStream = BufferedOutputStream(https.outputStream, bufferSize)
 
@@ -370,6 +372,14 @@ class DiskServiceImpl(
         https.disconnect()
         log.info("완")
         return true
+    }
+
+    private fun calculateOptimalBufferSize(fileSize: Long): Int {
+        return when {
+            fileSize > 5L * 1024 * 1024 * 1024 -> 4 * 1024 * 1024  // 4MB for files larger than 5GB
+            fileSize > 500L * 1024 * 1024 -> 2 * 1024 * 1024       // 2MB for files larger than 500MB
+            else -> 512 * 1024                                     // 512KB for smaller files
+        }
     }
 
     @Throws(Error::class)
@@ -400,7 +410,7 @@ class DiskServiceImpl(
         val httpsConn: HttpsURLConnection?
         val imageTransferService: ImageTransferService = conn.srvImageTransfer(imageTransferId)
 //            disableSSLVerification()
-        log.info("transferUrl: ${imageTransferService.get().send().imageTransfer().transferUrl()}")
+//        log.info("transferUrl: ${imageTransferService.get().send().imageTransfer().transferUrl()}")
 
         System.setProperty("sun.net.http.allowRestrictedHeaders", "true")
         val url = URL(imageTransferService.get().send().imageTransfer().transferUrl())

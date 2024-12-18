@@ -2346,7 +2346,7 @@ migrateHostsFromVM: async (vmId) => {
     return makeAPICall({
       method: "DELETE",
       url: ENDPOINTS.DELETE_DISK(diskId), 
-      // data: diskId
+      data: diskId
     });
   },
   /**

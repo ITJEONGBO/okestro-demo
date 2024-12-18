@@ -8,7 +8,7 @@ import { faPlay } from '@fortawesome/free-solid-svg-icons';
 const sizeToGB = (data) => (data / Math.pow(1024, 3));
 
 const formatSize = (size) =>
-  sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`;
+  sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(1)} GB`;
 
 const renderStatusIcon = (status) => {
   const styles = {

@@ -97,11 +97,10 @@ const DiskInfo = () => {
           isOpen={modals.delete}
           type="Disk"
           onRequestClose={() => toggleModal('delete', false)}
-          contentLabel="호스트"
+          contentLabel="디스크"
           data={disk}
         />
       )}
-
     </>
   );
 

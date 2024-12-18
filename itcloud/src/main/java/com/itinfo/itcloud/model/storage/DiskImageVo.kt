@@ -1,11 +1,14 @@
 package com.itinfo.itcloud.model.storage
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
 import com.itinfo.itcloud.repository.engine.entity.toVmId
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DiskBuilder
 import org.ovirt.engine.sdk4.builders.DiskProfileBuilder
@@ -306,12 +309,18 @@ fun DiskImageVo.toEditDiskBuilder(): Disk =
  * 	파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
  * 	디스크 이미지 업로드
  *  required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
- *
+ *	
  */
-fun DiskImageVo.toUploadDiskBuilder(fileSize: Long): Disk =
-	DiskBuilder()
+fun DiskImageVo.toUploadDiskBuilder(conn: Connection, fileSize: Long): Disk {
+	val storageDomain: StorageDomain = conn.findStorageDomain(this@toUploadDiskBuilder.storageDomainVo.id)
+		.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
+	// storage가 nfs 면 씬, iscsi면 사전할당
+	val allocation: Boolean = storageDomain.storage().type() == StorageType.NFS
+
+	return DiskBuilder()
 		.contentType(DiskContentType.ISO)
 		.provisionedSize(fileSize)
+		.sparse(allocation)
 		.alias(this@toUploadDiskBuilder.alias)
 		.description(this@toUploadDiskBuilder.description)
 		.storageDomains(*arrayOf(StorageDomainBuilder().id(this@toUploadDiskBuilder.storageDomainVo.id)))
@@ -321,3 +330,4 @@ fun DiskImageVo.toUploadDiskBuilder(fileSize: Long): Disk =
 		.backup(DiskBackup.NONE) // 증분백업 되지 않음
 		.format(DiskFormat.RAW) // 이미지 업로드는 raw 형식만 가능 +front 처리?
 		.build()
+}

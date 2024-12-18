@@ -32,7 +32,7 @@ const DiskUploadModal = ({
   const [file, setFile] = useState(null);
   const [alias, setAlias] = useState('');
   const [size, setSize] = useState('');
-  const [description, setdescription] = useState('');
+  const [description, setDescription] = useState('');
   const [dataCenterVoId, setDataCenterVoId] = useState('');
   const [domainVoId, setDomainVoId] = useState('');
   const [diskProfileVoId, setDiskProfileVoId] = useState('');
@@ -185,6 +185,7 @@ const DiskUploadModal = ({
             if (uploadedFile) {
               setFile(uploadedFile); // 파일 저장
               setAlias(uploadedFile.name);
+              setDescription(uploadedFile.name);
               setSize(Math.ceil(uploadedFile.size));
             }
           }}
@@ -220,7 +221,7 @@ const DiskUploadModal = ({
                 <input
                   type="text"
                   value={description}
-                  onChange={(e) => setdescription(e.target.value )}
+                  onChange={(e) => setDescription(e.target.value )}
                 />
               </FormGroup>
 

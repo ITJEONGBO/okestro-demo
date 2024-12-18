@@ -1,24 +1,19 @@
 import { useDiskById } from "../../../api/RQHook";
+import { formatBytesToGB } from '../../util/format';
 
 const DiskGeneral = ({ diskId }) => {
   const {
     data: disk,
-    status: diskStatus,
     isRefetching: isDiskRefetching,
     refetch: diskRefetch,
-    isError: isDiskError,
     error: diskError,
     isLoading: isDiskLoading,
   } = useDiskById(diskId, (e) => ({
     ...e,
   }));
 
-  function formatBytesToGB(bytes) {
-    return (bytes / (1024 * 1024 * 1024)).toFixed(0) + " GB";
-  }
-
   return (
-      <div className="tables">
+    <div className="tables">
       <div className="table_container_center">
         <table className="table">
           <tbody>
@@ -41,7 +36,7 @@ const DiskGeneral = ({ diskId }) => {
             
             <tr>
               <th>가상 크기:</th>
-              <td>{disk?.virtualSize && `${formatBytesToGB(disk.virtualSize)}`}</td>
+              <td>{disk?.virtualSize && `${formatBytesToGB(disk.virtualSize)}` }</td>
             </tr>
             <tr>
               <th>실제 크기:</th>
@@ -51,7 +46,7 @@ const DiskGeneral = ({ diskId }) => {
         </table>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default DiskGeneral     

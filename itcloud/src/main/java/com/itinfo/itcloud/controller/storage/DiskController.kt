@@ -291,10 +291,10 @@ class DiskController: BaseController() {
 		@RequestPart file: MultipartFile,
 		@RequestPart diskImage: DiskImageVo?
 	): ResponseEntity<Boolean> {
+		log.info("/storages/disks/upload ... 업로드")
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("Received diskImage: {}", diskImage)
-		log.info("/storages/disks/upload ... 업로드")
 		return ResponseEntity.ok(iDisk.upload(file, diskImage))
 	}
 
