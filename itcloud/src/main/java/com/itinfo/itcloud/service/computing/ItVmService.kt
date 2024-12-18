@@ -227,7 +227,7 @@ class VmServiceImpl(
 				diskAttachmentListToDelete,
 //				vmVo.diskAttachmentVos.toEditDiskAttachmentList(conn, vmVo.id),
 				vmVo.vnicProfileVos.map { it.id },
-				vmVo.connVo.id
+				vmVo.connVo?.id
 			).getOrNull()
 
 		return res?.toVmVo(conn)
