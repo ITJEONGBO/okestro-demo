@@ -318,7 +318,7 @@ class HostController {
 	@ResponseBody
 	fun importISCSIs(
 		@PathVariable("hostId") hostId: String? = null,
-		@PathVariable address: String? = null
+		@PathVariable address: String? = null  // address 뿐만 아니라 chap 이름, 암호도 들어가야함, 로그인은 나중에
 	): ResponseEntity<List<IscsiDetailVo>> {
 		if (hostId == null)
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()

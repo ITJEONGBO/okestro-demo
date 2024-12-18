@@ -32,7 +32,7 @@ const DomainModal = ({
   action,
   domainId,
   datacenterId,  // 데이터센터
-  hostId,  // 호스트
+  // hostId,  // 호스트
 }) => {
   const [formState, setFormState] = useState({
     id: '',
@@ -56,8 +56,18 @@ const DomainModal = ({
   // iscsi, fibre
   const [lunId, setLunId] = useState('');
 
+  // import
+  // nfs 는 같음
+  // iscsi 주소, 포트, 사용자 인증 이름, 암호 해서 검색
+  const [address, setAddress] = useState('');
+  const [port, setPort] = useState('');
+  const [chapName, setChapName] = useState('');
+  const [chapPassword, setChapPassword] = useState('');
+  const [useChap, setUseChap] = useState(false);
+
   const { mutate: addDomain } = useAddDomain();
   const { mutate: editDomain } = useEditDomain();
+  // const { mutate: importIscsiFromHost} = useImportIscsiFromHost();
 
   const editMode = (action === 'edit');
 
@@ -87,7 +97,7 @@ const DomainModal = ({
     refetch: refetchHosts,
     isLoading: isHostsLoading,
   } = useHostsFromDataCenter(
-    dataCenterVoId ? dataCenterVoId : undefined, 
+    dataCenterVoId ? dataCenterVoId : null, 
     (e) => ({...e,})
   );
 
@@ -104,9 +114,8 @@ const DomainModal = ({
       target: e?.logicalUnits[0].target,
       address: e?.logicalUnits[0].address,
       port: e?.logicalUnits[0].port,
-
       status: e?.logicalUnits[0].status,
-      size: (e?.logicalUnits[0].size ? e?.logicalUnits[0].size / (1024 ** 3) + 'GB': e?.logicalUnits[0].size),
+      size: (e?.logicalUnits[0].size ? e?.logicalUnits[0].size / (1024 ** 3): e?.logicalUnits[0].size),
       paths: e?.logicalUnits[0].paths,   
       productId: e?.logicalUnits[0].productId,   
       vendorId: e?.logicalUnits[0].vendorId,
@@ -124,7 +133,7 @@ const DomainModal = ({
     hostVoId ? hostVoId : null, (e) => ({
       ...e,
       status: e?.logicalUnits[0].status,
-      size: (e?.logicalUnits[0].size ? e?.logicalUnits[0].size / (1024 ** 3) + 'GB': e?.logicalUnits[0].size),
+      size: (e?.logicalUnits[0].size ? e?.logicalUnits[0].size / (1024 ** 3): e?.logicalUnits[0].size),
       paths: e?.logicalUnits[0].paths,   
       productId: e?.logicalUnits[0].productId,   
       vendorId: e?.logicalUnits[0].vendorId,   
@@ -133,19 +142,19 @@ const DomainModal = ({
   );
   
   // iscsi 목록 가져오기
-  const {
-    data: iscsi = [],
-    refetch: refetchIscsi,
-    error: isIscsiError,
-    isLoading: isIscsiLoading,
-  } = useImportIscsiFromHost(
-    hostVoId ? hostVoId : null, (e) => ({
-      ...e,
-      target: e?.logicalUnits[0].target,
-      address: e?.logicalUnits[0].address,
-      port: e?.logicalUnits[0].port,
-    })
-  );
+  // const {
+  //   data: iscsi = [],
+  //   refetch: refetchIscsi,
+  //   error: isIscsiError,
+  //   isLoading: isIscsiLoading,
+  // } = useImportIscsiFromHost(
+  //   hostVoId ? hostVoId : null,  (e) => ({
+  //     ...e,
+  //     target: e?.logicalUnits[0].target,
+  //     address: e?.logicalUnits[0].address,
+  //     port: e?.logicalUnits[0].port,
+  //   })
+  // );
 
   const domainTypes = [
     { value: "data", label: "데이터" },
@@ -212,7 +221,7 @@ const DomainModal = ({
       setHostVoName(hosts[0].name);
       setHostVoId(hosts[0].id);
     }
-  }, [hosts, editMode]);
+  }, [hosts, editMode]);  
 
   useEffect(() => {
     const options = storageTypeOptions(formState.domainType);
@@ -242,6 +251,10 @@ const DomainModal = ({
     setStorageAddress('');
     setStoragePath('');
     setLunId('');
+    setAddress('');
+    setPort(3260);
+    setChapName('');
+    setChapPassword('');
   };
 
   const handleRowClick = (row) => {
@@ -312,11 +325,11 @@ const DomainModal = ({
     } else if (action === 'imported') {
       addDomain(dataToSubmit, {
         onSuccess: () => {
-          alert('도메인 생성 완료');
+          alert('도메인 가져오기 완료');
           onRequestClose();
         },
       });
-    } else if (action === 'create') { // create
+    } else if (action === 'create') {
       addDomain(dataToSubmit, {
         onSuccess: () => {
           alert('도메인 생성 완료');
@@ -351,26 +364,31 @@ const DomainModal = ({
           <div className="domain_new_left">
 
           <FormGroup label="데이터 센터">
-            {datacenterId ? (
+            <select
+              value={dataCenterVoId}
+              onChange={(e) => setDataCenterVoId(e.target.value)}
+              disabled={editMode}
+            >
+            {isDatacentersLoading ? (
+              <p>데이터 센터를 불러오는 중...</p>
+            ) : dataCenters.length === 0 ? (
+              <p>사용 가능한 데이터 센터가 없습니다.</p>
+            ) : datacenterId ? (
               <input 
                 type="text" 
-                value={dataCenter?.name} 
+                value={dataCenter?.name || ''} 
                 readOnly 
               />
             ) : (
-              <select
-                value={dataCenterVoId}
-                onChange={(e) => setDataCenterVoId(e.target.value)}
-                disabled={editMode}
-              >
-                {dataCenters && dataCenters.map((dc) => (
-                  <option key={dc.id} value={dc.id}>
-                    {dc.name} : {dataCenterVoId}
-                  </option>
-                ))}
-              </select>
+              dataCenters.map((dc) => (
+                <option key={dc.id} value={dc.id}>
+                  {dc.name}
+                </option>
+              ))
             )}
+            </select>
           </FormGroup>
+
 
           <FormGroup label="도메인 유형">
             <select
@@ -408,13 +426,20 @@ const DomainModal = ({
               onChange={(e) => setHostVoName(e.target.value)}
               disabled={editMode}
             >
-              {hosts && hosts.map((h) => (
-                <option key={h.name} value={h.name}>
-                  {h.name} : {h.id}
-                </option>
-              ))}
+              {isHostsLoading ? (
+                <option key="loading">호스트를 불러오는 중...</option>
+              ) : hosts.length === 0 ? (
+                <option key="no-hosts">사용 가능한 호스트가 없습니다.</option>
+              ) : (
+                hosts.map((h) => (
+                  <option key={h.name} value={h.name}>
+                    {h.name} : {h.id}
+                  </option>
+                ))
+              )}
             </select>
           </FormGroup>
+
       </div>
 
       <div className="domain_new_right">
@@ -495,14 +520,14 @@ const DomainModal = ({
                         abled: logicalUnit.storageDomainId === "" ? "OK" : "NO",
                         status: logicalUnit.status,
                         id: logicalUnit.id,
-                        size: logicalUnit.size ? `${(logicalUnit.size / (1024 ** 3)).toFixed(2)} GB` : "N/A",
+                        size: logicalUnit.size ? `${(logicalUnit.size / (1024 ** 3)).toFixed(2)} GB` : "",
                         paths: logicalUnit.paths || 0,
-                        vendorId: logicalUnit.vendorId || "N/A",
-                        productId: logicalUnit.productId || "N/A",
-                        serial: logicalUnit.serial || "N/A",
-                        target: logicalUnit.target || "N/A",
-                        address: logicalUnit.address || "N/A",
-                        port: logicalUnit.port || "N/A",
+                        vendorId: logicalUnit.vendorId || "",
+                        productId: logicalUnit.productId || "",
+                        serial: logicalUnit.serial || "",
+                        target: logicalUnit.target || "",
+                        address: logicalUnit.address || "",
+                        port: logicalUnit.port || "",
                       })) || []
                     }
                     // onRowClick={handleRowClick}
@@ -519,14 +544,50 @@ const DomainModal = ({
                   <>
                     <label className='label_font_name'>대상 검색</label>
 
-                    <FormGroup label="디스크 공간 부족 경고 표시(%)">
+                    <FormGroup>
+                      <label className='label_font_name'>주소</label>
                       <input
-                        type="number"
-                        value={formState.warning}
-                        onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
                       />
                     </FormGroup>
-                    
+                    <FormGroup>
+                      <label className='label_font_name'>포트</label>
+                      <input
+                        type="number"
+                        value={port}
+                        onChange={(e) => setPort(e.target.value)}
+                      />
+                    </FormGroup>
+                    <button>검색</button>
+                    <div className="disk_delete_box">
+                      <input
+                        type="checkbox"
+                        id="format"
+                        checked={useChap}
+                        onChange={(e) => setUseChap(e.target.checked)} // 체크 여부에 따라 true/false 설정
+                      />
+                      <label htmlFor="format">사용자 인증</label>
+                    </div>
+                    <FormGroup>
+                      <label className='label_font_name'>CHAP 사용자 이름</label>
+                      <input
+                        type="text"
+                        value={chapName}
+                        onChange={(e) => setChapName(e.target.value)}
+                        disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
+                      />
+                    </FormGroup>
+                    <FormGroup>
+                      <label className='label_font_name'>CHAP 암호</label>
+                      <input
+                        type="password"
+                        value={chapPassword}
+                        onChange={(e) => setChapPassword(e.target.value)}
+                        disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
+                      />
+                    </FormGroup>                    
                   </>
                 ) : null }
                 
@@ -534,8 +595,8 @@ const DomainModal = ({
             )}
           </div>
           <div>
-                  <span>id: {lunId}</span>
-                </div>
+            <span>id: {lunId}</span>
+          </div>
         </div>
       )}
       

@@ -2123,7 +2123,8 @@ migrateHostsFromVM: async (vmId) => {
    */
   findImportIscsiFromHost: async (hostId, address) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_IMPORT_ISCSIS_FROM_HOST(hostId, address)
+    url: ENDPOINTS.FIND_IMPORT_ISCSIS_FROM_HOST(hostId, address),
+    data: {hostId, address}
   }),
 
 
