@@ -321,8 +321,7 @@ fun List<Vm>.toVmsIdName(): List<VmVo> =
 fun Vm.toVmMenu(conn: Connection): VmVo {
     val cluster: Cluster? = conn.findCluster(this@toVmMenu.cluster().id())
             .getOrNull()
-    val dataCenter: DataCenter? =
-        cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
+    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
 
     return VmVo.builder {
         id { this@toVmMenu.id() }
@@ -361,15 +360,12 @@ fun List<Vm>.toVmsMenu(conn: Connection): List<VmVo> =
 /**
  * 가상머신 메뉴
  */
-fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
-    val cluster: Cluster? =
-        conn.findCluster(this@toVmVoInfo.cluster().id())
-            .getOrNull()
-    val dataCenter: DataCenter? =
-        cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
-
-    val nics: List<Nic> =
-        conn.findAllNicsFromVm(this@toVmVoInfo.id()).getOrDefault(listOf())
+fun Vm.toVmVoInfo(conn: Connection): VmVo {
+    val cluster: Cluster? = conn.findCluster(this@toVmVoInfo.cluster().id())
+        .getOrNull()
+    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
+    val nics: List<Nic> = conn.findAllNicsFromVm(this@toVmVoInfo.id())
+        .getOrDefault(listOf())
     val host: Host? =
         if (this@toVmVoInfo.hostPresent())
             conn.findHost(this@toVmVoInfo.host().id()).getOrNull()
@@ -377,12 +373,11 @@ fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
             conn.findHost(this@toVmVoInfo.placementPolicy().hosts().first().id()).getOrNull()
         else
             null
-    val template: Template? =
-        conn.findTemplate(this@toVmVoInfo.template().id())
-            .getOrNull()
+    val template: Template? = conn.findTemplate(this@toVmVoInfo.template().id())
+        .getOrNull()
 
-    val statistics: List<Statistic> =
-        conn.findAllStatisticsFromVm(this@toVmVoInfo.id())
+    val statistics: List<Statistic> = conn.findAllStatisticsFromVm(this@toVmVoInfo.id())
+
 
     return VmVo.builder {
         id { this@toVmVoInfo.id() }
@@ -414,13 +409,10 @@ fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
         hostVo { host?.fromHostToIdentifiedVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() } // 메모리, cpu, 네트워크
-//        templateName { template?.name() }
+        templateVo { template?.fromTemplateToIdentifiedVo() }
         usageDto { statistics.toVmUsage() }
     }
 }
-fun List<Vm>.toVmVoInfos(conn: Connection/*, graph: ItGraphService*/): List<VmVo> =
-    this@toVmVoInfos.map { it.toVmVoInfo(conn) }
-
 
 fun Vm.toStorageDomainVm(conn: Connection, storageDomainId: String): VmVo {
     val diskAttachments: List<DiskAttachment> = conn.findAllDiskAttachmentsFromVm(this@toStorageDomainVm.id())
@@ -442,7 +434,7 @@ fun List<Vm>.toStorageDomainVms(conn: Connection, storageDomainId: String): List
 
 
 
-// region: VmBuilder
+// region: Add VmBuilder
 
 /**
  * 가상머신 빌더
@@ -466,12 +458,12 @@ fun VmVo.toVmBuilder(): VmBuilder {
 fun VmVo.toAddVmBuilder(): Vm =
     this@toAddVmBuilder.toVmBuilder().build()
 
+
 /**
  * 가상머신 편집 빌더
  */
 fun VmVo.toEditVmBuilder(): Vm =
     this@toEditVmBuilder.toVmBuilder().id(this@toEditVmBuilder.id).build()
-
 
 
 /**
@@ -634,6 +626,22 @@ fun VmVo.toVmBootBuilder(vmBuilder: VmBuilder): VmBuilder {
 // endregion
 
 
+
+//fun VmVo.editVmBuilder(): VmBuilder {
+//    val vmBuilder = VmBuilder()
+//    this@toVmBuilder.toVmInfoBuilder(vmBuilder)
+//    this@toVmBuilder.toVmSystemBuilder(vmBuilder)
+//    this@toVmBuilder.toVmInitBuilder(vmBuilder)
+//    this@toVmBuilder.toVmHostBuilder(vmBuilder)
+////    this@toVmBuilder.toVmResourceBuilder(vmBuilder)
+//    this@toVmBuilder.toVmHaBuilder(vmBuilder)
+//    this@toVmBuilder.toVmBootBuilder(vmBuilder)
+//    log.info("vmvo: {}", this)
+//    return vmBuilder
+//}
+
+
+
 /**
  * [Vm.toVmSystem]
  *
@@ -727,7 +735,8 @@ fun Vm.toVmResource(conn: Connection): VmVo {
  * 편집 - 부트 옵션
  */
 fun Vm.toVmBoot(conn: Connection): VmVo {
-	val cdrom: Cdrom? = conn.findAllVmCdromsFromVm(this@toVmBoot.id()).getOrDefault(listOf()).firstOrNull()
+	val cdrom: Cdrom? = conn.findAllVmCdromsFromVm(this@toVmBoot.id())
+        .getOrDefault(listOf()).firstOrNull()
 	val cdromFileId: String = cdrom?.file()?.id() ?: ""
 	val disk: Disk? = conn.findDisk(cdromFileId).getOrNull()
 	return VmVo.builder {
@@ -739,8 +748,6 @@ fun Vm.toVmBoot(conn: Connection): VmVo {
 				null
 		}
         connVo { disk?.fromDiskToIdentifiedVo() }
-//		connId { cdromFileId }
-//		connName { disk?.name() }
 	}
 }
 
@@ -912,7 +919,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         diskAttachmentVos { this@toVmVo.diskAttachments().toDiskAttachmentVos(conn) }
         vnicProfileVos { this@toVmVo.nics().toVnicProfileVosFromNic(conn) }
         memorySize { this@toVmVo.memory() }
-//        memoryMax { this@toVmVo. }
+        memoryMax { this@toVmVo.memoryPolicy().max() }
         memoryActual { this@toVmVo.memoryPolicy().guaranteed() }
         cpuArc { this@toVmVo.cpu().architecture() }
         cpuTopologyCnt {
