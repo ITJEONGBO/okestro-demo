@@ -326,7 +326,7 @@ class HostController {
 
 
 	@ApiOperation(
-		httpMethod="GET",
+		httpMethod="POST",
 		value="도메인 가져오기에 필요한 iSCSI 요청",
 		notes="도메인 가져오기 - iSCSI 요쳥"
 	)
@@ -337,7 +337,7 @@ class HostController {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/{hostId}/iscsisToImport")
+	@PostMapping("/{hostId}/iscsisToImport")
 	@ResponseBody
 	fun importISCSIs(
 		@PathVariable("hostId") hostId: String? = null,
@@ -347,8 +347,7 @@ class HostController {
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		if(iscsiDetailVo == null)
 			throw ErrorPattern.DISCOVER_TARGET_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/iscsisToImport ... 호스트 iscsis 가져오기 목록", hostId)
-		log.info("iscsi import {}", iscsiDetailVo)
+		log.info("/computing/hosts/{}/iscsisToImport {} {} ... 호스트 iscsis 가져오기 목록", hostId, iscsiDetailVo.address, iscsiDetailVo.port)
 		return ResponseEntity.ok(iHost.findImportIscsiFromHost(hostId, iscsiDetailVo))
 	}
 

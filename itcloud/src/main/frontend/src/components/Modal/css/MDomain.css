@@ -36,3 +36,15 @@
 .input_number{
   width: 70px;
 }
+
+.search_button{
+  height: 25px;
+  width: 40px;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  cursor: pointer;
+  align-content: center;
+  justify-content: center
+}

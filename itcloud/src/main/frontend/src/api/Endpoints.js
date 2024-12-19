@@ -72,7 +72,7 @@ const ENDPOINTS = {
 
   FIND_FIBRES_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/fibres`,
   FIND_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsis`,
-  FIND_IMPORT_ISCSIS_FROM_HOST: (hostId, address) => `/api/v1/computing/hosts/${hostId}/iscsis/${address}`,
+  FIND_IMPORT_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsisToImport`,
 
   ADD_HOST: () => `/api/v1/computing/hosts`,
   EDIT_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}`, 

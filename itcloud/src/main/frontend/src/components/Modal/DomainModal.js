@@ -59,17 +59,19 @@ const DomainModal = ({
   // import
   // nfs 는 같음
   // iscsi 주소, 포트, 사용자 인증 이름, 암호 해서 검색
+  
   const [address, setAddress] = useState('');
   const [port, setPort] = useState('');
-  const [chapName, setChapName] = useState('');
-  const [chapPassword, setChapPassword] = useState('');
-  const [useChap, setUseChap] = useState(false);
+  // const [chapName, setChapName] = useState('');
+  // const [chapPassword, setChapPassword] = useState('');
+  // const [useChap, setUseChap] = useState(false);
+
+  const editMode = (action === 'edit');
 
   const { mutate: addDomain } = useAddDomain();
   const { mutate: editDomain } = useEditDomain();
-  // const { mutate: importIscsiFromHost} = useImportIscsiFromHost();
+  const { mutate: importIscsiFromHost } = useImportIscsiFromHost();
 
-  const editMode = (action === 'edit');
 
   // 도메인 데이터 가져오기
   const {
@@ -148,13 +150,18 @@ const DomainModal = ({
   //   error: isIscsiError,
   //   isLoading: isIscsiLoading,
   // } = useImportIscsiFromHost(
-  //   hostVoId ? hostVoId : null,  (e) => ({
+  //   hostVoId, iscsiData, (e) => ({
   //     ...e,
   //     target: e?.logicalUnits[0].target,
   //     address: e?.logicalUnits[0].address,
   //     port: e?.logicalUnits[0].port,
   //   })
   // );
+
+
+  const isNfs = formState.storageType === 'nfs' || domain?.storageType === 'nfs';
+  const isIscsi = formState.storageType === 'iscsi' || domain?.storageType === 'iscsi';
+  const isFibre = formState.storageType === 'fcp' || domain?.storageType === 'fcp';
 
   const domainTypes = [
     { value: "data", label: "데이터" },
@@ -175,10 +182,6 @@ const DomainModal = ({
         ];
     }
   };
-
-  const isNfs = formState.storageType === 'nfs' || domain?.storageType === 'nfs';
-  const isIscsi = formState.storageType === 'iscsi' || domain?.storageType === 'iscsi';
-  const isFibre = formState.storageType === 'fcp' || domain?.storageType === 'fcp';
 
   useEffect(() => {
     if (editMode && domain) {
@@ -236,6 +239,7 @@ const DomainModal = ({
     }
   }, [formState.domainType, editMode]);
   
+  
   const resetForm = () => {
     setFormState({
       id: '',
@@ -253,8 +257,8 @@ const DomainModal = ({
     setLunId('');
     setAddress('');
     setPort(3260);
-    setChapName('');
-    setChapPassword('');
+    // setChapName('');
+    // setChapPassword('');
   };
 
   const handleRowClick = (row) => {
@@ -275,6 +279,32 @@ const DomainModal = ({
       if (selectedLogicalUnit?.abled === 'NO') return '선택한 항목은 사용할 수 없습니다.';
     }
     return null;
+  };
+
+  const [iscsiSearchResults, setIscsiSearchResults] = useState([]);
+  const handleSearchIscsi = () => {
+    if (!hostVoId) {
+      alert('호스트를 선택해주세요.');
+      return;
+    }
+    if (!address || !port) {
+      alert('주소와 포트를 입력해주세요.');
+      return;
+    }
+  
+    const iscsiData = { address, port };
+    importIscsiFromHost(
+      { hostId: hostVoId, iscsiData },
+      {
+        onSuccess: (data) => {
+          console.log('iSCSI 가져오기 성공:', data);
+          setIscsiSearchResults(data); // 검색 결과 상태 업데이트
+        },
+        onError: (error) => {
+          console.error('iSCSI 가져오기 실패:', error);
+        },
+      }
+    );
   };
 
 
@@ -560,8 +590,16 @@ const DomainModal = ({
                         onChange={(e) => setPort(e.target.value)}
                       />
                     </FormGroup>
-                    <button>검색</button>
-                    <div className="disk_delete_box">
+                    <button className='search_button' onClick={handleSearchIscsi}>검색</button>
+                    {iscsiSearchResults.length > 0 && (
+                      <Table
+                        columns={TableInfo.TARGETS_LUNS}
+                        data={iscsiSearchResults}
+                        onRowClick={handleRowClick}
+                        shouldHighlight1stCol={true}
+                      />
+                    )}
+                    {/* <div className="disk_delete_box">
                       <input
                         type="checkbox"
                         id="format"
@@ -587,7 +625,7 @@ const DomainModal = ({
                         onChange={(e) => setChapPassword(e.target.value)}
                         disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
                       />
-                    </FormGroup>                    
+                    </FormGroup> */}
                   </>
                 ) : null }
                 

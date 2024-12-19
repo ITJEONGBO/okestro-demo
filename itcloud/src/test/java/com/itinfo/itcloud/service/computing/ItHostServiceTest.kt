@@ -272,7 +272,7 @@ class ItHostServiceTest {
 				port { 3260 }
 			}
 		val result: List<IscsiDetailVo> =
-			service.findImportIscsiFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a", iscsi)
+			service.findImportIscsiFromHost("eabd4005-b001-4540-80d6-8b91910fc175", iscsi)
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }

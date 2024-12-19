@@ -775,6 +775,26 @@ export const useFibreFromHost = (hostId, mapPredicate) => useQuery({
   },
 })
 
+
+// export const useImportIscsiFromHost = (hostId, mapPredicate) => useQuery({
+//   refetchOnWindowFocus: true,
+//   queryKey: ['iscsiFromHost', hostId], 
+//   enabled: false,
+//   queryFn: async (iscsiData) => {
+//     if(hostId === null) return [];
+//     console.log(`useImportIscsiFromHost ... ${hostId}`);
+//     const res = await ApiManager.findImportIscsiFromHost(hostId, iscsiData); 
+
+//     const processedData = res?.map((e) => mapPredicate(e)) ?? [];
+//     console.log('Processed Fibre data:', processedData);
+//     return processedData; // 데이터 가공 후 반환
+//   },
+//   onSuccess: (data) => {
+//     console.log('iscsi Data:', data);
+//   },
+// })
+
+
 /**
  * @name useImportIscsiFromHost
  * @description 호스트 가져오기 iscsi 목록조회 useQuery훅
@@ -783,23 +803,24 @@ export const useFibreFromHost = (hostId, mapPredicate) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useImportIscsiFromHost
+ * @see ApiManager.findImportIscsiFromHost
  */
-export const useImportIscsiFromHost = (hostId, address, mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['iscsiFromHost', hostId], 
-  queryFn: async () => {
-    if(hostId === null) return [];
-    console.log(`useImportIscsiFromHost ... ${hostId}`);
-    const res = await ApiManager.findImportIscsiFromHost(hostId, address); 
-    const processedData = res?.map((e) => mapPredicate(e)) ?? [];
-    console.log('Processed Fibre data:', processedData);
-    return processedData; // 데이터 가공 후 반환
-  },
-  onSuccess: (data) => {
-    console.log('Fibre data:', data);
-  },
-})
+export const useImportIscsiFromHost = (mapPredicate) => {
+  // const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({hostId, iscsiData}) => await ApiManager.findImportIscsiFromHost(hostId, iscsiData),
+    onSuccess: (data) => {
+      console.log('iSCSI 가져오기 성공:', data); // 성공한 응답 데이터 출력
+      // const processedData = data?.map((e) => mapPredicate(e)) ?? [];
+      // console.log('Processed Fibre data:', processedData);
+      // return processedData; // 데이터 가공 후 반환
+      // queryClient.invalidateQueries('allHosts'); // 필요시 특정 쿼리를 무효화하여 최신 데이터 가져오기
+    },
+    onError: (error) => {
+      console.error('iSCSI 가져오기 에러:', error);
+    },
+  });
+};
 
 
 /**

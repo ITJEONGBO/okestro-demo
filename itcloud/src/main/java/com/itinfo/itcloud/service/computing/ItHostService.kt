@@ -345,7 +345,7 @@ class HostServiceImpl(
 
 	@Throws(Error::class)
 	override fun findImportIscsiFromHost(hostId: String, iscsiDetailVo: IscsiDetailVo): List<IscsiDetailVo> {
-		log.info("findImportIscsiFromHost... hostId: {}, iscsiDetailVo : {}", hostId, iscsiDetailVo)
+		log.info("findImportIscsiFromHost... hostId: {}", hostId)
 		conn.findHost(hostId).getOrNull() ?: return listOf()
 		val res: List<IscsiDetails> = conn.discoverIscsiFromHost(hostId, iscsiDetailVo.toDiscoverIscsiDetailVo())
 			.getOrDefault(listOf())

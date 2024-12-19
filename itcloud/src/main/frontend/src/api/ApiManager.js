@@ -2,7 +2,6 @@ import ENDPOINTS from "./Endpoints"
 import DEFAULT_VALUES from "./DefaultValues"
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { data } from "jquery";
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -2121,10 +2120,10 @@ migrateHostsFromVM: async (vmId) => {
    * 
    * @see
    */
-  findImportIscsiFromHost: async (hostId, address) => makeAPICall({
-    method: "GET", 
-    url: ENDPOINTS.FIND_IMPORT_ISCSIS_FROM_HOST(hostId, address),
-    data: {hostId, address}
+  findImportIscsiFromHost: async (hostId, iscsiData) => makeAPICall({
+    method: "POST", 
+    url: ENDPOINTS.FIND_IMPORT_ISCSIS_FROM_HOST(hostId, iscsiData),
+    data: iscsiData
   }),
 
 
