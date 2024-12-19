@@ -50,11 +50,21 @@ interface ItVmSnapshotService {
 	 * 스냅샷 삭제
 	 *
 	 * @param vmId [String] 가상머신 Id
+	 * @param snapshotId [String] 스냅샷 Id
+	 * @return [Boolean]
+	 */
+	@Throws(Error::class)
+	fun removeFromVm(vmId: String, snapshotId: String): Boolean
+	/**
+	 * [ItVmSnapshotService.removeMultiFromVm]
+	 * 스냅샷 삭제(다중)
+	 *
+	 * @param vmId [String] 가상머신 Id
 	 * @param snapshotIds List<[String]> 스냅샷 Id 목록
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun removeFromVm(vmId: String, snapshotIds: List<String>): Boolean
+	fun removeMultiFromVm(vmId: String, snapshotIds: List<String>): Boolean
 
 	/**
 	 * [ItVmSnapshotService.previewFromVm]
@@ -130,8 +140,16 @@ class VmSnapshotServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun removeFromVm(vmId: String, snapshotIds: List<String>): Boolean {
-		log.info("removeFromVm ... vmId: {}, snapshotIds: {}", vmId, snapshotIds)
+	override fun removeFromVm(vmId: String, snapshotId: String): Boolean {
+		log.info("removeFromVm ... vmId: {}, snapshotId: {}", vmId, snapshotId)
+		val res: Result<Boolean> =
+			conn.removeSnapshotFromVm(vmId, snapshotId)
+		return res.isSuccess
+	}
+
+	@Throws(Error::class)
+	override fun removeMultiFromVm(vmId: String, snapshotIds: List<String>): Boolean {
+		log.info("removeMultiFromVm ... vmId: {}, snapshotIds: {}", vmId, snapshotIds)
 		val res: Result<Boolean> =
 			conn.removeMultiSnapshotFromVm(vmId, snapshotIds)
 		return res.isSuccess

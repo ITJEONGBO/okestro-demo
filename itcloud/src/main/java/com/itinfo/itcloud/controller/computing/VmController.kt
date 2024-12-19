@@ -1074,6 +1074,33 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="snapshotId", value="스냅샷 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@DeleteMapping("/{vmId}/snapshots/{snapshotId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun removeSnapshot(
+		@PathVariable vmId: String? = null,
+		@PathVariable snapshotId: String? = null
+	): ResponseEntity<Boolean> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (snapshotId.isNullOrEmpty())
+			throw ErrorPattern.SNAPSHOT_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/snapshots/{} ... 가상머신 스냅샷 삭제", vmId, snapshotId)
+		return ResponseEntity.ok(iVmSnapshot.removeFromVm(vmId, snapshotId))
+	}
+
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="가상머신 스냅샷 삭제(다중)",
+		notes="가상머신에 있는 스냅샷을 삭제한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
 		ApiImplicitParam(name="snapshotIds", value="스냅샷 ID 목록", dataTypeClass=Array::class, required=true, paramType="body"),
 	)
 	@ApiResponses(
@@ -1082,16 +1109,16 @@ class VmController: BaseController() {
 	@DeleteMapping("/{vmId}/snapshots")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun removeSnapshot(
+	fun removeSnapshots(
 		@PathVariable vmId: String? = null,
-		@RequestBody snapshotIds: List<String>? = null 
+		@RequestBody snapshotIds: List<String>? = null
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (snapshotIds == null)
 			throw ErrorPattern.SNAPSHOT_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/snapshots ... 가상머신 스냅샷 삭제", vmId)
-		return ResponseEntity.ok(iVmSnapshot.removeFromVm(vmId, snapshotIds))
+		return ResponseEntity.ok(iVmSnapshot.removeMultiFromVm(vmId, snapshotIds))
 	}
 
 	@ApiOperation(
