@@ -817,7 +817,7 @@ class VmController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="DELETE",
-		value="가상머신 디스크 삭제",
+		value="가상머신 디스크 삭제(다중)",
 		notes="선택된 가상머신의 디스크를 삭제한다"
 	)
 	@ApiImplicitParams(
@@ -838,8 +838,36 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (diskAttachments == null)
 			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
-		log.info("/computing/vms/{}/disks ... 가상머신 디스크 삭제 ", vmId)
+		log.info("/computing/vms/{}/disks ... 가상머신 디스크 삭제(다중) ", vmId)
 		return ResponseEntity.ok(iVmDisk.removeMultiFromVm(vmId, diskAttachments))
+	}
+
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="가상머신 디스크 삭제",
+		notes="선택된 가상머신의 디스크를 삭제한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="diskAttachmentId", value="디스크연결 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@DeleteMapping("/{vmId}/disks/{diskAttachmentId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun removeDisk(
+		@PathVariable vmId: String? = null,
+		@PathVariable diskAttachmentId: String? = null,
+		@RequestParam(defaultValue = "false") detachOnly: Boolean,
+	): ResponseEntity<Boolean> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (diskAttachmentId.isNullOrEmpty())
+			throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/disks/{}?detachOnly={} ... 가상머신 디스크 삭제 ", vmId, diskAttachmentId, detachOnly)
+		return ResponseEntity.ok(iVmDisk.removeFromVm(vmId, diskAttachmentId, detachOnly))
 	}
 
 	@ApiOperation(

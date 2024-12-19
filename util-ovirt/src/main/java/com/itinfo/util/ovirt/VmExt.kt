@@ -669,6 +669,27 @@ fun Connection.updateMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: 
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.removeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean): Result<Boolean> = runCatching {
+	if (this.findVm(vmId).isFailure) {
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	val dah: DiskAttachment = this.findDiskAttachmentFromVm(vmId, diskAttachmentId)
+		.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
+	if(dah.active()){
+		throw ErrorPattern.DISK_ATTACHMENT_ACTIVE_INVALID.toError()
+	}
+
+	// DiskAttachment 삭제 요청 및 결과 확인
+	this.srvDiskAttachmentFromVm(vmId, diskAttachmentId).remove().detachOnly(detachOnly).send()
+	true
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "삭제", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK_ATTACHMENT, "삭제", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
 //fun Connection.removeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean): Result<Boolean> = runCatching {
 //	// VM 확인
 //	if (this.findVm(vmId).isFailure) {

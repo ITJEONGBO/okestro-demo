@@ -4,6 +4,8 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.storage.DiskServiceImpl
+import com.itinfo.itcloud.service.storage.DiskServiceImpl.Companion
 import com.itinfo.itcloud.service.storage.ItStorageService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -68,8 +70,19 @@ interface ItVmDiskService {
 	@Throws(Error::class)
 	fun updateFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	/**
-	 * [ItVmDiskService.removeMultiFromVm]
+	 * [ItVmDiskService.removeFromVm]
 	 * 가상머신 디스크 삭제
+	 *
+	 * @param vmId [String] 가상머신 Id
+	 * @param diskAttachmentId [String] 디스크 id
+	 * @param detachOnly [Boolean] 디스크 완전삭제 여부
+	 * @return [Boolean]
+	 */
+	@Throws(Error::class)
+	fun removeFromVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean): Boolean
+	/**
+	 * [ItVmDiskService.removeMultiFromVm]
+	 * 가상머신 디스크 삭제 (다중)
 	 *
 	 * @param vmId [String] 가상머신 Id
 	 * @param diskAttachmentVos List<[DiskAttachmentVo]>
@@ -170,13 +183,21 @@ class VmDiskService(
 
 	@Throws(Error::class)
 	override fun updateFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
-		log.info("updateromVm ... vmId: {}", vmId)
+		log.info("updateFromVm ... vmId: {}", vmId)
 		val res: DiskAttachment? =
 			conn.updateDiskAttachmentToVm(
 				vmId,
 				diskAttachmentVo.toEditDiskAttachment()
 			).getOrNull()
 		return res?.toDiskAttachmentVo(conn)
+	}
+
+	@Throws(Error::class)
+	override fun removeFromVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean): Boolean {
+		log.info("removeFromVm ... vmId: $vmId, diskAttachmentId: $diskAttachmentId, detachOnly: $detachOnly")
+		val res: Result<Boolean> =
+			conn.removeDiskAttachmentToVm(vmId, diskAttachmentId, detachOnly)
+		return res.isSuccess
 	}
 
 	@Throws(Error::class)
