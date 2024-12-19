@@ -40,32 +40,40 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 	fun findFirstByVmStatusOrderByCpuUsagePercentDesc(vmStatus: Int): List<VmSamplesHistoryEntity>
 
 	@Query(
-		value =
-		"""
-			WITH RankedVMs AS (
-    SELECT *, 
-           ROW_NUMBER() OVER (PARTITION BY vm_id ORDER BY history_datetime DESC) AS rn
-    FROM vm_samples_history
-    WHERE cpu_usage_percent IS NOT NULL
-), LatestVMStatus AS (
-    SELECT vm_id, 
-           vm_status
-    FROM vm_samples_history
-    WHERE history_datetime = (SELECT MAX(history_datetime) 
-                              FROM vm_samples_history AS sub
-                              WHERE sub.vm_id = vm_samples_history.vm_id)
-)
-SELECT *
-FROM RankedVMs
-JOIN LatestVMStatus ON RankedVMs.vm_id = LatestVMStatus.vm_id
-WHERE RankedVMs.rn <= 10 
-  AND LatestVMStatus.vm_status = 1
-ORDER BY RankedVMs.vm_id, RankedVMs.history_datetime DESC
-	""",
+		value = """
+      WITH RankedVMs AS (
+         SELECT *, 
+               ROW_NUMBER() OVER (PARTITION BY vm_id ORDER BY history_datetime DESC) AS rn
+         FROM vm_samples_history
+         WHERE cpu_usage_percent IS NOT NULL
+              AND vm_id NOT IN (SELECT vm_id 
+                                FROM vm_samples_history
+                                WHERE history_id = 1)
+              AND CAST(EXTRACT(MINUTE FROM history_datetime) AS INTEGER) % 10 = 0
+      ), 
+      LatestVMStatus AS (
+         SELECT vm_id, 
+               vm_status
+         FROM vm_samples_history
+         WHERE history_datetime = (SELECT MAX(history_datetime) 
+                                   FROM vm_samples_history AS sub
+                                   WHERE sub.vm_id = vm_samples_history.vm_id)
+              AND vm_id NOT IN (SELECT vm_id 
+                                FROM vm_samples_history
+                                WHERE history_id = 1)
+      )
+      SELECT *
+      FROM RankedVMs
+      JOIN LatestVMStatus ON RankedVMs.vm_id = LatestVMStatus.vm_id
+      WHERE RankedVMs.rn <= 10 
+        AND LatestVMStatus.vm_status = 1
+      ORDER BY RankedVMs.vm_id, RankedVMs.history_datetime DESC
+    """,
 		nativeQuery = true
 	)
 	fun findVmUsageListChart(): List<VmSamplesHistoryEntity>
 	//TODO findVmUsageListChart vmCpuPerList&vmMemoryPerList 가상머신 external-HostedEngineLocal (빈값) 에 대한 에러있음
+	// 에러처리로 우선 history_id 1은 예외처리해서 검색x
 
 	@Query(
 		value =
