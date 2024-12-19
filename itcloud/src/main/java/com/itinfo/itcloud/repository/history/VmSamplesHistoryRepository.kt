@@ -20,7 +20,7 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 			FROM Vm_Samples_History v 
 			JOIN vm_configuration c ON v.vm_id = c.vm_id WHERE v.vm_status = 1 
 			AND v.history_Datetime = ( SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id) 
-			AND NOT EXISTS (SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name LIKE '%HostedEngineLocal%') 
+			AND NOT EXISTS (SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name ='external-HostedEngineLocal') 
 			ORDER BY v.cpu_Usage_Percent DESC""", nativeQuery = true
 	)
 	fun findVmCpuChart(page: Pageable?): List<VmSamplesHistoryEntity>
@@ -30,7 +30,7 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 			FROM Vm_Samples_History v 
 			JOIN vm_configuration c ON v.vm_id = c.vm_id WHERE v.vm_status = 1 
 			AND v.history_Datetime = ( SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id) 
-			AND NOT EXISTS (SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name LIKE '%HostedEngineLocal%') 
+			AND NOT EXISTS (SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name ='external-HostedEngineLocal') 
 			ORDER BY v.memory_Usage_Percent DESC""", nativeQuery = true
 	)
 	fun findVmMemoryChart(page: Pageable?): List<VmSamplesHistoryEntity>
@@ -65,6 +65,7 @@ ORDER BY RankedVMs.vm_id, RankedVMs.history_datetime DESC
 		nativeQuery = true
 	)
 	fun findVmUsageListChart(): List<VmSamplesHistoryEntity>
+	//TODO findVmUsageListChart vmCpuPerList&vmMemoryPerList 가상머신 external-HostedEngineLocal (빈값) 에 대한 에러있음
 
 	@Query(
 		value =
