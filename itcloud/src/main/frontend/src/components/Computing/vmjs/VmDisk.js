@@ -21,7 +21,11 @@ const VmDisk = ({vm}) => {
     const toggleContent = () => {
       setIsVisible(!isVisible);
     };
-  
+    const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+    const toggleModal = (type, isOpen) => {
+      setModals((prev) => ({ ...prev, [type]: isOpen }));
+  };
+    
     const [activeDiskType, setActiveDiskType] = useState('all');
   const handleDiskTypeClick = (type) => {
     setActiveDiskType(type);  // 여기서 type을 설정해야 함
@@ -132,7 +136,7 @@ const VmDisk = ({vm}) => {
                     {/* <button onClick={() => openPopup('disk_edit')}>수정</button> */}
                     <button onClick={() => selectedDisk?.id && handleActionClick('edit')}>수정</button>
                     {/* <button onClick={() => openPopup('delete')}>제거</button> */}
-                    <button onClick={() => selectedDisk?.id && handleActionClick('delete')}>제거</button> 
+                    <button onClick={() => selectedDisk?.id && toggleModal('delete', true)} disabled={!selectedDisk?.id}>제거</button>
                     <button className="content_header_popup_btn" onClick={togglePopup}>
                       <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
                       {isPopupOpen && (
@@ -179,7 +183,7 @@ const VmDisk = ({vm}) => {
 
               {/* 모달 */}
               <Suspense>
-                  {isModalOpen && (
+       
                     <>
                       {(action === 'create' || action === 'edit') && (
                         <DiskModal
@@ -191,17 +195,18 @@ const VmDisk = ({vm}) => {
                           type="vmDisk"
                         />
                       )}
-                      {action === 'delete' && (
+                       {modals.delete  && selectedDisk &&(
                         <DeleteModal
-                          isOpen={isModalOpen}
-                          type="Disk"
-                          onRequestClose={() => setIsModalOpen(false)}
-                          contentLabel="디스크"
+                          isOpen={modals.delete}
+                          type='vmDisk'
+                          onRequestClose={() => toggleModal('delete', false)}
+                          contentLabel={"디스크"}
                           data={selectedDisk}
+                          vmId={vm?.id}
                         />
                       )}
                     </>
-                  )}
+                
                 </Suspense>
             </>
                 );

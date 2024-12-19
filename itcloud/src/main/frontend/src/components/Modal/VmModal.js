@@ -5,6 +5,7 @@ import { faTimes, faInfoCircle, faChevronCircleRight } from '@fortawesome/free-s
 import { Tooltip } from 'react-tooltip';
 import '../Modal/css/MVm.css';
 import { 
+  useAddDiskFromVM,
   useAddDisksFromVM,
   useAddVm, 
   useAllClusters, 
@@ -87,7 +88,7 @@ const VmModal = ({
 
   const { mutate: addVM } = useAddVm();
   const { mutate: editVM } = useEditVm();
-
+  const { mutate: addDiskVm } = useAddDiskFromVM();
 
   const { 
     data: allvm, 
@@ -136,10 +137,11 @@ const handleDiskSelection = (diskId, diskDetails) => {
 };
 
   // VM에 연결된 디스크
-  const [vmdisks, setVmDisks] = useState([]); 
+  const [vmdisks, setVmdisks] = useState([]); 
+
   const handleDiskCreated = (createdDisk) => {
     console.log("새로 생성된 디스크 정보:", createdDisk);
-    setVmDisks((prevDisks) => [...prevDisks, createdDisk]); // 새 디스크를 디스크 목록에 추가
+    setVmdisks((prevDisks) => [...prevDisks, createdDisk]); // 새 디스크를 디스크 목록에 추가
   };
   
   const { data: vmdisk} = useAddDisksFromVM(vmId);
@@ -325,7 +327,7 @@ useEffect(() => {
   if (editMode && vm) {
     // 서버에서 반환된 디스크 정보를 상태에 저장
     if (vm?.disks) {
-      setVmDisks(vm.disks);
+      setVmdisks(vm.disks);
     }
   }
 }, [editMode, vm]);
@@ -543,7 +545,7 @@ useEffect(() => {
 
      const firstDisk = vmdisks.length > 0 ? vmdisks[0] : null;
     const dataToSubmit = {
-     
+      vmdisks,
       clusterVo:{
         id: selectedCluster.id,
         name: selectedCluster.name,
@@ -644,8 +646,9 @@ useEffect(() => {
       });
     } else {
       addVM(dataToSubmit, {
-        onSuccess: () => {
+        onSuccess: (response) => {
           alert('가상머신 생성 완료');
+          setVmdisks(response.vmdisks); // 서버에서 받은 vmdisks 저장
           onRequestClose();
         },
         onError: (error) => {
@@ -943,6 +946,7 @@ return (
           onRequestClose={() => setIsEditPopupOpen(false)}
           editMode={true}
           diskId={disk.id} // 디스크 ID 전달
+          vmdisks={vmdisks}
           type="vm"
         />
         <div className="flex">
@@ -977,6 +981,7 @@ return (
         editMode={false}
         vmId={vmId}
         type="vm"
+        vmdisks={vmdisks}
         onDiskCreated={handleDiskCreated}
       />
     {vmdisks.length > 0 ? (
@@ -1017,6 +1022,7 @@ return (
         editMode={false}
         vmId={vmId}
         type='vm'
+        vmdisks={vmdisks}
         onDiskCreated={handleDiskCreated}
       />
       <div className="flex">
@@ -1053,7 +1059,7 @@ return (
                                       <p>디스크 ID: {selectedDiskId}</p>
                                       {selectedDiskInfo ? (
                                         <>
-                                          <p>디스크 이름: {selectedDiskInfo?.alias || "정보 없음"}</p>
+                                          <p>디스크 이름ㅇㅇㅇ: {selectedDiskInfo?.alias || "정보 없음"}</p>
                                           <p>크기: {selectedDiskInfo?.virtualSize || "정보 없음"} GB</p>
                                           <p>상태: {selectedDiskInfo?.status || "정보 없음"}</p>
                                         </>
@@ -1111,12 +1117,13 @@ return (
                                         editMode={false}
                                         vmId={vmId}
                                         type="vm"
+                                        vmdisks={vmdisks}
                                         onDiskCreated={handleDiskCreated}
                                         />
                                       {vmdisks.length > 0 ? (
                                           vmdisks.map((disk) => (
                                             <div key={disk.id}>
-                                              <p>디스크 이름: {disk.alias}</p>
+                                              <p>디스크 이름ㄴㄴ: {disk.alias}</p>
                                               <p>크기: {disk.size} GB</p>
                                             </div>
                                           ))
@@ -1158,6 +1165,7 @@ return (
                                         editMode={false}
                                         vmId={vmId}
                                         type="vm"
+                                        vmdisks={vmdisks}
                                         onDiskCreated={handleDiskCreated}
                                         />
                                       {vmdisks.length > 0 ? (

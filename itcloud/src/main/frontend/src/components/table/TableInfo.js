@@ -419,8 +419,8 @@ HOST_NETWORK_INTERFACE: [
   ],
 
   ALL_DISK:  [
-    { header: '이름', accessor: 'alias', clickable: true,width:'10%' },
-    { header: 'ID', accessor: 'id', clickable: false ,width:'12%'},
+    { header: '이름', accessor: 'alias', clickable: true,width:'15%' },
+    { header: 'ID', accessor: 'id', clickable: false ,width:'15%'},
     { header: '', accessor: 'icon1', clickable: false,width:'4%' },
     { header: '', accessor: 'icon2', clickable: false ,width:'4%'},
     { header: '연결 대상', accessor: 'connectionTarget', clickable: false },

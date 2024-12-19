@@ -870,6 +870,22 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.DELETE_DISKS_FROM_VM
     });
   },
+    /**
+   * @name ApiManager.deleteSnapshotsFromVM
+   * @description 가상머신 디스크 삭제(한개)
+   * 
+   * @param {String} vmId
+   * @param {Object} List
+   * @returns {Promise<Object>} API 응답 결과
+   */
+    deleteDiskFromVM: async (vmId, diskAttachmentId) => {
+      return makeAPICall({
+        method: "DELETE",
+        url: ENDPOINTS.DELETE_DISK_FROM_VM(vmId,diskAttachmentId), 
+        data: diskAttachmentId, 
+        // defaultValues: DEFAULT_VALUES.DELETE_SNAPSHOTS_FROM_VM
+      });
+    },
   /**
    * @name ApiManager.attachDisksFromVM
    * @description 가상머신 디스크 연결(여러개)
@@ -1025,6 +1041,23 @@ const ApiManager = {
       // defaultValues: DEFAULT_VALUES.DELETE_SNAPSHOTS_FROM_VM
     });
   },
+
+  /**
+   * @name ApiManager.deleteSnapshotsFromVM
+   * @description 가상머신 스냅샷 삭제(한개)
+   * 
+   * @param {String} vmId
+   * @param {Object} List<string> diskAttachmentIds
+   * @returns {Promise<Object>} API 응답 결과
+   */
+    deleteSnapshotFromVM: async (vmId, snapshotId) => {
+      return makeAPICall({
+        method: "DELETE",
+        url: ENDPOINTS.DELETE_SNAPSHOT_FROM_VM(vmId,snapshotId), 
+        data: snapshotId, 
+        // defaultValues: DEFAULT_VALUES.DELETE_SNAPSHOTS_FROM_VM
+      });
+    },
   /**
    * @name ApiManager.previewSnapshotFromVM
    * @description 가상머신 스냅샷 미리보기

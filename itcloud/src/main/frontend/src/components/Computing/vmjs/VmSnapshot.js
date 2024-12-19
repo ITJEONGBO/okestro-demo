@@ -253,6 +253,7 @@ const VmSnapshot = ({vm}) => {
           contentLabel={'스냅샷'}
           data={ selectedSnapshot}
           vmId={vm?.id}
+      
         />
       )}
 </Suspense>

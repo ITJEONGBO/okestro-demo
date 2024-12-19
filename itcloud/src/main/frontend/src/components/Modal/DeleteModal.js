@@ -13,7 +13,8 @@ import {
   useDeleteNetworkInterface,
   useDeleteDisk,
   useDeleteNetworkFromTemplate,
-  useDeleteSnapshot
+  useDeleteSnapshot,
+  useDeleteDiskFromVM
 } from '../../api/RQHook';
 
 const DeleteModal = ({ 
@@ -24,7 +25,7 @@ const DeleteModal = ({
     data,
     networkId,// 외부에서 전달된 prop TODO 바꿔야함
     vmId,
-    templateId
+    templateId,
 }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -39,6 +40,7 @@ const DeleteModal = ({
   const { mutate: deleteNicFromTemplate } = useDeleteNetworkFromTemplate();
   const { mutate: deleteDisk } = useDeleteDisk();
   const { mutate: deleteSnapshot } = useDeleteSnapshot();
+  const { mutate: deleteDiskFromVM } = useDeleteDiskFromVM();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -97,7 +99,12 @@ const DeleteModal = ({
       handleDelete(deleteDisk);
     }else if (type === 'Snapshot') {
       console.log('Deleting Snapshot');
-      handleDelete(deleteSnapshot);
+      handleDelete(() => deleteSnapshot({ vmId, snapshotId: id }));
+      onRequestClose();
+    }else if (type === 'vmDisk') {
+      console.log('Deleting vmDisk');
+      handleDelete(() => deleteDiskFromVM({ vmId, diskAttachmentId: id }));
+      onRequestClose();
     }
   };
 

@@ -1065,13 +1065,18 @@ export const useAddSnapshotFromVM = () => {
  */
 export const useDeleteSnapshot = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
-  return useMutation({ 
-    mutationFn: async (vmId) => await ApiManager.deleteSnapshotsFromVM(vmId),
+  return useMutation({
+    mutationFn: async ({ vmId,snapshotId}) => {
+      // ID들이 제대로 전달되는지 확인하기 위해 로그 추가
+      console.log('vmId:', vmId);
+      console.log('snapshotId:', snapshotId);
+      return await ApiManager.deleteSnapshotFromVM(vmId,snapshotId);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries('allNetworks');
+      queryClient.invalidateQueries('SnapshotFromVM');
     },
     onError: (error) => {
-      console.error('Error deleting cluster:', error);
+      console.error('Error deleting snapshot:', error);
     },
   });
 };
@@ -1568,7 +1573,29 @@ export const useAddDiskFromVM = () => {
   });
 };
 
-
+/**
+ * @name useDeleteNetwork
+ * @description 가상머신 디스크 삭제 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDeleteDiskFromVM = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({ vmId,diskAttachmentId}) => {
+      // ID들이 제대로 전달되는지 확인하기 위해 로그 추가
+      console.log('vmId:', vmId);
+      console.log('diskAttachmentId:', diskAttachmentId);
+      return await ApiManager.deleteDiskFromVM(vmId,diskAttachmentId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries('DisksFromVM');
+    },
+    onError: (error) => {
+      console.error('Error deleting Disk:', error);
+    },
+  });
+};
 
 
 /**
