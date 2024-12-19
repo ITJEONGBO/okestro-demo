@@ -214,6 +214,24 @@
     cursor: pointer;
     font-size: 0.29rem;
 }
+/*가상머신 ... 버튼 새템플릿 생성*/
+.new_template_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 77vh;
+    width: 45%;
+    left: 50%;
+    font-size:0.33rem;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.new_template_popup .edit_first_content{
+    border-bottom:none;
+}
 /*삭제예정*/
 
 /* .res_second_content{

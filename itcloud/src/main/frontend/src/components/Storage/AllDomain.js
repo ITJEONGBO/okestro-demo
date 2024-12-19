@@ -1,5 +1,4 @@
 import React from 'react';
-import './css/AllDomain.css';
 import HeaderButton from '../button/HeaderButton';
 import DomainDupl from '../duplication/DomainDupl';
 import TableInfo from '../table/TableInfo';

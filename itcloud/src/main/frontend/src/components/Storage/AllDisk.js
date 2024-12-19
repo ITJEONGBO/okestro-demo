@@ -1,5 +1,4 @@
 import React from 'react';
-import './css/AllDisk.css';
 import HeaderButton from '../button/HeaderButton';
 import TableInfo from '../table/TableInfo';
 import { useAllDisks } from '../../api/RQHook';

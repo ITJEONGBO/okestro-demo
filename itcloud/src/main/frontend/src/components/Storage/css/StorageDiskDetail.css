@@ -1,6 +1,6 @@
-
+/* 
 .table_container_center,.table_container_right{
-    /* margin: 20px;*/
+  
     width: 31%;
  }
 
@@ -12,9 +12,9 @@
 }
 .storage_right_btns>span{
     margin-right: 0.2rem;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .storage_right_btns>div{
     width: 8%;
@@ -41,6 +41,6 @@
     left: 50%;
     z-index:99999;
     transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     font-size:0.33rem;
-}
+} */

@@ -1,109 +1,218 @@
-/*호스트 네트워크설정*/
-.host_network_content_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 54.4vh;
-    width: 43%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-.vnic_new_content_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 68.4vh;
-    width: 43%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    }
-.vnic_new_contents{
-    font-size: 0.33rem;
-}
 
-.vnic_new_box{
-    padding: 1.2% 0.3rem;
+
+.storage_right_btns{
     display: flex;
-    justify-content: space-between;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+    height: 3.3vh;
 }
-.vnic_new_box>input,.vnic_new_box>select{
-    width: 50%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    background: white;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-}
-.vnic_new_checkbox{
-    padding: 1.2% 0.3rem;
-    display:flex;
-}
-.vnic_new_checkbox input{
+.storage_right_btns>span{
     margin-right: 0.2rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
 }
-.vnic_new_inputs{
-    padding: 1.2% 0.3rem;
-}
-
-.vnic_new_buttons{
+.storage_right_btns>div{
+    width: 8%;
     display: flex;
     justify-content: space-between;
 }
-.vnic_new_buttons>div{
-    display: flex;
-    width: 8%;
-}
-.vnic_new_buttons>div>div{
+.storage_right_btns button{
     width: 50%;
-    border: 1px solid #8b8989;
-    text-align: center;
-    font-size: 0.4rem;
-    font-weight: 800;
-    border-radius: 3px;
-    color: #8b8989;
     cursor: pointer;
-}
-.vnic_new_inputs select{
-    width: 30%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    background: white;
+    border: 1px solid #14417c;
     border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
+    color: rgb(10, 55, 107);
+    font-weight: 600;
 }
-.popup_plus_btn{
-    padding: 1.2% 2%;
+/*vNic프로파일(새로만들기)*/
+
+/*클러스터(네트워크 관리)*/
+.manage_network_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 60.4vh;
+    width: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.manage_network_popup>.section_table_outer{
+    margin-top: 0.2rem;
+}
+.manage_network_popup>.section_table_outer td{
+    text-align: left;
+  
+}
+/**/
+.network_popup_table{
+    font-size: 0.3rem;
+    
+}
+.network_popup_table>table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.network_popup_table thead{
+    background-color: #dddddd;
+}
+.network_popup_table thead th{
+    padding: 0.12rem 0;
+}
+.network_popup_table tbody td{
+    border-right: 1px solid #dddddd;
+}
+.network_popup_table tbody td:last-child{
+    border-right: none;
+}
+.network_popup_table>.vnic_new_checkbox{
+   text-align: center;
+}
+/**호스트(호스트 네트워크 설정)*/
+.host_network_separation{
+    display:flex;
+    justify-content: space-between;
+    height:40vh;
+}
+.network_separation_left{
+    width:65%
+}
+.network_separation_left>div:first-child{
+    display:flex;
+    justify-content: space-between;
+    height:13%;
+}
+.network_separation_left>div:first-child>div{
+    width:50%;
+    text-align:center;
+    padding:0.2rem;
+}
+.separation_left_content{
+    border: 1px solid #a3a3a3;
+    display:flex;
+    justify-content: space-between;
+    height: 5vh;
+}
+.container{
     display: flex;
-    justify-content: right;
+    align-items: center;
+    border: 1px solid #ddd;
+    cursor:pointer;
+    padding: 10px;
+    background-color: white;
 }
-.popup_plus{
-    padding:0.08rem;
+.container:hover,.unconfigured_network>div:nth-child(n+2):nth-child(-n+5):hover{
+    background: #d1d1d1;
+}
+.left-section {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+.network_separation_right{
+    width: 43%;
+    padding: 0 0.5rem;
+}
+.right-section {
+    display: flex;
+    gap: 5px;
+}
+
+.unconfigured_network{
+    display: flex;
+    flex-direction: column; /* 세로 방향 정렬 */
+    justify-content: space-between; /* 위, 아래 끝에 요소들을 배치하고 나머지 공간을 균등하게 배분 */
+    align-items: center; /* 가로축에서 중앙 정렬 */
+    height:33vh;
+    margin-bottom:0.2rem
+}
+.unconfigured_network>div{
+    width: 100%;
+    padding: 0.1rem;
+    text-align: center;
+    align-items: center;
+}
+
+.unconfigured_content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    gap: 0.5rem; 
+    cursor:pointer;
     border:1px solid gray;
-    border-radius:3px;
+}
+.lable_part {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px;
+    width: 100%;
+    border: 1px dashed black;
+  }
+  
+  .lable_part span {
+    font-size: 14px;
+    color: black;
+    font-weight: normal;
+  }
+#network_detail_edit_form{
+  height: 69vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: 0.33rem;
+}
+.network_detail_edit_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 82.8%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+/*호스트네트워크설정(추가모달)*/
+.network_backup_edit{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 57.4vh;
+    width: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+   
+}
+.network_backup_edit_nav{
+    font-size: 0.33rem;
+    height: 48vh;
+    width: 30%;
+    background-color: #FAFAFA;
+    border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    font-weight:800;
+}
+.network_backup_edit_nav>div{
+    padding: 0.4rem 0.2rem;
     cursor:pointer;
 }
-.plus_popup_outer{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 56%;
-    width: 42%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    font-size:0.35rem;
+.backup_edit_content{
+    padding:0.2rem 0;
+    font-size: 0.33rem;
+    width: 86%;
+}
+.backup_edit_radiobox{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding:0.2rem;
+    height:16vh;
 }

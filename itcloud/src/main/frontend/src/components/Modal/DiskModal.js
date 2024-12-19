@@ -27,7 +27,6 @@ const DiskModal = ({
   editMode = false,
   diskId,
   vmId,
-  vmdisks, // vm에서 받은 디스크
   type='disk',
   onDiskCreated
 }) => {
@@ -95,12 +94,7 @@ const DiskModal = ({
   );  
 
 
-  useEffect(() => {
-    if (vmdisks) {
-      console.log('가상머신에서 받은 디스크 정보:', vmdisks);
-      // 필요한 로직 추가
-    }
-  }, [vmdisks]);
+
 
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
@@ -265,39 +259,7 @@ const DiskModal = ({
           },
         }
       );
-    }else if (vmdisks && vmdisks.length > 0) { // 가상머신에서 받아온데이터터
-      vmdisks.forEach((disk) => {
-        const vmDataToSubmit = {
-          bootable: disk.bootable,
-          readOnly: disk.readOnly,
-          passDiscard: disk.passDiscard,
-          interface_: disk.interface_,
-          logicalName: disk.logicalName,
-          diskImageVo: { 
-            alias: disk.alias,
-            size: sizeToBytes,
-            description: disk.description,
-            wipeAfterDelete:disk.wipeAfterDelete,
-            backup:formState.backup,
-            sparse:formState.sparse,
-            dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
-            storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
-            diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
-          }
-        };
-        addDiskVm(
-          { vmId, diskData: vmDataToSubmit },
-          {
-            onSuccess: () => {
-              alert("VM 디스크 생성 완료");
-              onRequestClose(); // 성공 시 모달 닫기
-            },
-            onError: (error) => {
-              console.error("vNIC 프로파일 추가 중 오류 발생:", error);
-            },
-          }
-        );
-      });
+    
     }else if (type === 'vmDisk'){ // 가상머신 세부페이지 디스크
       addDiskVm(
         {vmId:vmId, diskData: vmDataToSubmit },

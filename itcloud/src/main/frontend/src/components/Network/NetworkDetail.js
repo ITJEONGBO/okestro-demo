@@ -5,7 +5,6 @@ import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
 import NetworkDetailGeneral from '../zNotuse/NetworkDetailGeneral';
-import './css/NetworkDetail.css';
 import { 
   useNetworkById, 
 } from '../../api/RQHook';
