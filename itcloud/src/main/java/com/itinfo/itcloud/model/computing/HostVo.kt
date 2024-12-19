@@ -6,6 +6,7 @@ import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.model.network.toNetworkHostNicVos
+import com.itinfo.itcloud.model.storage.toStorageDomainMenu
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.util.ovirt.*
@@ -32,9 +33,10 @@ private val log = LoggerFactory.getLogger(HostVo::class.java)
  * @property hostedScore [Int] 점수
  * @property iscsi [String]
  * @property kdump  [KdumpStatus]   kdumpStatus(disabled, enabled, unknown)
- * @property ksm [Boolean]  hosted engine ksm enable = 금장
+ * @property ksm [Boolean]  hosted engine
  * @property seLinux [SeLinuxMode] SeLinuxMode(disabled, enforcing, permissive)
- * @property hostedEngine [Boolean] Hosted Engine 여부 [ 금장, 은장, null ]
+ * @property hostedEngine [Boolean] Hosted Engine 이동 여부 [ 금장, 은장, null ]
+ * @property hostedEngineVM [Boolean] Hosted Engine VM 여부 [ 금장, 은장, null ]
  * @property spmPriority [Int] spm 우선순위
  * @property spmStatus [SpmStatus] spm 상태
  * @property sshFingerPrint [String] ssh
@@ -85,6 +87,7 @@ class HostVo (
     val ksm: Boolean = false,
     val seLinux: SeLinuxMode = SeLinuxMode.DISABLED,
     val hostedEngine: Boolean = false,
+    val hostedEngineVM: Boolean = false,
     val spmPriority: Int = 0,
     val spmStatus: SpmStatus = SpmStatus.NONE,
     val sshFingerPrint: String = "",
@@ -134,6 +137,7 @@ class HostVo (
         private var bKsm: Boolean = false; fun ksm(block: () -> Boolean?) { bKsm = block() ?: false }
         private var bSeLinux: SeLinuxMode = SeLinuxMode.DISABLED; fun seLinux(block: () -> SeLinuxMode?) { bSeLinux = block() ?: SeLinuxMode.DISABLED }
         private var bHostedEngine: Boolean = false; fun hostedEngine(block: () -> Boolean?) { bHostedEngine = block() ?: false }
+        private var bHostedEngineVM: Boolean = false; fun hostedEngineVM(block: () -> Boolean?) { bHostedEngineVM = block() ?: false }
         private var bSpmPriority: Int = 0; fun spmPriority(block: () -> Int?) { bSpmPriority = block() ?: 0 }
         private var bSpmStatus: SpmStatus = SpmStatus.NONE; fun spmStatus(block: () -> SpmStatus?) { bSpmStatus = block() ?: SpmStatus.NONE }
         private var bSshFingerPrint: String = ""; fun sshFingerPrint(block: () -> String?) { bSshFingerPrint = block() ?: "" }
@@ -169,7 +173,7 @@ class HostVo (
         private var bVmVos: List<IdentifiedVo> = listOf(); fun vmVos(block: () -> List<IdentifiedVo>?) { bVmVos = block() ?: listOf() }
         private var bUsageDto: UsageDto = UsageDto(); fun usageDto(block: () -> UsageDto?) { bUsageDto = block() ?: UsageDto() }
 
-        fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, /*bVmTotalCnt, bVmActiveCnt,*/ bVmSizeVo, bVmMigratingCnt, bVgpu, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos, bUsageDto)
+        fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bHostedEngineVM, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, /*bVmTotalCnt, bVmActiveCnt,*/ bVmSizeVo, bVmMigratingCnt, bVgpu, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos, bUsageDto)
     }
     companion object {
         inline fun builder(block: HostVo.Builder.() -> Unit): HostVo = HostVo.Builder().apply(block).build()
@@ -197,13 +201,18 @@ fun Host.toHostMenu(conn: Connection, usageDto: UsageDto?): HostVo {
         conn.findDataCenter(it).getOrNull()
     }
 
+    val hostedVm = conn.findAllVmsFromHost(this@toHostMenu.id())
+        .getOrDefault(listOf())
+        .any { it.origin() == "managed_hosted_engine" }
+
     return HostVo.builder {
         id { this@toHostMenu.id() }
         name { this@toHostMenu.name() }
         comment { this@toHostMenu.comment() }
         status { this@toHostMenu.status() }
-        ksm { this@toHostMenu.ksm().enabled() }
+//        ksm { this@toHostMenu.ksm().enabled() }
         hostedEngine { this@toHostMenu.hostedEnginePresent() }
+        hostedEngineVM { hostedVm }
         address { this@toHostMenu.address() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }

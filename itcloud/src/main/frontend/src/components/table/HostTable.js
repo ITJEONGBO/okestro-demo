@@ -38,20 +38,19 @@ const HostTable = ({
         data={hosts.map((host) => ({
           ...host,
           icon: renderStatusIcon(host.status),
-          ksm: host?.ksm ? 'o' : 'x',
           hostedEngine: 
-            host?.hostedEngine && host?.ksm ? (
-                <FontAwesomeIcon 
-                    icon={faPencil} 
-                    fixedWidth 
-                    style={{ color: 'gold', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
-                />
+            host?.hostedEngine && host?.hostedEngineVM ? (
+              <FontAwesomeIcon 
+                  icon={faPencil} 
+                  fixedWidth 
+                  style={{ color: 'gold', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
+              />
             ) : host?.hostedEngine ? (
-                <FontAwesomeIcon 
-                    icon={faPencil} 
-                    fixedWidth 
-                    style={{ color: 'grey', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
-                />
+              <FontAwesomeIcon 
+                  icon={faPencil} 
+                  fixedWidth 
+                  style={{ color: 'grey', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
+              />
             ) : (''),
           status: host?.status,
           spmStatus: host?.spmStatus === 'NONE' ? '보통' : host?.spmStatus,

@@ -200,10 +200,6 @@ class HostServiceImpl(
 
 ): BaseService(), ItHostService {
 	@Autowired private lateinit var hostConfigurationRepository: HostConfigurationRepository
-	@Autowired private lateinit var hostSamplesHistoryRepository: HostSamplesHistoryRepository
-	@Autowired private lateinit var hostInterfaceSampleHistoryRepository: HostInterfaceSampleHistoryRepository
-	@Autowired private lateinit var vmSamplesHistoryRepository: VmSamplesHistoryRepository
-	@Autowired private lateinit var vmInterfaceSamplesHistoryRepository: VmInterfaceSamplesHistoryRepository
 	@Autowired private lateinit var itGraphService: ItGraphService
 	@Autowired private lateinit var rutil: RutilProperties
 
