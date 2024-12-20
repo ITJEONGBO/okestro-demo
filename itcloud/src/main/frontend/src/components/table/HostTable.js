@@ -3,7 +3,8 @@ import TablesOuter from './TablesOuter';
 import TableRowClick from './TableRowClick';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh } from '@fortawesome/free-solid-svg-icons';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { renderHostStatusIcon } from '../util/format';
 
 const HostTable = ({
   columns,
@@ -16,19 +17,6 @@ const HostTable = ({
     navigate(`/computing/hosts/${id}`);
   };
 
-  const renderStatusIcon = (status) => {
-    if (status === 'UP') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'green', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    } else if (status === 'DOWN') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-    } else if (status === 'MAINTENANCE') {
-      return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
-    } else if (status === 'REBOOT') {
-      return <FontAwesomeIcon icon={faRefresh} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
-    }
-    return status;
-  };
-
 
   return (
     <>
@@ -37,7 +25,7 @@ const HostTable = ({
         columns={columns}
         data={hosts.map((host) => ({
           ...host,
-          icon: renderStatusIcon(host.status),
+          icon: renderHostStatusIcon(host.status),
           hostedEngine: 
             host?.hostedEngine && host?.hostedEngineVM ? (
               <FontAwesomeIcon 

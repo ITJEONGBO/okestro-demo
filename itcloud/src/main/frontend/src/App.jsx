@@ -6,31 +6,32 @@ import { Toaster, toast } from 'react-hot-toast';
 import './App.css';
 import Header from './components/Header/Header';
 import MainOuter from './components/MainOuter';
-import Dashboard from './components/Dashboard';
-import Error from './components/Error';
 
 import Login from './page/Login';
-import AllDomain from './components/Storage/AllDomain';
+import Dashboard from './components/Dashboard';
 import Setting from './components/Setting/Setting';
-import NetworkDetail from './components/Network/NetworkDetail';
-import TemplateDetail from './components/Computing/TemplateDetail';
-import AllVm from './components/Computing/AllVm';
-import AllDisk from './components/Storage/AllDisk';
 import Event from './components/Event';
-import VmDetail from './components/Computing/VmDetail';
+import Error from './components/Error';
+
+import AllVm from './components/Computing/AllVm';
+import AllTemplates from './components/Computing/templatejs/AllTemplates';
+import AllNetwork from './components/Network/AllNetwork';
+import AllDomain from './components/Storage/AllDomain';
+import AllDisk from './components/Storage/AllDisk';
 
 import RutilManager from './components/Computing/RutilManager';
 import DataCenterInfo from './components/Computing/datacenterjs/DataCenterInfo';
 import ClusterInfo from './components/Computing/clusterjs/ClusterInfo';
 import HostInfo from './components/Computing/hostjs/HostInfo';
-
-import Templates from './components/Computing/Rutil/Templates';
-import DomainInfo from './components/Storage/domainjs/DomainInfo';
+import VmDetail from './components/Computing/VmDetail';
 import TemplateInfo from './components/Computing/templatejs/TemplateInfo';
-import DiskInfo from './components/Storage/diskjs/DiskInfo';
-import AllNetwork from './components/Network/AllNetwork';
 import NetworkInfo from './components/Network/networkjs/NetworkInfo';
-import AllTemplates from './components/Computing/templatejs/AllTemplates';
+import DomainInfo from './components/Storage/domainjs/DomainInfo';
+import DiskInfo from './components/Storage/diskjs/DiskInfo';
+
+// import NetworkDetail from './components/Network/NetworkDetail';
+// import TemplateDetail from './components/Computing/TemplateDetail';
+// import Templates from './components/Computing/Rutil/Templates';
 
 
 const App = () => {
@@ -119,18 +120,14 @@ const App = () => {
               <Route path="/computing/vms/templates" element={<AllTemplates />} />
               <Route path="/computing/templates/:id" element={<TemplateInfo />} />
               <Route path="/computing/templates/:id/:section" element={<TemplateInfo />} />
-              {/* <Route path="/computing/vms/templatesdetail" element={<TemplateDetail />} /> */}
-
-              
+                            
               <Route path="/networks/rutil-manager" element={<RutilManager />} />
               <Route path="/networks/rutil-manager/:section" element={<RutilManager />} />
 
-              {/* <Route path="/networks" element={<Network />} /> */}
               <Route path="/networks" element={<AllNetwork />} />
               <Route path="/networks/datacenters/:id/:section" element={<DataCenterInfo />} />
               <Route path="/networks/:id" element={<NetworkInfo />} /> 
               <Route path="/networks/:id/:section" element={<NetworkInfo />} /> 
-              {/* <Route path="/networks/:id/:section" element={<NetworkDetail />} />  */}
 
               <Route path="/storages/rutil-manager" element={<RutilManager />} />
               <Route path="/storages/rutil-manager/:section" element={<RutilManager />} />
@@ -148,24 +145,6 @@ const App = () => {
               <Route path="/settings" element={<Setting />} />
               <Route path="/settings/:section" element={<Setting />} />
               <Route path="/error" element={<Error />} />
-
- 
-              {/*임시(삭제예정) */}
-              {/* <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} /> */}
-              {/* <Route path="/example" element={<Example />} /> */}
-              {/* <Route path="/storages/disks/domain" element={<StorageDomainDetail />} /> */}
-              {/* <Route path="/computing/clusters/detail" element={<ClusterName />} />  */}
-            
-            
-              {/* <Route path="/computing/datacenters" element={<DataCenters />} /> */}
-              {/* <Route path="/networks/datacenters/:id" element={<DataCenterInfo />} /> */}
-              {/* <Route path="/storages/datacenters/:id" element={<DataCenterInfo />} /> */}
-              {/* <Route path="/computing/clusters" element={<Clusters />} /> */}
-              {/* <Route path="/computing/host" element={<Host />} /> */}
-              {/* <Route path="/computing/templates" element={<Templates />} /> */}
-              {/* <Route path="/storage-domainpart" element={<DomainParts />} /> */}
-   
-
             </Routes>
           </MainOuter>
           </>

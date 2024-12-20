@@ -1,29 +1,29 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
-import NavButton from '../navigation/NavButton';
-import HeaderButton from '../button/HeaderButton';
-import Footer from '../footer/Footer';
-import NetworkDetailGeneral from '../zNotuse/NetworkDetailGeneral';
+import NavButton from '../../navigation/NavButton';
+import HeaderButton from '../../button/HeaderButton';
+import Footer from '../../footer/Footer';
+import NetworkDetailGeneral from '../../zNotuse/NetworkDetailGeneral';
 import { 
   useNetworkById, 
-} from '../../api/RQHook';
+} from '../../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTimes,
   faInfoCircle,
   faFileEdit,
 } from '@fortawesome/free-solid-svg-icons'
-import TableOuter from '../table/TableOuter';
-import Path from '../Header/Path';
-import NetworkVnicprofile from '../zNotuse/NetworkVnicprofile';
-import NetworkCluster from '../zNotuse/NetworkCluster';
-import NetworkHost from '../zNotuse/NetworkHost';
-import NetworkVm from '../zNotuse/NetworkVm';
-import NetworkTemplate from '../zNotuse/NetworkTemplate';
-import LogicalNetworkEdit from '../Modal/LogicalNetworkEdit';
-import DeleteModal from '../Modal/DeleteModal';
-import NetworkNewModal from '../Modal/NetworkNewModal';
+import TableOuter from '../../table/TableOuter';
+import Path from '../../Header/Path';
+import NetworkVnicprofile from '../../zNotuse/NetworkVnicprofile';
+import NetworkCluster from '../../zNotuse/NetworkCluster';
+import NetworkHost from '../../zNotuse/NetworkHost';
+import NetworkVm from '../../zNotuse/NetworkVm';
+import NetworkTemplate from '../../zNotuse/NetworkTemplate';
+import LogicalNetworkEdit from '../../Modal/LogicalNetworkEdit';
+import DeleteModal from '../../Modal/DeleteModal';
+import NetworkModal from '../../Modal/NetworkModal';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   
@@ -283,7 +283,7 @@ useEffect(() => {
       </div>
       <Suspense>
         {modals.edit && (
-          <NetworkNewModal
+          <NetworkModal
             isOpen={modals.edit}
             onRequestClose={() => toggleModal('edit', false)}
             editMode={true}

@@ -10,11 +10,13 @@ import NetworkClusterModal from "../../Modal/NetworkClusterModal";
 const NetworkClusters = ({ networkId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); 
 
-  const renderStatusIcon = (status) => {
-    if (status === 'OPERATIONAL') {
+  const renderStatusIcon = (connect, status) => {
+    if (connect && status === 'OPERATIONAL') {
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    } else {
+    } else if(connect && status === 'NON_OPERATIONAL'){
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+    } else if(!connect){
+      return ''
     }
   };
   
@@ -26,10 +28,16 @@ const NetworkClusters = ({ networkId }) => {
   } = useAllClustersFromNetwork(networkId, (e) => ({
     ...e,
     name: e?.name,
-    // TODO 연결된 네트워크 값 구해야함
-    connect: e?.name === null ? <input type="checkbox" checked disabled/> : <input type="checkbox" disabled/>,
-    status: renderStatusIcon(e?.networkVo?.status),
+    connect: e?.connected ? <input type="checkbox" checked disabled/> : <input type="checkbox" disabled/>,
+    status: renderStatusIcon(e?.connected, e?.networkVo?.status),
     required: e?.networkVo?.required === true ? <input type="checkbox" checked disabled/> : <input type="checkbox" disabled/>,
+    networkRole: [
+      e?.networkVo?.usage?.management === true ? '관리' : null,
+      e?.networkVo?.usage?.display === true ? '출력' : null,
+      e?.networkVo?.usage?.migration === true ? '마이그레이션' : null,
+      e?.networkVo?.usage?.gluster === true ? '글러스터' : null,
+      e?.networkVo?.usage?.defaultRoute === true ? '기본라우팅' : null,
+    ].filter(Boolean).join('/'),
   }));
 
   return (
@@ -40,7 +48,7 @@ const NetworkClusters = ({ networkId }) => {
     
       <TablesOuter
         columns={TableInfo.CLUSTERS_FRON_NETWORK}
-        data={clusters}
+        data={clusters || []}
       />
 
       <NetworkClusterModal

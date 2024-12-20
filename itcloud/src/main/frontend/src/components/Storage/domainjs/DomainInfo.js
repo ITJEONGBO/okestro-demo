@@ -7,7 +7,7 @@ import Footer from '../../footer/Footer';
 import '../css/StorageDomainDetail.css';
 import { useDomainById } from '../../../api/RQHook';
 import Path from '../../Header/Path';
-import DomainGenerals from './DomainGenerals';
+import DomainGeneral from './DomainGeneral';
 import DomainDatacenters from './DomainDatacenters';
 import DomainVms from './DomainVms';
 import DomainEvents from './DomainEvents';
@@ -23,10 +23,7 @@ const DomainInfo = () => {
   const { id: domainId, section } = useParams();
   const {
     data: domain,
-    status: domainStatus,
-    isRefetching: isDomainRefetching,
     refetch: domainRefetch,
-    isError: isDomainError,
     error: domainError,
     isLoading: isDomainLoading,
   } = useDomainById(domainId, (e) => ({
@@ -74,7 +71,7 @@ const DomainInfo = () => {
 
   const renderSectionContent = () => {
     const SectionComponent = {
-      general: DomainGenerals,
+      general: DomainGeneral,
       datacenters: DomainDatacenters,
       vms: DomainVms,
       disks: DomainDisks,

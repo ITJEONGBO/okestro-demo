@@ -1,16 +1,16 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { faFileEdit } from '@fortawesome/free-solid-svg-icons';
-import NavButton from '../navigation/NavButton';
-import HeaderButton from '../button/HeaderButton';
-import Footer from '../footer/Footer';
+import NavButton from '../../navigation/NavButton';
+import HeaderButton from '../../button/HeaderButton';
+import Footer from '../../footer/Footer';
 import './css/Network.css';
-import { useNetwork } from '../../api/RQHook';
-import Path from '../Header/Path';
+import { useNetwork } from '../../../api/RQHook';
+import Path from '../../Header/Path';
 import NetworkGenerals from './NetworkGenerals';
 
-const NetworkModal = React.lazy(() => import('../Modal/NetworkModal'));
-const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
+const NetworkModal = React.lazy(() => import('../../Modal/NetworkModal'));
+const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
 const NetworkInfo = () => {
   const { id: networkId, section } = useParams();

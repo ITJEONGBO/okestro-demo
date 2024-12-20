@@ -142,8 +142,15 @@ fun Connection.expectDataCenterDeleted(dataCenterId: String, timeout: Long = 600
 fun Connection.srvClustersFromDataCenter(dataCenterId: String): ClustersService =
 	this.srvDataCenter(dataCenterId).clustersService()
 
-fun Connection.findAllClustersFromDataCenter(dataCenterId: String): Result<List<Cluster>> = runCatching {
-	this.srvClustersFromDataCenter(dataCenterId).list().send().clusters()
+fun Connection.findAllClustersFromDataCenter(dataCenterId: String, search: String = "", follow: String = ""): Result<List<Cluster>> = runCatching {
+	if (search.isNotEmpty() && follow.isNotEmpty())
+		this.srvClustersFromDataCenter(dataCenterId).list().search(search).follow(follow).send().clusters()
+	else if (search.isNotEmpty())
+		this.srvClustersFromDataCenter(dataCenterId).list().search(search).send().clusters()
+	else if (follow.isNotEmpty())
+		this.srvClustersFromDataCenter(dataCenterId).list().follow(follow).send().clusters()
+	else
+		this.srvClustersFromDataCenter(dataCenterId).list().send().clusters()
 }.onSuccess {
 	Term.DATACENTER.logSuccessWithin(Term.CLUSTER,"목록조회", dataCenterId)
 }.onFailure {

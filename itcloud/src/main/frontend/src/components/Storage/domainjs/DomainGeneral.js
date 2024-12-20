@@ -1,29 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDomainById } from '../../../api/RQHook';
+import { formatBytesToGBToFixedZero, zeroValue } from '../../util/format';
 
-const DomainGenerals = ({ domainId }) => {
+const DomainGeneral = ({ domainId }) => {
   const {
     data: domain,
-    status: domainStatus,
-    isRefetching: isDomainRefetching,
     refetch: domainRefetch,
-    isError: isDomainError,
     error: domainError,
     isLoading: isDomainLoading,
   } = useDomainById(domainId, (e) => ({
     ...e,
   }));
 
-  function formatBytesToGB(bytes) {
-    return (bytes / (1024 * 1024 * 1024)).toFixed(0);
-  }
-
   function overCommit() {
     return ((domain?.commitedSize / domain?.diskSize) * 100).toFixed(0);
-  }
-
-  function zeroValue(size) {
-    return size < 1 ? "< 1 GB" : `${size} GB`;
   }
 
   return (
@@ -38,19 +28,19 @@ const DomainGenerals = ({ domainId }) => {
               </tr>
               <tr>
                 <th>크기:</th>
-                <td>{zeroValue(formatBytesToGB(domain?.diskSize))}</td>
+                <td>{zeroValue(formatBytesToGBToFixedZero(domain?.diskSize))}</td>
               </tr>
               <tr>
                 <th>사용 가능:</th>
-                <td>{zeroValue(formatBytesToGB(domain?.availableSize))}</td>
+                <td>{zeroValue(formatBytesToGBToFixedZero(domain?.availableSize))}</td>
               </tr>
               <tr>
                 <th>사용됨:</th>
-                <td>{zeroValue(formatBytesToGB(domain?.usedSize))}</td>
+                <td>{zeroValue(formatBytesToGBToFixedZero(domain?.usedSize))}</td>
               </tr>
               <tr>
                 <th>할당됨:</th>
-                <td>{zeroValue(formatBytesToGB(domain?.commitedSize))}</td>
+                <td>{zeroValue(formatBytesToGBToFixedZero(domain?.commitedSize))}</td>
               </tr>
               <tr>
                 <th>오버 할당 비율:</th>
@@ -72,9 +62,7 @@ const DomainGenerals = ({ domainId }) => {
               </tr> */}
               <tr>
                 <th>디스크 공간 부족 경고 표시:</th>
-                <td>{domain?.warning}% ({(formatBytesToGB(domain?.diskSize) / domain?.warning).toFixed(0)} GB)</td>
-                {/* virtualSize: sizeToGB(disk?.virtualSize) < 1 ? "< 1 GB" : `${sizeToGB(disk?.virtualSize).toFixed(0)} GB`,
-            actualSize: sizeToGB(disk?.actualSize) < 1 ? "< 1 GB" : `${sizeToGB(disk?.actualSize).toFixed(0)} GB`, */}
+                <td>{domain?.warning}% ({(formatBytesToGBToFixedZero(domain?.diskSize) / domain?.warning).toFixed(0)} GB)</td>
               </tr>
               <tr>
                 <th>심각히 부족한 디스크 공간의 동작 차단:</th>
@@ -88,4 +76,4 @@ const DomainGenerals = ({ domainId }) => {
     );
   };
   
-  export default DomainGenerals;
+  export default DomainGeneral;

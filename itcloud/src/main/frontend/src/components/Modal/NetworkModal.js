@@ -1,1056 +1,498 @@
-// import React, { useState } from 'react';
-// import Modal from 'react-modal';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect } from 'react';
+import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { useAddNetwork, useAllClusters, useAllDataCenters, useDataCenter, useEditNetwork, useNetworkById } from '../../api/RQHook';
+import { Tooltip } from 'react-tooltip';
+import '../Modal/css/MNetwork.css';
 
-// const NetworkModal = ({ isOpen, onRequestClose, onSubmit }) => {
-//   const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
-//   const [secondModalOpen, setSecondModalOpen] = useState(false);
+const NetworkModal = ({ 
+    isOpen, 
+    onRequestClose, 
+    editMode = false,
+    networkId // 네트워크 ID를 받아서 편집 모드에서 사용
+  }) => {
+    const [id, setId] = useState('');
+    const [datacenterVoId, setDatacenterVoId] = useState('');
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [comment, setComment] = useState('');
+    const [portIsolation,setPortIsolation] = useState('');
+    const [mtu, setMtu] = useState('');
+    const [vlan, setVlan] = useState('');
+    const [usageVm, setUsageVm] = useState(false);
+    const [vmNetwork, setVmNetwork] = useState('');
+    const [clsuterVoId, setClusterVoId] = useState('');
+    const [clsuterVoName, setClusterVoName] = useState('');
 
-//   const handleTabClick = (tab) => setSelectedTab(tab);
+    const { mutate: addNetwork } = useAddNetwork();
+    const { mutate: editNetwork } = useEditNetwork();
+    
+  
+    //  네트워크 데이터
+    const { 
+        data: network, 
+        refetch: refetchNetworks,
+        isLoading, 
+        isError 
+    } = useNetworkById(networkId);
 
-//   const handleFormSubmit = (e) => {
-//     e.preventDefault();
-//     onSubmit(); // 부모 컴포넌트로 폼 데이터를 전달
-//   };
+    useEffect(() => {
+      console.log("네트워크아이디:", networkId);
+      console.log("네트워크 데이터 로딩 에러:", isError);
+    
+      if (network) {
+        console.log("네트워크 데이터:", network);
+        // 네트워크 데이터를 사용하여 폼 상태를 설정
+        setId(network.id);
+        setDatacenterVoId(network.datacenterVo?.id || '');
+        setName(network.name);
+        setDescription(network.description);
+        setComment(network.comment);
+        setPortIsolation(network.portIsolation);
+        setVlan(network.vlan);
+        setVmNetwork(network.vmNetwork);
+        setUsageVm(network.usage?.vm || false);
+        setMtu(network.mtu || '1500');
+        setClusterVoId(network?.clusterVo?.id || '');
+        setClusterVoName(network?.clusterVo?.name || '');
+      } else if (!isLoading && !network) {
+        console.log("네트워크 데이터가 없습니다.");
+      }
+    }, [network, isLoading, isError]);
+    
+    
+    // 클러스터 가져오기
+    const {
+        data: clusters,
+      } = useAllClusters((e) => ({
+        ...e,
+    }));
+    const [clusterConnections, setClusterConnections] = useState([]);
 
-//   return (
-//     <Modal
-//       isOpen={isOpen}
-//       onRequestClose={onRequestClose}
-//       contentLabel="새로 만들기"
-//       className="Modal"
-//       overlayClassName="Overlay"
-//       shouldCloseOnOverlayClick={false}
-//     >
-//       <div className="network_new_popup">
-//         <div className="popup_header">
-//           <h1>새 논리적 네트워크</h1>
-//           <button onClick={onRequestClose}>
-//             <FontAwesomeIcon icon={faTimes} fixedWidth />
-//           </button>
-//         </div>
+    useEffect(() => {
+      if (clusters) {
+        setClusterConnections(
+          clusters.map((cluster) => ({
+            ...cluster,
+            isConnected: true, // 처음엔 모두 연결 상태로 설정
+            isRequired: true, // 처음엔 모두 필수 상태로 설정되지 않음
+          }))
+        );
+      }
+    }, [clusters]);
 
-//         <div className="flex">
-//           <div className="network_new_nav">
-//             <div
-//               id="network_new_common_btn"
-//               className={selectedTab === 'network_new_common_btn' ? 'active-tab' : 'inactive-tab'}
-//               onClick={() => handleTabClick('network_new_common_btn')}
-//             >
-//               일반
-//             </div>
-//             <div
-//               id="network_new_cluster_btn"
-//               className={selectedTab === 'network_new_cluster_btn' ? 'active-tab' : 'inactive-tab'}
-//               onClick={() => handleTabClick('network_new_cluster_btn')}
-//             >
-//               클러스터
-//             </div>
-//             <div
-//               id="network_new_vnic_btn"
-//               className={selectedTab === 'network_new_vnic_btn' ? 'active-tab' : 'inactive-tab'}
-//               onClick={() => handleTabClick('network_new_vnic_btn')}
-//             >
-//               vNIC 프로파일
-//             </div>
-//           </div>
+    
+    // 데이터센터 가져오기
+    const {
+      data: datacenters,
+      status: datacentersStatus,
+      isRefetching: isDatacentersRefetching,
+      refetch: refetchDatacenters,
+      isError: isDatacentersError,
+      error: datacentersError,
+      isLoading: isDatacentersLoading
+    } = useAllDataCenters((e) => ({
+      ...e,
+    }));
+  
+    
+    useEffect(() => {
+      if (editMode && network) {
+        setId(network.id);
+        setDatacenterVoId(network.datacenterVo?.id || '');
+        setName(network.name);
+        setDescription(network.description);
+        setComment(network.comment);
+        setPortIsolation(network.portIsolation);
+        setVlan(network.vlan);
+        setVmNetwork(network.vmNetwork);
+        setUsageVm(network.usage?.vm || true);
+        setMtu(network.mtu);
+        setClusterVoId(network?.clusterVo?.id || '');
+        setClusterVoName(network?.clusterVo?.name || '');
+      } else {
+        resetForm();
+        setDatacenterVoId(networkId || datacenters?.[0]?.id || '');
+      }
+    }, [isOpen, editMode, network, datacenters, networkId]);
+    
+    
+      const resetForm = () => {
+        setId('');
+        setName('');
+        setDescription('');
+        setComment('');
+        setVmNetwork('');
+        setMtu('1500');
+        setUsageVm(true);
+        setVlan('0')
+      };
 
-//           {/* 일반 */}
-//           {selectedTab === 'network_new_common_btn' && (
-//             <form id="network_new_common_form" onSubmit={handleFormSubmit}>
-//               <div className="network_first_contents">
-//                 <div className="network_form_group">
-//                   <label htmlFor="cluster">데이터 센터</label>
-//                   <select id="cluster">
-//                     <option value="default">Default</option>
-//                   </select>
-//                 </div>
-//                 <div className="network_form_group">
-//                   <div className="checkbox_group">
-//                     <label htmlFor="name">이름</label>
-//                     <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth />
-//                   </div>
-//                   <input type="text" id="name" />
-//                 </div>
-//                 <div className="network_form_group">
-//                   <label htmlFor="description">설명</label>
-//                   <input type="text" id="description" />
-//                 </div>
-//                 <div className="network_form_group">
-//                   <label htmlFor="comment">코멘트</label>
-//                   <input type="text" id="comment" />
-//                 </div>
-//               </div>
+      // 클러스터 연결 정보를 데이터에 추가
+      const clusterConnectionData = clusterConnections.map((cluster) => ({
+        id: cluster.id,
+        name: cluster.name,
+        isConnected: cluster.isConnected,
+        isRequired: cluster.isRequired,
+      }));
+      const handleFormSubmit = () => {
+        const selectedDataCenter = datacenters.find((dc) => dc.id === datacenterVoId);
+        if (!selectedDataCenter) {
+          alert("데이터 센터를 선택해주세요.");
+          return;
+        }
+    
+        if(name === ''){
+          alert("이름을 입력해주세요.");
+          return;
+        }
+        const dataToSubmit = {
+          datacenterVo: {
+            id: selectedDataCenter.id,
+            name: selectedDataCenter.name,
+          },
+          name,
+          description,
+          comment,
+          portIsolation: Boolean(portIsolation), // 빈 문자열을 false로 처리
+          mtu: mtu ? parseInt(mtu, 10) : 1500, // mtu가 빈 값이면 1500 설정
+          vlan: vlan ? parseInt(vlan, 10) : 0, // 빈 문자열을 null로 설정
+          usage: {
+            defaultRoute: false,
+            display: false,
+            gluster: false,
+            management: false,
+            migration: false,
+            vm: true 
+          },
+          vmNetwork:  true,
+          clusterConnections: clusterConnectionData, 
+        };
+        
+    
+      console.log('Data to submit:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
+  // 편집 모드에서 관리 네트워크 수정 제한 로직 추가
+  if (editMode && network.usage?.management) {
+    alert('관리 네트워크는 수정할 수 없습니다.');
+    return;
+  }
 
-//               <div className="network_second_contents">
-//                 <span>네트워크 매개변수</span>
-//                 <div className="network_form_group">
-//                   <label htmlFor="network_label">네트워크 레이블</label>
-//                   <input type="text" id="network_label" />
-//                 </div>
-//                 <div className="network_checkbox_type1">
-//                   <div className="checkbox_group">
-//                     <input type="checkbox" id="valn_tagging" name="valn_tagging" />
-//                     <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
-//                   </div>
-//                   <input type="text" id="valn_tagging_input" disabled />
-//                 </div>
-//                 <div className="network_checkbox_type2">
-//                   <input type="checkbox" id="vm_network" name="vm_network" />
-//                   <label htmlFor="vm_network">가상 머신 네트워크</label>
-//                 </div>
-//                 <div className="network_checkbox_type2">
-//                   <input type="checkbox" id="photo_separation" name="photo_separation" />
-//                   <label htmlFor="photo_separation">포토 분리</label>
-//                 </div>
-//                 <div className="network_radio_group">
-//                   <div style={{ marginTop: '0.2rem' }}>MTU</div>
-//                   <div>
-//                     <div className="radio_option">
-//                       <input type="radio" id="default_mtu" name="mtu" value="default" checked />
-//                       <label htmlFor="default_mtu">기본값 (1500)</label>
-//                     </div>
-//                     <div className="radio_option">
-//                       <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
-//                       <label htmlFor="user_defined_mtu">사용자 정의</label>
-//                     </div>
-//                   </div>
-//                 </div>
+  if (editMode) {
+    dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
+    editNetwork({
+      networkId: id,
+      networkData: dataToSubmit
+    }, {
+      onSuccess: () => {
+        alert('네트워크 편집 완료');
+        onRequestClose();
+      },
+      onError: (error) => {
+        console.error('Error editing network:', error);
+      }
+    });
+  } else {
+    addNetwork(dataToSubmit, {
+      onSuccess: () => {
+        alert('네트워크 생성 완료');
+        onRequestClose();
+      },
+      onError: (error) => {
+        console.error('Error adding network:', error);
+      }
+    });
+  }
+};
+    
+    
+  
+  const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
+  const handleTabClick = (tab) => setSelectedTab(tab);
 
-//                 <div className="network_form_group">
-//                   <label htmlFor="host_network_qos">호스트 네트워크 QoS</label>
-//                   <select id="host_network_qos">
-//                     <option value="default">[제한없음]</option>
-//                   </select>
-//                 </div>
-//                 <div className="popup_plus_btn">
-//                   <div className="popup_plus" onClick={() => setSecondModalOpen(true)}>새로만들기</div>
-//                 </div>
-
-//                 {/* QoS 새로 만들기 모달 */}
-//                 <Modal
-//                   isOpen={secondModalOpen}
-//                   onRequestClose={() => setSecondModalOpen(false)}
-//                   contentLabel="추가 모달"
-//                   className="SecondModal"
-//                   overlayClassName="Overlay"
-//                 >
-//                   <div className="plus_popup_outer">
-//                     <div className="popup_header">
-//                       <h1>새 호스트 네트워크 Qos</h1>
-//                       <button onClick={() => setSecondModalOpen(false)}>
-//                         <FontAwesomeIcon icon={faTimes} fixedWidth />
-//                       </button>
-//                     </div>
-
-//                     <div className="p-1" style={{ borderBottom: '1px solid #d3d3d3' }}>
-//                       <div className="network_form_group">
-//                         <label htmlFor="network_provider">네트워크 공급자</label>
-//                         <select id="network_provider">
-//                           <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
-//                         </select>
-//                       </div>
-//                       <div className="network_form_group">
-//                         <label htmlFor="qos_name">QoS 이름</label>
-//                         <input type="text" id="qos_name" />
-//                       </div>
-//                       <div className="network_form_group">
-//                         <label htmlFor="description">설명</label>
-//                         <input type="text" id="description" />
-//                       </div>
-//                     </div>
-
-//                     <div className="p-1">
-//                       <span className="network_form_group font-bold">아웃바운드</span>
-//                       <div className="network_form_group">
-//                         <label htmlFor="weighted_share">가중 공유</label>
-//                         <input type="text" id="weighted_share" />
-//                       </div>
-//                       <div className="network_form_group">
-//                         <label htmlFor="speed_limit">속도 제한 [Mbps]</label>
-//                         <input type="text" id="speed_limit" />
-//                       </div>
-//                       <div className="network_form_group">
-//                         <label htmlFor="commit_rate">커밋 속도 [Mbps]</label>
-//                         <input type="text" id="commit_rate" />
-//                       </div>
-//                     </div>
-
-//                     <div className="edit_footer">
-//                       <button>가져오기</button>
-//                       <button onClick={() => setSecondModalOpen(false)}>취소</button>
-//                     </div>
-//                   </div>
-//                 </Modal>
-
-//                 <div className="network_checkbox_type2">
-//                   <input type="checkbox" id="dns_settings" name="dns_settings" />
-//                   <label htmlFor="dns_settings">DNS 설정</label>
-//                 </div>
-//               </div>
-//             </form>
-//           )}
-
-//           {/* 클러스터 */}
-//           {selectedTab === 'network_new_cluster_btn' && (
-//             <form id="network_new_cluster_form" onSubmit={handleFormSubmit}>
-//               <span>클러스터에서 네트워크를 연결/분리</span>
-//               <div>
-//                 <table className="network_new_cluster_table">
-//                   <thead>
-//                     <tr>
-//                       <th>이름</th>
-//                       <th>
-//                         <div className="checkbox_group">
-//                           <input type="checkbox" id="connect_all" />
-//                           <label htmlFor="connect_all">모두 연결</label>
-//                         </div>
-//                       </th>
-//                       <th>
-//                         <div className="checkbox_group">
-//                           <input type="checkbox" id="require_all" />
-//                           <label htmlFor="require_all">모두 필요</label>
-//                         </div>
-//                       </th>
-//                     </tr>
-//                   </thead>
-//                   <tbody>
-//                     <tr>
-//                       <td>Default</td>
-//                       <td className="checkbox-group">
-//                         <div className="checkbox_group">
-//                           <input type="checkbox" id="connect_default" />
-//                           <label htmlFor="connect_default">연결</label>
-//                         </div>
-//                       </td>
-//                       <td className="checkbox-group">
-//                         <div className="checkbox_group">
-//                           <input type="checkbox" id="require_default" />
-//                           <label htmlFor="require_default">필수</label>
-//                         </div>
-//                       </td>
-//                     </tr>
-//                   </tbody>
-//                 </table>
-//               </div>
-//             </form>
-//           )}
-
-//           {/* vNIC 프로파일 */}
-//           {selectedTab === 'network_new_vnic_btn' && (
-//             <form id="network_new_vnic_form" onSubmit={handleFormSubmit}>
-//               <span>vNIC 프로파일</span>
-//               <div>
-//                 <input type="text" id="vnic_profile" />
-//                 <div className="checkbox_group">
-//                   <input type="checkbox" id="public" disabled />
-//                   <label htmlFor="public">공개</label>
-//                   <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }} fixedWidth />
-//                 </div>
-//                 <label htmlFor="qos">QoS</label>
-//                 <select id="qos">
-//                   <option value="none">제한 없음</option>
-//                 </select>
-//                 <div className="network_new_vnic_buttons">
-//                   <button>+</button>
-//                   <button>-</button>
-//                 </div>
-//               </div>
-//             </form>
-//           )}
-//         </div>
-
-//         <div className="edit_footer">
-//           <button>OK</button>
-//           <button onClick={onRequestClose}>취소</button>
-//         </div>
-//       </div>
-//     </Modal>
-//   );
-// };
-
-// export default NetworkModal;
+  
+  return (
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      contentLabel={editMode ? '논리 네트워크 수정' : '새로 만들기'}
+      className="Modal"
+      overlayClassName="Overlay"
+      shouldCloseOnOverlayClick={false}
+      
+    >
+      <div className={`network_new_popup ${editMode ? 'edit-mode' : ''}`}>
+        <div className="popup_header">
+        <h1>{editMode ? '논리 네트워크 수정' : '새 논리적 네트워크'}</h1>
+          <button onClick={onRequestClose}>
+            <FontAwesomeIcon icon={faTimes} fixedWidth />
+          </button>
+        </div>
 
 
-
-
-
-              {/* 네트워크(새로 만들기) */}
-            //   <Modal
-            //     isOpen={activePopup === 'makeNetwork'}
-            //     onRequestClose={closePopup}
-            //     contentLabel="새로 만들기"
-            //     className="Modal"
-            //     overlayClassName="Overlay"
-            //     shouldCloseOnOverlayClick={false}
-            // >
-            //     <div className="network_new_popup">
-            //         <div className="popup_header">
-            //             <h1>새 논리적 네트워크</h1>
-            //             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-            //         </div>
-                    
-            //         <div className='flex'>
-            //             <div className="network_new_nav">
-            //                 <div
-            //                     id="network_new_common_btn"
-            //                     className={selectedTab === 'network_new_common_btn' ? 'active-tab' : 'inactive-tab'}
-            //                     onClick={() => handleTabClick('network_new_common_btn')}
-            //                 >
-            //                     일반
-            //                 </div>
-            //                 <div
-            //                     id="network_new_cluster_btn"
-            //                     className={selectedTab === 'network_new_cluster_btn' ? 'active-tab' : 'inactive-tab'}
-            //                     onClick={() => handleTabClick('network_new_cluster_btn')}
-            //                 >
-            //                     클러스터
-            //                 </div>
-            //                 <div
-            //                     id="network_new_vnic_btn"
-            //                     className={selectedTab === 'network_new_vnic_btn' ? 'active-tab' : 'inactive-tab'}
-            //                     onClick={() => handleTabClick('network_new_vnic_btn')}
-            //                     style={{ borderRight: 'none' }}
-            //                 >
-            //                     vNIC 프로파일
-            //                 </div>
-            //             </div>
-
-                        {/* 일반 */}
-                        {/* {selectedTab === 'network_new_common_btn' && (
-                            <form id="network_new_common_form">
-                                <div className="network_first_contents">
-                                    <div className="network_form_group">
-                                        <label htmlFor="cluster">데이터 센터</label>
-                                        <select id="cluster">
-                                            <option value="default">Default</option>
-                                        </select>
-                                    </div>
-                                    <div className="network_form_group">
-                                        <div  className='checkbox_group'>
-                                            <label htmlFor="name">이름</label>
-                                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}fixedWidth/>
-                                        </div>
-                                        <input type="text" id="name" />
-                                    </div>
-                                    <div className="network_form_group">
-                                        <label htmlFor="description">설명</label>
-                                        <input type="text" id="description" />
-                                    </div>
-                                    <div className="network_form_group">
-                                        <label htmlFor="comment">코멘트</label>
-                                        <input type="text" id="comment" />
-                                    </div>
-                                </div>
-
-                                <div className="network_second_contents">
-                                    <span>네트워크 매개변수</span>
-                                    <div className="network_form_group">
-                                        <label htmlFor="network_label">네트워크 레이블</label>
-                                        <input type="text" id="network_label" />
-                                    </div>
-                                    <div className="network_checkbox_type1">
-                                        <div className='checkbox_group'>
-                                            <input type="checkbox" id="valn_tagging" name="valn_tagging" />
-                                            <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
-                                        </div>
-                                        <input type="text" id="valn_tagging_input" disabled />
-                                    </div>
-                                    <div className="network_checkbox_type2">
-                                        <input type="checkbox" id="vm_network" name="vm_network" />
-                                        <label htmlFor="vm_network">가상 머신 네트워크</label>
-                                    </div>
-                                    <div className="network_checkbox_type2">
-                                        <input type="checkbox" id="photo_separation" name="photo_separation" />
-                                        <label htmlFor="photo_separation">포토 분리</label>
-                                    </div>
-                                    <div className="network_radio_group">
-                                        <div style={{ marginTop: '0.2rem' }}>MTU</div>
-                                        <div>
-                                            <div className="radio_option">
-                                                <input type="radio" id="default_mtu" name="mtu" value="default" checked />
-                                                <label htmlFor="default_mtu">기본값 (1500)</label>
-                                            </div>
-                                            <div className="radio_option">
-                                                <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
-                                                <label htmlFor="user_defined_mtu">사용자 정의</label>
-                                            </div>
-                                        </div>
-                                    
-                                    </div>
-                                    <div className="network_form_group">
-                                        <label htmlFor="host_network_qos">호스트 네트워크 QoS</label>
-                                        <select id="host_network_qos">
-                                            <option value="default">[제한없음]</option>
-                                        </select>
-                                </div>
-                                    <div className='popup_plus_btn'>
-                                        <div className="popup_plus" onClick={() => setSecondModalOpen(true)}>새로만들기</div>
-                                    </div>
-                                    
-                                        <Modal
-                                            isOpen={secondModalOpen}
-                                            onRequestClose={() => setSecondModalOpen(false)}
-                                            contentLabel="추가 모달"
-                                            className="SecondModal"
-                                            overlayClassName="Overlay"
-                                        >
-                                                                
-                                        <div className="plus_popup_outer">
-                                            <div className="popup_header">
-                                                <h1>새 호스트 네트워크 Qos</h1>
-                                                <button  onClick={() => setSecondModalOpen(false)}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                                            </div>
-                                            
-                                            <div className='p-1' style={{ borderBottom: '1px solid #d3d3d3' }}>
-                                                <div className="network_form_group">
-                                                    <label htmlFor="network_provider">네트워크 공급자</label>
-                                                    <select id="network_provider">
-                                                    <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
-                                                    </select>
-                                                </div>
-                                                <div className="network_form_group">
-                                                    <label htmlFor="qos_name">QoS 이름</label>
-                                                    <input type="text" id="qos_name" />
-                                                </div>
-                                                <div className="network_form_group">
-                                                    <label htmlFor="description">설명</label>
-                                                    <input type="text" id="description" />
-                                                </div>
-                                                </div>
-
-                                                <div className='p-1'>
-                                                <span className="network_form_group font-bold">아웃바운드</span>
-                                                <div className="network_form_group">
-                                                    <label htmlFor="weighted_share">가중 공유</label>
-                                                    <input type="text" id="weighted_share" />
-                                                </div>
-                                                <div className="network_form_group">
-                                                    <label htmlFor="speed_limit">속도 제한 [Mbps]</label>
-                                                    <input type="text" id="speed_limit" />
-                                                </div>
-                                                <div className="network_form_group">
-                                                    <label htmlFor="commit_rate">커밋 속도 [Mbps]</label>
-                                                    <input type="text" id="commit_rate" />
-                                                </div>
-                                            </div>
-
-
-                                            <div className="edit_footer">
-                                                <button style={{ display: 'none' }}></button>
-                                                <button>가져오기</button>
-                                                <button onClick={() => setSecondModalOpen(false)}>취소</button>
-                                            </div>
-                                        </div>
-                                        
-                                        </Modal>
-                                    <div className="network_checkbox_type2">
-                                        <input type="checkbox" id="dns_settings" name="dns_settings" />
-                                        <label htmlFor="dns_settings">DNS 설정</label>
-                                    </div>
-                                    <span>DB서버</span>
-                                    <div className="network_checkbox_type3">
-                                        <input type="text" id="name" disabled />
-                                        <div>
-                                            <button>+</button>
-                                            <button>-</button>
-                                        </div>
-                                    </div>
-                                    <div className="network_checkbox_type2">
-                                        <input type="checkbox" id="external_vendor_creation" name="external_vendor_creation" />
-                                        <label htmlFor="external_vendor_creation">외부 업체에서 작성</label>
-                                    </div>
-                                    <span>외부</span>
-                                    <div className="network_form_group" style={{ paddingTop: 0 }}>
-                                        <label htmlFor="external_provider">외부 공급자</label>
-                                        <select id="external_provider">
-                                            <option value="default">ovirt-provider-ovn</option>
-                                        </select>
-                                    </div>
-                                    <div className="network_form_group">
-                                        <label htmlFor="network_port_security">네트워크 포트 보안</label>
-                                        <select id="network_port_security">
-                                            <option value="default">활성화</option>
-                                        </select>
-                                    </div>
-                                    <div className="network_checkbox_type2">
-                                        <input type="checkbox" id="connect_to_physical_network" name="connect_to_physical_network" />
-                                        <label htmlFor="connect_to_physical_network">물리적 네트워크에 연결</label>
-                                    </div>
-                                </div>
-                            </form>
-                        )} */}
-
-                        {/* 클러스터 */}
-                        {/* {selectedTab === 'network_new_cluster_btn' && (
-                            <form id="network_new_cluster_form">
-                                <span>클러스터에서 네트워크를 연결/분리</span>
-                                <div>
-                                    <table className="network_new_cluster_table">
-                                        <thead>
-                                            <tr>
-                                                <th>이름</th>
-                                                <th>
-                                                    <div className="checkbox_group">
-                                                        <input type="checkbox" id="connect_all" />
-                                                        <label htmlFor="connect_all"> 모두 연결</label>
-                                                    </div>
-                                                </th>
-                                                <th>
-                                                    <div className="checkbox_group">
-                                                        <input type="checkbox" id="require_all" />
-                                                        <label htmlFor="require_all"> 모두 필요</label>
-                                                    </div>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Default</td>
-                                                <td className="checkbox-group">
-                                                    <div className="checkbox_group">
-                                                        <input type="checkbox" id="connect_default" />
-                                                        <label htmlFor="connect_default"> 연결</label>
-                                                    </div>
-                                                </td>
-                                                <td className="checkbox-group">
-                                                    <div className="checkbox_group">
-                                                        <input type="checkbox" id="require_default" />
-                                                        <label htmlFor="require_default"> 필수</label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </form>
-                        )} */}
-
-                        {/* vNIC 프로파일 */}
-                        {/* {selectedTab === 'network_new_vnic_btn' && (
-                            <form id="network_new_vnic_form">
-                                <span>vNIC 프로파일</span>
-                                <div>
-                                    <input type="text" id="vnic_profile" />
-                                    <div className='checkbox_group'>
-                                        <input type="checkbox" id="public" disabled />
-                                        <label htmlFor="public">공개</label>
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
-                                    </div>
-                                    <label htmlFor="qos">QoS</label>
-                                    <select id="qos">
-                                        <option value="none">제한 없음</option>
-                                    </select>
-                                    <div className="network_new_vnic_buttons">
-                                        <button>+</button>
-                                        <button>-</button>
-                                    </div>
-                                </div>
-                            </form>
-                        )}
-                    </div>
-
-                    <div className="edit_footer">
-                        <button style={{ display: 'none' }}></button>
-                        <button>OK</button>
-                        <button onClick={closePopup}>취소</button>
-                    </div>
+        <div className="flex">
+          {/* 일반 */}
+          {selectedTab === 'network_new_common_btn' && (
+            <form id="network_new_common_form">
+              <div className="network_first_contents">
+                <div className="network_form_group">
+                  <label htmlFor="cluster">데이터 센터</label>
+                  <select
+                    id="data_center"
+                    value={datacenterVoId}
+                    onChange={(e) => setDatacenterVoId(e.target.value)}
+                    disabled={editMode}
+                  >
+                    {datacenters &&
+                      datacenters.map((dc) => (
+                        <option value={dc.id}>
+                          {dc.name}
+                        </option>
+                      ))}
+                  </select>
                 </div>
-            </Modal> */}
+                <div className="network_form_group">
+                  <div className="checkbox_group">
+                    <label htmlFor="name">이름</label>
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
+                      data-tooltip-id="network-name-tooltip"
+                    />
+                    <Tooltip id="network-name-tooltip" className="icon_tooltip" place="top" effect="solid">
+                      네트워크 이름에 공백이 있거나 15자를 초과하는 경우에는 호스트에서 UUID로 대체합니다.
+                    </Tooltip>
+                  </div>
 
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)} 
+                  />
+                </div>
+                <div className="network_form_group">
+                  <label htmlFor="description">설명</label>
+                  <input
+                    type="text"
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)} // onChange 핸들러 추가
+                  />
+                </div>
+                <div className="network_form_group">
+                  <label htmlFor="comment">코멘트</label>
+                  <input
+                    type="text"
+                    id="comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                  />
+                </div>
+              </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{/* 논리네트워크(네트워크추가) 팝업 */}
-{/* <Modal
-isOpen={activePopup === 'newNetwork'}
-onRequestClose={closePopup}
-contentLabel="새로 만들기"
-className="Modal"
-overlayClassName="Overlay"
-shouldCloseOnOverlayClick={false}
->
-<div className="network_new_popup">
-    <div className="popup_header">
-        <h1 class="text-sm">새 논리적 네트워크</h1>
-        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+              <div className="network_second_contents">
+                <div className="network_checkbox_type1">
+    <div className="checkbox_group">
+      <input
+        type="checkbox"
+        id="valn_tagging"
+        name="valn_tagging"
+        checked={vlan !== ''} // vlan이 빈 문자열이 아니면 체크
+        onChange={(e) => setVlan(e.target.checked ? '0' : '')} // 체크되면 '0'으로 초기화, 해제 시 빈 문자열
+      />
+      <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
     </div>
+    <input
+      type="text"
+      id="valn_tagging_input"
+      disabled={vlan === ''} // VLAN 태깅 활성화가 체크되었을 때만 활성화
+      value={vlan}
+      onChange={(e) => setVlan(e.target.value)} // VLAN 입력 값 변경 시 setVlan 호출
+    />
+                </div>
 
-    <div className="network_new_nav">
-        <div
-            id="network_new_common_btn"
-            className={selectedTab === 'network_new_common_btn' ? 'active-tab' : 'inactive-tab'}
-            onClick={() => handleTabClickModal('network_new_common_btn')}
-        >
-            일반
+                <div className="network_checkbox_type2">
+                  <input
+                    type="checkbox"
+                    id="vm_network"
+                    name="vm_network"
+                    checked={usageVm} // Controlled by usageVm state
+                    onChange={(e) => setUsageVm(e.target.checked)}
+                  />
+                  <label htmlFor="vm_network">가상 머신 네트워크</label>
+                </div>
+                <div className="network_checkbox_type2">
+                  <input
+                    type="checkbox"
+                    id="photo_separation"
+                    name="photo_separation"
+                    checked={portIsolation} // Controlled by portIsolation state
+                    onChange={(e) => setPortIsolation(e.target.checked)}
+                  />
+                  <label htmlFor="photo_separation">포토 분리</label>
+                </div>
+
+                <div className="network_radio_group">
+                  <div style={{ marginTop: '0.2rem' }}>MTU</div>
+                  <div>
+                    <div className="radio_option">
+                      <input
+                        type="radio"
+                        id="default_mtu"
+                        name="mtu"
+                        value="default"
+                        checked={mtu === '1500'}
+                        onChange={() => setMtu('1500')} // 기본값 설정
+                      />
+                      <label htmlFor="default_mtu">기본값 (1500)</label>
+                    </div>
+                    <div className="radio_option">
+                      <input
+                        type="radio"
+                        id="user_defined_mtu"
+                        name="mtu"
+                        value="user_defined"
+                        checked={mtu !== '1500'} // 사용자 정의가 선택되었을 때 체크
+                        onChange={() => setMtu('')} // 사용자 정의 시 빈 값으로 설정
+                      />
+                      <label htmlFor="user_defined_mtu">사용자 정의</label>
+                    </div>
+                    <input
+                      type="text"
+                      id="mtu_input"
+                      value={mtu}
+                      onChange={(e) => setMtu(e.target.value)}
+                      disabled={mtu === '1500'} // 사용자 정의가 선택된 경우에만 활성화
+                    />
+                  </div>
+                </div>
+
+                <div className="network_checkbox_type2">
+                  <input type="checkbox" id="dns_settings" name="dns_settings" />
+                  <label htmlFor="dns_settings">DNS 설정</label>
+                </div>
+                <span>DNS서버</span>
+                <div className="network_checkbox_type3">
+                  <input type="text" id="dns_server" disabled />
+                  <div>
+                    <button>+</button>
+                    <button>-</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="network_new_cluster_form" style={{ display: editMode ? 'none' : 'block' }}>
+  <span>클러스터에서 네트워크를 연결/분리</span>
+  <div>
+    <table className="network_new_cluster_table">
+      <thead>
+        <tr>
+          <th>이름</th>
+          <th>
+            <div className="checkbox_group">
+              <input
+                type="checkbox"
+                id="connect_all"
+                checked={clusterConnections.every((cluster) => cluster.isConnected)} // 모든 클러스터가 연결 상태일 경우 체크
+                onChange={(e) => {
+                  const isChecked = e.target.checked;
+                  setClusterConnections((prevState) =>
+                    prevState.map((cluster) => ({
+                      ...cluster,
+                      isConnected: isChecked,
+                    }))
+                  );
+                }}
+              />
+              <label htmlFor="connect_all"> 모두 연결</label>
+            </div>
+          </th>
+          <th>
+            <div className="checkbox_group">
+              <input
+                type="checkbox"
+                id="require_all"
+                checked={clusterConnections.every((cluster) => cluster.isRequired)} // 모든 클러스터가 필수 상태일 경우 체크
+                onChange={(e) => {
+                  const isChecked = e.target.checked;
+                  setClusterConnections((prevState) =>
+                    prevState.map((cluster) => ({
+                      ...cluster,
+                      isRequired: isChecked,
+                    }))
+                  );
+                }}
+              />
+              <label htmlFor="require_all"> 모두 필요</label>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {clusterConnections.map((cluster, index) => (
+          <tr key={cluster.id}>
+            <td>{cluster.name}</td>
+            <td className="checkbox-group">
+              <div className="checkbox_group">
+                <input
+                  type="checkbox"
+                  id={`connect_${cluster.id}`}
+                  checked={cluster.isConnected} // 연결 상태
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setClusterConnections((prevState) =>
+                      prevState.map((c, i) =>
+                        i === index
+                          ? { ...c, isConnected: isChecked }
+                          : c
+                      )
+                    );
+                  }}
+                />
+                <label htmlFor={`connect_${cluster.id}`}> 연결</label>
+              </div>
+            </td>
+            <td className="checkbox-group">
+              <div className="checkbox_group">
+                <input
+                  type="checkbox"
+                  id={`require_${cluster.id}`}
+                  checked={cluster.isRequired} // 필수 상태
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setClusterConnections((prevState) =>
+                      prevState.map((c, i) =>
+                        i === index
+                          ? { ...c, isRequired: isChecked }
+                          : c
+                      )
+                    );
+                  }}
+                />
+                <label htmlFor={`require_${cluster.id}`}> 필수</label>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+            </form>
+          )}
         </div>
-        <div
-            id="network_new_cluster_btn"
-            className={selectedTab === 'network_new_cluster_btn' ? 'active-tab' : 'inactive-tab'}
-            onClick={() => handleTabClickModal('network_new_cluster_btn')}
-        >
-            클러스터
+
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
+          <button onClick={onRequestClose}>취소</button>
         </div>
-        <div
-            id="network_new_vnic_btn"
-            className={selectedTab === 'network_new_vnic_btn' ? 'active-tab' : 'inactive-tab'}
-            onClick={() => handleTabClickModal('network_new_vnic_btn')}
-            style={{ borderRight: 'none' }}
-        >
-            vNIC 프로파일
-        </div>
-    </div>
+      </div>
+    </Modal>
+  );
+};
 
-    {/* 일반 */}
-    // {selectedTab === 'network_new_common_btn' && (
-    //     <form id="network_new_common_form">
-    //         <div className="network_first_contents">
-    //             <div className="network_form_group">
-    //                 <label htmlFor="cluster">데이터 센터</label>
-    //                 <select id="cluster">
-    //                     <option value="default">Default</option>
-    //                 </select>
-    //             </div>
-    //             <div className="network_form_group">
-    //                 <div  className='checkbox_group'>
-    //                     <label htmlFor="name">이름</label>
-    //                     <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}fixedWidth/>
-    //                 </div>
-    //                 <input type="text" id="name" />
-    //             </div>
-    //             <div className="network_form_group">
-    //                 <label htmlFor="description">설명</label>
-    //                 <input type="text" id="description" />
-    //             </div>
-    //             <div className="network_form_group">
-    //                 <label htmlFor="comment">코멘트</label>
-    //                 <input type="text" id="comment" />
-    //             </div>
-    //         </div>
-
-    //         <div className="network_second_contents">
-    //             <span>네트워크 매개변수</span>
-    //             <div className="network_form_group">
-    //                 <label htmlFor="network_label">네트워크 레이블</label>
-    //                 <input type="text" id="network_label" />
-    //             </div>
-    //             <div className="network_checkbox_type1">
-    //                 <div className='checkbox_group'>
-    //                     <input type="checkbox" id="valn_tagging" name="valn_tagging" />
-    //                     <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
-    //                 </div>
-    //                 <input type="text" id="valn_tagging_input" disabled />
-    //             </div>
-    //             <div className="network_checkbox_type2">
-    //                 <input type="checkbox" id="vm_network" name="vm_network" />
-    //                 <label htmlFor="vm_network">가상 머신 네트워크</label>
-    //             </div>
-    //             <div className="network_checkbox_type2">
-    //                 <input type="checkbox" id="photo_separation" name="photo_separation" />
-    //                 <label htmlFor="photo_separation">포토 분리</label>
-    //             </div>
-    //             <div className="network_radio_group">
-    //                 <div style={{ marginTop: '0.2rem' }}>MTU</div>
-    //                 <div>
-    //                     <div className="radio_option">
-    //                         <input type="radio" id="default_mtu" name="mtu" value="default" checked />
-    //                         <label htmlFor="default_mtu">기본값 (1500)</label>
-    //                     </div>
-    //                     <div className="radio_option">
-    //                         <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
-    //                         <label htmlFor="user_defined_mtu">사용자 정의</label>
-    //                     </div>
-    //                 </div>
-                   
-    //             </div>
-    //             <div className="network_form_group">
-    //                 <label htmlFor="host_network_qos">호스트 네트워크 QoS</label>
-    //                 <select id="host_network_qos">
-    //                     <option value="default">[제한없음]</option>
-    //                 </select>
-    //            </div>
-    //             <div className='popup_plus_btn'>
-    //                 <div className="popup_plus" onClick={() => setSecondModalOpen(true)}>새로만들기</div>
-    //             </div>
-                
-    //                 <Modal
-    //                     isOpen={secondModalOpen}
-    //                     onRequestClose={() => setSecondModalOpen(false)}
-    //                     contentLabel="추가 모달"
-    //                     className="SecondModal"
-    //                     overlayClassName="Overlay"
-    //                 >
-                                            
-    //                 <div className="plus_popup_outer">
-    //                     <div className="popup_header">
-    //                         <h1>새 호스트 네트워크 Qos</h1>
-    //                         <button  onClick={() => setSecondModalOpen(false)}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-    //                     </div>
-                        
-    //                     <div className='p-1' style={{ borderBottom: '1px solid #d3d3d3' }}>
-    //                         <div className="network_form_group">
-    //                             <label htmlFor="network_provider">네트워크 공급자</label>
-    //                             <select id="network_provider">
-    //                             <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
-    //                             </select>
-    //                         </div>
-    //                         <div className="network_form_group">
-    //                             <label htmlFor="qos_name">QoS 이름</label>
-    //                             <input type="text" id="qos_name" />
-    //                         </div>
-    //                         <div className="network_form_group">
-    //                             <label htmlFor="description">설명</label>
-    //                             <input type="text" id="description" />
-    //                         </div>
-    //                         </div>
-
-    //                         <div className='p-1'>
-    //                         <span className="network_form_group font-bold">아웃바운드</span>
-    //                         <div className="network_form_group">
-    //                             <label htmlFor="weighted_share">가중 공유</label>
-    //                             <input type="text" id="weighted_share" />
-    //                         </div>
-    //                         <div className="network_form_group">
-    //                             <label htmlFor="speed_limit">속도 제한 [Mbps]</label>
-    //                             <input type="text" id="speed_limit" />
-    //                         </div>
-    //                         <div className="network_form_group">
-    //                             <label htmlFor="commit_rate">커밋 속도 [Mbps]</label>
-    //                             <input type="text" id="commit_rate" />
-    //                         </div>
-    //                     </div>
-
-
-    //                     <div className="edit_footer">
-    //                         <button style={{ display: 'none' }}></button>
-    //                         <button>가져오기</button>
-    //                         <button onClick={() => setSecondModalOpen(false)}>취소</button>
-    //                     </div>
-    //                 </div>
-                     
-                    // </Modal>
-//                 <div className="network_checkbox_type2">
-//                     <input type="checkbox" id="dns_settings" name="dns_settings" />
-//                     <label htmlFor="dns_settings">DNS 설정</label>
-//                 </div>
-//                 <span>DB서버</span>
-//                 <div className="network_checkbox_type3">
-//                     <input type="text" id="name" disabled />
-//                     <div>
-//                         <button>+</button>
-//                         <button>-</button>
-//                     </div>
-//                 </div>
-//                 <div className="network_checkbox_type2">
-//                     <input type="checkbox" id="external_vendor_creation" name="external_vendor_creation" />
-//                     <label htmlFor="external_vendor_creation">외부 업체에서 작성</label>
-//                 </div>
-//                 <span>외부</span>
-//                 <div className="network_form_group" style={{ paddingTop: 0 }}>
-//                     <label htmlFor="external_provider">외부 공급자</label>
-//                     <select id="external_provider">
-//                         <option value="default">ovirt-provider-ovn</option>
-//                     </select>
-//                 </div>
-//                 <div className="network_form_group">
-//                     <label htmlFor="network_port_security">네트워크 포트 보안</label>
-//                     <select id="network_port_security">
-//                         <option value="default">활성화</option>
-//                     </select>
-//                 </div>
-//                 <div className="network_checkbox_type2">
-//                     <input type="checkbox" id="connect_to_physical_network" name="connect_to_physical_network" />
-//                     <label htmlFor="connect_to_physical_network">물리적 네트워크에 연결</label>
-//                 </div>
-//             </div>
-//         </form>
-//     )}
-
-//     {/* 클러스터 */}
-//     {selectedTab === 'network_new_cluster_btn' && (
-//         <form id="network_new_cluster_form">
-//             <span>클러스터에서 네트워크를 연결/분리</span>
-//             <div>
-//                 <table className="network_new_cluster_table">
-//                     <thead>
-//                         <tr>
-//                             <th>이름</th>
-//                             <th>
-//                                 <div className="checkbox_group">
-//                                     <input type="checkbox" id="connect_all" />
-//                                     <label htmlFor="connect_all"> 모두 연결</label>
-//                                 </div>
-//                             </th>
-//                             <th>
-//                                 <div className="checkbox_group">
-//                                     <input type="checkbox" id="require_all" />
-//                                     <label htmlFor="require_all"> 모두 필요</label>
-//                                 </div>
-//                             </th>
-//                         </tr>
-//                     </thead>
-//                     <tbody>
-//                         <tr>
-//                             <td>Default</td>
-//                             <td className="checkbox-group">
-//                                 <div className="checkbox_group">
-//                                     <input type="checkbox" id="connect_default" />
-//                                     <label htmlFor="connect_default"> 연결</label>
-//                                 </div>
-//                             </td>
-//                             <td className="checkbox-group">
-//                                 <div className="checkbox_group">
-//                                     <input type="checkbox" id="require_default" />
-//                                     <label htmlFor="require_default"> 필수</label>
-//                                 </div>
-//                             </td>
-//                         </tr>
-//                     </tbody>
-//                 </table>
-//             </div>
-//         </form>
-//     )}
-
-//     {/* vNIC 프로파일 */}
-//     {selectedTab === 'network_new_vnic_btn' && (
-//         <form id="network_new_vnic_form">
-//             <span>vNIC 프로파일</span>
-//             <div>
-//                 <input type="text" id="vnic_profile" />
-//                 <div className='checkbox_group'>
-//                     <input type="checkbox" id="public" disabled />
-//                     <label htmlFor="public">공개</label>
-//                     <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
-//                 </div>
-//                 <label htmlFor="qos">QoS</label>
-//                 <select id="qos">
-//                     <option value="none">제한 없음</option>
-//                 </select>
-//                 <div className="network_new_vnic_buttons">
-//                     <button>+</button>
-//                     <button>-</button>
-//                 </div>
-//             </div>
-//         </form>
-//     )}
-//     <div className="edit_footer">
-//         <button style={{ display: 'none' }}></button>
-//         <button>OK</button>
-//         <button onClick={closePopup}>취소</button>
-//     </div>
-// </div>
-// </Modal> */}
-
-
-
-
-
-
-
-            
-              {/* 네트워크(편집) 팝업 */}
-            //   <Modal
-            //     isOpen={activePopup === 'editNetwork'}
-            //     onRequestClose={closePopup}
-            //     contentLabel="편집"
-            //     className="Modal"
-            //     overlayClassName="Overlay"
-            //     shouldCloseOnOverlayClick={false}
-            // >
-            //     <div className="network_edit_popup">
-            //         <div className="popup_header">
-            //             <h1>논리 네트워크 편집</h1>
-            //             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-            //         </div>
-                    
-            //         <form id="network_new_common_form">
-            //         <div className="network_first_contents">
-            //                     <div className="network_form_group">
-            //                         <label htmlFor="cluster">데이터 센터</label>
-            //                         <select id="cluster">
-            //                             <option value="default">Default</option>
-            //                         </select>
-            //                     </div>
-            //                     <div className="network_form_group">
-            //                         <div  className='checkbox_group'>
-            //                             <label htmlFor="name">이름</label>
-            //                             <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}fixedWidth/>
-            //                         </div>
-            //                         <input type="text" id="name" />
-            //                     </div>
-            //                     <div className="network_form_group">
-            //                         <label htmlFor="description">설명</label>
-            //                         <input type="text" id="description" />
-            //                     </div>
-            //                     <div className="network_form_group">
-            //                         <label htmlFor="comment">코멘트</label>
-            //                         <input type="text" id="comment" />
-            //                     </div>
-            //                 </div>
-
-            //                 <div className="network_second_contents">
-            //                     <span>네트워크 매개변수</span>
-            //                     <div className="network_form_group">
-            //                         <label htmlFor="network_label">네트워크 레이블</label>
-            //                         <input type="text" id="network_label" />
-            //                     </div>
-            //                     <div className="network_checkbox_type1">
-            //                         <div className='checkbox_group'>
-            //                             <input type="checkbox" id="valn_tagging" name="valn_tagging" />
-            //                             <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
-            //                         </div>
-            //                         <input type="text" id="valn_tagging_input" disabled />
-            //                     </div>
-            //                     <div className="network_checkbox_type2">
-            //                         <input type="checkbox" id="vm_network" name="vm_network" />
-            //                         <label htmlFor="vm_network">가상 머신 네트워크</label>
-            //                     </div>
-            //                     <div className="network_checkbox_type2">
-            //                         <input type="checkbox" id="photo_separation" name="photo_separation" />
-            //                         <label htmlFor="photo_separation">포토 분리</label>
-            //                     </div>
-            //                     <div className="network_radio_group">
-            //                         <div style={{ marginTop: '0.2rem' }}>MTU</div>
-            //                         <div>
-            //                             <div className="radio_option">
-            //                                 <input type="radio" id="default_mtu" name="mtu" value="default" checked />
-            //                                 <label htmlFor="default_mtu">기본값 (1500)</label>
-            //                             </div>
-            //                             <div className="radio_option">
-            //                                 <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
-            //                                 <label htmlFor="user_defined_mtu">사용자 정의</label>
-            //                             </div>
-            //                         </div>
-                                   
-            //                     </div>
-            //                     <div className="network_form_group">
-            //                         <label htmlFor="host_network_qos">호스트 네트워크 QoS</label>
-            //                         <select id="host_network_qos">
-            //                             <option value="default">[제한없음]</option>
-            //                         </select>
-            //                    </div>
-            //                     <div className='popup_plus_btn'>
-            //                         <div className="popup_plus" onClick={() => setSecondModalOpen(true)}>새로만들기</div>
-            //                     </div>
-                                
-            //                         <Modal
-            //                             isOpen={secondModalOpen}
-            //                             onRequestClose={() => setSecondModalOpen(false)}
-            //                             contentLabel="추가 모달"
-            //                             className="SecondModal"
-            //                             overlayClassName="Overlay"
-            //                         >
-                                                            
-            //                         <div className="plus_popup_outer">
-            //                             <div className="popup_header">
-            //                                 <h1>새 호스트 네트워크 Qos</h1>
-            //                                 <button  onClick={() => setSecondModalOpen(false)}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-            //                             </div>
-                                        
-            //                             <div className='p-1' style={{ borderBottom: '1px solid #d3d3d3' }}>
-            //                                 <div className="network_form_group">
-            //                                     <label htmlFor="network_provider">네트워크 공급자</label>
-            //                                     <select id="network_provider">
-            //                                     <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
-            //                                     </select>
-            //                                 </div>
-            //                                 <div className="network_form_group">
-            //                                     <label htmlFor="qos_name">QoS 이름</label>
-            //                                     <input type="text" id="qos_name" />
-            //                                 </div>
-            //                                 <div className="network_form_group">
-            //                                     <label htmlFor="description">설명</label>
-            //                                     <input type="text" id="description" />
-            //                                 </div>
-            //                                 </div>
-
-            //                                 <div className='p-1'>
-            //                                 <span className="network_form_group font-bold">아웃바운드</span>
-            //                                 <div className="network_form_group">
-            //                                     <label htmlFor="weighted_share">가중 공유</label>
-            //                                     <input type="text" id="weighted_share" />
-            //                                 </div>
-            //                                 <div className="network_form_group">
-            //                                     <label htmlFor="speed_limit">속도 제한 [Mbps]</label>
-            //                                     <input type="text" id="speed_limit" />
-            //                                 </div>
-            //                                 <div className="network_form_group">
-            //                                     <label htmlFor="commit_rate">커밋 속도 [Mbps]</label>
-            //                                     <input type="text" id="commit_rate" />
-            //                                 </div>
-            //                             </div>
-
-
-            //                             <div className="edit_footer">
-            //                                 <button style={{ display: 'none' }}></button>
-            //                                 <button>가져오기</button>
-            //                                 <button onClick={() => setSecondModalOpen(false)}>취소</button>
-            //                             </div>
-            //                         </div>
-                                     
-            //                         </Modal>
-            //                     <div className="network_checkbox_type2">
-            //                         <input type="checkbox" id="dns_settings" name="dns_settings" />
-            //                         <label htmlFor="dns_settings">DNS 설정</label>
-            //                     </div>
-            //                     <span>DB서버</span>
-            //                     <div className="network_checkbox_type3">
-            //                         <input type="text" id="name" disabled />
-            //                         <div>
-            //                             <button>+</button>
-            //                             <button>-</button>
-            //                         </div>
-            //                     </div>
-            //                     <div className="network_checkbox_type2">
-            //                         <input type="checkbox" id="external_vendor_creation" name="external_vendor_creation" />
-            //                         <label htmlFor="external_vendor_creation">외부 업체에서 작성</label>
-            //                     </div>
-            //                     <span>외부</span>
-            //                     <div className="network_form_group" style={{ paddingTop: 0 }}>
-            //                         <label htmlFor="external_provider">외부 공급자</label>
-            //                         <select id="external_provider">
-            //                             <option value="default">ovirt-provider-ovn</option>
-            //                         </select>
-            //                     </div>
-            //                     <div className="network_form_group">
-            //                         <label htmlFor="network_port_security">네트워크 포트 보안</label>
-            //                         <select id="network_port_security">
-            //                             <option value="default">활성화</option>
-            //                         </select>
-            //                     </div>
-            //                     <div className="network_checkbox_type2">
-            //                         <input type="checkbox" id="connect_to_physical_network" name="connect_to_physical_network" />
-            //                         <label htmlFor="connect_to_physical_network">물리적 네트워크에 연결</label>
-            //                     </div>
-            //                 </div>
-            //             </form>
-                   
-
-            //         <div className="edit_footer">
-            //             <button style={{ display: 'none' }}></button>
-            //             <button>OK</button>
-            //             <button onClick={closePopup}>취소</button>
-            //         </div>
-            //     </div>
-            // </Modal>
+export default NetworkModal;

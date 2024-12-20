@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrown, faExclamationTriangle, faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import Modal from 'react-modal';
 import { Suspense } from "react";
-import NetworkNewModal from "../../Modal/NetworkNewModal";
+import NetworkModal from "../../Modal/NetworkModal";
 import DeleteModal from "../../Modal/DeleteModal";
 
 const ClusterNetworks = ({ clusterId }) => {
@@ -69,7 +69,7 @@ const ClusterNetworks = ({ clusterId }) => {
            />
             <Suspense>
                 {(modals.create || (modals.edit && selectedNetwork)) && (
-                    <NetworkNewModal
+                    <NetworkModal
                         isOpen={modals.create || modals.edit}
                         onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
                         editMode={modals.edit}

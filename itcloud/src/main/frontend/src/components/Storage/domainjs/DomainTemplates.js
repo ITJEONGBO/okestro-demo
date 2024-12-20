@@ -4,9 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TableInfo from "../../table/TableInfo";
 import TablesOuter from "../../table/TablesOuter";
 import {useAllTemplateFromDomain} from "../../../api/RQHook";
-
-const sizeToGB = (data) => (data / Math.pow(1024, 3));
-const formatSize = (size) => (sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`);
+import { formatBytesToGB } from '../../util/format';
 
 const TemplateRow = ({ template, isExpanded, toggleRow }) => (
   <>
@@ -42,14 +40,13 @@ const DiskRow = ({ disk }) => (
       {disk.diskImageVo?.alias || 'Unnamed Disk'}
     </td>
     <td></td>
-    <td>{formatSize(disk.diskImageVo?.virtualSize || 0)}</td>
-    <td>{formatSize(disk.diskImageVo?.actualSize || 0)}</td>
+    <td>{formatBytesToGB(disk.diskImageVo?.virtualSize || 0)}</td>
+    <td>{formatBytesToGB(disk.diskImageVo?.actualSize || 0)}</td>
     <td>{disk.diskImageVo?.createDate || ''}</td>
   </tr>
 );
 
 const DomainTemplates = ({ domainId }) => {
-  
   const { 
     data: templates, 
     status: templatesStatus, 

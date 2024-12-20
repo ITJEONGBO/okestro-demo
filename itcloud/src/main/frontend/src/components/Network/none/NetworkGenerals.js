@@ -1,4 +1,4 @@
-import { useNetworkById } from "../../api/RQHook"
+import { useNetworkById } from "../../../api/RQHook"
 
 const NetworkDetailGeneral = ({ networkId }) => {
   const { data: network } = useNetworkById(networkId);

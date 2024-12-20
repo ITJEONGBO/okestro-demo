@@ -184,8 +184,8 @@ class TemplateServiceImpl(
 	@Throws(Error::class)
 	override fun findOne(templateId: String): TemplateVo? {
 		log.info("findOne ... templateId: {}", templateId)
-		val res: Template? =
-			conn.findTemplate(templateId).getOrNull()
+		val res: Template? = conn.findTemplate(templateId)
+			.getOrNull()
 		return res?.toTemplateInfo(conn)
 	}
 

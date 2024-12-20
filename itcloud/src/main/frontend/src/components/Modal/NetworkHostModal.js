@@ -9,7 +9,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 const NetworkHostModal = ({ 
   isOpen, 
   onRequestClose, 
-  hosts
+  hostId
 }) => {
 
     // 모달 관련 상태 및 함수

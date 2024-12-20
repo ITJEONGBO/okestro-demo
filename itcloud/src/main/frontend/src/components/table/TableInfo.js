@@ -148,7 +148,7 @@ const TableInfo = {
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '데이터센터', accessor: 'datacenter', clickable: false },
     { header: '설명', accessor: 'description', clickable: false, width: '20%' },
-    { header: '역할', accessor: 'role', clickable: false },
+    // { header: '역할', accessor: 'vmrole', clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
     { header: '레이블', accessor: 'label', clickable: false },
     { header: 'MTU', accessor: 'mtu', clickable: false },
@@ -163,7 +163,7 @@ const TableInfo = {
   ],
   CLUSTERS_FRON_NETWORK: [
     { header: '이름', accessor: 'name', clickable: true },
-    { header: '호환 버전', accessor: 'version', clickable: false },
+    // { header: '호환 버전', accessor: 'version', clickable: false },
     { header: '연결된 네트워크', accessor: 'connect', clickable: false },
     { header: '네트워크 상태', accessor: 'status', clickable: false },
     { header: '필수 네트워크', accessor: 'required', clickable: false },
@@ -172,17 +172,17 @@ const TableInfo = {
   ],
   HOSTS_FROM_NETWORK: [
     { header: '', accessor: 'icon', clickable: false },
-    { header: '이름', accessor: 'name', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: false },
-    { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
+    { header: '이름', accessor: 'host', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: true },
+    { header: '데이터 센터', accessor: 'dataCenter', clickable: true },
     { header: '네트워크 장치 상태', accessor: 'networkDeviceStatus', clickable: false },
     { header: '비동기', accessor: 'async', clickable: false },
     { header: '네트워크 장치', accessor: 'networkDevice', clickable: false },
     { header: '속도', accessor: 'speed', clickable: false },
-    { header: 'Rx', accessor: 'rx', clickable: false },
-    { header: 'Tx', accessor: 'tx', clickable: false },
-    { header: '총 Rx', accessor: 'totalRx', clickable: false },
-    { header: '총 Tx', accessor: 'totalTx', clickable: false },
+    { header: 'Rx(Mbps)', accessor: 'rx', clickable: false },
+    { header: 'Tx(Mbps)', accessor: 'tx', clickable: false },
+    { header: '총 Rx(byte)', accessor: 'totalRx', clickable: false },
+    { header: '총 Tx(byte)', accessor: 'totalTx', clickable: false },
   ],
   HOSTS_DISCONNECT_FROM_NETWORK: [
     { header: '이름', accessor: 'name', clickable: false },
@@ -205,6 +205,7 @@ const TableInfo = {
   ],
   TEMPLATES_FROM_NETWORK: [
     { header: '이름', accessor: 'name', clickable: false },
+    { header: '버전', accessor: 'ver', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '클러스터', accessor: 'clusterName', clickable: false },
     { header: 'vNic', accessor: 'nicName', clickable: false },
@@ -560,11 +561,12 @@ HOST_NETWORK_INTERFACE: [
 
   
   VMS_NIC: [
+    { header: '', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: 'vNIC 상태', accessor: 'icon', clickable: false },
+    { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false },
     { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: 'vNIC Rx', accessor: 'vnicRx', clickable: false },
     { header: 'vNIC Tx', accessor: 'vnicTx', clickable: false },
@@ -576,6 +578,7 @@ HOST_NETWORK_INTERFACE: [
     { header: '이름', accessor: 'name', clickable: false },
   ],
   VMS_STOP: [
+    { header: '', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },

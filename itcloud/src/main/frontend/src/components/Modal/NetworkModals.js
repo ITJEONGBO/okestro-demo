@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import NetworkNewModal from './NetworkNewModal';
 import '../Modal/css/MNetwork.css';
 
 const NetworkModals = ({ 
@@ -8,7 +7,7 @@ const NetworkModals = ({
     onRequestClose, 
     selectedNetwork 
 }) => {
-  const NetworkNewModal = React.lazy(() => import('../Modal/NetworkNewModal'));
+  const NetworkModal = React.lazy(() => import('./NetworkModal'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
   const NetworkActionModal = React.lazy(() => import('../Modal/NetworkActionModal'));
 
@@ -17,7 +16,7 @@ const NetworkModals = ({
   return (
     <Suspense>
       {action === 'create' || action === 'edit' ? (
-        <NetworkNewModal
+        <NetworkModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}

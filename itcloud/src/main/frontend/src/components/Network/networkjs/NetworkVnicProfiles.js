@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useAllVnicProfilesFromNetwork } from "../../../api/RQHook";
 import VnicProfileDupl from "../../duplication/VnicProfileDupl";
 import TableInfo from "../../table/TableInfo";

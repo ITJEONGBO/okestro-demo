@@ -1,134 +1,96 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useAllVmsFromNetwork } from "../../../api/RQHook";
-import TableColumnsInfo from "../../table/TableColumnsInfo";
-import TableOuter from "../../table/TableOuter";
-import { useNavigate } from 'react-router-dom';
 import { Suspense, useState } from 'react';
-import { faChevronDown, faPlay } from "@fortawesome/free-solid-svg-icons";
-import DeleteModal from "../../Modal/DeleteModal";
-
-const NetworkVm = ({ networkId }) => {
-  const navigate = useNavigate();
-  const [activePopup, setActivePopup] = useState(null);
-  const openPopup = (popupType) => setActivePopup(popupType);
-  const closePopup = () => setActivePopup(null);
-  const [activeVmFilter, setActiveVmFilter] = useState('running');
-  
-  const handleVmFilterClick = (filter) => {
-    setActiveVmFilter(filter);
-  };
-
-  const [modals, setModals] = useState({ delete: false });
-  const [selectedVms, setSelectedVms] = useState(null);
-  const toggleModal = (type, isOpen) => {
-    setModals((prev) => ({ ...prev, [type]: isOpen }));
-};
+import { useAllVmsFromNetwork } from "../../../api/RQHook";
+import TablesOuter from "../../table/TablesOuter";
+import TableInfo from "../../table/TableInfo";
+import TableRowClick from "../../table/TableRowClick";
+import { formatBytesToMB, renderUpDownStatusIcon, renderVmStatusIcon } from "../../util/format";
+import VmDeleteModal from '../../Modal/VmDeleteModal';
 
 
+const NetworkVms = ({ networkId }) => {
   const { 
     data: vms = [],  // 기본값 설정
     status: vmsStatus,
     isLoading: isVmsLoading,
     isError: isVmsError
-  } = useAllVmsFromNetwork(networkId, toTableItemPredicateVms);
+  } = useAllVmsFromNetwork(networkId, (vm) => ({ 
+    ...vm,
+    icon: renderVmStatusIcon(vm?.status),
+    name: (
+      <TableRowClick type="vms" id={vm.id}>
+        {vm.name}
+      </TableRowClick>
+    ),
+    cluster: (
+      <TableRowClick type="cluster" id={vm.clusterVo.id}>
+        {vm.clusterVo.name}
+      </TableRowClick>
+    ),
+    vnicStatus: renderUpDownStatusIcon(vm?.nicVos[0]?.status),
+    vnic: vm?.nicVos?.[0]?.name,
+    vnicRx: vm?.nicVos?.[0]?.rxSpeed ? Math.round(formatBytesToMB(vm?.nicVos[0].rxSpeed)): '',
+    vnicTx: vm?.nicVos?.[0]?.txSpeed ? Math.round(formatBytesToMB(vm?.nicVos[0].txSpeed)): '',
+    totalRx: vm?.nicVos?.[0]?.rxTotalSpeed ? vm?.nicVos?.[0]?.rxTotalSpeed.toLocaleString() : '',
+    totalTx: vm?.nicVos?.[0]?.txTotalSpeed ? vm?.nicVos?.[0]?.txTotalSpeed.toLocaleString() : '',
+  }));
 
-  function toTableItemPredicateVms(vm) {
-    const status = vm?.status ?? '';
-    const icon = status === 'UP' 
-      ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />
-      : status === 'DOWN' 
-      ? <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />
-      : '';
-    
-    return {
-      id: vm?.id ?? '없음',  
-      name: vm?.name ?? '없음',  
-      cluster: vm?.clusterVo?.name ?? '없음',
-      ipAddress: vm?.ipAddress ?? '없음',
-      fqdn: vm?.fqdn ?? '',
-      icon: icon,
-      status: status,
-      vnic: vm?.vnic ?? '',
-      vnicRx: vm?.vnicRx ?? '',
-      vnicTx: vm?.vnicTx ?? '',
-      rxTotalSpeed: vm?.rxTotalSpeed
-      ? vm.rxTotalSpeed.toLocaleString() // 천 단위 구분 기호 추가
-      : '',
-      txTotalSpeed: vm?.txTotalSpeed
-      ? vm.txTotalSpeed.toLocaleString() // 천 단위 구분 기호 추가
-      : '',
-      description: vm?.description ?? '없음'
-    };
-  }
+  const [activeFilter, setActiveFilter] = useState("running");
+  const [selectedVm, setSelectedVm] = useState(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  // 실행 중인 VM과 정지된 VM을 각각 필터링
-  const runningVms = vms.filter(vm => vm.status === 'UP');
-  const stoppedVms = vms.filter(vm => vm.status === 'DOWN');
+  const toggleDeleteModal = (isOpen) => setDeleteModalOpen(isOpen);
+
+  // 필터링된 VM 데이터 계산
+  const filteredVms = activeFilter === 'running' 
+    ? vms.filter(vm => vm.status === 'UP')
+    : vms.filter(vm => vm.status === 'DOWN');
+
+  const buttonClass = (filter) =>
+    `filter_button ${activeFilter === filter ? 'active' : ''}`;
 
   return (
     <>
       <div className="header_right_btns">
-      <button onClick={() => selectedVms?.id && toggleModal('delete', true)} disabled={!selectedVms?.id}>제거</button>
+        <button 
+          onClick={() => selectedVm?.id && toggleDeleteModal(true)} 
+          disabled={!selectedVm?.id}
+        >
+          제거
+        </button>
       </div>
       
       <div className="host_filter_btns">
-        <button
-          className={activeVmFilter === 'running' ? 'active' : ''}
-          onClick={() => handleVmFilterClick('running')}
-        >
+        <button className={buttonClass("running")} onClick={() => setActiveFilter("running")}>
           실행중
         </button>
-        <button
-          className={activeVmFilter === 'stopped' ? 'active' : ''}
-          onClick={() => handleVmFilterClick('stopped')}
-        >
+        <button className={buttonClass("stopped")} onClick={() => setActiveFilter("stopped")}>
           정지중
         </button>
       </div>
 
-      <span>id = {selectedVms?.id || ''}</span>
-      {activeVmFilter === 'running' && (
-        <TableOuter
-          columns={TableColumnsInfo.VMS_NIC}
-          data={runningVms} // 실행 중인 VM 데이터만 전달
-          onRowClick={(row, column, colIndex) => {
-            console.log('선택한 vNIC Profile 행 데이터:', row);
-  
-            setSelectedVms(row);
-            if (colIndex === 1) {
-              navigate(`/computing/vms/${row.id}`);
-            } 
-          }}
-          clickableColumnIndex={[1]}
-          onContextMenuItems={() => [
-            <div key="제거" onClick={() => console.log()}>제거</div>,
-          ]}
-        />
-      )}
+      <span>id = {selectedVm?.id || ''}</span>
 
-      {activeVmFilter === 'stopped' && (
-        <TableOuter
-          columns={TableColumnsInfo.VMS_STOP}
-          data={stoppedVms} // 정지된 VM 데이터만 전달
-          onRowClick={() => console.log('Row clicked')}
-        />
-      )}
+      <TablesOuter
+        columns={
+          activeFilter === "running" 
+          ? TableInfo.VMS_NIC 
+          : TableInfo.VMS_STOP
+        }
+        data={filteredVms}
+        onRowClick={(row) => setSelectedVm(row)}
+      />
+
       <Suspense>
-         {/*api없음 */}
-          {modals.delete && selectedVms && (
-            <DeleteModal
-                isOpen={modals.delete}
-                type='가상머신'
-                onRequestClose={() => toggleModal('delete', false)}
-                contentLabel={'가상머신'}
-                data={ selectedVms}
-                networkId={networkId}
-            />
-            )}
-        </Suspense>
-
+        {isDeleteModalOpen && (
+          <VmDeleteModal
+            isOpen={isDeleteModalOpen}
+            onRequestClose={() => toggleDeleteModal(false)}
+            data={selectedVm}
+          />
+        )}
+      </Suspense>
     </>
   );
 };
 
-export default NetworkVm;
+export default NetworkVms;

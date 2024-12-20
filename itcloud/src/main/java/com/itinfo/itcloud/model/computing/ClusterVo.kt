@@ -200,22 +200,19 @@ fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
 		vmSize { this@toClusterInfo.findVmCntFromCluster(conn) }
 	}
 }
-fun List<Cluster>.toClustersInfo(conn: Connection): List<ClusterVo> =
-	this@toClustersInfo.map { it.toClusterInfo(conn) }
-
 
 
 fun Cluster.toNetworkClusterVo(conn: Connection, networkId: String): ClusterVo{
-	val network: Network? =
-		conn.findNetworkFromCluster(this@toNetworkClusterVo.id(), networkId)
-			.getOrNull()
+	val network: Network? = conn.findAllNetworksFromCluster(this@toNetworkClusterVo.id())
+		.getOrDefault(listOf())
+		.find { it.id() == networkId }
 
 	return ClusterVo.builder {
 		id { this@toNetworkClusterVo.id() }
 		name { this@toNetworkClusterVo.name() }
 		description {this@toNetworkClusterVo.description() }
+		isConnected { network != null }
 		networkVo { network?.toClusterNetworkVo(conn) }
-//		networks { networks }
 	}
 }
 fun List<Cluster>.toNetworkClusterVos(conn: Connection, networkId: String): List<ClusterVo> =

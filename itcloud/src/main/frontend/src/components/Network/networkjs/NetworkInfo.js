@@ -8,24 +8,19 @@ import { useNetworkById } from '../../../api/RQHook';
 import Path from '../../Header/Path';
 import NetworkGeneral from './NetworkGeneral.js';
 import NetworkVnicProfiles from './NetworkVnicProfiles.js';
-// import NetworkHost from '../../zNotuse/NetworkHost.js'
 import NetworkHosts from './NetworkHosts.js';
-
 import NetworkVms from './NetworkVms.js'
 import NetworkTemplates from './NetworkTemplates.js'
 import NetworkClusters from './NetworkClusters.js';
 
-const NetworkNewModal = React.lazy(() => import('../../Modal/NetworkNewModal'))
+const NetworkModal = React.lazy(() => import('../../Modal/NetworkModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
 const NetworkInfo = () => {
   const { id: networkId, section } = useParams();
   const {
     data: network,
-    status: networkStatus,
-    isRefetching: isnetworkRefetching,
     refetch: networkRefetch,
-    isError: isnetworkError,
     error: networkError,
     isLoading: isnetworkLoading,
   } = useNetworkById(networkId, (e) => ({
@@ -69,7 +64,6 @@ const NetworkInfo = () => {
       general: NetworkGeneral,
       vnicProfiles: NetworkVnicProfiles,
       clusters: NetworkClusters,
-      // hosts: NetworkHost,
       hosts: NetworkHosts,
       vms: NetworkVms,
       templates: NetworkTemplates,
@@ -92,7 +86,7 @@ const NetworkInfo = () => {
   const renderModals = () => (
     <>
       {modals.edit && (
-        <NetworkNewModal
+        <NetworkModal
           isOpen={modals.edit}
           onRequestClose={() => toggleModal('edit', false)}
           editMode={true}
@@ -108,7 +102,6 @@ const NetworkInfo = () => {
           data={network}
         />
       )}
-
     </>
   );
 
@@ -130,7 +123,6 @@ const NetworkInfo = () => {
           {renderSectionContent()}
         </div>
       </div>
-
       <Suspense fallback={<div>Loading...</div>}>{renderModals()}</Suspense>
       <Footer/>
     </div>

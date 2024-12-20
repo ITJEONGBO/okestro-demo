@@ -2,8 +2,7 @@ import React from 'react';
 import TablesOuter from './TablesOuter';
 import TableRowClick from './TableRowClick';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import { renderVmStatusIcon } from '../util/format';
 
 const VmTable = ({
   columns,
@@ -16,15 +15,6 @@ const VmTable = ({
     navigate(`/computing/vms/${id}`);
   };
 
-  const renderStatusIcon = (status) => {
-    if (status === 'UP') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    } else if (status === 'DOWN') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-    }
-    return status;
-  };
-
   return (
     <>
       {/* 테이블 */}
@@ -32,7 +22,7 @@ const VmTable = ({
         columns={columns}
         data={vms.map((vm) => ({
           ...vm,
-          icon: renderStatusIcon(vm.status),
+          icon: renderVmStatusIcon(vm.status),
           host: vm.hostVo?.id ? (
             <TableRowClick type="host" id={vm.hostVo.id}>
               {vm.hostVo.name}
