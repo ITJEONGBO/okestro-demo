@@ -1,24 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import { useAllHosts } from '../../api/RQHook';
+import { useAllDataCenters, useAllHosts } from '../../api/RQHook';
 
 
 const VmonExportModal = ({ isOpen, onRequestClose, selectedVm }) => {
 
-  const [host, setHost] = useState('#');
-    // 모든 호스트 목록가져오기 
-    const { 
-      data: hosts, 
-    } = useAllHosts(toTableItemPredicateHosts);
-    function toTableItemPredicateHosts(host) {
-      return {                
-        name: host?.name ?? '',                                                     
-      };
+  //모든 데이터센터 목록 가져오기
+  const { 
+    data: datacenters, 
+  } = useAllDataCenters((e) =>({
+    ...e,
+  }));
+  const [selectedDatacenter, setSelectedDatacenter] = useState('');
+  // 데이터센터 목록 중 첫 번째 값을 기본값으로 설정
+  useEffect(() => {
+    if (datacenters && datacenters.length > 0) {
+      setSelectedDatacenter(datacenters[0].name); // 첫 번째 데이터센터 이름을 기본값으로 설정
     }
+  }, [datacenters]);
+
+
+
+  // 모든 호스트 목록가져오기(수정해야됨 모든아님)
+  const [host, setHost] = useState('#');
+  const { 
+    data: hosts, 
+  } = useAllHosts(toTableItemPredicateHosts);
+  function toTableItemPredicateHosts(host) {
+    return {                
+      name: host?.name ?? '',                                                     
+    };
+  }
+
+
   return (
     <Modal
       isOpen={isOpen}
@@ -39,8 +57,16 @@ const VmonExportModal = ({ isOpen, onRequestClose, selectedVm }) => {
         <div className="border-b border-gray-400">
           <div className="vm_select_box">
             <label htmlFor="datacenter">데이터 센터</label>
-            <select id="datacenter">
-              <option value="none">Default</option>
+               <select
+              id="datacenter"
+              value={selectedDatacenter}
+              onChange={(e) => setSelectedDatacenter(e.target.value)}
+            >
+              {datacenters?.map((datacenter, index) => (
+                <option key={index} value={datacenter.name}>
+                  {datacenter.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="vm_select_box">

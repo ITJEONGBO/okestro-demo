@@ -138,16 +138,10 @@ const handleDiskSelection = (diskId, diskDetails) => {
 
   const handleDiskCreated = (createdDisk) => {
     console.log("새로 생성된 디스크:", createdDisk);
-  
     setVmdisks((prevDisks) => {
-      const isDuplicate = prevDisks.some((disk) => disk.id === createdDisk.id);
-      if (!isDuplicate) {
-        return [...prevDisks, createdDisk]; // 기존 목록에 새 디스크 추가
-      }
-      return prevDisks; // 중복일 경우 기존 상태 반환
+      return [...prevDisks, createdDisk]; // 기존 목록에 새 디스크 추가
     });
   };
-  
   
   const { data: vmdisk} = useAddDisksFromVM(vmId);
 const handleAddDiskOptions = () => {
@@ -545,15 +539,15 @@ useEffect(() => {
       }
 
      const firstDisk = vmdisks.length > 0 ? vmdisks[0] : null;
-    const dataToSubmit = {
+     const dataToSubmit = {
       vmdisks,
-      clusterVo:{
+      clusterVo: {
         id: selectedCluster.id,
         name: selectedCluster.name,
       },
       templateVo: {
         id: selectedTemplate.id,
-        name: selectedTemplate.name
+        name: selectedTemplate.name,
       },
       nicVos: nicSelections.map((nic) => ({
         name: nic.name, // NIC 이름
@@ -565,90 +559,66 @@ useEffect(() => {
       name,
       description,
       comment,
-      osOptions:selectedOs,
-      chipsetFirmwareType:selectedChipset,// 선택된 칩셋
+      osOptions: selectedOs,
+      chipsetFirmwareType: selectedChipset, // 선택된 칩셋
       optimizeOption: selectedOptimizeOption, // 선택된 최적화 옵션
-      stateless,  //boolean
-      startPaused,   //boolean
-      deleteProtected, //boolean
-
-      // 시스템데이터
+      stateless, // boolean
+      startPaused, // boolean
+      deleteProtected, // boolean
+    
+      // 시스템 데이터
       memorySize: memorySize * 1024 * 1024, // MB -> B 변환
       memoryMax: maxMemory * 1024 * 1024, // MB -> B 변환
       memoryActual: allocatedMemory * 1024 * 1024, // MB -> B 변환
-      cpuTopologyCnt, // 총가상 cpu
+      cpuTopologyCnt, // 총가상 CPU
       cpuTopologyCore, // 가상 소켓 당 코어
       cpuTopologySocket, // 가상소켓
       cpuTopologyThread, // 코어당 스레드
     
       // 초기 실행 데이터 (예: cloud-init 관련)
-      cloudInit, 
+      cloudInit,
       script,
-
-      //호스트
+    
+      // 호스트
       migrationMode, // string 마이그레이션모드
       migrationPolicy, // 마이그레이션 정책
-
+    
       // 고가용성
       ha, // boolean
-      priority, //int
-      
-      // 부트옵션
-      firstDevice, //string
-      secDevice,  // string
-      connVo: isCdDvdChecked // CD/DVD 연결 데이터 포함
-      ? {
-          id: connVoId,
-          name: connVoName,
-        }
-      : null,
-      bootingMenu,// boolean
-      diskAttachmentVos: firstDisk
-      ? [
-          {
-            active: true,
-            bootable: firstDisk.bootable || false,
-            detachOnly: false,
-            diskImageVo: {
-              id: firstDisk.id || "",
-              alias: firstDisk.alias || "Unknown Alias",
-              size: firstDisk.size || 0,
-              description: firstDisk.description || "No Description",
-              backup: firstDisk.backup || false,
-              sharable: firstDisk.sharable || false,
-              sparse: firstDisk.sparse || false,
-              wipeAfterDelete: firstDisk.wipeAfterDelete || false,
-              dataCenterVo: firstDisk.dataCenterVo || { id: "", name: "No Data Center" },
-              diskProfileVo: firstDisk.diskProfileVo || { id: "", name: "No Profile" },
-              storageDomainVo: firstDisk.storageDomainVo || { id: "", name: "No Storage Domain" },
-            },
-          },
-        ]
-      : [], // 디스크가 없으면 빈 배열 반환
+      priority, // int
     
-      // diskAttachmentVo: firstDisk
-      // ? {
-      //     active: true,
-      //     bootable: firstDisk.bootable || false,
-      //     detachOnly: false,
-      //     diskImageVo: {
-      //       id: firstDisk.id || "",
-      //       alias: firstDisk.alias || "Unknown Alias",
-      //       size: firstDisk.size || 0,
-      //       description: firstDisk.description || "No Description",
-      //       backup: firstDisk.backup || false,
-      //       sharable: firstDisk.sharable || false,
-      //       sparse: firstDisk.sparse || false,
-      //       wipeAfterDelete: firstDisk.wipeAfterDelete || false,
-      //       dataCenterVo: firstDisk.dataCenterVo || { id: "", name: "No Data Center" },
-      //       diskProfileVo: firstDisk.diskProfileVo || { id: "", name: "No Profile" },
-      //       storageDomainVo: firstDisk.storageDomainVo || { id: "", name: "No Storage Domain" },
-      //     },
-      //   }
-      // : null, // 디스크가 없으면 null
-
-
+      // 부트옵션
+      firstDevice, // string
+      secDevice, // string
+      connVo: isCdDvdChecked
+        ? {
+            id: connVoId,
+            name: connVoName,
+          }
+        : null,
+      bootingMenu, // boolean
+    
+      // 모든 디스크를 처리
+      diskAttachmentVos: vmdisks.map((disk) => ({
+        active: true,
+        bootable: disk.bootable || false,
+        detachOnly: false,
+        diskImageVo: {
+          id: disk.id || "",
+          alias: disk.alias || "Unknown Alias",
+          size: disk.size || 0,
+          description: disk.description || "No Description",
+          backup: disk.backup || false,
+          sharable: disk.sharable || false,
+          sparse: disk.sparse || false,
+          wipeAfterDelete: disk.wipeAfterDelete || false,
+          dataCenterVo: disk.dataCenterVo || { id: "", name: "No Data Center" },
+          diskProfileVo: disk.diskProfileVo || { id: "", name: "No Profile" },
+          storageDomainVo: disk.storageDomainVo || { id: "", name: "No Storage Domain" },
+        },
+      })),
     };
+    
     console.log('가상머신 생성or편집데이터 확인:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
 
     
@@ -1054,12 +1024,6 @@ return (
 
                             </div>
                             
-
-
-
-
-
-                              
                           ) : (
                               // 생성 모드일 때
                               <div className="vm_plus_btn_outer">
@@ -1126,37 +1090,37 @@ return (
                               )}
                             
                               {/* 추가 옵션 */}
-                              {showAddOptions && (
-                                <div className="additional_disk_section">
-                                  <div className="vm_plus_btn float-right">
-                                    <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
-                                    <VmConnectionPlusModal
-                                      isOpen={isConnectionPopupOpen}
-                                      onRequestClose={() => setIsConnectionPopupOpen(false)}
-                                      vmId={vmId}
-                                      onSelectDisk={(diskId, diskDetails) => {
-                                        setSelectedDiskId(diskId);
-                                        setSelectedDisks((prev) => [...prev, { id: diskId, details: diskDetails }]);
-                                      }}
-                                      excludedDiskIds={selectedDisks.map((disk) => disk.id)}
-                                    />
-                                    <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
-                                    <DiskModal
-                                      isOpen={isCreatePopupOpen}
-                                      onRequestClose={() => setIsCreatePopupOpen(false)}
-                                      editMode={false}
-                                      vmId={vmId}
-                                      type="vm"
-                                      vmdisks={vmdisks}
-                                      onDiskCreated={(createdDisk) => {
-                                        handleDiskCreated(createdDisk); // 상태 업데이트
-                                      }}
-                                    />
-                                    <button disabled>+</button>
-                                    <button disabled>-</button>
-                                  </div>
-                                </div>
-                              )}
+                              {showAddOptions && vmdisks.length > 0 && (
+  <div className="additional_disk_section">
+    <div className="vm_plus_btn float-right">
+      <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+      <VmConnectionPlusModal
+        isOpen={isConnectionPopupOpen}
+        onRequestClose={() => setIsConnectionPopupOpen(false)}
+        vmId={vmId}
+        onSelectDisk={(diskId, diskDetails) => {
+          setSelectedDiskId(diskId);
+          setSelectedDisks((prev) => [...prev, { id: diskId, details: diskDetails }]);
+        }}
+        excludedDiskIds={selectedDisks.map((disk) => disk.id)}
+      />
+      <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
+      <DiskModal
+        isOpen={isCreatePopupOpen}
+        onRequestClose={() => setIsCreatePopupOpen(false)}
+        editMode={false}
+        vmId={vmId}
+        type="vm"
+        vmdisks={vmdisks}
+        onDiskCreated={(createdDisk) => {
+          handleDiskCreated(createdDisk);
+        }}
+      />
+      <button disabled>+</button>
+      <button disabled>-</button>
+    </div>
+  </div>
+)}
                             </div>
                             
                             

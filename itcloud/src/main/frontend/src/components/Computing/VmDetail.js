@@ -23,6 +23,8 @@ import VmApplication from './vmjs/VmApplication';
 import VmSnapshot from './vmjs/VmSnapshot';
 import VmNetwork from './vmjs/VmNetwork';
 import VmDisk from './vmjs/VmDisk';
+import VmActionButtons from '../button/VmActionButtons';
+import VmModals from '../Modal/VmModals';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -52,6 +54,9 @@ const VmDetail = () => {
         setActiveSection('common'); // 팝업을 열 때 항상 '일반' 섹션으로 설정
         setSelectedModalTab('common'); // '일반' 탭이 기본으로 선택되게 설정
         setIsModalOpen(true); // 모달 창 열림
+        setAction(popupType); // 선택된 액션 설정
+        setSelectedVm(vm); // 현재 VM 데이터 설정
+        setIsModalOpen(true); // 모달 열기
     };
     
     const closeModal = () => {
@@ -59,6 +64,8 @@ const VmDetail = () => {
         setActivePopup(null);  // 팝업 상태 초기화
         setActiveSection('common'); // 모달 닫을 때 '일반' 섹션으로 초기화
         setSelectedModalTab('common'); // 편집모달창 초기화
+        setIsModalOpen(false); // 모달 닫기
+        setAction(null); // 액션 초기화
     };
  
 
@@ -106,7 +113,21 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
   };
   const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 연결 팝업 상태
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
+    const [action, setAction] = useState(null); // 현재 동작
+    const [selectedVm, setSelectedVm] = useState(null);
   
+    const handleActionClick = (actionType) => {
+      if (actionType === 'templates') {
+        navigate('/computing/vms/templates');
+      } else {
+        setAction(actionType); // 현재 동작 설정
+        setIsModalOpen(true); // 모달 열기
+      }
+    };
+
+
+    const handleCreate = () => handleActionClick('create');
+    const handleEdit = () => selectedVm?.id && handleActionClick('edit');
 
 
   const sections = [
@@ -186,6 +207,7 @@ const buttons = [
       buttons={buttons}
       popupItems={popupItems}
     />
+
       <div className="content_outer">
         <NavButton 
             sections={sections} 
@@ -197,6 +219,13 @@ const buttons = [
           {renderSectionContent()}
         </div>
       </div>
+
+      <VmModals
+        isModalOpen={isModalOpen}
+        action={action}
+        onRequestClose={closePopup}
+        selectedVm={selectedVm}
+      />
 
 
         {/* 가상머신( 새로만들기)팝업 */}   
@@ -1389,7 +1418,7 @@ const buttons = [
       >
         <div className="vm_bring_popup">
           <div className="popup_header">
-            <h1>가상머신 가져오기</h1>
+            <h1>가상머신 가져오기dddd</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
          

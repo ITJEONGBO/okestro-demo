@@ -3,7 +3,9 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import {
+  useDeleteDiskFromVM,
   useDeleteVm,
+  useDisksFromVM,
 } from '../../api/RQHook';
 import ENDPOINTS from '../../api/Endpoints';
 
@@ -15,9 +17,13 @@ const VmDeleteModal = ({
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [diskDelete, setDiskDelete] = useState(true);
+  const [hasDisks, setHasDisks] = useState(false); // 디스크 정보 유무 상태
 
   const { mutate: deleteVm } = useDeleteVm();
-  
+  const { mutate: deleteVmDisk } = useDeleteDiskFromVM();//디스크삭제
+
+  const { data: disks } = useDisksFromVM(data?.id); // useDisksFromVM에서 디스크 데이터를 가져옴
+
   useEffect(() => {
     if (data) {
       setId(data.id || '');
@@ -29,6 +35,15 @@ const VmDeleteModal = ({
   useEffect(() => {
     console.log('diskDelete state updated:', diskDelete);
   }, [diskDelete]);
+
+  // 디스크유무무
+  useEffect(() => {
+    if (disks && disks.length > 0) {
+      setHasDisks(true); // 디스크가 있으면 true 설정
+    } else {
+      setHasDisks(false); // 디스크가 없으면 false 설정
+    }
+  }, [disks]);
 
   const handleDelete = () => {
     if (!id) {
@@ -75,16 +90,20 @@ const VmDeleteModal = ({
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
             <span> {name} 를(을) 삭제하시겠습니까? </span>
             
-            <input 
-              type="checkbox"
-              id="diskDelete"
-              checked={diskDelete}
-              onChange={(e) => {
-                console.log('Checkbox changed:', e.target.checked); // Debug log 추가
-                setDiskDelete(e.target.checked);
-              }}
-            />
-            <label htmlFor="backup">디스크 삭제</label>
+            {hasDisks && (
+              <>
+                <input
+                  type="checkbox"
+                  id="diskDelete"
+                  checked={diskDelete}
+                  onChange={(e) => {
+                    console.log('Checkbox changed:', e.target.checked);
+                    setDiskDelete(e.target.checked);
+                  }}
+                />
+                <label htmlFor="diskDelete">디스크 삭제</label>
+              </>
+            )}
           </div>
         </div>
 

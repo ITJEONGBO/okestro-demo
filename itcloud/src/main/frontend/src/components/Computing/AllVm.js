@@ -36,17 +36,18 @@ const closeModal = () => {
     setSelectedModalTab('common'); // 편집모달창 초기화
 };
 
-// 추가모달
-const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 연결 팝업 상태
-const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
-const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 상태
+// // 추가모달
+// const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 연결 팝업 상태
+// const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
+// const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 상태
+// const [selectedVms, setSelectedVms] = useState(null);
 
    // 탭 상태 정의 (기본 값: 'ipv4')
    const [selectedModalTab, setSelectedModalTab] = useState('common');
    // 탭 클릭 핸들러
 
  
-   const [selectedVms, setSelectedVms] = useState(null);
+
 
    const { 
     data: vms, 
@@ -95,61 +96,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
     </>
       </div>  
   
-        {/* 마이그레이션 팝업*/}
-        <Modal
-        isOpen={activePopup === 'migration'}
-          onRequestClose={closeModal}
-          contentLabel="마이그레이션"
-          className="Modal"
-          overlayClassName="Overlay"
-          shouldCloseOnOverlayClick={false}
-        >
-          <div className='migration_popup_content'>
-            <div className="popup_header">
-              <h1>가상머신 마이그레이션</h1>
-              <button onClick={closeModal}>
-                <FontAwesomeIcon icon={faTimes} fixedWidth />
-              </button>
-            </div>
-            <div id="migration_article_outer">
-              <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
-              
-              <div id="migration_article">
-                <div>
-                  <div id="migration_dropdown">
-                    <label htmlFor="host">대상 호스트 <FontAwesomeIcon icon={faInfoCircle} fixedWidth /></label>
-                  
-                    <select name="host_dropdown" id="host">
-                      <option value="">호스트 자동 선택</option>
-                      <option value="php">PHP</option>
-                      <option value="java">Java</option>
-                    </select>
-                  </div>
-                </div>
 
-                <div className="checkbox_group">
-                    <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
-                    <label className="check_label" htmlFor="ha_mode_box">
-                    선택한 가상 머신을 사용하여 양극 강제 연결 그룹의 모든 가상 시스템을 마이그레이션합니다.
-                    </label>
-                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
-                </div>
-
-                <div>
-                  <div className='font-bold'>가상머신</div>
-                  <div>on20-ap02</div>
-                </div>
-              </div>
-            
-            </div>
-            
-      <div className="edit_footer">
-        <button style={{ display: 'none' }}></button>
-        <button>OK</button>
-        <button onClick={closeModal}>취소</button>
-      </div>
-          </div>
-        </Modal>
       <Footer/>
     </div>
   );
