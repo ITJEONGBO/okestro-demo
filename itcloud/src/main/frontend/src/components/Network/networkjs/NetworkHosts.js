@@ -4,6 +4,7 @@ import {useAllHostsFromNetwork} from "../../../api/RQHook";
 import TableInfo from "../../table/TableInfo";
 import TablesOuter from "../../table/TablesOuter";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import NetworkHostModal from '../../Modal/NetworkHostModal';
 
 // 애플리케이션 섹션
 const NetworkHosts = ({ networkId }) => {
@@ -54,13 +55,13 @@ const NetworkHosts = ({ networkId }) => {
   }
 
   const [activeFilter, setActiveFilter] = useState("connected");
-  
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태 관리
 
 
   return (
     <>
       <div className="header_right_btns">
-        <button onClick={""}>호스트 네트워크 설정</button>
+        <button onClick={() => setIsModalOpen(true)}>호스트 네트워크 설정</button>
       </div>
       <div className="host_filter_btns">
         <button onClick={() => setActiveFilter("connected")}>연결됨</button>
@@ -75,6 +76,12 @@ const NetworkHosts = ({ networkId }) => {
         }
         data={hosts}
         onRowClick={() => console.log("Row clicked")}
+      />
+
+      <NetworkHostModal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        hosts={hosts} // 호스트 데이터 전달
       />
 
     </>

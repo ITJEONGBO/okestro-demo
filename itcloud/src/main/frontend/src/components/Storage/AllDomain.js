@@ -4,6 +4,7 @@ import DomainDupl from '../duplication/DomainDupl';
 import TableInfo from '../table/TableInfo';
 import { useAllStorageDomains } from '../../api/RQHook'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import Footer from '../footer/Footer';
 
 const AllDomain = () => {
   const {
@@ -33,6 +34,7 @@ const AllDomain = () => {
             type={'domain'}
           />
         </div>
+        <Footer/>
       </div>    
     </div>
   );

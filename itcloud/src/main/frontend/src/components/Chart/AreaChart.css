@@ -1,1 +1,4 @@
 /* AreaChart.css */
+.apexcharts-xaxistooltip{
+    display:none;
+}
