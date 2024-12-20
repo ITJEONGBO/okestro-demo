@@ -14,7 +14,6 @@ import {
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import HeaderButton from '../button/HeaderButton';
-import NetworkDetail from '../Network/none/NetworkDetail';
 import Footer from '../footer/Footer';
 import NavButton from '../navigation/NavButton';
 import './css/Setting.css';
@@ -133,7 +132,8 @@ const Setting = ({ }) => {
       return (
         <div id="section">
           {showNetworkDetail ? (
-            <NetworkDetail />
+            // <NetworkDetail />
+            <></>
           ) : (
             <>
               <HeaderButton
