@@ -1,13 +1,15 @@
 package com.itinfo.itcloud.controller.setting
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.controller.auth.OvirtUserController
+import com.itinfo.itcloud.controller.auth.OvirtUserController.Companion
+import com.itinfo.itcloud.model.auth.UserVo
+import com.itinfo.itcloud.model.setting.UsersVo
+import com.itinfo.itcloud.service.auth.ItOvirtUserService
+import com.itinfo.itcloud.service.setting.ItSettingService
 import com.itinfo.itcloud.service.setting.ItSystemPropertiesService
 import com.itinfo.util.model.SystemPropertiesVo
-
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
+import io.swagger.annotations.*
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 @RequestMapping("/api/v1/setting")
 class SystemPropertiesController {
 	@Autowired private lateinit var sysProp: ItSystemPropertiesService
+	@Autowired private lateinit var iUser: ItSettingService
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -58,6 +61,27 @@ class SystemPropertiesController {
 		// 이거는 json방식이긴한데.. 일단 나중에
 		return sysProp.update(sysProp.findOne())
 	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="사용자 목록조회",
+		notes="사용자 목록조회를 한다."
+	)
+	@ApiImplicitParams(
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "성공"),
+		ApiResponse(code = 404, message = "찾을 수 없는 사용자")
+	)
+	@GetMapping("/users")
+	fun findAll(): ResponseEntity<List<UsersVo>> {
+		log.info("findAll ... ")
+		val res: List<UsersVo> = iUser.findAllUsers()
+		return ResponseEntity.ok(res)
+	}
+	
+
+
 	companion object {
 		private val log by LoggerDelegate()
 	}

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * Converts bytes to megaabytes and formats the result to one decimal place.
@@ -62,6 +62,8 @@ export const renderVmStatusIcon = (status) => {
     return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
   } else if (status === 'DOWN') {
     return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+  } else if (status === 'POWERING_DOWN') {
+    return <FontAwesomeIcon icon={faArrowsUpToLine} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(180deg)' }} />;
   }
   return status;
 };

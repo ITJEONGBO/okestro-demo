@@ -152,12 +152,10 @@ class OvirtUserServiceImpl(
 	@Throws(PSQLException::class)
 	override fun findAll(): List<UserVo> {
 		log.info("findAll ... ")
-		val res: List<OvirtUser> =
-			ovirtUsers.findAll()
+		val res: List<OvirtUser> = ovirtUsers.findAll()
 		if (res.isEmpty()) return listOf()
 
-		val userDetails: List<UserDetail> =
-			userDetails.findAll()
+		val userDetails: List<UserDetail> = userDetails.findAll()
 		log.debug("detailsFound: {}", userDetails)
 		return res.toUserVos(userDetails)
 	}

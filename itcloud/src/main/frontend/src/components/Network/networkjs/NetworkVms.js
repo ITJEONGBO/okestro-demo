@@ -42,8 +42,9 @@ const NetworkVms = ({ networkId }) => {
 
   // 필터링된 VM 데이터 계산
   const filteredVms = activeFilter === 'running' 
-    ? vms.filter(vm => vm.status === 'UP')
+    ? vms.filter(vm => vm.status !== 'DOWN')
     : vms.filter(vm => vm.status === 'DOWN');
+    // : vms.filter(vm => vm.status === 'DOWN');
 
   const buttonClass = (filter) =>
     `filter_button ${activeFilter === filter ? 'active' : ''}`;
