@@ -18,23 +18,31 @@ const SuperAreaChart = ({ vmPer }) => {
   useEffect(() => {
     if (Array.isArray(vmPer) && vmPer.length > 0) {
       const defaultItem = { name: 'Unknown', time: [], dataList: [] };
-      const sortedData = vmPer
-        .filter(item => item) // Remove null/undefined entries
-        .map(item => ({ ...defaultItem, ...item })) // Merge defaults with item
-        .map((item) => {
-          const combined = item.time.map((time, index) => ({
-            time,
-            value: item.dataList[index] || 0,
-          })).sort((a, b) => new Date(a.time) - new Date(b.time));
   
-          return {
-            name: item.name,
-            data: combined.map(({ time, value }) => ({
-              x: formatDate(time),
-              y: value,
-            })),
-          };
-        });
+      // 각 항목의 dataList 합계를 기준으로 정렬하여 상위 3개 선택
+      const topThree = vmPer
+        .map(item => ({ ...defaultItem, ...item }))
+        .sort((a, b) => {
+          const sumA = a.dataList.reduce((sum, value) => sum + value, 0);
+          const sumB = b.dataList.reduce((sum, value) => sum + value, 0);
+          return sumB - sumA;
+        })
+        .slice(0, 3);
+  
+      const sortedData = topThree.map((item) => {
+        const combined = item.time.map((time, index) => ({
+          time,
+          value: item.dataList[index] || 0,
+        })).sort((a, b) => new Date(a.time) - new Date(b.time));
+  
+        return {
+          name: item.name,
+          data: combined.map(({ time, value }) => ({
+            x: formatDate(time),
+            y: value,
+          })),
+        };
+      });
   
       // Remove duplicate times
       const uniqueTimes = [...new Set(vmPer[0]?.time.map(formatDate))];
@@ -45,8 +53,7 @@ const SuperAreaChart = ({ vmPer }) => {
       setSeries([]);
       setDatetimes([]);
     }
-  }, [vmPer]);
-  
+  }, [vmPer]);  
 
   return (
     <AreaChart 
@@ -57,64 +64,3 @@ const SuperAreaChart = ({ vmPer }) => {
 };
 
 export default SuperAreaChart;
-
-
-// const SuperAreaChart = ({ type, vmUsage = [] }) => {
-//   const [series, setSeries] = useState([]);
-//   const [datetimes, setDatetimes] = useState([]);
-
-//   useEffect(() => {
-//     const seriesData = {};
-    
-//     vmUsage.forEach(item => {
-//         if (!seriesData[item.name]) {
-//           seriesData[item.name] = { name: item.name, data: [] };
-//         }
-//         if(type === 'cpu'){
-//           seriesData[item.name].data = [item.dataList]
-//         }else{
-//           seriesData[item.name].data.push(item.memoryPercent);
-//         }
-//     })
-    
-//     setSeries(Object.values(seriesData));
-//     setDatetimes(vmUsage.time);
-//   }, [vmUsage]);
-
-//   return (
-//     <AreaChart 
-//       series={series}
-//       datetimes={datetimes} 
-//     />
-//   );
-// };
-
-
-
-// const SuperAreaChart = () => {
-//   const [series, setSeries] = useState([{
-//     name: 'series1',
-//     data: [31, 40, 28, 51, 42, 109, 100] // 물결그래프 값
-//   }, {
-//     name: 'series2',
-//     data: [11, 32, 45, 82, 34, 52, 41]
-//   }, {
-//     name: 'series3',
-//     data: [20, 30, 40, 50, 60, 70, 80],
-//   }]);
-
-//   return (
-//     <AreaChart 
-//       series={series}
-//       datetimes={[
-//         "2018-09-19T00:00:00.000Z",
-//         "2018-09-19T01:30:00.000Z",
-//         "2018-09-19T02:30:00.000Z",
-//         "2018-09-19T03:30:00.000Z",
-//         "2018-09-19T04:30:00.000Z",
-//         "2018-09-19T05:30:00.000Z",
-//         "2018-09-19T06:30:00.000Z"
-//       ]} 
-//     />
-//   );
-// }
