@@ -375,8 +375,8 @@ const NetworkModal = ({
                 <span>DNS서버</span>
                 <div className="network_checkbox_type3">
                   <input type="text" id="dns_server" disabled />
-                  <div>
-                    <button>+</button>
+                  <div className='plusbtns'>
+                    <button class="border-r border-gray-500">+</button>
                     <button>-</button>
                   </div>
                 </div>

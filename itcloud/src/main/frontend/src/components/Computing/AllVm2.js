@@ -66,7 +66,6 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
       clusterId: e?.clusterVo?.id,
       dataCenter: e?.dataCenterVo?.name,
       dataCenterId: e?.dataCenterVo?.id,
-
       memoryUsage: e?.usageDto.memoryPercent === null ? '' : e?.usageDto.memoryPercent + '%',
       cpuUsage: e?.usageDto.cpuPercent === null ? '' : e?.usageDto.cpuPercent + '%',
       networkUsage: e?.usageDto.networkPercent === null ? '' : e?.usageDto.networkPercent + '%',

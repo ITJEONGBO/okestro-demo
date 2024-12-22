@@ -85,25 +85,28 @@ form>div{
     font-size: 0.32rem;
 }
 button{
-    border:1px solid gray;
+    /* border:1px solid gray;
     cursor:pointer;
-    border-radius: 3px;
+    border-radius: 3px; */
     padding: 0 0.1rem;
     display: flex;
-    align-items: center; /* 수직 가운데 정렬 추가 */
-    cursor:pointer;
+    align-items: center; 
 }
-/* button:disabled {
-    background-color: #e9e8e8cc; 
-    color: #666;           
-    cursor: not-allowed;    
-} */
+.plusbtns{
+    border:1px solid gray;
+    display: flex;
+    align-items: center; 
+    border-radius: 2px;
+    
+}
+.plusbtns>button{
+    height: 100%;
+}
 .icon_tooltip {
     max-width: 12vw !important;
     text-align: center;
   }
 .Overlay {
- 
     background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
     position: fixed;
     top: 0;
@@ -134,19 +137,7 @@ button{
     align-items: center;
     width:100%;
 }
-.header_right_btns button {
-    margin-right: 0.2rem;
-    font-size: 0.4rem;
-    padding: 0.1rem 0.1rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    border-radius: 2px;
-    height: 3.3vh;
-    background: white;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: left;
-    align-items: center; /* 수직 가운데 정렬 */
-}
+
 .content_header_right  i{
     font-size: 0.3rem;
     font-weight: 800;
@@ -733,10 +724,10 @@ background-color: #6999D9;
 .network_radio_group>div:nth-child(2){
    width: 46%;
 }
-.network_checkbox_type3>div,.network_new_vnic_buttons{
+/* .network_checkbox_type3>div,.network_new_vnic_buttons{
     display: flex;
     width: 6%;
-}
+} */
 
 .network_new_popup form{
     height: 66vh;

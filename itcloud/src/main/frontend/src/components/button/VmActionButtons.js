@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
@@ -60,6 +60,23 @@ const VmActionButtons = ({
     { onClick: onStop, label: '종료', disabled: isEditDisabled || isUp  },
     { onClick: onPowerOff, label: '전원끔', disabled: isEditDisabled || isUp  },
   ];
+
+  // 드롭다운 외부 클릭 감지 코드 추가
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropDownOpen(false);
+        setIsStopDropDownOpen(false);
+        setIsRebootDropDownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="header_right_btns">
       {onCreate && <button onClick={onCreate}>새로 만들기</button>}
@@ -120,18 +137,18 @@ const VmActionButtons = ({
       {snapshots && <button onClick={snapshots} disabled={isEditDisabled}>스냅샷</button>}
       {migration && <button onClick={migration} disabled={isMigrationDisabled}>마이그레이션</button>}
 
-      <div className="dropdown-container">
+      <div ref={dropdownRef} className="dropdown-container">
         <button onClick={toggleDropDown} className="manage-button">
           관리
           <FontAwesomeIcon icon={isDropDownOpen ? faChevronUp : faChevronDown} />
         </button>
         {isDropDownOpen && (
           <div className="dropdown-menu">
-            {onExport && <button onClick={onExport}>가져오기</button>}
-            {onCopy && <button onClick={onCopy} disabled={isEditDisabled}>가상머신 복제</button>}
-            {onDelete && <button onClick={onDelete} disabled={isEditDisabled}>삭제</button>}
-            {addTemplate && <button onClick={addTemplate} disabled={isEditDisabled}>템플릿 생성</button>}
-            {exportOva && <button onClick={exportOva} disabled={isEditDisabled}>OVA로 내보내기</button>}
+            {onExport && <button className="dropdown-item"onClick={onExport}>가져오기</button>}
+            {onCopy && <button className="dropdown-item" onClick={onCopy} disabled={isEditDisabled}>가상머신 복제</button>}
+            {onDelete && <button className="dropdown-item" onClick={onDelete} disabled={isEditDisabled}>삭제</button>}
+            {addTemplate && <button className="dropdown-item" onClick={addTemplate} disabled={isEditDisabled}>템플릿 생성</button>}
+            {exportOva && <button className="dropdown-item" onClick={exportOva} disabled={isEditDisabled}>OVA로 내보내기</button>}
           </div>
         )}
       </div>

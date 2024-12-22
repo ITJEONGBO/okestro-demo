@@ -55,6 +55,7 @@ const NetworkClusters = ({ networkId }) => {
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         clusters={clusters}
+        networkId={networkId}
       />
    </>
   );

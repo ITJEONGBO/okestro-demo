@@ -111,3 +111,15 @@
 .article_nav button i{
     margin-right: 3px;
 }
+.header_right_btns>button {
+    margin-right: 0.2rem;
+    padding: 0.1rem 0.1rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    border-radius: 2px;
+    height: 3.3vh;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: left;
+    align-items: center; /* 수직 가운데 정렬 */
+    border: 1px solid gray;
+}

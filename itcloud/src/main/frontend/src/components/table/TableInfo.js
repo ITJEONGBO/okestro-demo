@@ -225,7 +225,7 @@ const TableInfo = {
 
   STORAGE_DOMAINS: [
     { header: '상태', accessor: 'icon' },
-    { header: '', accessor: 'hostedEngine' },
+    { header: '', accessor: 'hostedEngine', width: '5%' },
     { header: '도메인 이름', accessor: 'name', width: '10%' },
     { header: '코멘트', accessor: 'comment', width: '12%' },
     { header: '도메인 유형', accessor: 'domainType' },
@@ -312,15 +312,18 @@ const TableInfo = {
 
 
   DISK_SNAPSHOT_FROM_STORAGE_DOMAIN: [
-    { header: '크기', accessor: 'actualSize', clickable: false },
-    { header: '생성 일자', accessor: 'creationDate', clickable: false },
-    { header: '스냅샷 생성일', accessor: 'snapshotCreationDate', clickable: false },
-    { header: '디스크 별칭', accessor: 'alias', clickable: false },
-    { header: '스냅샷 설명', accessor: 'description', clickable: false },
-    { header: '연결 대상', accessor: 'target', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false },
+    { header: '별칭', accessor: 'alias', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '실제 크기', accessor: 'actualSize', clickable: false },
+    { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
+    { header: '인터페이스', accessor: 'interface', clickable: false },
+    { header: '생성 일자', accessor: 'snapshotCreationDate', clickable: false },
+    { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
+    { header: '유형', accessor: 'type', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
   ],
+  
   TEMPLATE_VMS:[
     { header: '', accessor: 'icon', clickable: false, width: '10%' },
     { header: '이름', accessor: 'name', clickable: true, width: '20%' },
@@ -487,16 +490,17 @@ HOST_NETWORK_INTERFACE: [
     { header: '업그레이드 상태', accessor: 'upgrade', clickable: false },
 
   ],
-  
   CLUSTERS_POPUP: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '모두 할당', accessor: 'allAssigned', clickable: false },
     { header: '모두 필요', accessor: 'allRequired', clickable: false },
-    { header: '가상 머신 네트워크 관리', accessor: 'vmNetMgmt', clickable: false},
-    { header: '관리', accessor: 'manage', clickable: false },
+    { header: '가상 머신 네트워크 관리', accessor: 'vmNetMgmt', clickable: false },
+    { header: '네트워크 출력', accessor: 'networkOutput', clickable: false },
     { header: '마이그레이션 네트워크', accessor: 'migrationNetwork', clickable: false },
+    { header: 'Gluster 네트워크', accessor: 'glusterNetwork', clickable: false },
     { header: '기본 라우팅', accessor: 'defaultRouting', clickable: false },
   ],
+  
 
   
   HOSTS_DISCONNECTION: [

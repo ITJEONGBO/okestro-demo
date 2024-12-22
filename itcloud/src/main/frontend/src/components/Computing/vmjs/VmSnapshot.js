@@ -9,7 +9,6 @@ import TableInfo from '../../table/TableInfo';
 import VmSnapshotAddModal from '../../Modal/VmSnapshotaddModal';
 import DeleteModal from '../../Modal/DeleteModal';
 
-// 스냅샷(각각 밑에 열리는 창 만들어야함)
 const VmSnapshot = ({vm}) => {
   const [activePopup, setActivePopup] = useState(null);
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
@@ -56,7 +55,6 @@ const VmSnapshot = ({vm}) => {
     };
   }
 
-    // 가상머신에 연결되어있는 디스크(왜실행안됨??)
     const { data: disks } = useDisksFromVM(vm?.id, (e) => ({
       ...e,
       snapshot_check: (
@@ -97,7 +95,7 @@ const VmSnapshot = ({vm}) => {
         className="snapshot_content"
         onClick={() => setSelectedSnapshot(snapshot)} // snapshot_content 클릭 시 선택되도록 추가
         style={{
-        border: selectedSnapshot?.id === snapshot.id ? '1px solid #449bff' : 'none', // 선택된 항목 강조 효과
+        border: selectedSnapshot?.id === snapshot.id ? '1px solid #b9b9b9' : 'none', // 선택된 항목 강조 효과
         }}
       >
 
@@ -169,16 +167,32 @@ const VmSnapshot = ({vm}) => {
             <table className="snap_table">
               <tbody>
                 <tr>
+                  <th>날짜:</th>
+                  <td>현재</td>
+                </tr>
+                <tr>
                   <th>상태:</th>
                   <td>{snapshot.status || '알 수 없음'}</td>
                 </tr>
                 <tr>
-                  <th>생성 날짜:</th>
-                  <td>{snapshot.creationDate || '알 수 없음'}</td>
+                  <th>메모리:</th>
+                  <td>{snapshot.memorySize ? 'true' : 'false'}</td>
                 </tr>
                 <tr>
-                  <th>크기:</th>
-                  <td>{snapshot.actualSize || '알 수 없음'}</td>
+                  <th>설명:</th>
+                  <td>{snapshot.description || '활성 가상 머신'}</td>
+                </tr>
+                <tr>
+                  <th>설정된 메모리:</th>
+                  <td>{snapshot.memorySize || 'N/A'} </td>
+                </tr>
+                <tr>
+                  <th>할당할 실제 메모리:</th>
+                  <td>{snapshot.memoryActual || 'N/A'} </td>
+                </tr>
+                <tr>
+                  <th>CPU 코어 수:</th>
+                  <td>2 (2:1:1)</td>
                 </tr>
               </tbody>
             </table>
@@ -202,20 +216,36 @@ const VmSnapshot = ({vm}) => {
             <table className="snap_table">
               <tbody>
                 <tr>
+                  <th>이름:</th>
+                  <td>{vm?.nicVos?.[0]?.name || 'nic1'}</td>
+                </tr>
+                <tr>
                   <th>네트워크 이름:</th>
-                  <td>{vm?.nicVos?.[0]?.networkVo?.name || '알 수 없음'}</td>
+                  <td>{vm?.nicVos?.[0]?.networkVo?.name || 'ovirtmgmt'}</td>
                 </tr>
                 <tr>
-                  <th>MAC 주소:</th>
-                  <td>{vm?.nicVos?.[0]?.macAddress || '알 수 없음'}</td>
+                  <th>프로파일 이름:</th>
+                  <td>{vm?.nicVos?.[0]?.profileVo?.name || 'ovirtmgmt'}</td>
                 </tr>
                 <tr>
-                  <th>IPv4 주소:</th>
-                  <td>{vm?.nicVos?.[0]?.ipv4 || '알 수 없음'}</td>
+                  <th>유형:</th>
+                  <td>{vm?.nicVos?.[0]?.type || 'VirtIO'}</td>
                 </tr>
                 <tr>
-                  <th>IPv6 주소:</th>
-                  <td>{vm?.nicVos?.[0]?.ipv6 || '알 수 없음'}</td>
+                  <th>MAC:</th>
+                  <td>{vm?.nicVos?.[0]?.macAddress || '56:6f:7e:02:00:06'}</td>
+                </tr>
+                <tr>
+                  <th>Rx 속도 (Mbps):</th>
+                  <td>{vm?.nicVos?.[0]?.rxRate || '< 1'}</td>
+                </tr>
+                <tr>
+                  <th>Tx 속도 (Mbps):</th>
+                  <td>{vm?.nicVos?.[0]?.txRate || '< 1'}</td>
+                </tr>
+                <tr>
+                  <th>중단 (Pkts):</th>
+                  <td>{vm?.nicVos?.[0]?.dropRate || '0'}</td>
                 </tr>
               </tbody>
             </table>
