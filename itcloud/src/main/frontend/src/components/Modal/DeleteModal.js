@@ -9,7 +9,7 @@ import {
   useDeleteHost,
   useDeleteTemplate,
   useDeleteNetwork,
-  useDeleteVnicProfile, // 네트워크 삭제 추가
+  useDeleteVnicProfile,
   useDeleteNetworkInterface,
   useDeleteDisk,
   useDeleteNetworkFromTemplate,
@@ -78,8 +78,8 @@ const DeleteModal = ({
     } else if (type === 'Network') {
       console.log('Deleting Network');
       handleDelete(deleteNetwork);
-    } else if (type === 'vnic') {
-      console.log('Deleting vNIC');
+    } else if (type === 'vnicProfile') {
+      console.log('Deleting vnicProfile');
       if (!networkId) {
         console.error('Network ID가 없습니다. 삭제 요청을 취소합니다.');
         return;

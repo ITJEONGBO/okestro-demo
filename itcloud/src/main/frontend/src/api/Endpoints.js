@@ -158,12 +158,6 @@ const ENDPOINTS = {
   FIND_ALL_NETWORKS: () => `/api/v1/networks`,
   FIND_NETWORK: (networkId) => `/api/v1/networks/${networkId}`,
 
-  FIND_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
-  FIND_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
-  ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
-  EDIT_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
-  DELETE_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
-
   FIND_CLUSTERS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/clusters`,
   FIND_HOSTS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/hosts`,
   FIND_VMS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/vms`,
@@ -178,6 +172,12 @@ const ENDPOINTS = {
   IMPORT_NETWORK: () => `/api/v1/networks/import`,
   
   FIND_ALL_VNIC_PROFILES: () =>  `/api/v1/networks/vnicProfiles`,
+  FIND_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
+  FIND_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
+  ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
+  EDIT_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
+  DELETE_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
+
   //endregion: Network
 
   //region: StorageDomain

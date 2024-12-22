@@ -7,8 +7,8 @@ import {
   useAllDataCenters, 
   useEditVnicProfile, 
   useNetworksFromDataCenter, 
-  useAllVnicProfilesFromNetwork 
-} from '../../api/RQHook'; // 네트워크 훅 임포트
+  useVnicProfile,
+} from '../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
   <div className="vnic_new_box">
@@ -18,12 +18,11 @@ const FormGroup = ({ label, children }) => (
 );
 
 const VnicProfileModal = ({ 
-  // 편집기능은 되지만 테이블 행이제일첫번째로 올라감
   isOpen, 
   onRequestClose,
   editMode = false,
-  vnicProfile,
-  networkId ,
+  vnicProfileId,
+  networkId,
 }) => {
   const [formState, setFormState] = useState({
     id: '',
@@ -32,18 +31,30 @@ const VnicProfileModal = ({
     // passthrough: '',
     portMirroring: false,
     // migration: '',
-    // networkFilter: 'vdsm-no-mac-spoofing'
-  })
-  // const [id, setId] = useState('');
-  // const [name, setName] = useState('');
-  // const [description, setDescription] = useState('');
-  // const [passthrough, setPassthrough] = useState(vnicProfile?.passThrough !== 'DISABLED');
-  // const [portMirroring, setPortMirroring] = useState(vnicProfile?.portMirroring === true);
-  // const [migration, setMigration]  = useState('');
-
+  });
   // const [networkFilter, setNetworkFilter] = useState('');
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [networkVoId, setNetworkVoId] = useState('');  
+
+
+  const { 
+    data: vnic,
+    isLoading: isVnicLoading
+  } = useVnicProfile(networkId, vnicProfileId);
+  
+  const {
+    data: datacenters = [],
+    isLoading: isDataCentersLoading
+  } = useAllDataCenters((e) => ({...e,}));
+
+  const {
+    data: networks = [],
+    isLoading: isNetworksLoading
+  } = useNetworksFromDataCenter(
+    dataCenterVoId ? dataCenterVoId : undefined, 
+    (e) => ({...e,})
+  );
+  
 
   const { mutate: addVnicProfile } = useAddVnicProfile();
   const { mutate: editVnicProfile } = useEditVnicProfile();
@@ -69,41 +80,24 @@ const VnicProfileModal = ({
     { value: "", label: "No Network Filter" },
   ];
 
-  const {
-    data: datacenters,
-    isLoading: isDatacentersLoading
-  } = useAllDataCenters((e) => ({...e,}));
-
-  const {
-    data: networks = [],
-    isLoading: isNetworksLoading
-  } = useNetworksFromDataCenter(
-    dataCenterVoId ? dataCenterVoId : undefined, 
-    (e) => ({...e,})
-  );
-
-  const { 
-    data: vnics 
-  } = useAllVnicProfilesFromNetwork(networkId);
   
-  
-  // 초기값 설정
   useEffect(() => {
-    if (editMode && vnicProfile) {
+    if (editMode && vnic) {
+      console.log('vnic:', vnic);
       setFormState({
-        id: vnicProfile.id || '',
-        name: vnicProfile.name || '',
-        description: vnicProfile.description || '',
-        passthrough: vnicProfile.passThrough !== 'DISABLED',
-        migration: vnicProfile.migration || '', 
-        networkFilter: vnicProfile?.networkFilterVo?.id || ''
+        id: vnic?.id || '',
+        name: vnic?.name || '',
+        description: vnic?.description || '',
+        // passthrough: vnic.passThrough !== 'DISABLED',
+        // migration: vnic.migration || '', 
+        networkFilter: vnic?.networkFilterVo?.id || ''
       });
-      setDataCenterVoId(vnicProfile.dataCenterVo.id || '');
-      setNetworkVoId(vnicProfile.networkVo.id || '');        
-    } else if (!editMode ) {        
+      setDataCenterVoId(vnic?.dataCenterVo?.id || '');
+      setNetworkVoId(vnic?.networkVo?.id || '');        
+    } else if (!editMode && !isDataCentersLoading) {        
       resetForm();
     }
-  }, [editMode, vnicProfile]);
+  }, [editMode, vnic]);
 
   useEffect(() => {
     if (!editMode && datacenters && datacenters.length > 0) {
@@ -138,40 +132,34 @@ const VnicProfileModal = ({
     setNetworkVoId('');
   };
 
-  const handleFormSubmit = () => {
 
-  const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
-  const selectedNetwork = networks.find((n) => n.id === networkVoId);    
+  const handleFormSubmit = () => {
+    if (!formState.name) return alert('이름을 입력해주세요.');
+
+    const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
+    const selectedNetwork = networks.find((n) => n.id === networkVoId);    
 
     const dataToSubmit = {
-      networkVo: { id: selectedNetwork.id,},
-      ...formState,      
-      // migration : false, 
+      networkVo: { id: selectedNetwork.id, name: selectedNetwork.name},
+      ...formState,
     };
     console.log('dataToSubmit:', dataToSubmit); 
 
     if (editMode) {
-      dataToSubmit.id = formState.id;
       editVnicProfile(
-        { 
-          networkId: networkVoId,
-          vnicId: formState.id, 
-          vnicData: dataToSubmit 
-        }, 
-      {
-        onSuccess: () => {
-          alert('vNIC 프로파일이 성공적으로 편집되었습니다.');
-          onRequestClose();
-        },
-        onError: (error) => {
-          console.error('vNIC 프로파일 편집 중 오류 발생:', error);
-        }
-      });
+        { networkId: networkVoId, vnicId: formState.id, vnicData: dataToSubmit }, 
+        {
+          onSuccess: () => {
+            alert('vNIC 프로파일이 성공적으로 편집되었습니다.');
+            onRequestClose();
+          },
+          onError: (error) => {
+            console.error('vNIC 프로파일 편집 중 오류 발생:', error);
+          }
+        });
     } else {
       addVnicProfile(
-        { networkId: networkVoId,
-          vnicData: dataToSubmit
-        }, 
+        { networkId: networkVoId, vnicData: dataToSubmit }, 
         {
           onSuccess: () => {
             alert('vNIC 프로파일이 성공적으로 추가되었습니다.');
@@ -204,44 +192,42 @@ const VnicProfileModal = ({
         <div className="vnic_new_content">
           <div className="vnic_new_contents" style={{ paddingTop: '0.2rem' }}>
 
-            <FormGroup label="데이터 센터">
-              {isDatacentersLoading ? (
-                  <p>데이터 센터를 불러오는 중...</p>
-                ) : datacenters.length === 0 ? (
-                  <p>사용 가능한 데이터 센터가 없습니다.</p>
-                ) : (
-                <select
-                  value={dataCenterVoId}
-                  onChange={(e) => setDataCenterVoId(e.target.value)}
-                  disabled={editMode}
-                >
-                  {datacenters && datacenters.map((dc) => (
-                    <option key={dc.id} value={dc.id}>
-                      {dc.name}: {dataCenterVoId}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </FormGroup>
+          <FormGroup label="데이터 센터">
+                {isDataCentersLoading ? (
+                    <p>데이터 센터를 불러오는 중...</p>
+                  ) : datacenters.length === 0 ? (
+                    <p>사용 가능한 데이터 센터가 없습니다.</p>
+                  ) : (
+                  <select
+                    value={dataCenterVoId}
+                    onChange={(e) => setDataCenterVoId(e.target.value)}
+                    disabled={editMode}
+                  >
+                    {datacenters && datacenters.map((dc) => (
+                      <option key={dc.id} value={dc.id}>
+                        {dc.name}: {dataCenterVoId}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </FormGroup>
 
             <FormGroup label="네트워크">
-              {isNetworksLoading ? (
-                  <p>네트워크를 불러오는 중...</p>
-                ) : networks.length === 0 ? (
-                  <p>사용 가능한 네트워크가 없습니다.</p>
+              <select
+                value={networkVoId}
+                onChange={(e) => setNetworkVoId(e.target.value)}
+                disabled={editMode}
+              >
+                {isNetworksLoading ? (
+                  <option>loading ~~</option>
                 ) : (
-                <select
-                  value={networkVoId}
-                  onChange={(e) => setNetworkVoId(e.target.value)}
-                  disabled={editMode}
-                >
-                  {networks && networks.map((n) => (
+                  networks.map((n) => (
                     <option key={n.id} value={n.id}>
                       {n.name}: {networkVoId}
                     </option>
-                  ))}
-                </select>
-              )}
+                  ))
+                )}
+              </select>
             </FormGroup>
 
             <FormGroup label="별칭">

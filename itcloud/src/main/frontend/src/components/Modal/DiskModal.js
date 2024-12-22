@@ -105,7 +105,7 @@ const DiskModal = ({
   ];
 
   useEffect(() => {
-    if (editMode && disk && vmdisk) {
+    if (editMode && disk) {
       console.log('Setting edit mode state with disk:', disk);
       setFormState({
         id: disk.id || '',
@@ -117,6 +117,29 @@ const DiskModal = ({
         sharable: disk.sharable || false,
         backup: disk.backup || false,
         sparse: disk.sparse || false,
+      });
+      setDataCenterVoId(disk?.dataCenterVo?.id || '');
+      setDomainVoId(disk?.storageDomainVo?.id || '');
+      setDiskProfileVoId(disk?.diskProfileVo?.id || '');
+      // 
+    } else if (!editMode && !isDatacentersLoading) {
+      resetForm();
+    }
+  }, [editMode, disk]);
+  
+  useEffect(() => {
+    if (editMode && vmdisk) {
+      console.log('Setting edit mode state with disk:', vmdisk);
+      setFormState({
+        id: vmdisk.id || '',
+        size: (vmdisk.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
+        appendSize: 0,
+        alias: vmdisk.alias || '',
+        description: vmdisk.description || '',
+        wipeAfterDelete: vmdisk.wipeAfterDelete || false,
+        sharable: vmdisk.sharable || false,
+        backup: vmdisk.backup || false,
+        sparse: vmdisk.sparse || false,
         readOnly:vmdisk.readOnly || false
       });
       setDataCenterVoId(disk?.dataCenterVo?.id || '');
@@ -126,7 +149,7 @@ const DiskModal = ({
     } else if (!editMode) {
       resetForm();
     }
-  }, [editMode, disk]);
+  }, [editMode, vmdisk]);
 
   useEffect(() => {
     if (!editMode && datacenters && datacenters.length > 0) {
@@ -150,7 +173,7 @@ const DiskModal = ({
     if (!editMode && interfaceList.length > 0) {
       setInterface_(interfaceList[0].value);
     }
-  }, [editMode, interfaceList]);
+  }, [interfaceList, editMode]);
   
 
   const resetForm = () => {
@@ -191,7 +214,7 @@ const DiskModal = ({
       alert(error);
       return;
     }
-
+    
     const sizeToBytes = parseInt(formState.size, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환
     const appendSizeToBytes = parseInt(formState.appendSize || 0, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환 (기본값 0)
 
@@ -201,23 +224,17 @@ const DiskModal = ({
 
 
     // 데이터 객체 생성
-    const dataToSubmit = {
-      alias: formState.alias,
-      description: formState.description,
+    const diskDataToSubmit = {
       dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
       storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
       diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
       ...formState,
-      size: sizeToBytes,
-      appendSize: appendSizeToBytes,
-      backup: formState.backup,
-      sparse: formState.sparse,
-      bootable: formState.bootable,
-      readOnly: formState.readOnly,
+      size: sizeToBytes
     };
 
+    
     //가상머신  디스크
-    const vmDataToSubmit ={
+    const vmDataToSubmit = {
         bootable: formState.bootable,
         readOnly: formState.readOnly,
         passDiscard:formState.passDiscard,
@@ -236,29 +253,29 @@ const DiskModal = ({
         }
     }
 
-    // console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
+    console.log("Form Data: ", diskDataToSubmit); // 데이터를 확인하기 위한 로그
     console.log("Form vmDataToSubmit: ", vmDataToSubmit); // 데이터를 확인하기 위한 로그
 
-    if (type === "vm") {
-      if (onDiskCreated) {
-        console.log("DiskModal에서 생성된 디스크 데이터:", dataToSubmit);
-        onDiskCreated(dataToSubmit);
-      }
-      onRequestClose(); // 모달 닫기
-    }
-    
+    // if (type === "vm") {
+    //   if (onDiskCreated) {
+    //     console.log("DiskModal에서 생성된 디스크 데이터:", dataToSubmit);
+    //     onDiskCreated(dataToSubmit);
+    //   }
+    //   onRequestClose(); // 모달 닫기
+    // }
+
     if (editMode) {
-      editDisk( 
-        { diskId: formState.id, diskData: dataToSubmit },
+      diskDataToSubmit.appendSize = appendSizeToBytes;   
+      editDisk(
+        { diskId: formState.id, diskData: diskDataToSubmit}, 
         {
           onSuccess: () => {
-            alert("디스크 편집 완료");
-            onRequestClose(); // 성공 시 모달 닫기
+            alert("디스크 편집 완료")
+            onRequestClose();  // 성공 시 모달 닫기
           },
         }
       );
-    
-    }else if (type === 'vmDisk'){ // 가상머신 세부페이지 디스크
+    } else if (type === 'vmDisk'){ // 가상머신 세부페이지 디스크
       addDiskVm(
         {vmId:vmId, diskData: vmDataToSubmit },
         {
@@ -270,16 +287,15 @@ const DiskModal = ({
           console.error('vNIC 프로파일 추가 중 오류 발생:', error);
         },
         });
+    } else {
+      addDisk(diskDataToSubmit, {
+        onSuccess: () => {
+          alert("디스크 생성 완료")
+          onRequestClose();
+        },
+      });
     }
-    else if(type==='vm'){ // 훅실행x vmModal로 정보만넘겨주기
-      if (onDiskCreated) {
-        onDiskCreated(dataToSubmit);
-      }
-      onRequestClose();
-      return;
-    }
-  }
-
+  };
 
   return (
     <Modal

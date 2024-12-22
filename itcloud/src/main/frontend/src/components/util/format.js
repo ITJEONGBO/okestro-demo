@@ -23,6 +23,10 @@ export function formatBytesToGBToFixedZero(bytes) {
   return (bytes / (1024 * 1024 * 1024)).toFixed(0);
 }
 
+export function sizeToBytes(size) {
+  return parseInt(size, 10) * 1024 * 1024 * 1024
+}
+
 export function zeroValue(size) {
   return size < 1 ? "< 1 GB" : `${size} GB`;
 }

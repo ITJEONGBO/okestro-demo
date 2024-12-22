@@ -1911,6 +1911,20 @@ migrateHostsFromVM: async (vmId) => {
   }),
 
   /**
+   * @name ApiManager.findVnicProfile
+   * @description vnic profile
+   *
+   * @param {string} vnicId
+   * @returns 
+   * 
+   * @see
+   */
+  findVnicProfile: async (networkId, vnicId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VNIC_PROFILE_FROM_NETWORK(networkId, vnicId),
+  }),
+
+  /**
    * @name ApiManager.addVnicProfiles
    * @description 새 vnic프로파일생성
    * 

@@ -7,7 +7,8 @@ const VnicProfileDupl = ({
   vnicProfiles, 
   columns,
   onFetchVnicProfiles, 
-  status
+  status,
+  networkId,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
   const [action, setAction] = useState(null); // 현재 동작
@@ -40,6 +41,7 @@ const VnicProfileDupl = ({
         action={action}
         onRequestClose={() => setIsModalOpen(false)}
         selectedVnicProfile={selectedVnicProfile}
+        networkId={networkId}
       />
     </>
   );

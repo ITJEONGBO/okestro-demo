@@ -1978,7 +1978,6 @@ export const useAllNetworks = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 });
-
 /**
  * @name useNetworkById
  * @description 네트워크 상세조회 useQuery 훅
@@ -1997,8 +1996,6 @@ export const useNetworkById = (networkId) => useQuery({
   staleTime: 0,
   cacheTime: 0,
 });
-
-
 /**
  * @name useAllClustersFromNetwork
  * @description 네트워크 내 클러스터 목록조회 useQuery훅
@@ -2009,8 +2006,6 @@ export const useNetworkById = (networkId) => useQuery({
  * 
  * @see ApiManager.findAllClustersFromNetwork
  */
-
-// 클러스터목록
 export const useAllClustersFromNetwork = (networkId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['clustersFromNetwork', networkId],
@@ -2020,7 +2015,16 @@ export const useAllClustersFromNetwork = (networkId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? [];
   }
 })
-// 호스트 목록
+/**
+ * @name useAllHostsFromNetwork
+ * @description 네트워크 내 호스트 목록조회 useQuery훅
+ * 
+ * @param {string} networkId 네트워크ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllHostsFromNetwork
+ */
 export const useAllHostsFromNetwork = (networkId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['hostsFromNetwork', networkId], 
@@ -2033,7 +2037,25 @@ export const useAllHostsFromNetwork = (networkId, mapPredicate) => useQuery({
   staleTime: 0,
   cacheTime: 0,
 })
-// 가상머신 목록
+/**
+ * @name useAllVmsFromNetwork
+ * @description 네트워크 내 가상머신 목록조회 useQuery훅
+ * 
+ * @param {string} networkId 네트워크ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllVmsFromNetwork
+ */
+export const useAllVmsFromNetwork = (networkId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['vmFromNetwork', networkId], 
+  queryFn: async () => {
+    console.log(`useAllVmsFromNetwork ... ${networkId}`);
+    const res = await ApiManager.findAllVmsFromNetwork(networkId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
 /**
  * @name useAllTemplatesFromNetwork
  * @description 네트워크 내 템플릿 목록조회 useQuery훅
@@ -2073,25 +2095,6 @@ export const useAllPermissionsFromNetwork = (networkId, mapPredicate) => useQuer
   queryFn: async () => {
     console.log(`useAllPermissionFromNetwork ... ${networkId}`);
     const res = await ApiManager.findAllPermissionsFromNetwork(networkId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
-})
-/**
- * @name useAllVmsFromNetwork
- * @description 네트워크 내 가상머신 목록조회 useQuery훅
- * 
- * @param {string} networkId 네트워크ID
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.findAllVmsFromNetwork
- */
-export const useAllVmsFromNetwork = (networkId, mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['vmFromNetwork', networkId], 
-  queryFn: async () => {
-    console.log(`useAllVmsFromNetwork ... ${networkId}`);
-    const res = await ApiManager.findAllVmsFromNetwork(networkId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
@@ -2137,6 +2140,25 @@ export const useAllVnicProfiles = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+
+/**
+ * @name useVnicProfile
+ * @description vnic profile 상세조회 useQuery 훅
+ * 
+ * @param {string} vnicId vnic profile ID
+ * @returns useQuery 훅
+ */
+export const useVnicProfile = (networkId, vnicId) => useQuery({
+  queryKey: ['vnicId', vnicId],
+  queryFn: async () => {
+    if (!vnicId) return {};  
+    console.log(`Fetching vnic profile with ID: ${vnicId}`);
+    const res = await ApiManager.findVnicProfile(networkId, vnicId);
+    return res ?? {};
+  },
+  staleTime: 0,
+  cacheTime: 0,
+});
 
 /**
  * @name useAddNetwork
@@ -2196,6 +2218,8 @@ export const useDeleteNetwork = () => {
     },
   });
 };
+
+
 
 
 

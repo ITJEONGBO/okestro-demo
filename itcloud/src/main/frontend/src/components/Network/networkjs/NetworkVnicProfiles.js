@@ -17,6 +17,7 @@ const NetworkVnicProfiles = ({networkId}) => {
       <VnicProfileDupl
         columns={TableInfo.VNIC_PROFILES_FROM_NETWORK}
         vnicProfiles={vnicProfiles || []}
+        networkId={networkId}
       />
     </>
   );
