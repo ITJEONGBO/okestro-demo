@@ -3,6 +3,7 @@ import TablesOuter from './TablesOuter';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPencil, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { formatBytesToGBToFixedZero } from '../util/format';
 
 const DomainTable = ({
   columns,
@@ -18,7 +19,7 @@ const DomainTable = ({
   const renderStatusIcon = (status) => {
     if (status === 'ACTIVE') {
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    } else if (status === 'DOWN') {
+    } else if (status === 'DOWN' || status === 'INACTIVE') {
       return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
     } else if (status === 'MAINTENANCE') {
       return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
@@ -31,9 +32,19 @@ const DomainTable = ({
       return '활성화';
     } else if (status === 'DOWN') {
       return '중지?';
+    } else if (status === 'INACTIVE') {
+      return '비활성화';
     }
     return status;
   };
+
+  const sizeCheck = (size) => {
+    if(size === 0){
+      return 'N/A';
+    }else{
+      return formatBytesToGBToFixedZero(size) + " GB";
+    }
+  }
 
 
   return (
@@ -59,9 +70,9 @@ const DomainTable = ({
             : domain?.storageType === 'iscsi' ? 'iSCSI'
             : 'Fibre Channel',
           // hostedEngine: domain?.hostedEngine ? 'O' : 'X',
-          diskSize: domain?.diskSize/(Math.pow(1024, 3))+" GB",
-          availableSize: domain?.availableSize/(Math.pow(1024, 3))+" GB",
-          usedSize: domain?.usedSize/(Math.pow(1024, 3))+" GB",
+          diskSize: sizeCheck(domain?.diskSize),
+          availableSize: sizeCheck(domain?.availableSize),
+          usedSize: sizeCheck(domain?.usedSize),
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(row) => setSelectedDomain(row)}

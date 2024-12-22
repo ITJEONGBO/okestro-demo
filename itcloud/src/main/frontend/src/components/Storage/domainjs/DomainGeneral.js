@@ -12,8 +12,8 @@ const DomainGeneral = ({ domainId }) => {
     ...e,
   }));
 
-  function overCommit() {
-    return ((domain?.commitedSize / domain?.diskSize) * 100).toFixed(0);
+  function overCommit(commit, disk) {
+    return ((commit / disk) * 100).toFixed(0);
   }
 
   return (
@@ -44,7 +44,7 @@ const DomainGeneral = ({ domainId }) => {
               </tr>
               <tr>
                 <th>오버 할당 비율:</th>
-                <td>{overCommit()}%</td>
+                <td>{overCommit(domain?.availableSize, domain?.diskSize)}%</td>
               </tr>
               <tr>
                 <th>이미지: (약간의 문제)</th>

@@ -2208,9 +2208,9 @@ export const useDeleteNetwork = () => {
 export const useAddVnicProfile = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async (dataCenterData) => await ApiManager.addVnicProfiles(dataCenterData),
+    mutationFn: async ({networkId, vnicData}) => await ApiManager.addVnicProfiles(networkId, vnicData),
     onSuccess: () => {
-      queryClient.invalidateQueries('vnicProfilesFromNetwork'); // 데이터센터 추가 성공 시 'allDataCenters' 쿼리를 리패칭하여 목록을 최신화
+      queryClient.invalidateQueries('vnicProfilesFromNetwork');
     },
     onError: (error) => {
       console.error('Error adding vnic:', error);
@@ -2226,7 +2226,7 @@ export const useAddVnicProfile = () => {
 export const useEditVnicProfile = () => {
   const queryClient = useQueryClient();  
   return useMutation({
-    mutationFn: async ({ nicId, dataCenterData }) => await ApiManager.editVnicProfiles(nicId, dataCenterData),
+    mutationFn: async ({ networkId, vnicId, vnicData }) => await ApiManager.editVnicProfiles(networkId, vnicId, vnicData),
     onSuccess: () => {
       queryClient.invalidateQueries('vnicProfilesFromNetwork');
     },

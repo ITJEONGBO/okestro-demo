@@ -7,7 +7,7 @@ import Footer from '../../footer/Footer';
 import '../css/Vm.css';
 import { useVm } from '../../../api/RQHook';
 import Path from '../../Header/Path';
-import VmGenerals from './VmGenerals';
+import VmGeneral from './VmGeneral';
 import VmDisk from './VmDisk';
 import VmSnapshot from './VmSnapshot';
 import VmApplication from './VmApplication';
@@ -58,7 +58,7 @@ const VmInfo = () => {
   const pathData = [vm?.name, sections.find((section) => section.id === activeTab)?.label];
 
   const sectionComponents = {
-    general: VmGenerals,
+    general: VmGeneral,
     disks: VmDisk,
     snapshots: VmSnapshot,
     nics: VmNetwork,

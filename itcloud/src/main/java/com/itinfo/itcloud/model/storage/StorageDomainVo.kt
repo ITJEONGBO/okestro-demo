@@ -142,6 +142,23 @@ fun StorageDomain.toDomainStatus(conn: Connection): StorageDomainVo {
 fun List<StorageDomain>.toDomainStatuss(conn: Connection): List<StorageDomainVo> =
 	this@toDomainStatuss.map { it.toDomainStatus(conn) }
 
+fun StorageDomain.toDiskSize(): BigInteger? {
+	log.info(
+		"Checking disk size: availablePresent={}, usedPresent={}, available={}, used={}",
+		this@toDiskSize.availablePresent(),
+		this@toDiskSize.usedPresent(),
+		this@toDiskSize.available(),
+		this@toDiskSize.used(),
+//		this@toDiskSize.available().add(this@toDiskSize.used())
+	)
+	return if (!this@toDiskSize.availablePresent() || this@toDiskSize.available() == null ||
+		!this@toDiskSize.usedPresent() || this@toDiskSize.used() == null) {
+		null
+	} else {
+		this@toDiskSize.available().add(this@toDiskSize.used())
+	}
+
+}
 
 
 fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
@@ -170,7 +187,7 @@ fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
 		format { this@toStorageDomainMenu.storageFormat() }
 		usedSize { this@toStorageDomainMenu.used() }
 		availableSize { this@toStorageDomainMenu.available() }
-		diskSize { this@toStorageDomainMenu.available().add(this@toStorageDomainMenu.used()) }
+		diskSize { this@toStorageDomainMenu.toDiskSize() }
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }

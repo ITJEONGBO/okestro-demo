@@ -1914,29 +1914,29 @@ migrateHostsFromVM: async (vmId) => {
    * @name ApiManager.addVnicProfiles
    * @description 새 vnic프로파일생성
    * 
-   * @param {Object} dataCenterData 
+   * @param {Object} vnicData 
    * @returns {Promise<Object>} API 응답 결과
    */
-  addVnicProfiles: async (dataCenterData) => {
+  addVnicProfiles: async (networkId, vnicData) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.ADD_VNIC_PROFILE_FROM_NETWORK(),
-      data: dataCenterData, 
+      url: ENDPOINTS.ADD_VNIC_PROFILE_FROM_NETWORK(networkId),
+      data: vnicData, 
     });
   },
   /**
    * @name ApiManager.editVnicProfiles
    * @description vnic프로파일 편집
    * 
-   * @param {string} dataCenterId
-   * @param {Object} dataCenterData 
+   * @param {string} networkId
+   * @param {Object} vnicData 
    * @returns {Promise<Object>} API 응답 결과
    */
-    editVnicProfiles: async (dataCenterId, dataCenterData) => {
+    editVnicProfiles: async (networkId, vnicId, vnicData) => {
       return makeAPICall({
         method: "PUT",
-        url: ENDPOINTS.EDIT_VNIC_PROFILE_FROM_NETWORK(dataCenterId),
-        data: dataCenterData, 
+        url: ENDPOINTS.EDIT_VNIC_PROFILE_FROM_NETWORK(networkId, vnicId),
+        data: vnicData, 
       });
     },
   /**

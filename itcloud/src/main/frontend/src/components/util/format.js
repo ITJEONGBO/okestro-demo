@@ -16,7 +16,7 @@ export function formatBytesToMB(bytes) {
  * @returns {string} The formatted size in GB.
  */
 export function formatBytesToGB(bytes) {
-  return (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
+  return (bytes / (1024 * 1024 * 1024)).toFixed(1);
 }
 
 export function formatBytesToGBToFixedZero(bytes) {

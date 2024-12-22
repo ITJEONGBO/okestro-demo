@@ -94,8 +94,6 @@ const DiskModal = ({
   );  
 
 
-
-
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
   const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 세부페이지 안에 디스크생성성

@@ -126,7 +126,8 @@ fun VnicProfileVo.toVnicProfileBuilder(): VnicProfileBuilder {
 		.name(this@toVnicProfileBuilder.name)
 		.network(NetworkBuilder().id(this@toVnicProfileBuilder.networkVo.id))
 		.description(this@toVnicProfileBuilder.description)
-		.migratable(this@toVnicProfileBuilder.migration)
+//		.networkFilter()
+//		.migratable(this@toVnicProfileBuilder.migration)
 }
 
 /**
