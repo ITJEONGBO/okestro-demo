@@ -240,6 +240,11 @@ const ENDPOINTS = {
   //region: Event
   FIND_ALL_EVENTS: () => `/api/v1/events`,
   //endregion: Event
+
+  //region: setting
+  FIND_USERS: () => `/api/v1/setting/users`,
+
+  //endregion: setting
 }
 
 export default ENDPOINTS

@@ -649,7 +649,7 @@ HOST_NETWORK_INTERFACE: [
   SETTING_USER: [
     { header: '', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '성', accessor: 'lastName', clickable: false },
+    { header: '성', accessor: 'firstName', clickable: false },
     { header: '사용자 이름', accessor: 'username', clickable: false },
     { header: '인증 공급자', accessor: 'provider', clickable: false },
     { header: '네임스페이스', accessor: 'nameSpace', clickable: false },

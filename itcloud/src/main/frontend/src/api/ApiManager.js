@@ -2496,10 +2496,24 @@ migrateHostsFromVM: async (vmId) => {
   }),
   //endregion: event
 
+  //region: setting
+  /**
+   * @name ApiManager.findAllEvents
+   * @description 이벤트 목록
+   * 
+   * @returns 
+   **/
+  findUsers: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_USERS(),
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_EVENTS
+  }),
+  //endregion: setting
+
+
+
+
+
 }
-
-
-
-
 
 export default ApiManager

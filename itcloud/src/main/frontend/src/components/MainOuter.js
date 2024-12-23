@@ -76,7 +76,7 @@ const MainOuter = ({ children }) => {
           handleClick('storage');    // /storages가 들어가 있을 때
         } else if (path.includes('/events')) {
           handleClick('event');      // /events가 들어가 있을 때
-        } else if (path.includes('/settings')) {
+        } else if (path.includes('/settings/users')) {
           handleClick('setting');    // /settings가 들어가 있을 때
         } else {
           handleClick('dashboard');  // 기본적으로 dashboard로 설정
@@ -803,8 +803,8 @@ const getBackgroundColor = (id) => {
     };
 
     const handleSettingIconClick = () => {
-        navigate('/settings');
-        setSelected('setting');  // 'setting'이 선택되었음을 설정
+        navigate('/settings/users');
+        setSelected('setting/users');  // 'setting'이 선택되었음을 설정
         toggleAsidePopup('setting');  // 배경색을 파랑으로 변경하기 위해 호출
     };
 
@@ -883,7 +883,7 @@ const getBackgroundColor = (id) => {
                     </Link>
                 </div>
                 <div>
-                    <Link to='/settings' className="link-no-underline">
+                    <Link to='/settings/users' className="link-no-underline">
                         <div id="setting_icon" 
                         className={getClassNames('setting')}
                         style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={handleSettingIconClick}>

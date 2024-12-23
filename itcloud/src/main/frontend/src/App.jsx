@@ -28,6 +28,7 @@ import TemplateInfo from './components/Computing/templatejs/TemplateInfo';
 import NetworkInfo from './components/Network/networkjs/NetworkInfo';
 import DomainInfo from './components/Storage/domainjs/DomainInfo';
 import DiskInfo from './components/Storage/diskjs/DiskInfo';
+import SettingInfo from './components/Setting/SettingInfo';
 
 // import NetworkDetail from './components/Network/NetworkDetail';
 // import TemplateDetail from './components/Computing/TemplateDetail';
@@ -142,8 +143,10 @@ const App = () => {
               <Route path="/storages/disks/:id/:section" element={<DiskInfo />} />
 
               <Route path="/events" element={<Event />} />
-              <Route path="/settings" element={<Setting />} />
-              <Route path="/settings/:section" element={<Setting />} />
+              {/* <Route path="/settings" element={<SettingInfo />} /> */}
+              <Route path="/settings/:section" element={<SettingInfo />} />
+              {/* <Route path="/settings" element={<Setting />} /> */}
+              {/* <Route path="/settings/:section" element={<Setting />} /> */}
               <Route path="/error" element={<Error />} />
             </Routes>
           </MainOuter>

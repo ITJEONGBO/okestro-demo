@@ -2822,5 +2822,25 @@ export const useAllEvents = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+// endregion: event
+
+//region: setting -----------------설정---------------------
+/**
+ * @name useAllUsers
+ * @description 모든 사용자 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 
+ * @returns useQuery훅
+ */
+export const useAllUsers = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allUsers'],
+  queryFn: async () => {
+    const res = await ApiManager.findUsers()
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
 
 
+
+// endregion: setting
