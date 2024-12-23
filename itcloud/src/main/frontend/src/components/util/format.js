@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip } from 'react-tooltip';
 
 /**
  * Converts bytes to megaabytes and formats the result to one decimal place.
@@ -58,12 +59,49 @@ export const renderUpDownStatusIcon = (status) => {
 };
 
 export const renderVmStatusIcon = (status) => {
+  const tooltipId = `vm-status-tooltip-${status}`; 
   if (status === 'UP') {
-    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+    return (
+      <>
+        <FontAwesomeIcon
+          icon={faPlay}
+          fixedWidth
+          style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }}
+          data-tooltip-id={tooltipId}
+        />
+        <Tooltip id={tooltipId} place="top" effect="solid">
+          {status}
+        </Tooltip>
+      </>
+    );
   } else if (status === 'DOWN') {
-    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+    return (
+      <>
+        <FontAwesomeIcon
+          icon={faPlay}
+          fixedWidth
+          style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }}
+          data-tooltip-id={tooltipId}
+        />
+        <Tooltip id={tooltipId} place="top" effect="solid">
+          {status}
+        </Tooltip>
+      </>
+    );
   } else if (status === 'POWERING_DOWN') {
-    return <FontAwesomeIcon icon={faArrowsUpToLine} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(180deg)' }} />;
+    return (
+      <>
+        <FontAwesomeIcon
+          icon={faArrowsUpToLine}
+          fixedWidth
+          style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(180deg)' }}
+          data-tooltip-id={tooltipId}
+        />
+        <Tooltip id={tooltipId} place="top" effect="solid">
+          {status}
+        </Tooltip>
+      </>
+    );
   }
   return status;
 };

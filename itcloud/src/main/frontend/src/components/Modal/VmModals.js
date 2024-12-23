@@ -21,7 +21,7 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
           editMode={action === 'edit'}
-          vmId={selectedVm?.id || null}
+          vmId={selectedVm?.id}
           selectedVm={selectedVm}
         />
       ) : action === 'snapshots' ? ( //스냅샷(수정필요)

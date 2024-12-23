@@ -9,12 +9,6 @@ import EventTable from './table/EventTable';
 const Event = () => {
   const { 
     data: events, 
-    status: eventsStatus,
-    isRefetching: isEventsRefetching,
-    refetch: refetchEvents, 
-    isError: isEventsError, 
-    error: eventsError, 
-    isLoading: isEventsLoading,
   } = useAllEvents((e) => ({...e,}));
   
 

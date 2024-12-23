@@ -53,7 +53,43 @@ const Tables = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onRowClick]);
+
+  // 테이블 정렬기능
+  const [sortedData, setSortedData] = useState(data);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   
+  useEffect(() => {
+    if (sortConfig.key) {
+      sortData(data, sortConfig.key, sortConfig.direction);
+    } else {
+      setSortedData(data);
+    }
+  }, [data]);
+  const sortData = (data, key, direction) => {
+    const sorted = [...data].sort((a, b) => {
+      const aValue = a[key];
+      const bValue = b[key];
+  
+      if (aValue === null || aValue === undefined || aValue === '') return 1;
+      if (bValue === null || bValue === undefined || bValue === '') return -1;
+  
+      // 문자열 비교 시 대소문자 무시
+      const aLower = typeof aValue === 'string' ? aValue.toLowerCase() : aValue;
+      const bLower = typeof bValue === 'string' ? bValue.toLowerCase() : bValue;
+  
+      if (aLower < bLower) return direction === 'asc' ? -1 : 1;
+      if (aLower > bLower) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    setSortedData(sorted);
+  };
+  const handleSort = (column) => {
+    if (column.isIcon) return;
+    const { accessor } = column;
+    const direction = sortConfig.key === accessor && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+    setSortConfig({ key: accessor, direction });
+    sortData(sortedData, accessor, direction);
+  };
 
   // 툴팁 설정
   const handleMouseEnter = (e, rowIndex, colIndex, content) => {
@@ -71,6 +107,7 @@ const Tables = ({
     }
   };
 
+  
   // 우클릭 메뉴 외부 클릭 시 메뉴 닫기 + 배경색 초기화
   const menuRef = useRef(null);
   useEffect(() => {
@@ -89,13 +126,32 @@ const Tables = ({
   return (
     <>
       <div className='custom_outer'>
-        <table className="custom-table" ref={tableRef}>
+        <table className="custom-table" ref={tableRef} style={{ tableLayout: 'fixed', width: '100%' }}>
           <thead>
             <tr>
               {columns.map((column, index) => (
-                <th key={index}>{column.header}</th>
+                <th
+                  key={index}
+                  onClick={() => handleSort(column)}
+                  style={{
+                    cursor: column.isIcon ? 'default' : 'pointer',
+                    width: column.width ,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {column.header}
+                    {!column.isIcon && sortConfig.key === column.accessor && (
+                      <span>{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>
+                    )}
+                  </div>
+                </th>
               ))}
             </tr>
+            {/* <tr>
+              {columns.map((column, index) => (
+                <th key={index}>{column.header}</th>
+              ))}
+            </tr> */}
           </thead>
           <tbody>
             {data.length === 0 ? ( // 데이터가 없을 때 메시지 표시
@@ -157,7 +213,7 @@ const Tables = ({
                     }
                   }}
                 >
-                  {typeof row[column.accessor] === 'object' ? (
+                  {typeof row[column.accessor] === 'object' &&  column.header === 'icon' ? ( 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                       {row[column.accessor]}
                     </div>

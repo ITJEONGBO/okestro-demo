@@ -130,7 +130,7 @@ const Table = ({
                   onClick={() => handleSort(column)}
                   style={{
                     cursor: column.isIcon ? 'default' : 'pointer',
-                    width: column.width || 'auto',
+                    width: column.width ,
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -197,7 +197,7 @@ const Table = ({
                       }}
                     >
                       {typeof row[column.accessor] === 'object' ? (
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ display: 'flex' }}>
                           {row[column.accessor]}
                         </div>
                       ) : (

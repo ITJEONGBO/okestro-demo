@@ -64,6 +64,7 @@ td {
   text-overflow: ellipsis; /* 넘치는 텍스트는 ...으로 표시 */
 
 }
+
 .custom-table tbody tr {
   cursor: pointer; /* 모든 tr에 cursor: pointer 적용 */
 }

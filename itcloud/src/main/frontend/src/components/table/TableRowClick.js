@@ -33,7 +33,7 @@ const TableRowClick = ({
 
   return (
     <span
-      style={{ color: 'blue', cursor: 'pointer', fontWeight:'800', ...style }}
+      style={{ color: 'blue', cursor: 'pointer', fontWeight:'800',  textAlign: 'left', ...style }}
       onClick={handleClick}
     >
       {children}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import '../Modal/css/MVm.css';
 import { useAddTemplate, useAllDiskProfileFromDomain, useClustersFromDataCenter, useCpuProfilesFromCluster, useDiskById, useDisksFromVM, useDomainsFromDataCenter } from '../../api/RQHook'; // 클러스터 가져오는 훅
 
 const VmAddTemplateModal = ({ 

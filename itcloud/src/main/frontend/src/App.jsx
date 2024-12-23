@@ -148,6 +148,7 @@ const App = () => {
               {/* <Route path="/settings" element={<Setting />} /> */}
               {/* <Route path="/settings/:section" element={<Setting />} /> */}
               <Route path="/error" element={<Error />} />
+
             </Routes>
           </MainOuter>
           </>

@@ -61,11 +61,17 @@ const VmActionButtons = ({
     { onClick: onPowerOff, label: '전원끔', disabled: isEditDisabled || isUp  },
   ];
 
-  // 드롭다운 외부 클릭 감지 코드 추가
+ // 드롭다운 외부 클릭 감지 코드 추가
   const dropdownRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !event.target.closest('.dropdown-item') &&
+        !event.target.closest('.section_table_outer') &&
+        !event.target.closest('.Modal')
+      ) {
         setIsDropDownOpen(false);
         setIsStopDropDownOpen(false);
         setIsRebootDropDownOpen(false);
@@ -137,8 +143,8 @@ const VmActionButtons = ({
       {snapshots && <button onClick={snapshots} disabled={isEditDisabled}>스냅샷</button>}
       {migration && <button onClick={migration} disabled={isMigrationDisabled}>마이그레이션</button>}
 
-      <div ref={dropdownRef} className="dropdown-container">
-        <button onClick={toggleDropDown} className="manage-button">
+      <div className="dropdown-container">
+        <button ref={dropdownRef} onClick={toggleDropDown} className="manage-button">
           관리
           <FontAwesomeIcon icon={isDropDownOpen ? faChevronUp : faChevronDown} />
         </button>

@@ -85,15 +85,15 @@ form>div{
     font-size: 0.32rem;
 }
 button{
-    /* border:1px solid gray;
+    border:1px solid gray;
     cursor:pointer;
-    border-radius: 3px; */
+    /* border-radius: 3px; */
     padding: 0 0.1rem;
     display: flex;
     align-items: center; 
 }
 .plusbtns{
-    border:1px solid gray;
+    /* border:1px solid gray; */
     display: flex;
     align-items: center; 
     border-radius: 2px;
@@ -2048,7 +2048,7 @@ textarea{
 button[disabled],select[disabled],input[disabled]{
     background-color: #efefef;
     color: #6d6d6d;
-    border: 1px solid #b3b3b3;
+    /* border: 1px solid #b3b3b3; */
     cursor: no-drop;
 }
 #disk_managed_block_left>span{

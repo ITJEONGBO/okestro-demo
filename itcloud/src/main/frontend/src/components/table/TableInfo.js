@@ -165,7 +165,7 @@ const TableInfo = {
     { header: '이름', accessor: 'name', clickable: true },
     // { header: '호환 버전', accessor: 'version', clickable: false },
     { header: '연결된 네트워크', accessor: 'connect', clickable: false },
-    { header: '네트워크 상태', accessor: 'status', clickable: false },
+    { header: '네트워크 상태', accessor: 'status', clickable: false , width: '5%'},
     { header: '필수 네트워크', accessor: 'required', clickable: false },
     { header: '네트워크 역할', accessor: 'networkRole', clickable: false},
     { header: '설명', accessor: 'description', clickable: false },
@@ -224,8 +224,8 @@ const TableInfo = {
 
 
   STORAGE_DOMAINS: [
-    { header: '상태', accessor: 'icon' },
-    { header: '', accessor: 'hostedEngine', width: '5%' },
+    { header: '상태', accessor: 'icon', width: '4%' },
+    { header: '', accessor: 'hostedEngine', width: '4%' },
     { header: '도메인 이름', accessor: 'name', width: '10%' },
     { header: '코멘트', accessor: 'comment', width: '12%' },
     { header: '도메인 유형', accessor: 'domainType' },
