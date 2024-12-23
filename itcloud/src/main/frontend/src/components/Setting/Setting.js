@@ -5,11 +5,7 @@ import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faChevronLeft, faChevronRight, faChevronDown, faEllipsisV, faSearch
-  , faFilter,
   faTimes,
-  faHeart,
-  faInfoCircle,
   faUser,
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'

@@ -143,7 +143,6 @@ const App = () => {
               <Route path="/storages/disks/:id/:section" element={<DiskInfo />} />
 
               <Route path="/events" element={<Event />} />
-              {/* <Route path="/settings" element={<SettingInfo />} /> */}
               <Route path="/settings/:section" element={<SettingInfo />} />
               {/* <Route path="/settings" element={<Setting />} /> */}
               {/* <Route path="/settings/:section" element={<Setting />} /> */}
