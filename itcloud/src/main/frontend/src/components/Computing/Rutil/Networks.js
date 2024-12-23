@@ -7,10 +7,7 @@ import NetworkDupl from '../../duplication/NetworkDupl';
 const Networks = () => {
   const { 
     data: networks, 
-    status: networksStatus,
-    isRefetching: isNetworksRefetching,
     refetch: refetchNetworks, 
-    isError: isNetworksError, 
     error: networksError, 
     isLoading: isNetworksLoading,
   } = useAllNetworks((e) => ({...e,}));

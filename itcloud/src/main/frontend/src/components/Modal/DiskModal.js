@@ -98,6 +98,7 @@ const DiskModal = ({
   const { mutate: editDisk } = useEditDisk();
   const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 세부페이지 안에 디스크생성성
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const interfaceList = [
     { value: "VIRTIO_SCSI", label: "VirtIO-SCSI" },
     { value: "VIRTIO", label: "VirtIO" },

@@ -55,6 +55,7 @@ fun Connection.addNetwork(network: Network): Result<Network?> = runCatching {
 
 
 
+
 fun Connection.updateNetwork(network: Network): Result<Network?> = runCatching {
 	val networkUpdated: Network? =
 		this.srvNetwork(network.id()).update().network(network).send().network()

@@ -91,7 +91,7 @@ const DataCenterInfo = () => {
   const sectionHeaderButtons = [
     {
       id: 'edit_btn',
-      label: '데이터센터 편집',
+      label: '편집',
       onClick: () => toggleModal('edit', true),
     },
     {

@@ -200,22 +200,24 @@ fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
  * external provider 선택시 vlan, portisolation=false 선택되면 안됨
  * VnicProfile은 기본생성만 /qos는 제외항목, 네트워크필터도 vdsm으로 고정(?)
  */
-fun NetworkVo.toNetworkBuilder(): NetworkBuilder = NetworkBuilder()
-	.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.datacenterVo.id).build())
-	.name(this@toNetworkBuilder.name)
-	.description(this@toNetworkBuilder.description)
-	.comment(this@toNetworkBuilder.comment)
-	.portIsolation(this@toNetworkBuilder.portIsolation)
-	.mtu(this@toNetworkBuilder.mtu)  // 제한수가 있음
-	.vlan(if(this@toNetworkBuilder.vlan != 0) VlanBuilder().id(this@toNetworkBuilder.vlan) else null)
-	.usages(NetworkUsage.VM)
-//	.usages(if(this@toNetworkBuilder.usage.vm) NetworkUsage.VM else null )
-	.externalProvider(
-		if(this@toNetworkBuilder.openStackNetworkVo.id.isNotEmpty())
-			OpenStackNetworkProviderBuilder().id(this@toNetworkBuilder.openStackNetworkVo.id)
-		else
-			null
-	)
+fun NetworkVo.toNetworkBuilder(): NetworkBuilder {
+
+	return NetworkBuilder()
+		.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.datacenterVo.id).build())
+		.name(this@toNetworkBuilder.name)
+		.description(this@toNetworkBuilder.description)
+		.comment(this@toNetworkBuilder.comment)
+		.mtu(this@toNetworkBuilder.mtu)  // 제한수가 있음
+		.vlan(if (this@toNetworkBuilder.vlan != 0) VlanBuilder().id(this@toNetworkBuilder.vlan) else null)
+		.usages(if(this@toNetworkBuilder.usage.vm){ NetworkUsage.VM } else null)
+		.portIsolation(this@toNetworkBuilder.portIsolation)
+//	.externalProvider(
+//		if(this@toNetworkBuilder.openStackNetworkVo.id.isNotEmpty())
+//			OpenStackNetworkProviderBuilder().id(this@toNetworkBuilder.openStackNetworkVo.id)
+//		else
+//			null
+//	)
+}
 
 // 필요 name, datacenter_id
 fun NetworkVo.toAddNetworkBuilder(): Network =
@@ -230,21 +232,39 @@ fun NetworkVo.toEditNetworkBuilder(): Network =
 // 클러스터 연결.할당 (attach 가 되어잇어야 required 선택가능)
 // 선택되면 clusterVo(id, required=t/f)
 // 이게 ext에 들어가려면 cluster의 개수,  networkid, clusterid, cluster required(tf)
+//fun NetworkVo.toAddClusterAttach(conn: Connection, networkId: String) {
+//	conn.findNetwork(networkId)
+//		.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+//
+//	// TODO:HELP 반환값을 어떻게 할지 의문
+//	if (this@toAddClusterAttach.clusterVos.isNotEmpty()) {
+//		this@toAddClusterAttach.clusterVos.forEach { clusterVo ->
+//			conn.findCluster(clusterVo.id)
+//				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+//			conn.addNetworkFromCluster(
+//				clusterVo.id,
+//				NetworkBuilder().id(networkId).required(clusterVo.required).build()
+//			).getOrNull()
+//		}
+//	}
+//}
 fun NetworkVo.toAddClusterAttach(conn: Connection, networkId: String) {
-	conn.findNetwork(networkId).getOrNull()
-		?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+	val network = conn.findNetwork(networkId)
+		.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 
-	// TODO:HELP 반환값을 어떻게 할지 의문
-	if (this@toAddClusterAttach.clusterVos.isNotEmpty()) {
-		this@toAddClusterAttach.clusterVos.forEach { clusterVo ->
-			conn.findCluster(clusterVo.id).getOrNull()
-				?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
-			conn.addNetworkFromCluster(
-				clusterVo.id,
-				NetworkBuilder().id(networkId).required(clusterVo.required).build()
-			).getOrNull()
-		}
+	clusterVos.forEach { clusterVo ->
+		attachNetworkToCluster(conn, clusterVo, networkId)
 	}
+}
+
+private fun attachNetworkToCluster(conn: Connection, clusterVo: ClusterVo, networkId: String) {
+	val cluster = conn.findCluster(clusterVo.id)
+		.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+	log.info("{} attach", clusterVo.name)
+	conn.addNetworkFromCluster(
+		clusterVo.id,
+		NetworkBuilder().id(networkId).required(clusterVo.required).build()
+	).getOrNull()
 }
 
 // 네트워크 레이블

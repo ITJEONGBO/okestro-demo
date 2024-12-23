@@ -20,7 +20,7 @@ const ClusterTable = ({
         columns={columns}
         data={clusters.map((cluster) => ({
           ...cluster,
-          hostCnt: cluster?.hostSize.allCnt,
+          hostCnt: cluster?.hostSize?.allCnt,
           vmCnt: cluster?.vmSize.allCnt,
           dataCenter: (
             <TableRowClick type="datacenter" id={cluster.dataCenterVo.id}>

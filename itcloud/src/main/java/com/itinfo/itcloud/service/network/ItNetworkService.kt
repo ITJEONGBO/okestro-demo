@@ -182,10 +182,9 @@ class NetworkServiceImpl(
 	override fun add(networkVo: NetworkVo): NetworkVo? {
 		// dc 다르면 중복명 가능
 		log.info("addNetwork ... ")
-		val res: Network? =
-			conn.addNetwork(
-				networkVo.toAddNetworkBuilder()
-			).getOrNull()
+		val res: Network? = conn.addNetwork(
+			networkVo.toAddNetworkBuilder()
+		).getOrNull()
 
 		if(res == null){
 			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
@@ -193,16 +192,16 @@ class NetworkServiceImpl(
 
 		// 생성 후에 나온 network Id로 클러스터 네트워크 생성 및 레이블 생성 가능
 		networkVo.toAddClusterAttach(conn, res.id())	// 클러스터 연결, 필수 선택
-		networkVo.toAddNetworkLabel(conn, res.id())
+//		networkVo.toAddNetworkLabel(conn, res.id()) // 네트워크 레이블
 		return res.toNetworkVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun update(networkVo: NetworkVo): NetworkVo? {
 		log.info("update ... networkName: {}", networkVo.name)
-		val res: Network? =
-			conn.updateNetwork(networkVo.toEditNetworkBuilder())
-				.getOrNull()
+		val res: Network? = conn.updateNetwork(
+			networkVo.toEditNetworkBuilder()
+		).getOrNull()
 		return res?.toNetworkVo(conn)
 	}
 

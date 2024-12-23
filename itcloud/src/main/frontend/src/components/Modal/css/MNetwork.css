@@ -1,5 +1,4 @@
 
-
 .storage_right_btns{
     display: flex;
     font-size: 0.34rem;
@@ -72,7 +71,7 @@
 .network_popup_table>.vnic_new_checkbox{
    text-align: center;
 }
-/**호스트(호스트 네트워크 설정)*/
+
 .host_network_separation{
     display:flex;
     justify-content: space-between;
@@ -176,7 +175,7 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
-/*호스트네트워크설정(추가모달)*/
+
 .network_backup_edit{
     border: 1px solid #dfdddd;
     position: absolute;
@@ -216,3 +215,16 @@
     padding:0.2rem;
     height:16vh;
 }
+
+.label_name{
+    font-size: '10px';
+}
+/* 
+.network_radio_group input[type="radio"] {
+  transform: scale(0.5); 
+  margin-right: 0.1rem; 
+} */
+
+/* .network_radio_group label {
+  font-size: 13px;
+} */
