@@ -627,8 +627,8 @@ HOST_NETWORK_INTERFACE: [
   ],
 
   EVENTS: [
-    { header: '시간', accessor: 'time', clickable: false, width:'10%' },
-    { header: '알림', accessor: 'severity', clickable: false},    
+    { header: '시간', accessor: 'time', clickable: false, width:'14%' },
+    { header: '알림', accessor: 'severity', clickable: false, width:'3%'},    
     { header: '메세지', accessor: 'description', clickable: false},
     // { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
     // // { header: '소스', accessor: 'source', clickable: false },

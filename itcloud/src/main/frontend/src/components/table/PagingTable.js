@@ -102,7 +102,16 @@ const PagingTable = ({
           <thead>
             <tr>
               {columns.map((column, index) => (
-                <th key={index}>{column.header}</th>
+                <th 
+                  key={index}
+                  style={{
+                    cursor: column.isIcon ? 'default' : 'pointer',
+                    width: column.width ,
+                  }}
+                  >
+                  {column.header}
+                </th>
+            
               ))}
             </tr>
           </thead>

@@ -5,8 +5,11 @@ import { faArrowsAltH, faBan, faCaretDown, faCheck, faCircle, faDesktop, faExcla
 import TableOuter from '../../table/TableOuter';
 import { useNetworkInterfaceFromHost } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';
+import NetworkHostModal from '../../Modal/NetworkHostModal';
 
 const HostNics = ({ hostId }) => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { 
     data: nics = [] 
   } = useNetworkInterfaceFromHost(hostId, (e) => ({ 
@@ -118,43 +121,50 @@ const HostNics = ({ hostId }) => {
                       <button onClick={toggleAllBoxes}>
                         {visibleBoxes.length === nics.length ? '모두 숨기기' : '모두 확장'}
                       </button>
-                      <button onClick={() => openPopup('host_network_set')}>호스트 네트워크 설정</button>
+                      <button onClick={() => setIsModalOpen(true)}>호스트 네트워크 설정</button>
                       <button className="disabled">네트워크 설정 저장</button>
                       <button className="disabled">모든 네트워크 동기화</button>
                     </div>
               
                     {nics.map((data, index) => (
-                      <div className="host_network_boxs" key={index}>
-                        <div
-                          className="host_network_firstbox"
-                          onClick={() => toggleHiddenBox(index)} // 클릭 시 해당 박스만 열리거나 닫힘
-                        >
-                          <div className="section_table_outer">
-                            <TableOuter
-                              columns={TableInfo.HOST_NETWORK_INTERFACE}
-                              data={nics}
-                              onRowClick={() => console.log('Row clicked')}
-                            />
-                          </div>
-                        </div>
-                        {visibleBoxes.includes(index) && ( // 박스가 열려 있을 때만 보임
-                          <div className="host_network_hiddenbox">
-                            <div className="section_table_outer">
-                              <TableOuter
-                                columns={TableInfo.NETWORKS_FROM_HOST}
-                                data={nics}
-                                onRowClick={() => console.log('Row clicked')}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                     ))}
+  <div className="host_network_boxs" key={index} style={{ marginBottom: '0.2rem' }}>
 
-                
+    <div
+      className="host_network_firstbox"
+      onClick={() => toggleHiddenBox(index)} // 클릭 시 해당 박스만 열리거나 닫힘
+    >
+      <div className="section_table_outer">
+        <TableOuter
+          columns={TableInfo.HOST_NETWORK_INTERFACE}
+          data={[data]} // 개별 NIC 데이터만 전달
+          onRowClick={() => console.log('Row clicked')}
+        />
+      </div>
+    </div>
+    {visibleBoxes.includes(index) && ( // 박스가 열려 있을 때만 보임
+      <div className="host_network_hiddenbox">
+        <div className="section_table_outer">
+          <TableOuter
+            columns={TableInfo.NETWORKS_FROM_HOST}
+            data={[data]} // 개별 NIC 데이터만 전달
+            onRowClick={() => console.log('Row clicked')}
+          />
+        </div>
+      </div>
+    )}
+  </div>
+))}
 
-  {/*호스트(호스트 네트워크 설정)*/}
-  <Modal
+
+  <NetworkHostModal
+    isOpen={isModalOpen}
+    onRequestClose={() => setIsModalOpen(false)}
+    hostId={nics} 
+  />
+         
+
+  {/*호스트(호스트 네트워크 설정) 삭제예정*/}
+  {/* <Modal
               isOpen={activePopup === 'host_network_set'}
               onRequestClose={closePopup}
               contentLabel="호스트 네트워크 설정"
@@ -208,7 +218,7 @@ const HostNics = ({ hostId }) => {
             <div className="network_separation_right">
 
 
-        {/* unconfigured_network는 네트워크 버튼이 클릭된 경우만 보임 */}
+        
         {!isLabelVisible && (
           <div className="unconfigured_network">
             <div>할당되지 않은 논리 네트워크</div>
@@ -242,7 +252,7 @@ const HostNics = ({ hostId }) => {
 
       </div>
 
-      {/*연필아이콘 클릭하면 추가모달 */}
+
       <Modal
         isOpen={isSecondModalOpen}
         onRequestClose={closeSecondModal} // 모달 닫기 핸들러 연결
@@ -284,7 +294,7 @@ const HostNics = ({ hostId }) => {
               </div>
             </div>
 
-            {/* 탭 내용 */}
+
             <div className="backup_edit_content">
               {selectedModalTab === 'ipv4' && 
               <>
@@ -435,7 +445,7 @@ const HostNics = ({ hostId }) => {
                   <button onClick={closePopup}>취소</button>
                 </div>
               </div>
-            </Modal>
+  </Modal> */}
 
             </>
     

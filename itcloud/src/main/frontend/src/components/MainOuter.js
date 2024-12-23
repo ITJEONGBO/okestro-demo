@@ -26,7 +26,7 @@ const MainOuter = ({ children }) => {
     storage: null,
     network: null,
     event: null,
-    setting: null,
+    settings: null,
   });
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ const MainOuter = ({ children }) => {
     computing: '',
     storage: '',
     network: '',
-    setting: '',
+    settings: '',
     event: '',
     default: 'rgb(218, 236, 245)'
   });
@@ -76,8 +76,8 @@ const MainOuter = ({ children }) => {
           handleClick('storage');    // /storages가 들어가 있을 때
         } else if (path.includes('/events')) {
           handleClick('event');      // /events가 들어가 있을 때
-        } else if (path.includes('/settings/users')) {
-          handleClick('setting');    // /settings가 들어가 있을 때
+        } else if (path.includes('/settings')) {
+          handleClick('settings');    // /settings가 들어가 있을 때
         } else {
           handleClick('dashboard');  // 기본적으로 dashboard로 설정
         }
@@ -317,14 +317,14 @@ const toggleDataCenter = (dataCenterId) => {
         localStorage.setItem('selected', id);  // 선택한 섹션을 로컬 스토리지에 저장
         
         // 이벤트와 설정을 제외한 경우에만 마지막 선택 항목을 저장
-        if (id !== 'event' && id !== 'setting' && id !== 'dashboard') {
+        if (id !== 'event' && id !== 'settings' && id !== 'dashboard') {
             setLastSelected(id);
             localStorage.setItem('lastSelected', id);  // 로컬 스토리지에 저장
         }
     };
       
       const renderAsidePopupContent = () => {
-        if (selected === 'event' || selected === 'setting') {
+        if (selected === 'event' || selected === 'settings') {
             // 이벤트와 설정에서는 이전에 선택한 섹션의 콘텐츠를 표시
             return lastSelected ? renderAsidePopup(lastSelected) : <div>선택된 내용이 없습니다.</div>;
         }
@@ -766,8 +766,8 @@ const toggleDataCenter = (dataCenterId) => {
         newBackgroundColor.network = 'rgb(218, 236, 245)';
     } else if (id === 'event') {
         newBackgroundColor.event = 'rgb(218, 236, 245)';
-    } else if (id === 'setting') {
-        newBackgroundColor.setting = 'rgb(218, 236, 245)';
+    } else if (id === 'settings') {
+        newBackgroundColor.settings = 'rgb(218, 236, 245)';
     }
 
     setAsidePopupBackgroundColor(newBackgroundColor);
@@ -804,8 +804,8 @@ const getBackgroundColor = (id) => {
 
     const handleSettingIconClick = () => {
         navigate('/settings/users');
-        setSelected('setting/users');  // 'setting'이 선택되었음을 설정
-        toggleAsidePopup('setting');  // 배경색을 파랑으로 변경하기 위해 호출
+        setSelected('settings/users');  // 'setting'이 선택되었음을 설정
+        toggleAsidePopup('settings');  // 배경색을 파랑으로 변경하기 위해 호출
     };
 
     return (
@@ -885,8 +885,12 @@ const getBackgroundColor = (id) => {
                 <div>
                     <Link to='/settings/users' className="link-no-underline">
                         <div id="setting_icon" 
-                        className={getClassNames('setting')}
-                        style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={handleSettingIconClick}>
+                        className={getClassNames('settings')}
+                        onClick={() => {
+                            handleClick('settings');
+                            setSelectedDiv(null); // 루틸 매니저 선택을 방지하기 위해 selectedDiv를 null로 설정
+                        }}
+                        style={{ backgroundColor: asidePopupBackgroundColor.settings }}>
                         <FontAwesomeIcon icon={faCog} fixedWidth/>
                         </div>
                     </Link>

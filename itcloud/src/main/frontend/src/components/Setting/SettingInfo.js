@@ -26,7 +26,7 @@ import SettingSessions from './SettingSessions';
 const SettingInfo = () => {
   const { section } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('users');
+  const [activeTab, setActiveTab] = useState(section || 'users'); // 초기값 설정
   
   const sections = [
     { id: 'users', label: '사용자' },
@@ -48,7 +48,7 @@ const SettingInfo = () => {
 
   const handleTabClick = (tab) => {
     const path = tab === 'users' ? `/setting/users` : `/setting/${tab}`;
-    navigate(path);
+    navigate(`/settings/${tab}`);
     setActiveTab(tab);
   };
 
