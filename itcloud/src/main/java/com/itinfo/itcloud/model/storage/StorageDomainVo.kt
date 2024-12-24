@@ -300,6 +300,25 @@ fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
 	return this@toAddStorageDomainBuilder.toStorageDomainBuilder().build()
 }
 
+fun StorageDomainVo.toImportStorageDomainBuilder(): StorageDomain {
+
+	return StorageDomainBuilder()
+		.id(this@toImportStorageDomainBuilder.id)
+		.name(this@toImportStorageDomainBuilder.name)
+		.type(StorageDomainType.fromValue(this@toImportStorageDomainBuilder.domainType))
+		.description(this@toImportStorageDomainBuilder.description)
+		.comment(this@toImportStorageDomainBuilder.comment)
+		.warningLowSpaceIndicator(this@toImportStorageDomainBuilder.warning)
+		.criticalSpaceActionBlocker(this@toImportStorageDomainBuilder.spaceBlocker)  //디스크 공간 동작 차단
+//		.dataCenters(*arrayOf(DataCenterBuilder().id(this@toImportStorageDomainBuilder.dataCenterVo.id).build()))
+		.host(HostBuilder().name(this@toImportStorageDomainBuilder.hostVo.name).build())
+		.storage(
+			HostStorageBuilder()
+				.type(StorageType.fromValue(this@toImportStorageDomainBuilder.storageType))
+		)
+		.build()
+}
+
 /**
  * NFS
  */

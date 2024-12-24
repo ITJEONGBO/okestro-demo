@@ -95,7 +95,7 @@ const DomainActionModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data.name} 를(을) {contentLabel}하시겠습니까? {datacenterId}</span>
+            <span> {data.name} 를(을) {contentLabel} 하시겠습니까? {datacenterId}</span>
           </div>
         </div>
 

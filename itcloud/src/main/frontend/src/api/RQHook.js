@@ -613,13 +613,17 @@ export const useHost = (hostId) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['HostById',hostId],
   queryFn: async () => {
-    if (!hostId) return {};
+    if (!hostId) throw new Error('Host ID is missing.');
     console.log(`useHost ... ${hostId}`)
     const res = await ApiManager.findHost(hostId)
     return res ?? {}
   },
-  staleTime: 0, 
-  cacheTime: 0,
+  onSuccess: (data) => {
+    console.log('host data:', data);
+  },
+  onError: (error) => {
+    console.error('API 에러:', error.message);
+  },
 })
 
 
@@ -805,19 +809,38 @@ export const useFibreFromHost = (hostId, mapPredicate) => useQuery({
  * 
  * @see ApiManager.findImportIscsiFromHost
  */
-export const useImportIscsiFromHost = (mapPredicate) => {
+export const useImportIscsiFromHost = () => {
   // const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({hostId, iscsiData}) => await ApiManager.findImportIscsiFromHost(hostId, iscsiData),
     onSuccess: (data) => {
       console.log('iSCSI 가져오기 성공:', data); // 성공한 응답 데이터 출력
-      // const processedData = data?.map((e) => mapPredicate(e)) ?? [];
-      // console.log('Processed Fibre data:', processedData);
-      // return processedData; // 데이터 가공 후 반환
-      // queryClient.invalidateQueries('allHosts'); // 필요시 특정 쿼리를 무효화하여 최신 데이터 가져오기
     },
     onError: (error) => {
       console.error('iSCSI 가져오기 에러:', error);
+    },
+  });
+};
+
+/**
+ * @name useImportFcpFromHost
+ * @description 호스트 가져오기 fcp 목록조회 useQuery훅
+ * 
+ * @param {string} hostId
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findImportIscsiFromHost
+ */
+export const useImportFcpFromHost = () => {
+  // const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ( { hostId } ) => await ApiManager.findImportFcpFromHost(hostId),
+    onSuccess: (data) => {
+      console.log('fcp 가져오기 성공:', data);
+    },
+    onError: (error) => {
+      console.error('fcp 가져오기 에러:', error);
     },
   });
 };
@@ -2531,6 +2554,26 @@ export const useAddDomain = () => {
     mutationFn: async (domainData) => await ApiManager.addDomain(domainData),
     onSuccess: () => {
       console.log('domain 생성성공')
+      queryClient.invalidateQueries('allStorageDomains');
+    },
+    onError: (error) => {
+      console.error('Error adding storageDomain:', error);
+    },  
+  });
+};
+
+/**
+ * @name useImportDomain
+ * @description 도메인 가져오기 useMutation 훅(수정해야됨)
+ * 
+ * @returns useMutation 훅
+ */
+export const useImportDomain = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async (domainData) => await ApiManager.importDomain(domainData),
+    onSuccess: () => {
+      console.log('domain 가져오기 성공')
       queryClient.invalidateQueries('allStorageDomains');
     },
     onError: (error) => {

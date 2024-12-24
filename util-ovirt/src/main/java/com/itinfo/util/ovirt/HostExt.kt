@@ -518,8 +518,14 @@ fun Connection.discoverIscsiFromHost(hostId: String, iscsiDetails: IscsiDetails)
 }
 
 fun Connection.unRegisteredStorageDomainsFromHost(hostId: String): Result<List<StorageDomain>> = runCatching {
-	this.srvHost(hostId).unregisteredStorageDomainsDiscover().send().storageDomains()
-//	result
+//	log.info("{}", hostId)
+	val res = this.srvHost(hostId).unregisteredStorageDomainsDiscover().send().storageDomains()
+//	log.info("size: {}, {}", res.size, res.forEach {  })
+	res.forEach { a ->
+		log.info("st: {}", a.id())
+	}
+
+	res
 }.onSuccess {
 	Term.HOST.logSuccessWithin(Term.STORAGE,"목록조회", hostId)
 }.onFailure {

@@ -1,19 +1,24 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useHost } from "../../../api/RQHook";
 import '../css/Host.css';
+import { formatBytesToMB } from '../../util/format';
 
 const HostGeneral = ({ hostId }) => {
-  const { data: host } = useHost(hostId);
+  const {
+    data: host,
+    isError: isHostError,
+    error: hostError,
+    isLoading: isHostLoading,
+  } = useHost(hostId);
+
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("general");
-  // console.log("host structure: ", host);
 
-  function formatBytesToMB(bytes) {
-    return (bytes / (1024 * 1024)).toFixed(0) + " MB";
-  }
-
+  
   return (
     <div className="host_content_outer">
-      
+      <p>{host?.hostError}</p>
       {/* Tab Buttons */}
       <div className="host_tabs">
         <button onClick={() => setActiveTab("general")} className={`tab_button ${activeTab === "general" ? "active" : ""}`}>
@@ -40,15 +45,15 @@ const HostGeneral = ({ hostId }) => {
             </tr>
             <tr>
               <th>활성 가상 머신:</th>
-              <td>{host?.vmSizeVo.upCnt}</td>
+              <td>{host?.vmSizeVo?.upCnt}</td>
             </tr>
             <tr>
               <th>논리 CPU 코어 수:</th>
-              <td>{host?.hostHwVo.cpuTopologySocket}</td>
+              <td>{host?.hostHwVo?.cpuTopologySocket}</td>
             </tr>
             <tr>
               <th>온라인 논리 CPU 코어 수:</th>
-              <td>{host?.hostHwVo.cpuOnline}</td>
+              <td>{host?.hostHwVo?.cpuOnline}</td>
             </tr>
             <tr>
               <th>부팅 시간:</th>
@@ -69,17 +74,17 @@ const HostGeneral = ({ hostId }) => {
             <tr>
               <th>물리적 메모리:</th>
               <td>
-                {host?.memoryTotal && `${formatBytesToMB(host.memoryTotal)}`}&nbsp;합계, &nbsp;
-                {host?.memoryUsed && `${formatBytesToMB(host.memoryUsed)}`}&nbsp;사용됨, &nbsp;
-                {host?.memoryFree && `${formatBytesToMB(host.memoryFree)}`}&nbsp;사용가능
+                {formatBytesToMB(host?.memoryTotal)} MB 합계<br/>
+                {formatBytesToMB(host?.memoryUsed)} MB 사용됨<br/>
+                {formatBytesToMB(host?.memoryFree)} MB 사용가능
               </td>
             </tr>
             <tr>
               <th>Swap 크기:</th>
               <td>
-                {host?.swapTotal && `${formatBytesToMB(host.swapTotal)}`}&nbsp;합계, &nbsp;
-                {host?.swapUsed && `${formatBytesToMB(host.swapUsed)}`}&nbsp;사용됨, &nbsp;
-                {host?.swapFree && `${formatBytesToMB(host.swapFree)}`}&nbsp;사용가능
+                {formatBytesToMB(host?.swapTotal)} MB 합계<br/>
+                {formatBytesToMB(host?.swapUsed)} MB 사용됨<br/>
+                {formatBytesToMB(host?.swapFree)} MB 사용가능
               </td>
             </tr>
             <tr>
@@ -92,7 +97,7 @@ const HostGeneral = ({ hostId }) => {
             </tr>
             <tr>
               <th>새로운 가상 머신의 스케줄링을 위한 최대 여유 메모리:</th>
-              <td>{host?.memoryMax && `${formatBytesToMB(host.memoryMax)}`}</td>
+              <td>{formatBytesToMB(host?.memoryMax)} MB</td>
             </tr>
             <tr>
               <th>메모리 페이지 공유:</th>
@@ -119,51 +124,51 @@ const HostGeneral = ({ hostId }) => {
           <tbody>
             <tr>
               <th>제조사:</th>
-              <td>{host?.hostHwVo.name}</td>
+              <td>{host?.hostHwVo?.name}</td>
             </tr>
             <tr>
               <th>버전:</th>
-              <td>{host?.hostHwVo.hwVersion}</td>
+              <td>{host?.hostHwVo?.hwVersion}</td>
             </tr>
             <tr>
               <th>CPU 모델:</th>
-              <td>{host?.hostHwVo.cpuName}</td>
+              <td>{host?.hostHwVo?.cpuName}</td>
             </tr>
             <tr>
               <th>소켓당 CPU 코어:</th>
-              <td>{host?.hostHwVo.cpuTopologyCore}</td>
+              <td>{host?.hostHwVo?.cpuTopologyCore}</td>
             </tr>
             <tr>
               <th>제품군:</th>
-              <td>{host?.hostHwVo.name}</td>
+              <td>{host?.hostHwVo?.name}</td>
             </tr>
             <tr>
               <th>UUID:</th>
-              <td>{host?.hostHwVo.uuid}</td>
+              <td>{host?.hostHwVo?.uuid}</td>
             </tr>
             <tr>
               <th>CPU 유형:</th>
-              <td>{host?.hostHwVo.cpuType}</td>
+              <td>{host?.hostHwVo?.cpuType}</td>
             </tr>
             <tr>
               <th>코어당 CPU의 스레드:</th>
-              <td>{host?.hostHwVo.cpuTopologyThread}</td>
+              <td>{host?.hostHwVo?.cpuTopologyThread}</td>
             </tr>
             <tr>
               <th>제품 이름:</th>
-              <td>{host?.hostHwVo.productName}</td>
+              <td>{host?.hostHwVo?.productName}</td>
             </tr>
             <tr>
               <th>일련 번호:</th>
-              <td>{host?.hostHwVo.serialNum}</td>
+              <td>{host?.hostHwVo?.serialNum}</td>
             </tr>
             <tr>
               <th>CPU 소켓:</th>
-              <td>{host?.hostHwVo.cpuTopologySocket}</td>
+              <td>{host?.hostHwVo?.cpuTopologySocket}</td>
             </tr>
             <tr>
               <th>TSC 주파수:</th>
-              <td>{host?.hostHwVo.name}</td>
+              <td>{host?.hostHwVo?.name}</td>
             </tr>
           </tbody>
         </table>
@@ -174,47 +179,47 @@ const HostGeneral = ({ hostId }) => {
           <tbody>
             <tr>
               <th>OS 버전:</th>
-              <td>{host?.hostSwVo.osVersion}</td>
+              <td>{host?.hostSwVo?.osVersion}</td>
             </tr>
             <tr>
               <th>OS 정보:</th>
-              <td>{host?.hostSwVo.osInfo}</td>
+              <td>{host?.hostSwVo?.osInfo}</td>
             </tr>
             <tr>
               <th>커널 버전:</th>
-              <td>{host?.hostSwVo.kernalVersion}</td>
+              <td>{host?.hostSwVo?.kernalVersion}</td>
             </tr>
             <tr>
               <th>KVM 버전:</th>
-              <td>{host?.hostSwVo.kvmVersion}</td>
+              <td>{host?.hostSwVo?.kvmVersion}</td>
             </tr>
             <tr>
               <th>LIBVIRT 버전:</th>
-              <td>{host?.hostSwVo.libvirtVersion}</td>
+              <td>{host?.hostSwVo?.libvirtVersion}</td>
             </tr>
             <tr>
               <th>VDSM 버전:</th>
-              <td>{host?.hostSwVo.vdsmVersion}</td>
+              <td>{host?.hostSwVo?.vdsmVersion}</td>
             </tr>
             <tr>
               <th>SPICE 버전:</th>
-              <td>{host?.hostSwVo.spiceVersion}</td>
+              <td>{host?.hostSwVo?.spiceVersion}</td>
             </tr>
             <tr>
               <th>GlusterFS 버전:</th>
-              <td>{host?.hostSwVo.glustersfsVersion}</td>
+              <td>{host?.hostSwVo?.glustersfsVersion}</td>
             </tr>
             <tr>
               <th>CEPH 버전:</th>
-              <td>{host?.hostSwVo.cephVersion}</td>
+              <td>{host?.hostSwVo?.cephVersion}</td>
             </tr>
             <tr>
               <th>Open vSwitch 버전:</th>
-              <td>{host?.hostSwVo.openVswitchVersion}</td>
+              <td>{host?.hostSwVo?.openVswitchVersion}</td>
             </tr>
             <tr>
               <th>Nmstate 버전:</th>
-              <td>{host?.hostSwVo.nmstateVersion}</td>
+              <td>{host?.hostSwVo?.nmstateVersion}</td>
             </tr>
             <tr>
               <th>커널 기능:</th>

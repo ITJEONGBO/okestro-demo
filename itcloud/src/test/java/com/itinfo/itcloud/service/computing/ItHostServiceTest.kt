@@ -287,7 +287,7 @@ class ItHostServiceTest {
 	@Test
 	fun should_findUnregisterDomainFromHost() {
 		log.debug("should_findUnregisterDomainFromHost ...")
-		val result: List<StorageDomainVo> =
+		val result: List<IdentifiedVo> =
 			service.findUnregisterDomainFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a")
 
 		assertThat(result, `is`(not(nullValue())))

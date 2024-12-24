@@ -2173,7 +2173,20 @@ migrateHostsFromVM: async (vmId) => {
     data: iscsiData
   }),
 
-
+  /**
+   * @name ApiManager.findImportFcpFromHost
+   * @description fcp 목록
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findImportFcpFromHost: async (hostId) => makeAPICall({
+    method: "POST", 
+    url: ENDPOINTS.FIND_IMPORT_FCPS_FROM_HOST(hostId),
+    data: hostId
+  }),
 
 
   /**
@@ -2189,6 +2202,20 @@ migrateHostsFromVM: async (vmId) => {
       url: ENDPOINTS.ADD_STORAGE_DOMAIN(),
       data: domainData, 
       // defaultValues: DEFAULT_VALUES.ADD_STORAGE_DOMAIN
+    });
+  },
+  /**
+   * @name ApiManager.importDomain
+   * @description 스토리지도메인 가져오기
+   * 
+   * @param {Object} domainData 
+   * @returns {Promise<Object>}
+   */
+  importDomain: async (domainData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.IMPORT_STORAGE_DOMAIN(),
+      data: domainData,
     });
   },
   /**

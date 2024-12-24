@@ -292,10 +292,9 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun import(storageDomainVo: StorageDomainVo): StorageDomainVo? {
 		log.info("import ... storageDomain name: {}", storageDomainVo.name)
-		val res: StorageDomain? =
-			conn.addStorageDomain(
-				storageDomainVo.toAddStorageDomainBuilder(),
-				storageDomainVo.dataCenterVo.id
+		val res: StorageDomain? = conn.importFcpStorageDomain(
+				storageDomainVo.toImportStorageDomainBuilder(),
+//				storageDomainVo.dataCenterVo.id
 			).getOrNull()
 		return res?.toStorageDomainVo(conn)
 	}

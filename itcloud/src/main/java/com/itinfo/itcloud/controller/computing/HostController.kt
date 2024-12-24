@@ -4,12 +4,14 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.storage.StorageController
 import com.itinfo.itcloud.controller.storage.StorageController.Companion
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.HostStorageVo
 import com.itinfo.itcloud.model.storage.IscsiDetailVo
+import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.computing.ItHostOperationService
 import com.itinfo.itcloud.service.computing.ItHostService
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -352,6 +354,33 @@ class HostController {
 	}
 
 
+	@ApiOperation(
+		httpMethod="POST",
+		value="도메인 가져오기에 필요한 fcp 요청",
+		notes="도메인 가져오기 - fcp 요쳥"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name = "hostId", value = "호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@PostMapping("/{hostId}/fcpToImport")
+	@ResponseBody
+	fun importFcps(
+		@PathVariable("hostId") hostId: String? = null
+	): ResponseEntity<List<IdentifiedVo>> {
+		if (hostId == null)
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/fcpToImport ... 호스트 fcp 가져오기 목록", hostId)
+		return ResponseEntity.ok(iHost.findUnregisterDomainFromHost(hostId))
+	}
+
+	// iscsi 가져오기 함수
+	// fcp 가져오기 함수
+
+
+	// iscsi 함수
 
 
 	// ------------------------------------------

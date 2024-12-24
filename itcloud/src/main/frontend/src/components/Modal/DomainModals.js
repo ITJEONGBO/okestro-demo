@@ -23,7 +23,6 @@ const DomainModals = ({
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
           action={action}
-          // domainId={selectedDomain?.id || null}
         />
       ): action === 'edit' ? (
         <DomainModal
@@ -31,7 +30,7 @@ const DomainModals = ({
           onRequestClose={onRequestClose}
           action={'edit'}
           domainId={selectedDomain?.id || null}
-        />      
+        />
       ) : action === 'delete' ? (
         <DomainDeleteModal
           isOpen={isModalOpen}
@@ -59,7 +58,7 @@ const getContentLabel = (action) => {
     case 'activate': return '활성';
     case 'attach': return '연결';
     case 'detach': return '분리';
-    case 'maintenance': return '유지보수';
+    case 'maintenance': return '유지 관리 모드로 설정ㅉ';
     default: return '';
   }
 };

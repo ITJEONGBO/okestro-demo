@@ -15,6 +15,8 @@ import {
   useIscsiFromHost,
   useFibreFromHost,
   useImportIscsiFromHost,
+  useImportFcpFromHost,
+  useImportDomain,  
 } from '../../api/RQHook';
 
 Modal.setAppElement('#root');
@@ -67,10 +69,13 @@ const DomainModal = ({
   // const [useChap, setUseChap] = useState(false);
 
   const editMode = (action === 'edit');
+  const importMode = (action === 'imported');
 
   const { mutate: addDomain } = useAddDomain();
   const { mutate: editDomain } = useEditDomain();
+  const { mutate: importDomain } = useImportDomain();
   const { mutate: importIscsiFromHost } = useImportIscsiFromHost();
+  const { mutate: importFcpFromHost } = useImportFcpFromHost();
 
 
   // 도메인 데이터 가져오기
@@ -109,21 +114,22 @@ const DomainModal = ({
     refetch: refetchIscsis,
     error: isIscsisError,
     isLoading: isIscsisLoading,
-  } = useIscsiFromHost(
-    hostVoId ? hostVoId : null, (e) => ({
-      ...e,
-      abled: e?.logicalUnits[0].storageDomainId === "" ? 'OK' : 'NO',
-      target: e?.logicalUnits[0].target,
-      address: e?.logicalUnits[0].address,
-      port: e?.logicalUnits[0].port,
-      status: e?.logicalUnits[0].status,
-      size: (e?.logicalUnits[0].size ? e?.logicalUnits[0].size / (1024 ** 3): e?.logicalUnits[0].size),
-      paths: e?.logicalUnits[0].paths,   
-      productId: e?.logicalUnits[0].productId,   
-      vendorId: e?.logicalUnits[0].vendorId,
-      serial: e?.logicalUnits[0].serial,
-    })
-  );
+  } = useIscsiFromHost(hostVoId ? hostVoId : null, ((e) => {
+    const unit = e?.logicalUnits[0];
+      return {
+        ...e,
+        abled: unit.storageDomainId === "" ? 'OK' : 'NO',
+        target: unit.target,
+        address: unit.address,
+        port: unit.port,
+        status: unit.status,
+        size: (unit.size ? unit.size / (1024 ** 3): unit.size),
+        paths: unit.paths,   
+        productId: unit.productId,   
+        vendorId: unit.vendorId,
+        serial: unit.serial,
+    };
+  }));
 
   // fibre 목록 가져오기
   const {
@@ -131,33 +137,19 @@ const DomainModal = ({
     refetch: refetchFibres,
     error: isFibresError,
     isLoading: isFibresLoading,
-  } = useFibreFromHost(
-    hostVoId ? hostVoId : null, (e) => ({
+  } = useFibreFromHost(hostVoId ? hostVoId : null, ((e) => {
+    const unit = e?.logicalUnits[0];
+    return {
       ...e,
-      status: e?.logicalUnits[0].status,
-      size: (e?.logicalUnits[0].size ? e?.logicalUnits[0].size / (1024 ** 3): e?.logicalUnits[0].size),
-      paths: e?.logicalUnits[0].paths,   
-      productId: e?.logicalUnits[0].productId,   
-      vendorId: e?.logicalUnits[0].vendorId,   
-      serial: e?.logicalUnits[0].serial,   
-    })
-  );
+      status: unit.status,
+      size: (unit.size ? unit.size / (1024 ** 3): unit.size),
+      paths: unit.paths,   
+      productId: unit.productId,   
+      vendorId: unit.vendorId,   
+      serial: unit.serial
+    };
+  }));
   
-  // iscsi 목록 가져오기
-  // const {
-  //   data: iscsi = [],
-  //   refetch: refetchIscsi,
-  //   error: isIscsiError,
-  //   isLoading: isIscsiLoading,
-  // } = useImportIscsiFromHost(
-  //   hostVoId, iscsiData, (e) => ({
-  //     ...e,
-  //     target: e?.logicalUnits[0].target,
-  //     address: e?.logicalUnits[0].address,
-  //     port: e?.logicalUnits[0].port,
-  //   })
-  // );
-
 
   const isNfs = formState.storageType === 'nfs' || domain?.storageType === 'nfs';
   const isIscsi = formState.storageType === 'iscsi' || domain?.storageType === 'iscsi';
@@ -206,7 +198,6 @@ const DomainModal = ({
       } else if (updatedState.storageType === 'iscsi' || updatedState.storageType === 'fcp') {
         setLunId(domain?.hostStorageVo?.logicalUnits[0]?.id || '');
       }
-      console.log('-------' + domain?.hostStorageVo?.logicalUnits[0]?.id)
     } else if (!editMode) {
       resetForm();
     }
@@ -269,9 +260,9 @@ const DomainModal = ({
   const validateForm = () => {
     if (!formState.name) return '이름을 입력해주세요.';
     if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
-    if ((action === 'create' || action === 'imported') && !hostVoName) return '호스트를 선택해주세요.';
+    if ((action === 'create' || importMode) && !hostVoName) return '호스트를 선택해주세요.';
     if (formState.storageType === 'NFS' && !storagePath) return '경로를 입력해주세요.';
-    if ((action === 'create' || action === 'imported') && formState.storageType !== 'nfs' && lunId) {
+    if ((action === 'create' || importMode) && formState.storageType !== 'nfs' && lunId) {
       const selectedLogicalUnit =
         formState.storageType === 'iscsi'
           ? iscsis.find((iLun) => iLun.id === lunId)
@@ -282,6 +273,8 @@ const DomainModal = ({
   };
 
   const [iscsiSearchResults, setIscsiSearchResults] = useState([]);
+  const [fcpSearchResults, setFcpSearchResults] = useState([]);
+
   const handleSearchIscsi = () => {
     if (!hostVoId) {
       alert('호스트를 선택해주세요.');
@@ -307,6 +300,25 @@ const DomainModal = ({
     );
   };
 
+  const handleSearchFcp = () => {
+    if (!hostVoId) {
+      alert('호스트를 선택해주세요.');
+      return;
+    }  
+    importFcpFromHost(
+      { hostId: hostVoId },
+      {
+        onSuccess: (data) => {
+          console.log('fcp 가져오기 성공:', data);
+          setFcpSearchResults(data);
+        },
+        onError: (error) => {
+          console.error('fcp 가져오기 실패:', error);
+        },
+      }
+    );
+  };
+
 
   const handleFormSubmit = () => {
     const error = validateForm();
@@ -322,6 +334,10 @@ const DomainModal = ({
       dataToSubmit = {
         ...formState,
       };
+    // }else if(importMode){
+    //   dataToSubmit = {
+    //     ...formState,
+    //   }
     } else {
       const selectedDataCenter = dataCenters.find((dc) => dc.id === dataCenterVoId);
       const selectedHost = hosts.find((h) => h.name === hostVoName);
@@ -352,14 +368,14 @@ const DomainModal = ({
           },
         }
       );
-    } else if (action === 'imported') {
-      addDomain(dataToSubmit, {
+    } else if (importMode) {
+      importDomain(dataToSubmit, {
         onSuccess: () => {
           alert('도메인 가져오기 완료');
           onRequestClose();
         },
       });
-    } else if (action === 'create') {
+    } else {
       addDomain(dataToSubmit, {
         onSuccess: () => {
           alert('도메인 생성 완료');
@@ -382,9 +398,9 @@ const DomainModal = ({
       <div className="storage_domain_administer_popup">
         <div className="popup_header">
           <h1>
-          {action === "create" ? "새로운 도메인 생성"
+          {importMode ? "도메인 가져오기"
             : editMode ? "도메인 편집"
-            : "도메인 가져오기"
+            : "새로운 도메인 생성"
           }
           </h1>
           <button onClick={onRequestClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
@@ -501,6 +517,7 @@ const DomainModal = ({
 
     <div className="storage_specific_content">
       
+      {/* NFS 의 경우 */}
       {isNfs && (
         <div className="storage_popup_iSCSI">
           <div className="network_form_group">
@@ -533,6 +550,7 @@ const DomainModal = ({
         </div>
       )}
       
+    {/* ISCSI 의 경우 */}
       {isIscsi && (        
         <div className="storage_popup_iSCSI">
           <div className="tab_content">
@@ -560,17 +578,10 @@ const DomainModal = ({
                         port: logicalUnit.port || "",
                       })) || []
                     }
-                    // onRowClick={handleRowClick}
+                    onRowClick={handleRowClick}
                     // shouldHighlight1stCol={true}
                   />
-                ): action === 'create' ? (
-                  <Table
-                    columns={TableInfo.LUNS_TARGETS}
-                    data={iscsis}
-                    onRowClick={handleRowClick}
-                    shouldHighlight1stCol={true}
-                  />
-                ): action === 'imported' ? (
+                ): importMode ? (
                   <>
                     <label className='label_font_name'>대상 검색</label>
 
@@ -591,7 +602,8 @@ const DomainModal = ({
                       />
                     </FormGroup>
                     <button className='search_button' onClick={handleSearchIscsi}>검색</button>
-                    {iscsiSearchResults.length > 0 && (
+
+                    {iscsiSearchResults?.length > 0 && (
                       <Table
                         columns={TableInfo.TARGETS_LUNS}
                         data={iscsiSearchResults}
@@ -627,8 +639,15 @@ const DomainModal = ({
                       />
                     </FormGroup> */}
                   </>
-                ) : null }
-                
+                ): (
+                  // create
+                  <Table
+                    columns={TableInfo.LUNS_TARGETS}
+                    data={iscsis}
+                    onRowClick={handleRowClick}
+                    shouldHighlight1stCol={true}
+                  />    
+                )}                
               </>
             )}
           </div>
@@ -665,16 +684,29 @@ const DomainModal = ({
                         port: logicalUnit.port || "N/A",
                       })) || []
                     }
-                    // onRowClick={handleRowClick}
+                    onRowClick={handleRowClick}
                     // shouldHighlight1stCol={true}
                   />
+                ): importMode ? (
+                  <>
+                    <button className='search_button' onClick={handleSearchFcp}>검색</button>
+
+                    {fcpSearchResults?.length > 0 && (
+                      <Table
+                        columns={TableInfo.FIBRE_IMPORT}
+                        data={fcpSearchResults}
+                        onRowClick={handleRowClick}
+                        // shouldHighlight1stCol={true}
+                      />
+                    )}
+                  </>
                 ): (
                   <Table
-                  columns={TableInfo.FIBRE}
-                  data={fibres}
-                  onRowClick={handleRowClick}
-                  shouldHighlight1stCol={true}
-                />
+                    columns={TableInfo.FIBRE}
+                    data={fibres}
+                    onRowClick={handleRowClick}
+                    shouldHighlight1stCol={true}
+                  />
                 )} 
                 <div>
                   <span>id: {lunId}</span>

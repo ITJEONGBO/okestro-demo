@@ -281,6 +281,12 @@ const TableInfo = {
     { header: 'serial', accessor: 'serial', clickable: false },
   ],
 
+  FIBRE_IMPORT: [
+    { header: 'checkbox', accessor: 'check', clickable: true },
+    { header: 'name', accessor: 'name', clickable: true },
+    { header: 'id', accessor: 'id', clickable: true },
+  ],
+
 //---------------------------
     // 템플릿
   NICS_FROM_TEMPLATES: [

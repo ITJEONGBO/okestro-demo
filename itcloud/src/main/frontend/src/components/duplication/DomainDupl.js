@@ -21,26 +21,14 @@ const DomainDupl = ({
   };
 
   const selectedIds = selectedDomains.map((domain) => domain.id).join(', ');
-  const isDeleteDisabled = //삭제조건
+  // const isDeleteDisabled = //삭제조건
   selectedDomains.length === 0 || // 선택된 항목이 없거나
   selectedDomains.some((domain) => domain.status !== 'ACTIVE'); // 'ACTIVE' 상태인 도메인이 있을 경우
 
   // 도메인 생성, 도메인 가져오기, 도메인 관리(편집), 삭제 등 버튼 액션 처리
   return (
     <>
-      {type === 'domain' && (
-        <DomainActionButtons
-          onCreate={() => handleActionClick('create')}
-          onImport={() => handleActionClick('imported')}
-          onEdit={() => selectedDomains.length === 1 && handleActionClick('edit')}
-          onDelete={() => selectedDomains.length > 0 && handleActionClick('delete')}
-          disk={true}
-          isEditDisabled={selectedDomains.length !== 1}
-          isDeleteDisabled={isDeleteDisabled}
-          status={selectedDomains[0]?.status}
-        />
-      )}
-      {type === 'datacenter' && (
+      { type === 'datacenter' ? (
         <DomainActionButtons
           onActivate={() => selectedDomains.length > 0 && handleActionClick('activate')}
           onAttach={() => selectedDomains.length > 0 && handleActionClick('attach')}
@@ -48,14 +36,13 @@ const DomainDupl = ({
           onMaintenance={() => selectedDomains.length > 0 && handleActionClick('maintenance')}
           status={selectedDomains[0]?.status}
         />
-      )}
-      {type === 'rutil' && (
+      ) : (
         <DomainActionButtons
           onCreate={() => handleActionClick('create')}
           onImport={() => handleActionClick('imported')}
           onEdit={() => selectedDomains.length === 1 && handleActionClick('edit')}
           onDelete={() => selectedDomains.length > 0 && handleActionClick('delete')}
-          disk={false}
+          disk={type === 'domain' ? true: false}
           isEditDisabled={selectedDomains.length !== 1}
           status={selectedDomains[0]?.status}
         />

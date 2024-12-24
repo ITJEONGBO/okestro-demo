@@ -1,24 +1,22 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import TableOuter from './table/TableOuter';
-import HeaderButton from './button/HeaderButton';
-import TableColumnsInfo from './table/TableColumnsInfo';
-import Footer from './footer/Footer';
-import { useAllClusters, useAllEvents } from '../api/RQHook';
-import PagingTable from './table/PagingTable';
-import PagingTableOuter from './table/PagingTableOuter';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Error = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const message = location.state?.message || '알 수 없는 오류가 발생했습니다.';
 
   return (
     <div id="section">
-        <div className='error_text'>
-            <FontAwesomeIcon icon={faExclamationTriangle} fixedWidth/> 
-            <span>페이지를 표시할 수 없습니다.</span>
-        </div>
+      <div className='error_text'>
+        <FontAwesomeIcon icon={faExclamationTriangle} fixedWidth/> &nbsp;
+        <span>페이지를 표시할 수 없습니다.&nbsp;</span>
+
+        <p>{message}</p>
+          <button onClick={() => navigate('/')}>홈으로 이동</button>
+          <button onClick={() => navigate(-2)}>뒤로가기</button>
+      </div>
     </div>
   );
 };

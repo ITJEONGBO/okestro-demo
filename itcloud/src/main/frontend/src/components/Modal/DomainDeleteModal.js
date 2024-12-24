@@ -96,7 +96,7 @@ const DomainDeleteModal = ({
           </div>
         </div>
 
-        <div className="disk_delete_box">
+        <div className="disk_delete_box" style={{display : 'flex'}}>
           <input
             type="checkbox"
             id="format"

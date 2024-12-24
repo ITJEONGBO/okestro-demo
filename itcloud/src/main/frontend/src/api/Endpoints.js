@@ -73,6 +73,7 @@ const ENDPOINTS = {
   FIND_FIBRES_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/fibres`,
   FIND_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsis`,
   FIND_IMPORT_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsisToImport`,
+  FIND_IMPORT_FCPS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/fcpToImport`,
 
   ADD_HOST: () => `/api/v1/computing/hosts`,
   EDIT_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}`, 
@@ -200,6 +201,7 @@ const ENDPOINTS = {
   
   
   ADD_STORAGE_DOMAIN: () => `/api/v1/storages/domains`,
+  IMPORT_STORAGE_DOMAIN: () => `/api/v1/storages/domains/import`,
   EDIT_STORAGE_DOMAIN: (domainId) => `/api/v1/storages/domains/${domainId}`,
   // DELETE_STORAGE_DOMAIN: (domainId, format, hostName) => `/api/v1/storages/domains/${domainId}?format=${format}&host=${hostName}`,
   DELETE_STORAGE_DOMAIN: (domainId, format, hostName) => {
@@ -214,7 +216,6 @@ const ENDPOINTS = {
   },  
 
   DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destory`, 
-  IMPORT_STORAGE_DOMAIN: () => `/api/v1/storages/domains/import`,
 
   //endregion: StorageDomain
 

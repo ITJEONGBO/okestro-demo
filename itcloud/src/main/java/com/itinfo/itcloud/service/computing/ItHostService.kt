@@ -2,8 +2,10 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.auth.RutilProperties
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.fromStorageDomainsToIdentifiedVos
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.toHostNicVos
@@ -18,11 +20,11 @@ import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
-import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.Error
 
 interface ItHostService {
 	/**
@@ -181,7 +183,7 @@ interface ItHostService {
 	 * @return List<[StorageDomainVo]>
 	 */
 	@Throws(Error::class)
-	fun findUnregisterDomainFromHost(hostId: String): List<StorageDomainVo>
+	fun findUnregisterDomainFromHost(hostId: String): List<IdentifiedVo>
 
 	/**
 	 * [ItHostService.findAllPermissionsFromHost]
@@ -349,12 +351,12 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findUnregisterDomainFromHost(hostId: String): List<StorageDomainVo> {
+	override fun findUnregisterDomainFromHost(hostId: String): List<IdentifiedVo> {
 		log.info("findUnregisterDomainFromHost... hostId: {}", hostId)
 		conn.findHost(hostId).getOrNull() ?: return listOf()
 		val res: List<StorageDomain> = conn.unRegisteredStorageDomainsFromHost(hostId)
 			.getOrDefault(listOf())
-		return res.toStorageDomainsMenu(conn)
+		return res.fromStorageDomainsToIdentifiedVos()
 	}
 
 

@@ -12,6 +12,7 @@ import HostVms from './HostVms'
 import HostNics from './HostNics'
 import HostDevices from './HostDevices';
 import HostEvents from './HostEvents'
+import { renderHostStatus } from '../../util/format';
 
 const HostModal = React.lazy(() => import('../../Modal/HostModal'))
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -21,18 +22,21 @@ const HostInfo = () => {
   const { id: hostId, section } = useParams();
   const {
     data: host,
-    status: hostStatus,
-    isRefetching: isHostRefetching,
-    refetch: hostRefetch,
     isError: isHostError,
     error: hostError,
     isLoading: isHostLoading,
-  } = useHost(hostId, (e) => ({
-    ...e,
-  }));
+  } = useHost(hostId);
 
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
+
+  // useEffect(() => {
+  //   if (!isHostError) {
+  //     console.error('Host fetch error:', isHostError); // 디버깅 로그
+  //     navigate('/error', { state: { message: '잘못된 Host ID입니다.' } });
+  //   }
+  // }, [isHostError, navigate]);
+  
   const [modals, setModals] = useState({
     edit: false,
     delete: false,
@@ -48,20 +52,6 @@ const HostInfo = () => {
     haon: false,
     haoff: false,
   }); 
-
-  const renderStatus = (status) => {
-    if (status === 'UP') {
-      return '실행중';
-    } else if (status === 'DOWN') {
-      return '중지';
-    } else if (status === 'MAINTENANCE') {
-      return '유지보수';
-    } else if (status === 'REBOOT') {
-      return '재부팅중';
-    }
-    return status;
-  };
-
   
   const sections = [
     { id: 'general', label: '일반' },
@@ -168,7 +158,7 @@ const HostInfo = () => {
       <HeaderButton
         titleIcon={faUser}
         title={host?.name}
-        status={renderStatus(host?.status)}
+        status={renderHostStatus(host?.status)}
         buttons={sectionHeaderButtons}
         popupItems={popupItems}
       />
