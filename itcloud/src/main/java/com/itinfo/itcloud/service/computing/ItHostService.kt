@@ -275,8 +275,8 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun findAllHostNicsFromHost(hostId: String): List<HostNicVo> {
 		log.info("findAllHostNicsFromHost ... hostId: {}", hostId)
-		val res: List<HostNic> =
-			conn.findAllNicsFromHost(hostId).getOrDefault(listOf())
+		val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
+			.getOrDefault(listOf())
 		return res.toHostNicVos(conn)
 	}
 

@@ -100,7 +100,7 @@ fun HostNic.toHostNicVo(conn: Connection): HostNicVo {
 	val host: Host? =
 		conn.findHost(this@toHostNicVo.host().id()).getOrNull()
 	val network: Network? =
-		if (this@toHostNicVo.networkPresent()) conn.findNetwork(this@toHostNicVo.network().id()).getOrNull()
+		if (this@toHostNicVo.networkPresent() && this@toHostNicVo.network().ipPresent()) conn.findNetwork(this@toHostNicVo.network().id()).getOrNull()
 		else null
 	val statistics: List<Statistic> =
 		 conn.findAllStatisticsFromHostNic(this@toHostNicVo.host().id(), this@toHostNicVo.id())
