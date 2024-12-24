@@ -27,8 +27,8 @@ const DeleteModal = ({
     vmId,
     templateId,
 }) => {
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
+  const [id, setId] = useState([]);
+  const [name, setName] = useState([]);
 
   const { mutate: deleteDataCenter } = useDeleteDataCenter();
   const { mutate: deleteCluster } = useDeleteCluster();
@@ -47,9 +47,15 @@ const DeleteModal = ({
 
   useEffect(() => {
     if (data) {
-      setId(data.id || '');
-      setName(data.name || data.alias || '');
-      console.log('**' + data.id);
+      if (Array.isArray(data)) {
+        // data가 배열인 경우
+        setId(data.map((item) => item.id));
+        setName(data.map((item) => item.name || item.alias || ''));
+      } else {
+        // data가 단일 객체인 경우
+        setId([data.id]);
+        setName([data.name || data.alias || '']);
+      }
     }
   }, [data]);
 
@@ -77,7 +83,10 @@ const DeleteModal = ({
       handleDelete(deleteTemplate);
     } else if (type === 'Network') {
       console.log('Deleting Network');
-      handleDelete(deleteNetwork);
+      id.forEach((networkId, index) => {
+        handleDelete(() => deleteNetwork(networkId), name[index]); // 각 네트워크를 개별적으로 삭제
+      });
+      onRequestClose();
     } else if (type === 'vnicProfile') {
       console.log('Deleting vnicProfile');
       if (!networkId) {
@@ -96,7 +105,10 @@ const DeleteModal = ({
       onRequestClose();
     }else if (type === 'Disk') {
       console.log('Deleting Disk');
-      handleDelete(deleteDisk);
+      id.forEach((diskkId, index) => {
+        handleDelete(() => deleteDisk(diskkId), name[index]); // 각 네트워크를 개별적으로 삭제
+      });
+      onRequestClose();
     }else if (type === 'Snapshot') {
       console.log('Deleting Snapshot');
       handleDelete(() => deleteSnapshot({ vmId, snapshotId: id }));

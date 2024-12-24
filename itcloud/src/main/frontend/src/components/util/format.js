@@ -31,6 +31,65 @@ export function sizeToBytes(size) {
 export function zeroValue(size) {
   return size < 1 ? "< 1 GB" : `${size} GB`;
 }
+export function icon(status) {
+  const tooltipId = `status-tooltip-${status}`;
+  let iconProps = {};
+
+  switch (status) {
+    case 'UP':
+      iconProps = {
+        icon: faPlay,
+        style: { color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' },
+      };
+      break;
+    case 'ACTIVE':
+      iconProps = {
+        icon: faPlay,
+        style: { color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' },
+      };
+      break;
+    case 'DOWN':
+      iconProps = {
+        icon: faPlay,
+        style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' },
+      };
+      break;
+    case 'POWERING_DOWN':
+      iconProps = {
+        icon: faArrowsUpToLine,
+        style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(180deg)' },
+      };
+      break;
+    case 'MAINTENANCE':
+      iconProps = {
+        icon: faWrench,
+        style: { color: 'black', fontSize: '0.3rem' },
+      };
+      break;
+    case 'REBOOT':
+      iconProps = {
+        icon: faRefresh,
+        style: { color: 'black', fontSize: '0.3rem' },
+      };
+      break;
+    default:
+      return status;
+  }
+
+  return (
+    <>
+      <FontAwesomeIcon
+        {...iconProps}
+        fixedWidth
+        data-tooltip-id={tooltipId}
+      />
+      <Tooltip id={tooltipId} place="top" effect="solid">
+        {status}
+      </Tooltip>
+    </>
+  );
+}
+
 
 // const sizeToGB = (data) => (data / Math.pow(1024, 3));
 // const formatSize = (size) => (sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`);
@@ -59,49 +118,13 @@ export const renderUpDownStatusIcon = (status) => {
 };
 
 export const renderVmStatusIcon = (status) => {
-  const tooltipId = `vm-status-tooltip-${status}`; 
-  if (status === 'UP') {
-    return (
-      <>
-        <FontAwesomeIcon
-          icon={faPlay}
-          fixedWidth
-          style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }}
-          data-tooltip-id={tooltipId}
-        />
-        <Tooltip id={tooltipId} place="top" effect="solid">
-          {status}
-        </Tooltip>
-      </>
-    );
-  } else if (status === 'DOWN') {
-    return (
-      <>
-        <FontAwesomeIcon
-          icon={faPlay}
-          fixedWidth
-          style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }}
-          data-tooltip-id={tooltipId}
-        />
-        <Tooltip id={tooltipId} place="top" effect="solid">
-          {status}
-        </Tooltip>
-      </>
-    );
-  } else if (status === 'POWERING_DOWN') {
-    return (
-      <>
-        <FontAwesomeIcon
-          icon={faArrowsUpToLine}
-          fixedWidth
-          style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(180deg)' }}
-          data-tooltip-id={tooltipId}
-        />
-        <Tooltip id={tooltipId} place="top" effect="solid">
-          {status}
-        </Tooltip>
-      </>
-    );
-  }
-  return status;
+  return icon(status);
+};
+
+export const renderDomainStatusIcon = (status) => {
+  return icon(status);
+}
+
+export const renderEventStatusIcon = (status) => {
+  return icon(status);
 };

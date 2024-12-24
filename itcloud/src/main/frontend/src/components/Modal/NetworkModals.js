@@ -5,7 +5,8 @@ const NetworkModals = ({
     isModalOpen, 
     action, 
     onRequestClose, 
-    selectedNetwork 
+    selectedNetwork,
+    selectedNetworks
 }) => {
   const NetworkModal = React.lazy(() => import('./NetworkModal'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
@@ -28,7 +29,7 @@ const NetworkModals = ({
           type="Network"
           onRequestClose={onRequestClose}
           contentLabel="네트워크"
-          data={selectedNetwork}
+          data={selectedNetworks}
         />
       ) : (
          //가져오기

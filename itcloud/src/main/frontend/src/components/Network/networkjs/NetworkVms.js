@@ -35,9 +35,11 @@ const NetworkVms = ({ networkId }) => {
   }));
 
   const [activeFilter, setActiveFilter] = useState("running");
-  const [selectedVm, setSelectedVm] = useState(null);
+  const [selectedVms, setSelectedVms] = useState([]);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
+
+  const selectedIds = (Array.isArray(selectedVms) ? selectedVms : []).map((network) => network.id).join(', ');
   const toggleDeleteModal = (isOpen) => setDeleteModalOpen(isOpen);
 
   // 필터링된 VM 데이터 계산
@@ -53,8 +55,8 @@ const NetworkVms = ({ networkId }) => {
     <>
       <div className="header_right_btns">
         <button 
-          onClick={() => selectedVm?.id && toggleDeleteModal(true)} 
-          disabled={!selectedVm?.id}
+  onClick={() => toggleDeleteModal(true)} 
+  disabled={selectedVms.length === 0} // 선택된 VM이 없을 때 비활성화
         >
           제거
         </button>
@@ -69,7 +71,7 @@ const NetworkVms = ({ networkId }) => {
         </button>
       </div>
 
-      <span>id = {selectedVm?.id || ''}</span>
+      <span>id = {selectedIds || '선택된 항목이 없습니다.'}</span>
 
       <TablesOuter
         columns={
@@ -78,7 +80,7 @@ const NetworkVms = ({ networkId }) => {
           : TableInfo.VMS_STOP
         }
         data={filteredVms}
-        onRowClick={(row) => setSelectedVm(row)}
+        onRowClick={(rows) => setSelectedVms(Array.isArray(rows) ? rows : [])}
       />
 
       <Suspense>
@@ -86,7 +88,7 @@ const NetworkVms = ({ networkId }) => {
           <VmDeleteModal
             isOpen={isDeleteModalOpen}
             onRequestClose={() => toggleDeleteModal(false)}
-            data={selectedVm}
+            data={selectedVms}
           />
         )}
       </Suspense>

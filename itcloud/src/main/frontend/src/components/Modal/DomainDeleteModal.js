@@ -8,66 +8,66 @@ import {
 } from '../../api/RQHook';
 
 const DomainDeleteModal = ({ 
-    isOpen, 
-    onRequestClose, 
-    data,
+  isOpen, 
+  onRequestClose, 
+  data, // 선택된 도메인들 (단일 객체 또는 배열)
 }) => {
-  
+  const [format, setFormat] = useState(false);
+  const [hostName, setHostName] = useState('');
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [selectedNames, setSelectedNames] = useState([]);
+
+  const { mutate: deleteDomain } = useDeleteDomain();
+
   // 호스트 목록 가져오기
   const {
     data: hosts = [],
-    refetch: refetchHosts,
-    isLoading: isHostsLoading
-  } = useAllHosts((e) => ({...e,}));
+    isLoading: isHostsLoading,
+  } = useAllHosts();
 
+  // data가 배열 또는 단일 객체일 경우를 처리
   useEffect(() => {
-    if (data) {
-      setId(data.id || '');
-      setName(data.name || data.alias || '');
-      console.log('**' + data.id);
+    if (Array.isArray(data)) {
+      setSelectedIds(data.map((item) => item.id));
+      setSelectedNames(data.map((item) => item.name || item.alias || ''));
+    } else if (data) {
+      setSelectedIds([data.id]);
+      setSelectedNames([data.name || data.alias || '']);
     }
   }, [data]);
 
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
-  const [format, setFormat] = useState(false);
-  const [hostName, setHostName] = useState('');
-  
-  const { mutate: deleteDomain } = useDeleteDomain();
-
-  useEffect(() => {
-    console.log('삭제데이터:', data, id);
-  }, [data, id]);
-  
   useEffect(() => {
     if (hosts && hosts.length > 0) {
-      setHostName(hosts[0].name);
+      setHostName(hosts[0].name); // 기본 호스트 이름 설정
     }
   }, [hosts]);
 
   const handleFormSubmit = () => {
-    if (!id) {
+    if (!selectedIds.length) {
       console.error('ID가 없습니다. 삭제 요청을 취소합니다.');
       return;
     }
-  
-    console.log(`Data to submit: ID=${id}, Format=${format}, HostName=${hostName}`);
-  
-    deleteDomain(
-      { domainId: id, format: format, hostName: hostName },
-      {
-        onSuccess: () => {
-          console.log(`스토리지 도메인 삭제: ${id}, ${format}, ${hostName}`);
-          onRequestClose();
-        },
-        onError: (error) => {
-          console.error(`스토리지 도메인 ${name} 삭제 오류:`, error);
-        },
-      }
-    );    
+
+    console.log('Deleting domains:', { selectedIds, format, hostName });
+
+    selectedIds.forEach((id, index) => {
+      deleteDomain(
+        { domainId: id, format: format, hostName: hostName },
+        {
+          onSuccess: () => {
+            console.log(`도메인 삭제 성공: ${selectedNames[index]} (ID: ${id})`);
+            if (index === selectedIds.length - 1) {
+              onRequestClose(); // 모든 삭제가 완료되면 모달 닫기
+            }
+          },
+          onError: (error) => {
+            console.error(`도메인 ${selectedNames[index]} 삭제 오류:`, error);
+          },
+        }
+      );
+    });
   };
 
-  
   return (
     <Modal
       isOpen={isOpen}
@@ -88,7 +88,11 @@ const DomainDeleteModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {name} 를(을) 삭제하시겠습니까? </span>
+            <span>
+              {selectedNames.length > 1 
+                ? `${selectedNames.join(', ')} 를(을) 삭제하시겠습니까?`
+                : `${selectedNames[0]} 를(을) 삭제하시겠습니까?`}
+            </span>
           </div>
         </div>
 
@@ -99,7 +103,7 @@ const DomainDeleteModal = ({
             checked={format}
             onChange={(e) => setFormat(e.target.checked)} // 체크 여부에 따라 true/false 설정
           />
-          <label htmlFor="format">포멧 하시겠습니까?</label>
+          <label htmlFor="format">포맷 하시겠습니까?</label>
         </div>
 
         <div className="disk_delete_box">
@@ -108,9 +112,9 @@ const DomainDeleteModal = ({
             onChange={(e) => setHostName(e.target.value)}
             disabled={!format} // format이 false면 비활성화
           >
-            {hosts && hosts.map((h) => (
-              <option key={h.id} value={h.id}>
-                {h.name} : {h.id}
+            {hosts.map((host) => (
+              <option key={host.id} value={host.name}>
+                {host.name} : {host.id}
               </option>
             ))}
           </select>
@@ -127,4 +131,3 @@ const DomainDeleteModal = ({
 };
 
 export default DomainDeleteModal;
-

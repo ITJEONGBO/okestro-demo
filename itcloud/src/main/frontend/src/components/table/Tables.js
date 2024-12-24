@@ -14,7 +14,8 @@ const Tables = ({
   const [tooltips, setTooltips] = useState({}); // 툴팁 상태 관리
   const tableRef = useRef(null); 
   const [contextRowIndex, setContextRowIndex] = useState(null); // 우클릭한 행의 인덱스 관리
-  
+  const [selectedRows, setSelectedRows] = useState([]); // ctrl다중선택택
+
   // 우클릭 메뉴 위치 관리
   const [contextMenu, setContextMenu] = useState(null);
   const handleContextMenu = (e, rowIndex) => {
@@ -106,7 +107,30 @@ const Tables = ({
       }));
     }
   };
-
+  const handleRowClick = (rowIndex, e) => {
+    const clickedRow = data[rowIndex];
+    if (clickedRow) {
+      if (e.ctrlKey) {
+        setSelectedRows((prev) => {
+          const updated = prev.includes(rowIndex)
+            ? prev.filter((index) => index !== rowIndex)
+            : [...prev, rowIndex];
+          const selectedData = updated.map((index) => data[index]);
+          console.log('Selected Rows:', selectedData); // 다중 선택된 데이터 출력
+          onRowClick(selectedData); // 선택된 데이터 배열 전달
+          return updated;
+        });
+      } else {
+        const selectedData = [clickedRow];
+        setSelectedRows([rowIndex]);
+        console.log('Selected Row:', selectedData); // 단일 선택된 데이터 출력
+        onRowClick(selectedData); // 단일 선택 데이터 배열로 전달
+      }
+    }
+  };
+  
+  
+  
   
   // 우클릭 메뉴 외부 클릭 시 메뉴 닫기 + 배경색 초기화
   const menuRef = useRef(null);
@@ -147,13 +171,83 @@ const Tables = ({
                 </th>
               ))}
             </tr>
-            {/* <tr>
-              {columns.map((column, index) => (
-                <th key={index}>{column.header}</th>
-              ))}
-            </tr> */}
           </thead>
           <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} style={{ textAlign: 'center' }}>
+                  내용이 없습니다
+                </td>
+              </tr>
+            ) : (
+              data.map((row, rowIndex) => (
+                <tr
+  key={rowIndex}
+  onClick={(e) => {
+    setSelectedRowIndex(rowIndex);
+                    setContextRowIndex(null); // 다른 우클릭된 행을 초기화
+                    onRowClick(row); // 클릭한 행의 전체 데이터를 onRowClick에 전달
+    handleRowClick(rowIndex, e); // 다중 선택 핸들러
+  }}
+  onContextMenu={(e) => handleContextMenu(e, rowIndex)} // 우클릭 시 메뉴 표시
+  style={{
+    backgroundColor: selectedRows.includes(rowIndex) || contextRowIndex === rowIndex
+      ? 'rgb(218, 236, 245)' // 선택된 행 및 우클릭된 행 색상
+      : 'transparent', // 초기화 색상
+  }}
+>
+                  {columns.map((column, colIndex) => (
+                    <td
+                      key={colIndex}
+                      data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
+                      data-tooltip-content={row[column.accessor]}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        textAlign:
+                          typeof row[column.accessor] === 'string' || typeof row[column.accessor] === 'number'
+                            ? 'left'
+                            : 'center',
+                        verticalAlign: 'middle',
+                        cursor: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
+                        color: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit',
+                        fontWeight: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
+                      }}
+                      onClick={(e) => {
+                        if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+                          e.stopPropagation();
+                          if (onClickableColumnClick) {
+                            onClickableColumnClick(row);
+                          }
+                        }
+                      }}
+                      onMouseOver={(e) => {
+                        if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+                          e.target.style.textDecoration = 'underline';
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
+                          e.target.style.textDecoration = 'none';
+                        }
+                      }}
+                    >
+                      {typeof row[column.accessor] === 'object' && column.header === 'icon' ? (
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                          {row[column.accessor]}
+                        </div>
+                      ) : (
+                        row[column.accessor]
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+
+          {/*옛날tbody <tbody>
             {data.length === 0 ? ( // 데이터가 없을 때 메시지 표시
               <tr>
                 <td colSpan={columns.length} style={{ textAlign: 'center' }}>
@@ -225,7 +319,7 @@ const Tables = ({
                 </tr>
               ))
             )}
-          </tbody>
+          </tbody> */}
         </table>
       </div>
       {/* 우클릭 메뉴 박스 */}

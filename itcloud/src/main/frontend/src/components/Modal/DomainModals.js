@@ -6,6 +6,7 @@ const DomainModals = ({
   onRequestClose, 
   selectedDomain,
   datacenterId,
+  selectedDomains
 }) => {
   const DomainModal = React.lazy(() => import('../Modal/DomainModal'));
   const DomainDeleteModal = React.lazy(() => import('../Modal/DomainDeleteModal'));
@@ -35,10 +36,10 @@ const DomainModals = ({
         <DomainDeleteModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
-          data={selectedDomain}
+          data={selectedDomains}
         />
       ) : (
-        <DomainActionModal
+        <DomainActionModal // 여러개도 되는지 확인
           isOpen={isModalOpen}
           action={action}
           onRequestClose={onRequestClose}

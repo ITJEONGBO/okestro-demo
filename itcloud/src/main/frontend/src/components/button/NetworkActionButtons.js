@@ -5,7 +5,8 @@ const NetworkActionButtons = ({
   onEdit, 
   onDelete, 
   onImport, 
-  isEditDisabled 
+  isEditDisabled,
+  isDeleteDisabled
 }) => {
   return (
     <div className="header_right_btns">
@@ -16,7 +17,7 @@ const NetworkActionButtons = ({
         <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
       )}
       {onDelete && (
-        <button onClick={onDelete} disabled={isEditDisabled}>제거</button>
+        <button onClick={onDelete} disabled={isDeleteDisabled}>제거</button>
       )}
       {onImport && (
         <button onClick={onImport}>가져오기</button>

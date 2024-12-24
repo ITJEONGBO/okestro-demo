@@ -4,7 +4,8 @@ const DiskModals = ({
   isModalOpen, 
   action, 
   onRequestClose, 
-  selectedDisk 
+  selectedDisk,
+  selectedDisks
 }) => {
   const DiskModal = React.lazy(() => import('./DiskModal.js'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
@@ -29,12 +30,12 @@ const DiskModals = ({
           onRequestClose={onRequestClose}
         />
       ) : action === 'delete' ? (
-        <DeleteModal
+        <DeleteModal // 시간살짝걸림
           isOpen={isModalOpen}
           type="Disk"
           onRequestClose={onRequestClose}
           contentLabel="디스크"
-          data={selectedDisk}
+          data={selectedDisks}
         />
       ) : (
         // 이동, 복사
@@ -43,7 +44,7 @@ const DiskModals = ({
           action={action}
           onRequestClose={onRequestClose}
           contentLabel={getContentLabel(action)}
-          data={selectedDisk}
+          data={selectedDisks}
         />
       )}
     </Suspense>
