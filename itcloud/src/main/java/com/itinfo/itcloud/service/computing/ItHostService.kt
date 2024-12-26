@@ -6,10 +6,7 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.auth.RutilProperties
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.fromStorageDomainsToIdentifiedVos
-import com.itinfo.itcloud.model.network.HostNicVo
-import com.itinfo.itcloud.model.network.NetworkVo
-import com.itinfo.itcloud.model.network.toHostNicVos
-import com.itinfo.itcloud.model.network.toSetHostNicVos
+import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
@@ -106,6 +103,7 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllHostNicsFromHost(hostId: String): List<HostNicVo>
+	fun findBonding(hostId: String): List<HostNicVo>
 	/**
 	 * [ItHostService.setHostNicsFromHost]
 	 * 호스트 네트워크 설정창
@@ -282,10 +280,18 @@ class HostServiceImpl(
 		return res.toHostNicVos(conn)
 	}
 
+	@Throws(Error::class)
+	override fun findBonding(hostId: String): List<HostNicVo> {
+		log.info("findBonding ... hostId: {}", hostId)
+		val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
+			.getOrDefault(listOf())
+		return res.toBondingVos()
+	}
+
 	override fun setHostNicsFromHost(hostId: String): List<HostNicVo> {
 		log.info("setHostNicsFromHost ... hostId: {}", hostId)
-		val res: List<HostNic> =
-			conn.findAllNicsFromHost(hostId).getOrDefault(listOf())
+		val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
+			.getOrDefault(listOf())
 		return res.toSetHostNicVos(conn)
 	}
 

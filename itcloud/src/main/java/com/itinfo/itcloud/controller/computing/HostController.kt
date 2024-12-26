@@ -376,11 +376,6 @@ class HostController {
 		return ResponseEntity.ok(iHost.findUnregisterDomainFromHost(hostId))
 	}
 
-	// iscsi 가져오기 함수
-	// fcp 가져오기 함수
-
-
-	// iscsi 함수
 
 
 	// ------------------------------------------
