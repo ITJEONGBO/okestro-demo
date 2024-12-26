@@ -118,7 +118,7 @@ fun HostNic.toHostNicVo(conn: Connection): HostNicVo {
 		status { this@toHostNicVo.status() }
 		hostVo { host?.fromHostToIdentifiedVo() }
 		networkVo { network?.fromNetworkToIdentifiedVo() }
-		bondingVo { this@toHostNicVo.bonding().toBondingVo(conn) }
+		bondingVo { if(this@toHostNicVo.bondingPresent()) this@toHostNicVo.bonding().toBondingVo(conn, this@toHostNicVo.host().id()) else null }
 		speed { this@toHostNicVo.speed() }
 		rxSpeed { statistics.findSpeed("data.current.rx.bps") }
 		txSpeed { statistics.findSpeed("data.current.tx.bps") }
@@ -132,16 +132,15 @@ fun List<HostNic>.toHostNicVos(conn: Connection): List<HostNicVo> =
 	this@toHostNicVos.map { it.toHostNicVo(conn) }
 
 
-fun HostNic.toBondingVo(): HostNicVo {
-//	val ho = conn.findNicFromHost()
-	return HostNicVo.builder {
+fun HostNic.toBondingVo(conn: Connection): HostNicVo {
+		return HostNicVo.builder {
 		id { this@toBondingVo.id() }
 		name { this@toBondingVo.name() }
-//		bondingVo { if(this@toBondingVo.bondingPresent()) this@toBondingVo.bonding().toBondingVo() else null }
+		bondingVo { if(this@toBondingVo.bondingPresent()) this@toBondingVo.bonding().toBondingVo(conn, this@toBondingVo.host().id()) else null }
 	}
 }
-fun List<HostNic>.toBondingVos(): List<HostNicVo> =
-	this@toBondingVos.map { it.toBondingVo() }
+fun List<HostNic>.toBondingVos(conn: Connection): List<HostNicVo> =
+	this@toBondingVos.map { it.toBondingVo(conn) }
 
 
 fun HostNic.toNetworkHostNicVo(conn: Connection): HostNicVo {

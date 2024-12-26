@@ -82,12 +82,14 @@ fun NetworkFilter.fromNetworkFilterToIdentifiedVo(): IdentifiedVo = IdentifiedVo
 fun List<NetworkFilter>.fromNetworkFiltersToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromNetworkFiltersToIdentifiedVos.map { it.fromNetworkFilterToIdentifiedVo() }
 
+
 fun HostNic.fromHostNicToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }
 	name { if (namePresent()) name() else "" }
 }
 fun List<HostNic>.fromHostNicsToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromHostNicsToIdentifiedVos.map { it.fromHostNicToIdentifiedVo() }
+
 
 fun VnicProfile.fromVnicProfileToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }

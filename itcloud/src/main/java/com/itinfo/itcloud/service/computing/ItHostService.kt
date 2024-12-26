@@ -103,6 +103,7 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllHostNicsFromHost(hostId: String): List<HostNicVo>
+
 	fun findBonding(hostId: String): List<HostNicVo>
 	/**
 	 * [ItHostService.setHostNicsFromHost]
@@ -285,7 +286,7 @@ class HostServiceImpl(
 		log.info("findBonding ... hostId: {}", hostId)
 		val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
 			.getOrDefault(listOf())
-		return res.toBondingVos()
+		return res.toBondingVos(conn)
 	}
 
 	override fun setHostNicsFromHost(hostId: String): List<HostNicVo> {

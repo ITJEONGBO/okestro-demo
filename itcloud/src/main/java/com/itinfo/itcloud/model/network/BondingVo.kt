@@ -17,16 +17,16 @@ private val log = LoggerFactory.getLogger(BondingVo::class.java)
 class BondingVo (
     val activeSlave: IdentifiedVo = IdentifiedVo(),  // hostNicvo
     val optionVos: List<OptionVo> = listOf(),
-    val hostNisVos: List<IdentifiedVo> = listOf(),  // hostNic
+    val slaves: List<IdentifiedVo> = listOf(),  // hostNic
 ): Serializable {
     override fun toString(): String = gson.toJson(this)
 
     class Builder{
         private var bActiveSlave: IdentifiedVo = IdentifiedVo(); fun activeSlave(block: () -> IdentifiedVo?) { bActiveSlave = block() ?: IdentifiedVo() }
         private var bOptionVos: List<OptionVo> = listOf(); fun optionVos(block: () -> List<OptionVo>?) { bOptionVos = block() ?: listOf() }
-        private var bHostNisVos: List<IdentifiedVo> = listOf(); fun hostNisVos(block: () -> List<IdentifiedVo>?) { bHostNisVos = block() ?: listOf() }
+        private var bSlaves: List<IdentifiedVo> = listOf(); fun slaves(block: () -> List<IdentifiedVo>?) { bSlaves = block() ?: listOf() }
 
-        fun build(): BondingVo = BondingVo(bActiveSlave, bOptionVos, bHostNisVos)
+        fun build(): BondingVo = BondingVo(bActiveSlave, bOptionVos, bSlaves)
     }
 
     companion object{
@@ -34,12 +34,28 @@ class BondingVo (
     }
 }
 
-fun Bonding.toBondingVo(conn: Connection): BondingVo {
+fun Bonding.toBondingVo(conn: Connection, hostId: String): BondingVo {
+    // Extract slave HostNics using the provided connection
+    val slaves = if (this@toBondingVo.slavesPresent()) {
+        this@toBondingVo.slaves().mapNotNull { hostNic ->
+            // Extract the id from each slave
+            val slaveId = hostNic.id()
+            val nic = conn.findNicFromHost(hostId, slaveId).getOrNull()
+            nic?.fromHostNicToIdentifiedVo()
+        }
+    } else listOf()
 
     return BondingVo.builder {
-        activeSlave { if(this@toBondingVo.activeSlavePresent()) this@toBondingVo.activeSlave().fromHostNicToIdentifiedVo() else null }
-        optionVos { if(this@toBondingVo.optionsPresent()) this@toBondingVo.options().toOptionVos() else listOf() }
-        hostNisVos { if(this@toBondingVo.slavesPresent()) this@toBondingVo.slaves().fromHostNicsToIdentifiedVos() else listOf() }
+        activeSlave {
+            if (this@toBondingVo.activeSlavePresent()) {
+                val activeSlaveId = this@toBondingVo.activeSlave().id()
+                val nic = conn.findNicFromHost(hostId, activeSlaveId).getOrNull()
+                nic?.fromHostNicToIdentifiedVo()
+            } else null
+        }
+        optionVos {
+            if (this@toBondingVo.optionsPresent()) this@toBondingVo.options().toOptionVos() else listOf()
+        }
+        slaves { slaves }
     }
 }
-
