@@ -6,6 +6,7 @@ import TableOuter from '../../table/TableOuter';
 import { useNetworkInterfaceFromHost } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';
 import NetworkHostModal from '../../Modal/NetworkHostModal';
+import { renderUpDownStatusIcon } from '../../util/format';
 
 const HostNics = ({ hostId }) => {
 
@@ -13,6 +14,7 @@ const HostNics = ({ hostId }) => {
   const { 
     data: nics = [] 
   } = useNetworkInterfaceFromHost(hostId, (e) => ({ 
+    // 단위 변환은 나중에
     ...e,
     id: e?.id,
     name: e?.name,
@@ -22,31 +24,12 @@ const HostNics = ({ hostId }) => {
     macAddress: e?.macAddress,
     mtu: e?.mtu,
     status: e?.status,
-    icon: (() => {
-      if (e?.status === 'UP') {
-        return (
-          <FontAwesomeIcon 
-            icon={faPlay} 
-            fixedWidth 
-            style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} 
-          />
-        );
-      } else if (e?.status === 'DOWN') {
-        return (
-          <FontAwesomeIcon 
-            icon={faPlay} 
-            fixedWidth 
-            style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
-          />
-        );
-      }
-      return null;
-    })(),
-    speed: e?.speed ? Math.floor(e.speed / 1e6) : 0, // Mbps 단위 변환 후 숫자로만 반환
-    rxSpeed: e?.rxSpeed ? Math.floor(e.rxSpeed / 1e6) : 0, // Rx 속도 Mbps 숫자만 반환
-    txSpeed: e?.txSpeed ? Math.floor(e.txSpeed / 1e6) : 0, // Tx 속도 Mbps 숫자만 반환
-    rxTotalSpeed: e?.rxTotalSpeed ? Math.floor(e.rxTotalSpeed / 1e9) : 0, // 총 Rx 속도 GB 숫자만 반환
-    txTotalSpeed: e?.txTotalSpeed ? Math.floor(e.txTotalSpeed / 1e9) : 0, // 총 Tx 속도 GB 숫자만 반환
+    icon: renderUpDownStatusIcon(e?.status),
+    speed: e?.speed <= 0 ? '< 1' : e?.speed, // Mbps 단위 변환 후 숫자로만 반환
+    rxSpeed: e?.rxSpeed <= 0 ? '< 1' : e?.rxSpeed, // Rx 속도 Mbps 숫자만 반환
+    txSpeed: e?.txSpeed <= 0 ? '< 1' : e?.txSpeed, // Tx 속도 Mbps 숫자만 반환
+    rxTotalSpeed: e?.rxTotalSpeed || 0, // 총 Rx 속도 GB 숫자만 반환
+    txTotalSpeed: e?.txTotalSpeed || 0, // 총 Tx 속도 GB 숫자만 반환
     rxTotalError: e?.rxTotalError || 0, // Rx 에러
     txTotalError: e?.txTotalError || 0, // Tx 에러
     hostName: e?.hostVo?.name || '', // 호스트 이름

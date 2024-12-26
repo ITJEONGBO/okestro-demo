@@ -102,7 +102,7 @@ fun HostNic.toHostNicVo(conn: Connection): HostNicVo {
 	val host: Host? = conn.findHost(this@toHostNicVo.host().id())
 		.getOrNull()
 	val network: Network? =
-		if (this@toHostNicVo.networkPresent() && this@toHostNicVo.network().ipPresent()) conn.findNetwork(this@toHostNicVo.network().id()).getOrNull()
+		if (this@toHostNicVo.networkPresent() && this@toHostNicVo.network().idPresent()) conn.findNetwork(this@toHostNicVo.network().id()).getOrNull()
 		else null
 	val statistics: List<Statistic> =conn.findAllStatisticsFromHostNic(this@toHostNicVo.host().id(), this@toHostNicVo.id())
 		.getOrDefault(listOf())
@@ -166,16 +166,10 @@ fun List<HostNic>.toNetworkHostNicVos(conn: Connection): List<HostNicVo> =
 	this@toNetworkHostNicVos.map { it.toNetworkHostNicVo(conn) }
 
 
-//fun HostNic.toSlave(conn: Connection): HostNicVo {
-//	val hostNic: HostNic = conn.find
-//}
-
-
-
 
 fun HostNic.toSetHostNicVo(conn: Connection): HostNicVo {
-	val host: Host? =
-		conn.findHost(this@toSetHostNicVo.host().id()).getOrNull()
+	val host: Host? = conn.findHost(this@toSetHostNicVo.host().id())
+		.getOrNull()
 	val network: Network? =
 		if (this@toSetHostNicVo.networkPresent()) conn.findNetwork(this@toSetHostNicVo.network().id()).getOrNull()
 		else null
@@ -187,6 +181,11 @@ fun HostNic.toSetHostNicVo(conn: Connection): HostNicVo {
 		status { this@toSetHostNicVo.status() }
 		hostVo { host?.fromHostToIdentifiedVo() }
 		networkVo { network?.fromNetworkToIdentifiedVo() }
+		bondingVo {
+			if(this@toSetHostNicVo.bondingPresent())
+				this@toSetHostNicVo.bonding().toBondingVo(conn, this@toSetHostNicVo.host().id())
+			else null
+		}
 	}
 }
 fun List<HostNic>.toSetHostNicVos(conn: Connection): List<HostNicVo> =

@@ -184,23 +184,6 @@ class ItHostServiceTest {
 		result.forEach { println(it) }
 //		assertThat(result.size, `is`(1))
 	}
-	/*
-	 * [should_findAllHostNicsFromHost]
-	 * [ItHostService.findAllHostNicsFromHost]에 대한 단위테스트
-	 *
-	 * @see ItHostService.findAllHostNicsFromHost
-	 */
-	@Test
-	fun findBonding() {
-		log.debug("findBonding ...")
-
-		val result: List<HostNicVo> =
-			service.findBonding("c35ee370-b9f6-4c5b-9c65-fe2e716795b5")
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-//		assertThat(result.size, `is`(1))
-	}
 
 	/**
 	 * [should_setHostNicsFromHost]

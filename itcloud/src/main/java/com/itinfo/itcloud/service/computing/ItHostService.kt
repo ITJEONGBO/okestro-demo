@@ -104,10 +104,9 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun findAllHostNicsFromHost(hostId: String): List<HostNicVo>
 
-	fun findBonding(hostId: String): List<HostNicVo>
 	/**
 	 * [ItHostService.setHostNicsFromHost]
-	 * 호스트 네트워크 설정창
+	 * 호스트 네트워크 설정창 nic출력용
 	 *
 	 * @param hostId [String] 호스트 Id
 	 * @return List<[HostNicVo]> 네트워크 인터페이스 목록
@@ -282,13 +281,6 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findBonding(hostId: String): List<HostNicVo> {
-		log.info("findBonding ... hostId: {}", hostId)
-		val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
-			.getOrDefault(listOf())
-		return res.toBondingVos(conn)
-	}
-
 	override fun setHostNicsFromHost(hostId: String): List<HostNicVo> {
 		log.info("setHostNicsFromHost ... hostId: {}", hostId)
 		val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
