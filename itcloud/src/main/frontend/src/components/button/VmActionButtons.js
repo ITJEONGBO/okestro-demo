@@ -22,6 +22,8 @@ const VmActionButtons = ({
   exportOva,
   isEditDisabled,
   isMigrationDisabled,
+  isDeleteDisabled,
+  isPauseDisabled,
   status,
 }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
@@ -46,19 +48,19 @@ const VmActionButtons = ({
   };
 
   const manageActions = [
-    { onClick: onStart, label: '실행', disabled: isEditDisabled || isUp },
-    { onClick: onPause, label: '일시중지', disabled: isEditDisabled || !isUp },
+    { onClick: onStart, label: '실행', disabled: !isPauseDisabled },
+    { onClick: onPause, label: '일시중지',  disabled: isPauseDisabled},
     // { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || !isUp },
   ];
 
   const rebootOptions = [
-    { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || isUp  },
-    { onClick: onReset, label: '재설정', disabled: isEditDisabled || isUp  },
+    { onClick: onReboot, label: '재부팅', disabled: isPauseDisabled  },
+    { onClick: onReset, label: '재설정', disabled: isPauseDisabled  },
   ];
 
   const stopOptions = [
-    { onClick: onStop, label: '종료', disabled: isEditDisabled || isUp  },
-    { onClick: onPowerOff, label: '전원끔', disabled: isEditDisabled || isUp  },
+    { onClick: onStop, label: '종료', disabled: isPauseDisabled  },
+    { onClick: onPowerOff, label: '전원끔', disabled: isPauseDisabled  },
   ];
 
  // 드롭다운 외부 클릭 감지 코드 추가
@@ -99,7 +101,7 @@ const VmActionButtons = ({
       ))}
 
   <div className="dropdown-container">
-      <button onClick={toggleRebootDropDown} disabled={isEditDisabled || !isUp}>
+      <button onClick={toggleRebootDropDown} disabled={isPauseDisabled}>
         재부팅
         <FontAwesomeIcon icon={isRebootDropDownOpen ? faChevronUp : faChevronDown} />
       </button>
@@ -119,7 +121,7 @@ const VmActionButtons = ({
   </div>
 
   <div className="dropdown-container">
-      <button onClick={toggleStopDropDown} disabled={isEditDisabled || !isUp}>
+      <button onClick={toggleStopDropDown} disabled={isPauseDisabled}>
         종료
         <FontAwesomeIcon icon={isStopDropDownOpen ? faChevronUp : faChevronDown} />
       </button>
@@ -152,9 +154,9 @@ const VmActionButtons = ({
           <div className="dropdown-menu">
             {onExport && <button className="dropdown-item"onClick={onExport}>가져오기</button>}
             {onCopy && <button className="dropdown-item" onClick={onCopy} disabled={isEditDisabled}>가상머신 복제</button>}
-            {onDelete && <button className="dropdown-item" onClick={onDelete} disabled={isEditDisabled}>삭제</button>}
-            {addTemplate && <button className="dropdown-item" onClick={addTemplate} disabled={isEditDisabled}>템플릿 생성</button>}
-            {exportOva && <button className="dropdown-item" onClick={exportOva} disabled={isEditDisabled}>OVA로 내보내기</button>}
+            {onDelete && <button className="dropdown-item" onClick={onDelete} disabled={isDeleteDisabled}>삭제</button>}
+            {addTemplate && <button className="dropdown-item" onClick={addTemplate} disabled={isEditDisabled || !isPauseDisabled}>템플릿 생성</button>}
+            {exportOva && <button className="dropdown-item" onClick={exportOva}>OVA로 내보내기</button>}
           </div>
         )}
       </div>

@@ -8,7 +8,8 @@ const TemplateEditModal = ({
   isOpen, 
   onRequestClose, 
   editMode, 
-  templateId 
+  templateId,
+  selectedTemplate
 }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -42,25 +43,25 @@ const TemplateEditModal = ({
   const [selectedChipset, setSelectedChipset] = useState('Q35_OVMF'); // 칩셋 선택
 
   // 초기값설정
-  useEffect(() => {
-    if (isOpen) {
-      if (editMode && templateData) {
-        setId(templateData?.id);
-        setName(templateData?.name || 'd');
-        setDescription(templateData?.description);
-        setComment(templateData?.comment || '');
-        setOsSystem(templateData?.osSystem || '');
-        setStateless(templateData?.stateless);
-        setClsuterVoId(templateData.clusterVo?.id || '');
-        setClsuterVoName(templateData.clusterVo?.name || '');
-
-        setStartPaused(templateData?.startPaused);
-        setDeleteProtected(templateData?.deleteProtected);
-        setSelectedOptimizeOption(templateData?.optimizeOption || 'server'); // 최적화 옵션
-        setSelectedChipset(templateData?.chipsetFirmwareType || 'Q35_OVMF');
-      }
+useEffect(() => {
+  if (isOpen) {
+    const template = templateData || selectedTemplate;
+    if (template) {
+      setId(template?.id || '');
+      setName(template?.name || ''); // 이름안뜸
+      setDescription(template?.description || '');
+      setComment(template?.comment || '');
+      setOsSystem(template?.osSystem || '');
+      setStateless(template?.stateless || false);
+      setClsuterVoId(template.clusterVo?.id || '');
+      setClsuterVoName(template.clusterVo?.name || '');
+      setStartPaused(template?.startPaused || false);
+      setDeleteProtected(template?.deleteProtected || false);
+      setSelectedOptimizeOption(template?.optimizeOption || 'server');
+      setSelectedChipset(template?.chipsetFirmwareType || 'Q35_OVMF');
     }
-  }, [isOpen, editMode, templateData,templateId]);
+  }
+}, [isOpen, templateData, selectedTemplate]);
 
   const handleFormSubmit = () => {
     if (!templateId) {

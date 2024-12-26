@@ -7,14 +7,16 @@ import { renderVmStatusIcon } from '../util/format';
 const VmTable = ({
   columns,
   vms,
-  setSelectedVm, // 선택된 VM을 저장하는 함수
+  setSelectedVms, // 선택된 VM을 저장하는 함수
 }) => {
   const navigate = useNavigate();
 
   const handleNameClick = (id) => {
     navigate(`/computing/vms/${id}`);
   };
-
+  const handleRowSelection = (selectedRows) => {
+    setSelectedVms(selectedRows); // 선택된 데이터 전달
+  };
   return (
     <>
       {/* 테이블 */}
@@ -46,14 +48,15 @@ const VmTable = ({
           ? '' : `${vm.usageDto.networkPercent}%`,
         }))}
         shouldHighlight1stCol={true}
-        onRowClick={(row) => {
-          console.log('Selected VM row:', row); // 선택된 행의 데이터를 확인
-          // 선택된 VM 정보와 데이터센터 ID 포함
-          setSelectedVm({
-            ...row,
-            dataCenterId: row?.dataCenterVo?.id, // 데이터센터 ID를 추가
-          });
-        }}
+        // onRowClick={(row) => {
+        //   console.log('Selected VM row:', row); // 선택된 행의 데이터를 확인
+        //   // 선택된 VM 정보와 데이터센터 ID 포함
+        //   setSelectedVms({
+        //     ...row,
+        //     dataCenterId: row?.dataCenterVo?.id, // 데이터센터 ID를 추가
+        //   });
+        // }}
+        onRowClick={handleRowSelection}
         clickableColumnIndex={[1]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
       />

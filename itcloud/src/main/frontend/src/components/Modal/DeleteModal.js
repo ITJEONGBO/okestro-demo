@@ -80,7 +80,10 @@ const DeleteModal = ({
       handleDelete(deleteHost);
     } else if (type === 'Template') {
       console.log('Deleting Template');
-      handleDelete(deleteTemplate);
+      id.forEach((templateId, index) => {
+        handleDelete(() => deleteTemplate(templateId), name[index]); // 각 네트워크를 개별적으로 삭제
+      });
+      onRequestClose();
     } else if (type === 'Network') {
       console.log('Deleting Network');
       id.forEach((networkId, index) => {

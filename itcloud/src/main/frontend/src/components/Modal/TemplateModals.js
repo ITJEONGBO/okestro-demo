@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import TemplateEditModal from './TemplateEditModal';
 import '../Modal/css/MTemplate.css';
 
-const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate }) => {
+const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate,selectedTemplates }) => {
   const TemplateEditModal = React.lazy(() => import('../Modal/TemplateEditModal'));
   const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
 
@@ -19,14 +19,15 @@ const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate 
         onRequestClose={onRequestClose}
         editMode={true}
         templateId={selectedTemplate?.id}
+        selectedTemplate={selectedTemplate}
         />
       ): action === 'delete' ? (
-        <DeleteModal // 삭제되는데 시간걸림
+        <DeleteModal
           isOpen={isModalOpen}
           type="Template"
           onRequestClose={onRequestClose}
           contentLabel="템플릿"
-          data={selectedTemplate}
+          data={selectedTemplates}
         />
       ): null}
     </Suspense>

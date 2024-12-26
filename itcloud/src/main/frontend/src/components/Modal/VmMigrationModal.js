@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { useHostsForMigration, useMigration } from '../../api/RQHook';
 
-const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm }) => {
+const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm,selectedVms }) => {
   const [selectedHost, setSelectedHost] = useState();
   const [isHaMode, setIsHaMode] = useState(false);
 

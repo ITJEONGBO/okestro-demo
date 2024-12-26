@@ -55,8 +55,8 @@ const NetworkVms = ({ networkId }) => {
     <>
       <div className="header_right_btns">
         <button 
-  onClick={() => toggleDeleteModal(true)} 
-  disabled={selectedVms.length === 0} // 선택된 VM이 없을 때 비활성화
+          onClick={() => toggleDeleteModal(true)} 
+          disabled={selectedVms.length === 0} // 선택된 VM이 없을 때 비활성화
         >
           제거
         </button>
@@ -80,7 +80,10 @@ const NetworkVms = ({ networkId }) => {
           : TableInfo.VMS_STOP
         }
         data={filteredVms}
-        onRowClick={(rows) => setSelectedVms(Array.isArray(rows) ? rows : [])}
+        onRowClick={(rows) => {
+          console.log('Selected Rows:', rows); // 선택된 데이터 확인
+          setSelectedVms(Array.isArray(rows) ? rows : []);
+        }}
       />
 
       <Suspense>

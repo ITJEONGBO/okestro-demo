@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
 
 /**
@@ -58,6 +58,12 @@ export function icon(status) {
       iconProps = {
         icon: faArrowsUpToLine,
         style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(180deg)' },
+      };
+      break;
+    case 'POWERING_UP':
+      iconProps = {
+        icon: faSpinner,
+        style: { color: 'orange', fontSize: '0.3rem', transform: 'rotate(180deg)' },
       };
       break;
     case 'MAINTENANCE':

@@ -4,24 +4,41 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useAllHosts } from '../../api/RQHook';
 
-const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVm }) => {
+const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
   const [host, setHost] = useState('#');
   const [directory, setDirectory] = useState('#');
-  const [name, setName] = useState(selectedVm?.name || '#');
+
+  // 선택된 VM의 이름 처리 (여러 개일 경우 이름을 결합)
+  const vmNames =
+    Array.isArray(selectedVms) && selectedVms.length > 0
+      ? selectedVms.map((vm) => vm.name).join(', ')
+      : '선택된 가상 머신 없음';
+  const [name, setName] = useState(vmNames);
 
   const handleExport = () => {
-    // 내보내기 로직 추가
+    if (!host || host === '#') {
+      alert('호스트를 선택하세요.');
+      return;
+    }
+    if (!directory || directory === '#') {
+      alert('디렉토리를 입력하세요.');
+      return;
+    }
+    if (!name) {
+      alert('이름을 입력하세요.');
+      return;
+    }
+
     console.log('Exporting OVA:', { host, directory, name });
     onRequestClose(); // 모달 닫기
   };
 
-  // 모든 호스트 목록가져오기 
-  const { 
-    data: hosts, 
-  } = useAllHosts(toTableItemPredicateHosts);
+  // 모든 호스트 목록 가져오기
+  const { data: hosts } = useAllHosts(toTableItemPredicateHosts);
+
   function toTableItemPredicateHosts(host) {
-    return {                
-      name: host?.name ?? '',                                                     
+    return {
+      name: host?.name ?? '',
     };
   }
 
@@ -45,7 +62,12 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVm }) => {
         <div className="py-1">
           <div className="vnic_new_box">
             <label htmlFor="host_select">호스트</label>
-            <select id="host_select" value={host} onChange={(e) => setHost(e.target.value)}>  
+            <select
+              id="host_select"
+              value={host}
+              onChange={(e) => setHost(e.target.value)}
+            >
+              <option value="#">호스트를 선택하세요</option>
               {hosts?.map((hostItem, index) => (
                 <option key={index} value={hostItem.name}>
                   {hostItem.name}
@@ -60,6 +82,7 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVm }) => {
               id="directory"
               value={directory}
               onChange={(e) => setDirectory(e.target.value)}
+              placeholder="디렉토리를 입력하세요"
             />
           </div>
           <div className="vnic_new_box">
@@ -69,6 +92,8 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVm }) => {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="가상 머신 이름을 입력하세요"
+              rows={3} // 이름이 길 경우를 대비해 textarea로 변경
             />
           </div>
         </div>

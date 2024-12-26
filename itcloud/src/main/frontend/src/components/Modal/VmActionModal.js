@@ -10,6 +10,7 @@ import {
   useShutdownVM,
   useRebootVM,
   useResetVM,
+  selectedVms
 } from '../../api/RQHook';
 
 const VmActionModal = ({ 
@@ -34,12 +35,21 @@ const VmActionModal = ({
   
   useEffect(() => {
     if (data) {
-      setId(data.id || '');
-      setName(data.name || '');
-      console.log('**' + data.id);
+      if (Array.isArray(data)) {
+        // 다중 선택된 경우
+        setId(data.map((vm) => vm.id).join(', ')); // ID를 ','로 연결
+        setName(data.map((vm) => vm.name || '이름 없음').join(', '));
+      } else {
+        // 단일 선택된 경우
+        setId(data.id || ''); // 단일 VM의 ID 설정
+        setName(data.name || '이름 없음');
+      }
+      console.log('Selected VM data:', data);
+      console.log('Selected VM ids:', data.map ? data.map((vm) => vm.id) : data.id);
     }
   }, [data]);
 
+  
   const handleFormSubmit = () => {
     if (!id) {
       console.error('ID가 없습니다.');
@@ -47,6 +57,14 @@ const VmActionModal = ({
     }
 
     if (action === 'start') {
+      const invalidVms = Array.isArray(data)
+      ? data.filter((vm) => !vm.diskAttachmentVo || !vm.diskAttachmentVo.id)
+      : !data.diskAttachmentVo || !data.diskAttachmentVo.id;
+  
+    if (invalidVms && invalidVms.length > 0) {
+      alert('선택된 가상머신 중 디스크가 연결되지 않은 항목이 있어 실행할 수 없습니다.');
+      return;
+    }
       console.log('start ' + id)
       handleAction(startVM)
     } else if (action === 'pause') {
@@ -65,6 +83,8 @@ const VmActionModal = ({
       console.log('reset Vm');
       handleAction(resetVM);
     } 
+
+    
   };
 
   const handleAction = (actionFn) => {
@@ -98,7 +118,7 @@ const VmActionModal = ({
     >
       <div className="storage_delete_popup">
         <div className="popup_header">
-          <h1>가상머신 {contentLabel} {id}</h1>
+          <h1>가상머신 {contentLabel}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
@@ -107,7 +127,11 @@ const VmActionModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data.name} 를(을) {contentLabel}하시겠습니까? </span>
+            {Array.isArray(data) ? (
+              <span>{name} 를(을) {contentLabel}하시겠습니까?</span>
+            ) : (
+              <span>{data.name} 를(을) {contentLabel}하시겠습니까?</span>
+            )}
           </div>
         </div>
 

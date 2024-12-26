@@ -25,10 +25,10 @@ const DiskActionButtons = ({
         <button onClick={onDelete} disabled={isDeleteDisabled && !isOk}>제거</button>
       )}
       {onMove && (
-        <button onClick={onMove} disabled={isDeleteDisabled}>이동</button>
+        <button onClick={onMove} disabled={isEditDisabled}>이동</button>
       )}
       {onCopy && (
-        <button onClick={onCopy} disabled={isDeleteDisabled}>복사</button>
+        <button onClick={onCopy} disabled={isEditDisabled}>복사</button>
       )}
       {onUpload && (
         <button onClick={onUpload}>업로드</button>

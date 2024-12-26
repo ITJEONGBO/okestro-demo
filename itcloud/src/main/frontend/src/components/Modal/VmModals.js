@@ -5,7 +5,7 @@ import VmDeleteModal from './VmDeleteModal';
 import VmSnapshotAddModal from './VmSnapshotaddModal';
 // import VmExportOVAModal from './VmExportOVAModal';
 
-const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
+const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm,selectedVms }) => {
   const VmModal = React.lazy(() => import('../Modal/VmModal'));
   const VmDeleteModal = React.lazy(() => import('./VmDeleteModal'));
   const VmActionModal = React.lazy(() => import('../Modal/VmActionModal'));
@@ -35,13 +35,13 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
         <VmDeleteModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
-          data={selectedVm}
+          data={selectedVms}
         />
       ):  action === 'migration' ? ( // 마이그레이션
         <VmMigrationModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
-          selectedVm={selectedVm}
+          selectedVms={selectedVms}
         />
       ) : action === 'onExport' ? ( // 가져오기
         <VmonExportModal
@@ -67,7 +67,7 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
         <VmExportOVAModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
-          selectedVm={selectedVm}
+          selectedVms={selectedVms}
         />
       ) :(
         <VmActionModal
@@ -75,7 +75,7 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm }) => {
           action={action}
           onRequestClose={onRequestClose}
           contentLabel={getContentLabel(action)}
-          data={selectedVm}
+          data={selectedVms.length === 1 ? selectedVms[0] : selectedVms}
         />
       )}
     </Suspense>
