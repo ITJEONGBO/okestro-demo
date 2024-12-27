@@ -300,6 +300,8 @@ const DomainModal = ({
     );
   };
 
+  
+
   const handleSearchFcp = () => {
     if (!hostVoId) {
       alert('호스트를 선택해주세요.');

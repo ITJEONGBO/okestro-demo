@@ -50,3 +50,14 @@ fun IscsiDetailVo.toDiscoverIscsiDetailVo(): IscsiDetails {
         .port(this@toDiscoverIscsiDetailVo.port)
         .build()
 }
+
+/**
+ * iscsi 로그인
+ */
+fun IscsiDetailVo.toLoginIscsi(): IscsiDetails {
+    return IscsiDetailsBuilder()
+        .target(this@toLoginIscsi.target)
+        .address(this@toLoginIscsi.address)
+        .port(this@toLoginIscsi.port)
+        .build()
+}

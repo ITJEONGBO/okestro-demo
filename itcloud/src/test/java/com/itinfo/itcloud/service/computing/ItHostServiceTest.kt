@@ -237,6 +237,28 @@ class ItHostServiceTest {
 		result.forEach { println(it) }
 	}
 
+	/**
+	 * [should_loginIscsiFromHost]
+	 * [ItHostService.loginIscsiFromHost]에 대한 단위테스트
+	 *
+	 * @see ItHostService.loginIscsiFromHost
+	 */
+	@Test
+	fun should_loginIscsiFromHost() {
+		log.debug("should_loginIscsiFromHost ...")
+		val iscsiVo = IscsiDetailVo.builder {
+			target { "iqn.2024-12.com.itinfo:rutilvm-iscsi" }
+			address { "192.168.0.99" }
+			port { 3260 }
+		}
+		val result: Boolean =
+			service.loginIscsiFromHost("9fa5d40b-4644-45f4-9919-5167ddf6e11a", iscsiVo)
+
+		assertThat(result, `is`(not(nullValue())))
+//		result.forEach { println(it) }
+		println(result)
+	}
+
 	companion object {
 		private val log by LoggerDelegate()
 	}

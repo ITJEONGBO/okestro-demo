@@ -272,6 +272,7 @@ const TableInfo = {
   ],
   
   FIBRE: [
+    // { header: '', accessor: 'check', clickable: true },
     { header: 'status', accessor: 'status', clickable: false },
     { header: 'Lun ID', accessor: 'id', clickable: false },
     { header: 'size', accessor: 'size', clickable: false },

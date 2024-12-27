@@ -518,14 +518,7 @@ fun Connection.discoverIscsiFromHost(hostId: String, iscsiDetails: IscsiDetails)
 }
 
 fun Connection.unRegisteredStorageDomainsFromHost(hostId: String): Result<List<StorageDomain>> = runCatching {
-//	log.info("{}", hostId)
-	val res = this.srvHost(hostId).unregisteredStorageDomainsDiscover().send().storageDomains()
-//	log.info("size: {}, {}", res.size, res.forEach {  })
-	res.forEach { a ->
-		log.info("st: {}", a.id())
-	}
-
-	res
+	this.srvHost(hostId).unregisteredStorageDomainsDiscover().send().storageDomains()
 }.onSuccess {
 	Term.HOST.logSuccessWithin(Term.STORAGE,"목록조회", hostId)
 }.onFailure {
@@ -533,7 +526,18 @@ fun Connection.unRegisteredStorageDomainsFromHost(hostId: String): Result<List<S
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-
+fun Connection.loginIscsiFromHost(hostId: String, iscsiDetails: IscsiDetails): Result<Boolean> = runCatching {
+	if(this.findHost(hostId).isFailure){
+		throw ErrorPattern.HOST_NOT_FOUND.toError()
+	}
+	this.srvHost(hostId).iscsiLogin().iscsi(iscsiDetails).send()
+	true
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.STORAGE,"iscsi 로그인 성공", hostId)
+}.onFailure {
+	Term.HOST.logFailWithin(Term.STORAGE,"iscsi 로그인 실패", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 
 private fun Connection.srvNetworkAttachmentsFromHost(hostId: String): NetworkAttachmentsService =

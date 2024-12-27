@@ -2,7 +2,7 @@ import React from 'react';
 import TablesOuter from './TablesOuter';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { formatBytesToGBToFixedZero, renderDomainStatusIcon } from '../util/format';
 
 const DomainTable = ({
@@ -14,17 +14,6 @@ const DomainTable = ({
 
   const handleNameClick = (id) => {
     navigate(`/storages/domains/${id}`);
-  };
-
-  const renderStatusIcon = (status) => {
-    if (status === 'ACTIVE') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    } else if (status === 'DOWN' || status === 'INACTIVE') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-    } else if (status === 'MAINTENANCE') {
-      return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem' }} />;
-    }
-    return status;
   };
 
   const renderStatus = (status) => {

@@ -15,6 +15,7 @@ import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.HostOperationServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.types.*
@@ -113,6 +114,7 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun findAllEventsFromHost(hostId: String): List<EventVo>
 
+
 	/**
 	 * [ItHostService.findAllIscsiFromHost]
 	 * 도메인 생성 - iSCSI 유형 대상 LUN 목록
@@ -132,7 +134,6 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllFibreFromHost(hostId: String): List<HostStorageVo>
-
 	/**
 	 * [ItHostService.findImportIscsiFromHost]
 	 * 도메인 가져오기 - iSCSI 유형 대상 LUN 목록
@@ -143,7 +144,6 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findImportIscsiFromHost(hostId: String, iscsiDetailVo: IscsiDetailVo): List<IscsiDetailVo>
-
 	/**
 	 * [ItHostService.findUnregisterDomainFromHost]
 	 * 도메인 가져오기 - iSCSI 유형 대상 LUN 목록
@@ -153,6 +153,17 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findUnregisterDomainFromHost(hostId: String): List<IdentifiedVo>
+	/**
+	 * [ItHostService.loginIscsiFromHost]
+	 * 도메인 가져오기 - iSCSI 로그인
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @param iscsiDetailVo [IscsiDetailVo]
+	 * @return List<[StorageDomainVo]>
+	 */
+	@Throws(Error::class)
+	fun loginIscsiFromHost(hostId: String, iscsiDetailVo: IscsiDetailVo): Boolean
+
 
 	/**
 	 * [ItHostService.findAllPermissionsFromHost]
@@ -303,6 +314,13 @@ class HostServiceImpl(
 		return res.fromStorageDomainsToIdentifiedVos()
 	}
 
+	@Throws(Error::class)
+	override fun loginIscsiFromHost(hostId: String, iscsiDetailVo: IscsiDetailVo): Boolean {
+		log.info("loginIscsiFromHost... hostId: {}", hostId)
+		val res: Result<Boolean> =
+			conn.loginIscsiFromHost(hostId, iscsiDetailVo.toLoginIscsi())
+		return res.isSuccess
+	}
 
 	@Deprecated("필요없음")
 	@Throws(Error::class)

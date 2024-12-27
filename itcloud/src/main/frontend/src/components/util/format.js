@@ -78,6 +78,12 @@ export function icon(status) {
         style: { color: 'black', fontSize: '0.3rem' },
       };
       break;
+    case 'INACTIVE':
+      iconProps = {
+        icon: faPlay,
+        style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' },
+    };
+      break;
     default:
       return status;
   }
