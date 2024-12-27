@@ -247,7 +247,7 @@ class ItHostServiceTest {
 	fun should_loginIscsiFromHost() {
 		log.debug("should_loginIscsiFromHost ...")
 		val iscsiVo = IscsiDetailVo.builder {
-			target { "iqn.2024-12.com.itinfo:rutilvm-iscsi" }
+			target { "iqn.2024-12.com.itinfo:rutilvm-" }
 			address { "192.168.0.99" }
 			port { 3260 }
 		}

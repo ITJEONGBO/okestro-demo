@@ -780,25 +780,6 @@ export const useFibreFromHost = (hostId, mapPredicate) => useQuery({
 })
 
 
-// export const useImportIscsiFromHost = (hostId, mapPredicate) => useQuery({
-//   refetchOnWindowFocus: true,
-//   queryKey: ['iscsiFromHost', hostId], 
-//   enabled: false,
-//   queryFn: async (iscsiData) => {
-//     if(hostId === null) return [];
-//     console.log(`useImportIscsiFromHost ... ${hostId}`);
-//     const res = await ApiManager.findImportIscsiFromHost(hostId, iscsiData); 
-
-//     const processedData = res?.map((e) => mapPredicate(e)) ?? [];
-//     console.log('Processed Fibre data:', processedData);
-//     return processedData; // 데이터 가공 후 반환
-//   },
-//   onSuccess: (data) => {
-//     console.log('iscsi Data:', data);
-//   },
-// })
-
-
 /**
  * @name useImportIscsiFromHost
  * @description 호스트 가져오기 iscsi 목록조회 useQuery훅
@@ -844,6 +825,31 @@ export const useImportFcpFromHost = () => {
     },
   });
 };
+
+
+/**
+ * @name useLoginIscsiFromHost
+ * @description 호스트 가져오기 iscsi 로그인 useQuery훅
+ * 
+ * @param {string} hostId
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findImportIscsiFromHost
+ */
+export const useLoginIscsiFromHost = () => {
+  // const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({hostId, iscsiData}) => await ApiManager.findLoginIscsiFromHost(hostId, iscsiData),
+    onSuccess: (data) => {
+      console.log('iSCSI 로그인 성공:', data); // 성공한 응답 데이터 출력
+    },
+    onError: (error) => {
+      console.error('iSCSI 로그인 에러:', error);
+    },
+  });
+};
+
 
 
 /**

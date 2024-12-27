@@ -2172,7 +2172,6 @@ migrateHostsFromVM: async (vmId) => {
     url: ENDPOINTS.FIND_IMPORT_ISCSIS_FROM_HOST(hostId, iscsiData),
     data: iscsiData
   }),
-
   /**
    * @name ApiManager.findImportFcpFromHost
    * @description fcp 목록
@@ -2186,6 +2185,21 @@ migrateHostsFromVM: async (vmId) => {
     method: "POST", 
     url: ENDPOINTS.FIND_IMPORT_FCPS_FROM_HOST(hostId),
     data: hostId
+  }),
+  
+  /**
+   * @name ApiManager.findLoginIscsiFromHost
+   * @description iSCSI 로그인
+   *
+   * @param {string} hostId
+   * @returns 
+   * 
+   * @see
+   */
+  findLoginIscsiFromHost: async (hostId, iscsiData) => makeAPICall({
+    method: "POST", 
+    url: ENDPOINTS.FIND_LOGIN_ISCSIS_FROM_HOST(hostId, iscsiData),
+    data: iscsiData
   }),
 
 

@@ -74,6 +74,7 @@ const ENDPOINTS = {
   FIND_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsis`,
   FIND_IMPORT_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsisToImport`,
   FIND_IMPORT_FCPS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/fcpToImport`,
+  FIND_LOGIN_ISCSIS_FROM_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}/iscsiToLogin`,
 
   ADD_HOST: () => `/api/v1/computing/hosts`,
   EDIT_HOST: (hostId) => `/api/v1/computing/hosts/${hostId}`, 

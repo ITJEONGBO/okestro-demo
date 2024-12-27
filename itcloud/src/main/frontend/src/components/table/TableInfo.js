@@ -2,7 +2,10 @@
  * @name TableInfo
  * @description 테이블 컬럼 정보
  */
+
+
 const TableInfo = {
+
   DATACENTERS: [
     { header: '', accessor: 'icon', clickable: false, width: '3%'  },
     { header: '이름', accessor: 'name', clickable: true }, 
@@ -252,6 +255,7 @@ const TableInfo = {
   ],
 
   TARGETS_LUNS: [
+    { header: 'Select', accessor: 'checkbox', clickable: true },
     { header: 'Target Name', accessor: 'target', clickable: true },
     { header: 'address', accessor: 'address', clickable: true },
     { header: 'port', accessor: 'port', clickable: true },
@@ -272,7 +276,7 @@ const TableInfo = {
   ],
   
   FIBRE: [
-    // { header: '', accessor: 'check', clickable: true },
+    { header: '', accessor: 'check', clickable: true },
     { header: 'status', accessor: 'status', clickable: false },
     { header: 'Lun ID', accessor: 'id', clickable: false },
     { header: 'size', accessor: 'size', clickable: false },

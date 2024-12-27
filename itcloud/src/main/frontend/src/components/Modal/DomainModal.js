@@ -16,7 +16,8 @@ import {
   useFibreFromHost,
   useImportIscsiFromHost,
   useImportFcpFromHost,
-  useImportDomain,  
+  useImportDomain,
+  useLoginIscsiFromHost,
 } from '../../api/RQHook';
 
 Modal.setAppElement('#root');
@@ -62,11 +63,14 @@ const DomainModal = ({
   // nfs 는 같음
   // iscsi 주소, 포트, 사용자 인증 이름, 암호 해서 검색
   
+  const [target, setTarget] = useState('');
   const [address, setAddress] = useState('');
   const [port, setPort] = useState('');
   // const [chapName, setChapName] = useState('');
   // const [chapPassword, setChapPassword] = useState('');
   // const [useChap, setUseChap] = useState(false);
+
+
 
   const editMode = (action === 'edit');
   const importMode = (action === 'imported');
@@ -74,8 +78,9 @@ const DomainModal = ({
   const { mutate: addDomain } = useAddDomain();
   const { mutate: editDomain } = useEditDomain();
   const { mutate: importDomain } = useImportDomain();
-  const { mutate: importIscsiFromHost } = useImportIscsiFromHost();
-  const { mutate: importFcpFromHost } = useImportFcpFromHost();
+  const { mutate: importIscsiFromHost } = useImportIscsiFromHost(); // 가져오기 iscsi
+  const { mutate: importFcpFromHost } = useImportFcpFromHost();   // 가져오기 fcp
+  const { mutate: loginIscsiFromHost } = useLoginIscsiFromHost();  // 가져오기 iscsi 로그인
 
 
   // 도메인 데이터 가져오기
@@ -230,6 +235,19 @@ const DomainModal = ({
     }
   }, [formState.domainType, editMode]);
   
+
+  useEffect(() => {
+    // 스토리지 유형 변경 시 초기화할 상태 설정
+    setStorageAddress('');
+    setStoragePath('');
+    setLunId('');
+    setIscsiSearchResults([]); // iSCSI 검색 결과 초기화
+    setFcpSearchResults([]);   // FCP 검색 결과 초기화
+    setTarget('');             // 선택된 target 초기화
+    setAddress('');            // iSCSI 주소 초기화
+    setPort('3260');           // iSCSI 포트 기본값 초기화
+  }, [formState.storageType]); // formState.storageType 변경 시 실행
+    
   
   const resetForm = () => {
     setFormState({
@@ -243,18 +261,21 @@ const DomainModal = ({
       spaceBlocker: '5',
     });
     // setStorageTypes(['nfs', 'iscsi', 'fcp']); // 기본 도메인 유형에 따른 스토리지 유형
+    setIscsiSearchResults([]); // iSCSI 검색 결과 초기화
+    setFcpSearchResults([]);   // FCP 검색 결과 초기화
     setStorageAddress('');
     setStoragePath('');
     setLunId('');
     setAddress('');
     setPort(3260);
-    // setChapName('');
-    // setChapPassword('');
   };
 
   const handleRowClick = (row) => {
     console.log('선택한 행 데이터:', row);
     setLunId(row.id); // 선택된 LUN ID를 설정
+    setTarget(row.target); // 선택된 target 값을 설정
+    setAddress(row.address); // 선택된 address 값을 설정
+    setPort(row.port); // 선택된 port 값을 설정
   };
 
   const validateForm = () => {
@@ -274,6 +295,8 @@ const DomainModal = ({
 
   const [iscsiSearchResults, setIscsiSearchResults] = useState([]);
   const [fcpSearchResults, setFcpSearchResults] = useState([]);
+
+  
 
   const handleSearchIscsi = () => {
     if (!hostVoId) {
@@ -300,8 +323,6 @@ const DomainModal = ({
     );
   };
 
-  
-
   const handleSearchFcp = () => {
     if (!hostVoId) {
       alert('호스트를 선택해주세요.');
@@ -321,6 +342,28 @@ const DomainModal = ({
     );
   };
 
+  const handleLoginIscsi = () => {
+    if (!target) { // 체크박스를 선택해주세요
+      alert('항목을 선택해주세요.');
+      return;
+    }
+  
+    const iscsiData = { target, address, port };
+    loginIscsiFromHost(
+      { hostId: hostVoId, iscsiData },
+      {
+        onSuccess: (data) => {
+          console.log('iSCSI 로그인 성공:', data);
+          setIscsiSearchResults(data); // 검색 결과 상태 업데이트
+        },
+        onError: (error) => {
+          console.error('iSCSI 로그인 실패:', error);
+        },
+      }
+    );
+  };
+
+  
 
   const handleFormSubmit = () => {
     const error = validateForm();
@@ -586,7 +629,8 @@ const DomainModal = ({
                 ): importMode ? (
                   <>
                     <label className='label_font_name'>대상 검색</label>
-
+                    {iscsiSearchResults?.length == 0 && (
+                      <>
                     <FormGroup>
                       <label className='label_font_name'>주소</label>
                       <input
@@ -604,14 +648,20 @@ const DomainModal = ({
                       />
                     </FormGroup>
                     <button className='search_button' onClick={handleSearchIscsi}>검색</button>
-
+                    </>
+                    )}
                     {iscsiSearchResults?.length > 0 && (
-                      <Table
-                        columns={TableInfo.TARGETS_LUNS}
-                        data={iscsiSearchResults}
-                        onRowClick={handleRowClick}
-                        shouldHighlight1stCol={true}
-                      />
+                      <>
+                        <button className='search_button' onClick={handleLoginIscsi}>로그인</button>
+
+                        <Table
+                          columns={TableInfo.TARGETS_LUNS}
+                          data={iscsiSearchResults}
+                          onRowClick={handleRowClick}
+                          shouldHighlight1stCol={true}
+                        />
+                        <p style={{fontSize: '12px'}}>target: {target}, {address}, {port}</p>
+                      </>
                     )}
                     {/* <div className="disk_delete_box">
                       <input
