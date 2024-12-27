@@ -95,35 +95,6 @@ interface ItHostService {
 	// 생성, 편집, 삭제, 실행, 일시중지, 종료, 호스트 네트워크 복사, 재부팅, 콘솔, 템플릿 목록, 스냅샷 생성, 마이그레이션
 
 	/**
-	 * [ItHostService.findAllHostNicsFromHost]
-	 * 호스트 네트워크 인터페이스 목록
-	 *
-	 * @param hostId [String] 호스트 Id
-	 * @return List<[HostNicVo]> 네트워크 인터페이스 목록
-	 */
-	@Throws(Error::class)
-	fun findAllHostNicsFromHost(hostId: String): List<HostNicVo>
-
-	/**
-	 * [ItHostService.setHostNicsFromHost]
-	 * 호스트 네트워크 설정창 nic출력용
-	 *
-	 * @param hostId [String] 호스트 Id
-	 * @return List<[HostNicVo]> 네트워크 인터페이스 목록
-	 */
-	@Throws(Error::class)
-	fun setHostNicsFromHost(hostId: String): List<HostNicVo>
-	/**
-	 * [ItHostService.setUpNetworksFromHost]
-	 * 호스트 네트워크 설정
-	 *
-	 * @param hostId [String] 호스트 Id
-	 * @param network [NetworkVo] 네트워크 (미정)
-	 * @return [Boolean] 아직미정
-	 */
-	@Throws(Error::class)
-	fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean
-	/**
 	 * [ItHostService.findAllHostDevicesFromHost]
 	 * 호스트 호스트장치 목록
 	 *
@@ -272,33 +243,7 @@ class HostServiceImpl(
 		return res.toVmsMenu(conn)
 	}
 
-	@Throws(Error::class)
-	override fun findAllHostNicsFromHost(hostId: String): List<HostNicVo> {
-		log.info("findAllHostNicsFromHost ... hostId: {}", hostId)
-		val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
-			.getOrDefault(listOf())
-		return res.toHostNicVos(conn)
-	}
 
-	@Throws(Error::class)
-	override fun setHostNicsFromHost(hostId: String): List<HostNicVo> {
-		log.info("setHostNicsFromHost ... hostId: {}", hostId)
-		val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
-			.getOrDefault(listOf())
-		return res.toSetHostNicVos(conn)
-	}
-
-	@Throws(Error::class)
-	override fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean {
-		// 할당되지 않은 논리 네트워크 목록
-		// 인터페이스 <-> 할당된 논리 네트워크
-		log.info("setUpNetworksFromHost ... hostId: {}", hostId)
-
-//		val modifiedBonds: List<HostNic> =
-
-
-		TODO("Not yet implemented")
-	}
 
 	@Throws(Error::class)
 	override fun findAllHostDevicesFromHost(hostId: String): List<HostDeviceVo> {

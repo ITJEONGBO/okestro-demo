@@ -12,6 +12,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.HostStorageVo
 import com.itinfo.itcloud.model.storage.IscsiDetailVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
+import com.itinfo.itcloud.service.computing.ItHostNicService
 import com.itinfo.itcloud.service.computing.ItHostOperationService
 import com.itinfo.itcloud.service.computing.ItHostService
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -167,77 +168,6 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="호스트 네트워크 인터페이스 목록",
-		notes="선택된 호스트의 네트워크 인터페이스 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{hostId}/nics")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun nics(
-		@PathVariable hostId: String? = null
-	): ResponseEntity<List<HostNicVo>> {
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/nics ... 호스트 nic 목록", hostId)
-		return ResponseEntity.ok(iHost.findAllHostNicsFromHost(hostId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
-		value="호스트 네트워크 설정창 ",
-		notes="선택된 호스트의 네트워크 설정창 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{hostId}/network")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun networkSet(
-		@PathVariable hostId: String? = null
-	): ResponseEntity<List<HostNicVo>> {
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/network ... 호스트 네트워크 설정창 목록", hostId)
-		return ResponseEntity.ok(iHost.setHostNicsFromHost(hostId))
-	}
-
-	@ApiOperation(
-		httpMethod="POST",
-		value="호스트 네트워크 설정",
-		notes="선택된 호스트의 네트워크를 설정한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="network", value="네트워크", dataTypeClass=NetworkVo::class, required=true, paramType="body"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@PostMapping("/{hostId}/nics/setup")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun setupNetwork(
-		@PathVariable hostId: String? = null,
-		@RequestBody network: NetworkVo
-	): ResponseEntity<Boolean> {
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/nics/setup ... 호스트 네트워크 생성", hostId)
-		return ResponseEntity.ok(iHost.setUpNetworksFromHost(hostId, network))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
 		value="호스트 장치 목록",
 		notes="선택된 호스트의 장치 목록을 조회한다"
 	)
@@ -377,7 +307,6 @@ class HostController {
 	}
 
 
-
 	// ------------------------------------------
 	@Deprecated("필요없음")
 	@ApiOperation(
@@ -402,6 +331,60 @@ class HostController {
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		return ResponseEntity.ok(iHost.findAllPermissionsFromHost(hostId))
 	}
+
+
+
+	@Autowired private lateinit var iHostNic: ItHostNicService
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="호스트 네트워크 인터페이스 목록",
+		notes="선택된 호스트의 네트워크 인터페이스 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{hostId}/nics")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun nics(
+		@PathVariable hostId: String? = null
+	): ResponseEntity<List<HostNicVo>> {
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/nics ... 호스트 nic 목록", hostId)
+		return ResponseEntity.ok(iHostNic.findAllFromHost(hostId))
+	}
+
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="호스트 네트워크 설정",
+		notes="선택된 호스트의 네트워크를 설정한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="network", value="네트워크", dataTypeClass=NetworkVo::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@PostMapping("/{hostId}/nics/setup")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun setupNetwork(
+		@PathVariable hostId: String? = null,
+		@RequestBody network: NetworkVo
+	): ResponseEntity<Boolean> {
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/nics/setup ... 호스트 네트워크 생성", hostId)
+		return ResponseEntity.ok(iHostNic.setUpNetworksFromHost(hostId, network))
+	}
+
 
 
 	@Autowired private lateinit var iHostOp: ItHostOperationService

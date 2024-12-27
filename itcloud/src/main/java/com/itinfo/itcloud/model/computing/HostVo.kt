@@ -5,8 +5,7 @@ import com.itinfo.itcloud.ovirtDf
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.toHostNicVos
-import com.itinfo.itcloud.model.network.toNetworkHostNicVos
-import com.itinfo.itcloud.model.storage.toStorageDomainMenu
+import com.itinfo.itcloud.model.network.toSlaveHostNicVos
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.util.ovirt.*
@@ -274,15 +273,9 @@ fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfiguration
  * 네트워크에서 호스트 볼때
  */
 fun Host.toNetworkHostVo(conn: Connection): HostVo {
-    val cluster: Cluster? =
-        conn.findCluster(this@toNetworkHostVo.cluster().id())
-            .getOrNull()
-    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
-        conn.findDataCenter(it).getOrNull()
-    }
-    val hostNics: List<HostNic> =
-        conn.findAllNicsFromHost(this@toNetworkHostVo.id())
-            .getOrDefault(listOf())
+    val cluster: Cluster? = conn.findCluster(this@toNetworkHostVo.cluster().id()).getOrNull()
+    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
+    val hostNics: List<HostNic> = conn.findAllNicsFromHost(this@toNetworkHostVo.id()).getOrDefault(listOf())
 
     return HostVo.builder {
         id { this@toNetworkHostVo.id() }
@@ -290,7 +283,7 @@ fun Host.toNetworkHostVo(conn: Connection): HostVo {
         status { this@toNetworkHostVo.status() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
-        hostNicVos { hostNics.toNetworkHostNicVos(conn) }
+        hostNicVos { hostNics.toSlaveHostNicVos(conn) }
     }
 }
 fun List<Host>.toNetworkHostVos(conn: Connection): List<HostVo> =

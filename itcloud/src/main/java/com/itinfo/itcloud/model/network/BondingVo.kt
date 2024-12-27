@@ -17,14 +17,14 @@ private val log = LoggerFactory.getLogger(BondingVo::class.java)
 class BondingVo (
     val activeSlave: IdentifiedVo = IdentifiedVo(),  // hostNicvo
     val optionVos: List<OptionVo> = listOf(),
-    val slaves: List<IdentifiedVo> = listOf(),  // hostNic
+    val slaves: List<HostNicVo> = listOf(),  // hostNic
 ): Serializable {
     override fun toString(): String = gson.toJson(this)
 
     class Builder{
         private var bActiveSlave: IdentifiedVo = IdentifiedVo(); fun activeSlave(block: () -> IdentifiedVo?) { bActiveSlave = block() ?: IdentifiedVo() }
         private var bOptionVos: List<OptionVo> = listOf(); fun optionVos(block: () -> List<OptionVo>?) { bOptionVos = block() ?: listOf() }
-        private var bSlaves: List<IdentifiedVo> = listOf(); fun slaves(block: () -> List<IdentifiedVo>?) { bSlaves = block() ?: listOf() }
+        private var bSlaves: List<HostNicVo> = listOf(); fun slaves(block: () -> List<HostNicVo>?) { bSlaves = block() ?: listOf() }
 
         fun build(): BondingVo = BondingVo(bActiveSlave, bOptionVos, bSlaves)
     }
@@ -35,13 +35,12 @@ class BondingVo (
 }
 
 fun Bonding.toBondingVo(conn: Connection, hostId: String): BondingVo {
-    // Extract slave HostNics using the provided connection
     val slaves = if (this@toBondingVo.slavesPresent()) {
         this@toBondingVo.slaves().mapNotNull { hostNic ->
             // Extract the id from each slave
             val slaveId = hostNic.id()
-            val nic = conn.findNicFromHost(hostId, slaveId).getOrNull()
-            nic?.fromHostNicToIdentifiedVo()
+            val nic: HostNic? = conn.findNicFromHost(hostId, slaveId).getOrNull()
+            nic?.toSlaveHostNicVo(conn)
         }
     } else listOf()
 

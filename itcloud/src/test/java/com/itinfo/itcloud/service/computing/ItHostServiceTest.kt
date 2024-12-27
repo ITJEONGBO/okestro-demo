@@ -168,64 +168,6 @@ class ItHostServiceTest {
 	}
 
 	/**
-	 * [should_findAllHostNicsFromHost]
-	 * [ItHostService.findAllHostNicsFromHost]에 대한 단위테스트
-	 *
-	 * @see ItHostService.findAllHostNicsFromHost
-	 */
-	@Test
-	fun should_findAllHostNicsFromHost() {
-		log.debug("should_findAllHostNicFromHost ...")
-
-		val result: List<HostNicVo> =
-			service.findAllHostNicsFromHost("c35ee370-b9f6-4c5b-9c65-fe2e716795b5")
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-//		assertThat(result.size, `is`(1))
-	}
-
-	/**
-	 * [should_setHostNicsFromHost]
-	 * [ItHostService.setHostNicsFromHost]에 대한 단위테스트
-	 *
-	 * @see ItHostService.setHostNicsFromHost
-	 */
-	@Test
-	fun should_setHostNicsFromHost() {
-		log.debug("should_setHostNicsFromHost ...")
-
-		val result: List<HostNicVo> =
-			service.setHostNicsFromHost("c35ee370-b9f6-4c5b-9c65-fe2e716795b5")
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-//		assertThat(result.size, `is`(1))
-	}
-
-
-	/**
-	 * [should_setUpNetworksFromHost]
-	 * [ItHostService.setUpNetworksFromHost]에 대한 단위테스트
-	 *
-	 * @see ItHostService.setUpNetworksFromHost
-	 */
-	@Test
-	fun should_setUpNetworksFromHost() {
-		log.debug("should_setUpNetworksFromHost ...")
-		val hostId = ""
-		val networkVo: NetworkVo =
-			NetworkVo.builder {
-
-			}
-
-		val result: Boolean =
-			service.setUpNetworksFromHost(hostId, networkVo)
-
-		assertThat(result, `is`(not(nullValue())))
-	}
-
-	/**
 	 * [should_findAllHostDevicesFromHost]
 	 * [ItHostService.findAllHostDevicesFromHost]에 대한 단위테스트
 	 *
