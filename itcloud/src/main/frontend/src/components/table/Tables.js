@@ -66,31 +66,28 @@ const Tables = ({
       setSortedData(data);
     }
   }, [data]);
-  const sortData = (data, key, direction) => {
+  const sortData = (key, direction) => {
     const sorted = [...data].sort((a, b) => {
-      const aValue = a[key];
-      const bValue = b[key];
+      const aValue = a[key] ?? '';
+      const bValue = b[key] ?? '';
   
-      if (aValue === null || aValue === undefined || aValue === '') return 1;
-      if (bValue === null || bValue === undefined || bValue === '') return -1;
+      // 문자열 비교: 대소문자 무시 및 로케일별 정렬 (A-Z, ㄱ-ㅎ)
+      const result = String(aValue).localeCompare(String(bValue), 'ko', { sensitivity: 'base' });
   
-      // 문자열 비교 시 대소문자 무시
-      const aLower = typeof aValue === 'string' ? aValue.toLowerCase() : aValue;
-      const bLower = typeof bValue === 'string' ? bValue.toLowerCase() : bValue;
-  
-      if (aLower < bLower) return direction === 'asc' ? -1 : 1;
-      if (aLower > bLower) return direction === 'asc' ? 1 : -1;
-      return 0;
+      return direction === 'asc' ? result : -result;
     });
     setSortedData(sorted);
   };
+  
+  
   const handleSort = (column) => {
     if (column.isIcon) return;
     const { accessor } = column;
     const direction = sortConfig.key === accessor && sortConfig.direction === 'asc' ? 'desc' : 'asc';
     setSortConfig({ key: accessor, direction });
-    sortData(sortedData, accessor, direction);
+    sortData(accessor, direction);
   };
+  
 
   // 툴팁 설정
   const handleMouseEnter = (e, rowIndex, colIndex, content) => {
@@ -108,27 +105,31 @@ const Tables = ({
     }
   };
   const handleRowClick = (rowIndex, e) => {
-    const clickedRow = data[rowIndex];
+    const clickedRow = sortedData[rowIndex]; // sortedData 사용으로 정렬 상태 유지
     if (clickedRow) {
       if (e.ctrlKey) {
         setSelectedRows((prev) => {
           const updated = prev.includes(rowIndex)
             ? prev.filter((index) => index !== rowIndex)
             : [...prev, rowIndex];
-          const selectedData = updated.map((index) => data[index]);
-          console.log('Selected Rows:', selectedData); // 다중 선택된 데이터 출력
+          const selectedData = updated.map((index) => sortedData[index]); // sortedData 기준으로 선택
           onRowClick(selectedData); // 선택된 데이터 배열 전달
           return updated;
         });
       } else {
         const selectedData = [clickedRow];
         setSelectedRows([rowIndex]);
-        console.log('Selected Row:', selectedData); // 단일 선택된 데이터 출력
-        onRowClick(selectedData); // 단일 선택 데이터 배열로 전달
+        onRowClick(selectedData); // 단일 선택된 데이터 전달
       }
     }
   };
-  
+  useEffect(() => {
+    if (sortConfig.key) {
+      sortData(sortConfig.key, sortConfig.direction); // 현재 정렬 상태 유지
+    } else {
+      setSortedData(data); // 정렬 상태가 없는 경우 원본 데이터를 사용
+    }
+  }, [data, sortConfig]);
   
   
   
@@ -173,29 +174,29 @@ const Tables = ({
             </tr>
           </thead>
           <tbody>
-            {data.length === 0 ? (
+            {sortedData.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} style={{ textAlign: 'center' }}>
                   내용이 없습니다
                 </td>
               </tr>
             ) : (
-              data.map((row, rowIndex) => (
+              sortedData.map((row, rowIndex) => (
                 <tr
-  key={rowIndex}
-  onClick={(e) => {
-    setSelectedRowIndex(rowIndex);
+                  key={rowIndex}
+                  onClick={(e) => {
+                    setSelectedRowIndex(rowIndex);
                     setContextRowIndex(null); // 다른 우클릭된 행을 초기화
                     onRowClick(row); // 클릭한 행의 전체 데이터를 onRowClick에 전달
-    handleRowClick(rowIndex, e); // 다중 선택 핸들러
-  }}
-  onContextMenu={(e) => handleContextMenu(e, rowIndex)} // 우클릭 시 메뉴 표시
-  style={{
-    backgroundColor: selectedRows.includes(rowIndex) || contextRowIndex === rowIndex
-      ? 'rgb(218, 236, 245)' // 선택된 행 및 우클릭된 행 색상
-      : 'transparent', // 초기화 색상
-  }}
->
+                    handleRowClick(rowIndex, e); // 다중 선택 핸들러
+                  }}
+                  onContextMenu={(e) => handleContextMenu(e, rowIndex)} // 우클릭 시 메뉴 표시
+                  style={{
+                    backgroundColor: selectedRows.includes(rowIndex) || contextRowIndex === rowIndex
+                      ? 'rgb(218, 236, 245)' // 선택된 행 및 우클릭된 행 색상
+                      : 'transparent', // 초기화 색상
+                  }}
+                >
                   {columns.map((column, colIndex) => (
                     <td
                       key={colIndex}
@@ -246,6 +247,7 @@ const Tables = ({
               ))
             )}
           </tbody>
+
 
           {/*옛날tbody <tbody>
             {data.length === 0 ? ( // 데이터가 없을 때 메시지 표시

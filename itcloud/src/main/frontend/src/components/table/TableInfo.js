@@ -4,14 +4,14 @@
  */
 const TableInfo = {
   DATACENTERS: [
-    { header: '', accessor: 'icon', clickable: false },
+    { header: '', accessor: 'icon', clickable: false, width: '3%'  },
     { header: '이름', accessor: 'name', clickable: true }, 
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '스토리지 유형', accessor: 'storageType', clickable: false },    
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '호스트 수', accessor: 'hostCnt', clickable: false }, 
-    { header: '클러스터 수', accessor: 'clusterCnt', clickable: false }, 
-    { header: '호환 버전', accessor: 'version', clickable: false },
+    { header: '호스트 수', accessor: 'hostCnt', clickable: false, width: '7%'  }, 
+    { header: '클러스터 수', accessor: 'clusterCnt', clickable: false, width: '7%'  }, 
+    { header: '호환 버전', accessor: 'version', clickable: false, width: '7%'   },
     { header: '설명', accessor: 'description', clickable: false },
   ],
   CLUSTERS_FROM_DATACENTER: [
@@ -56,14 +56,14 @@ const TableInfo = {
   ],
 
   HOSTS: [
-    { header: '', accessor: 'icon', clickable: false },
-    { header: '', accessor: 'hostedEngine', clickable: false },
-    { header: '이름', accessor: 'name', clickable: true },
-    { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '호스트 이름/IP', accessor: 'address', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: true },
-    { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
-    { header: '가상 머신 개수', accessor: 'vmCnt', clickable: false },
+    { header: '', accessor: 'icon', clickable: false, width: '3%' },
+    { header: '', accessor: 'hostedEngine', clickable: false, width: '4%' },
+    { header: '이름', accessor: 'name', clickable: true, width: '12%' },
+    { header: '코멘트', accessor: 'comment', clickable: false, width: '12%' },
+    { header: '호스트 이름/IP', accessor: 'address', clickable: false, width: '12%' },
+    { header: '클러스터', accessor: 'cluster', clickable: true, width: '12%' },
+    { header: '데이터 센터', accessor: 'dataCenter', clickable: false, width: '10%' },
+    { header: '가상 머신 개수', accessor: 'vmCnt', clickable: false, width: '10%' },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '메모리', accessor: 'memoryUsage', clickable: false },
     { header: 'CPU', accessor: 'cpuUsage', clickable: false },
@@ -109,7 +109,7 @@ const TableInfo = {
   ],
 
   VMS: [
-    { header: '', accessor: 'icon', clickable: false, width: '10%' },
+    { header: '', accessor: 'icon', clickable: false, width: '8%' },
     { header: '이름', accessor: 'name', clickable: true, width: '20%' },
     { header: '코멘트', accessor: 'comment', clickable: false, width: '20%' },
     { header: 'IP주소', accessor: 'ipv4', clickable: false, width: '20%' },
@@ -121,7 +121,7 @@ const TableInfo = {
     { header: 'Memory', accessor: 'memoryUsage', clickable: false, width: '12%' },
     { header: 'CPU', accessor: 'cpuUsage', clickable: false, width: '12%' },
     { header: 'Network', accessor: 'networkUsage', clickable: false, width: '12%' },
-    { header: '업타임', accessor: 'upTime', clickable: false, width: '20%' },
+    { header: '업타임', accessor: 'upTime', clickable: false, width: '12%' },
     { header: '설명', accessor: 'description', clickable: false, width: '25%' }
   ],
   // 디스크 DISKS
@@ -399,7 +399,7 @@ const TableInfo = {
 
 
 NETWORKS_FROM_HOST: [
-  { header: '', accessor: 'icon', width: '5%' }, // 아이콘
+  // { header: '', accessor: 'icon', width: '5%' }, // 아이콘
   { header: '관리되지 않음', accessor: 'bridged' }, // 브리지 상태
   { header: 'VLAN', accessor: 'vlan' }, // VLAN 정보
   { header: '네트워크 이름', accessor: 'networkName', clickable: true }, // 네트워크 이름

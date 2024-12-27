@@ -15,6 +15,7 @@ const HostActionButtons = ({
   onHaOn,
   onHaOff,
   isEditDisabled,
+  isDeleteDisabled,
   status
 }) => {
   const [activeDropdown, setActiveDropdown] = useState(null); // 현재 활성화된 드롭다운
@@ -76,7 +77,7 @@ const HostActionButtons = ({
         <button onClick={onEdit} disabled={isEditDisabled || !isUp}>편집</button>
       }
       {onDelete && 
-        <button onClick={onDelete} disabled={isEditDisabled || isUp || !isMaintenance }>삭제</button>
+        <button onClick={onDelete} disabled={isDeleteDisabled && !isMaintenance }>삭제</button>
       } 
       {/* 관리 버튼 */}
       <div ref={dropdownRef} className="dropdown-container">

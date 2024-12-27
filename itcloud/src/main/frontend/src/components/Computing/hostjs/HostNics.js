@@ -126,7 +126,7 @@ const HostNics = ({ hostId }) => {
     </div>
     {visibleBoxes.includes(index) && ( // 박스가 열려 있을 때만 보임
       <div className="host_network_hiddenbox">
-        <div className="section_table_outer">
+        <div className="section_table_outer" style={{ marginLeft: '1.43rem' }}>
           <TableOuter
             columns={TableInfo.NETWORKS_FROM_HOST}
             data={[data]} // 개별 NIC 데이터만 전달

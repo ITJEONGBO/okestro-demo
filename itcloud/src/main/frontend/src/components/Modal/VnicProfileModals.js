@@ -5,6 +5,7 @@ const VnicProfileModals = ({
   action, 
   onRequestClose, 
   selectedVnicProfile,
+  selectedVnicProfiles,
   networkId
 }) => {
   const VnicProfileModal = React.lazy(() => import('./VnicProfileModal.js'));
@@ -29,7 +30,7 @@ const VnicProfileModals = ({
             type="vnicProfile"
             onRequestClose={onRequestClose}
             contentLabel="vNIC 프로파일"
-            data={selectedVnicProfile}
+            data={selectedVnicProfiles}
             networkId={networkId}
           />
         )}

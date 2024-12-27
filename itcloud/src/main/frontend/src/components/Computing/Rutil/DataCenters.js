@@ -7,6 +7,7 @@ import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllDataCenters } from '../../../api/RQHook';
 import DataCenterActionButtons from '../../button/DataCenterActionButtons';
+import TableOuter from '../../table/TableOuter';
 
 const DataCenterModal = React.lazy(() => import('../../Modal/DataCenterModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -54,13 +55,19 @@ const DataCenters = () => {
       />
       <span>id = {selectedDataCenter?.id || ''}</span>
 
-      <TablesOuter
+      <TableOuter
         columns={TableInfo.DATACENTERS}
         data={datacenters || []}
-        shouldHighlight1stCol={true}
-        onRowClick={(row) => setSelectedDataCenter(row)}
+        // shouldHighlight1stCol={true}
+        onRowClick={(row, column, colIndex) => {
+          console.log('Row Clicked:', row); // 디버깅 추가
+          setSelectedDataCenter(row);
+          if (colIndex === 1) {
+            navigate(`/computing/datacenters/${row.id}/clusters`); 
+          }
+        }}
         clickableColumnIndex={[1]} // "이름" 열의 인덱스 설정
-        onClickableColumnClick={(row) => handleNameClick(row.id)}
+        // onClickableColumnClick={(row) => handleNameClick(row.id)}
       />
 
       {/* 모달 컴포넌트를 사용할 때만 로딩 */}

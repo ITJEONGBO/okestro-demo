@@ -77,7 +77,9 @@ const DeleteModal = ({
       handleDelete(deleteCluster);
     } else if (type === 'Host') {
       console.log('Deleting Host');
-      handleDelete(deleteHost);
+      id.forEach((hostId, index) => {
+        handleDelete(() => deleteHost(hostId), name[index]);
+      });
     } else if (type === 'Template') {
       console.log('Deleting Template');
       id.forEach((templateId, index) => {
@@ -90,13 +92,14 @@ const DeleteModal = ({
         handleDelete(() => deleteNetwork(networkId), name[index]); // 각 네트워크를 개별적으로 삭제
       });
       onRequestClose();
-    } else if (type === 'vnicProfile') {
+    }else if (type === 'vnicProfile') {
       console.log('Deleting vnicProfile');
-      if (!networkId) {
-        console.error('Network ID가 없습니다. 삭제 요청을 취소합니다.');
-        return;
-      }
-      handleDelete(() => deleteVnicProfile({ networkId, vnicProfileId: id }));
+      id.forEach((vnicId, index) => {
+        handleDelete(
+          () => deleteVnicProfile({ networkId, vnicProfileId: vnicId }),
+          name[index]
+        );
+      });
       onRequestClose();
     } else if (type === 'NetworkInterface') {
       handleDelete(() => deleteNetworkInterface({ vmId, nicId: id }));

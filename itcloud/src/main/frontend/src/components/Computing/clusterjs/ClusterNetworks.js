@@ -61,6 +61,7 @@ const ClusterNetworks = ({ clusterId }) => {
           data={networks} 
           clickableColumnIndex={[0]} 
           onRowClick={(row, column, colIndex) => {
+            console.log('Row Clicked:', row); // 디버깅 추가
             setSelectedNetwork(row);
             if (colIndex === 0) {
               navigate(`/networks/${row.id}`); 

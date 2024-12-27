@@ -5,6 +5,7 @@ const HostModals = ({
   action, 
   onRequestClose, 
   selectedHost,
+  selectedHosts,
   clusterId
 }) => {
   const HostModal = React.lazy(() => import('../Modal/HostModal'));
@@ -29,7 +30,7 @@ const HostModals = ({
           type="Host"
           onRequestClose={onRequestClose}
           contentLabel="호스트"
-          data={selectedHost}
+          data={selectedHosts}
         />
       ) : (
         <HostActionModal
@@ -37,7 +38,7 @@ const HostModals = ({
           action={action}
           onRequestClose={onRequestClose}
           contentLabel={getContentLabel(action)}
-          data={selectedHost}
+          data={selectedHosts}
         />
       )}
     </Suspense>
