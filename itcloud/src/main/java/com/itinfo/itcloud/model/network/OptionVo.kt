@@ -42,6 +42,6 @@ fun OptionVo.toOptionBuilder(): Option {
     return OptionBuilder()
         .name(this@toOptionBuilder.name)
         .value(this@toOptionBuilder.value)
-        .type(this@toOptionBuilder.type)
+//        .type(this@toOptionBuilder.type)
         .build()
 }

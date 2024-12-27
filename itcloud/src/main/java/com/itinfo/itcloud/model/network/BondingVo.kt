@@ -6,6 +6,7 @@ import com.itinfo.itcloud.model.fromHostNicToIdentifiedVo
 import com.itinfo.itcloud.model.fromHostNicsToIdentifiedVos
 import com.itinfo.util.ovirt.findNicFromHost
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.builders.BondingBuilder
 import org.ovirt.engine.sdk4.types.Bonding
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.HostNic
@@ -57,4 +58,15 @@ fun Bonding.toBondingVo(conn: Connection, hostId: String): BondingVo {
         }
         slaves { slaves }
     }
+}
+
+/**
+ * 호스트 네트워크 인터페이스
+ */
+fun BondingVo.toBondingBuilder(): Bonding {
+
+    return BondingBuilder()
+//        .options()
+//        .slaves()
+        .build()
 }

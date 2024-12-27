@@ -180,10 +180,13 @@ fun HostNic.toSetHostNicVo(conn: Connection): HostNicVo {
 fun List<HostNic>.toSetHostNicVos(conn: Connection): List<HostNicVo> =
 	this@toSetHostNicVos.map { it.toSetHostNicVo(conn) }
 
-
+/**
+ * 호스트 네트워크 modified_bonds
+ * host_nic 빌더
+ */
 fun HostNicVo.toHostNicBuilder(): HostNicBuilder {
 	return HostNicBuilder()
-		.id(this@toHostNicBuilder.id)
+//		.id(this@toHostNicBuilder.id)
 		.name(this@toHostNicBuilder.name)
 		.bonding(
 			BondingBuilder()

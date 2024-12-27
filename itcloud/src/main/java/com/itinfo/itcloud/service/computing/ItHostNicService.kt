@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.network.toHostNicVo
 import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
@@ -23,14 +24,14 @@ interface ItHostNicService {
     fun findAllFromHost(hostId: String): List<HostNicVo>
     /**
      * [ItHostNicService.findOneFromHost]
-     * 호스트 네트워크 인터페이스 목록
+     * 호스트 네트워크 인터페이스
      *
      * @param hostId [String] 호스트 Id
      * @param hostNicId [String] 호스트 nic Id
-     * @return List<[HostNicVo]> 네트워크 인터페이스 목록
+     * @return [HostNicVo]? 네트워크 인터페이스 목록
      */
     @Throws(Error::class)
-    fun findOneFromHost(hostId: String, hostNicId: String): List<HostNicVo>
+    fun findOneFromHost(hostId: String, hostNicId: String): HostNicVo?
     /**
      * [ItHostNicService.setUpNetworksFromHost]
      * 호스트 네트워크 설정
@@ -41,8 +42,6 @@ interface ItHostNicService {
      */
     @Throws(Error::class)
     fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean
-
-
 }
 
 @Service
@@ -59,8 +58,11 @@ class ItHostNicServiceImpl(
     }
 
     @Throws(Error::class)
-    override fun findOneFromHost(hostId: String, hostNicId: String): List<HostNicVo> {
-        TODO("Not yet implemented")
+    override fun findOneFromHost(hostId: String, hostNicId: String): HostNicVo? {
+        log.info("findOneFromHost ... hostId: {}, hostNicId: {}", hostId, hostNicId)
+        val res: HostNic? = conn.findNicFromHost(hostId, hostNicId)
+            .getOrNull()
+        return res?.toHostNicVo(conn)
     }
 
     @Throws(Error::class)

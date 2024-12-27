@@ -462,7 +462,7 @@ fun Connection.findNicFromHost(hostId: String, hostNicId: String): Result<HostNi
 }
 
 fun Connection.setUpNetworks(hostId: String): Result<Boolean> = runCatching {
-	this.srvHost(hostId).setupNetworks().send()
+	this.srvHost(hostId).setupNetworks()/*.modifiedBonds().modifiedNetworkAttachments()*/.commitOnSuccess(true).send()
 
 	true
 	TODO("호스트 -> 네트워크 인터페이스")
