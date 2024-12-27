@@ -95,7 +95,28 @@
     border-top: 1px solid gray;
 }
 
+.edit_first_content select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    border: 1px solid #a7a6a6;
+}
+.edit_first_content>div{
+    display: flex;
+    justify-content: space-between;
+    padding: 0.2rem 0.29rem;
+}
+.edit_first_content>div:first-child{
 
+    padding-top: 0.3rem;
+}
+.edit_first_content{
+    border-bottom: 1px solid #cecece;
+    font-size: 0.32rem;
+}
 .edit_second_content>div,#host_third_content>div{
     display: flex;
     justify-content: space-between;
@@ -159,19 +180,7 @@
     cursor: pointer;
 }
 /*선호도*/
-#preference_content{
-    padding: 5%;
-}
-#preference_content>div{
-    padding-bottom: 4%;
-}
-#preference_content>div,.preference_select>div{
-    display: flex;
-    justify-content: space-between;
-}
-#preference_content>div>div{
-    width: 47%;
-}
+
 .preference_select select{
     width: 85%;
     height: 3.3vh;
@@ -232,6 +241,54 @@
 .new_template_popup .edit_first_content{
     border-bottom:none;
 }
+
+
+/*디스크 연결 팝업*/
+.storage_disk_new_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 74%;
+    width: 50%;
+    left: 50%;
+    z-index:99999;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+/*..버튼 가져오기 팝업*/
+.vm_bring_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    font-size: 0.34rem;
+    height: 85%;
+    width: 69%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+.load_btn{
+    width:4%;
+    padding:0.1rem;
+    border:1px solid gray;
+    display: flex;
+    align-items: center;
+    cursor:pointer;
+}
+.vm_bring_table{
+    display:flex;
+    justify-content:space-between;
+    padding: 0.3rem;
+ }
+ .vm_bring_table>div{
+     width:44%;
+ }
 /*삭제예정*/
 
 /* .res_second_content{

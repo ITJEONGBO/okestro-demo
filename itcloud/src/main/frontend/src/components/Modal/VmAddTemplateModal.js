@@ -194,7 +194,6 @@ const handleFormSubmit = () => {
   };
 
   console.log('템플릿 생성데이터:', dataToSubmit);
-
   addTemplate(
     {vmId, templateData: dataToSubmit},
     {
@@ -330,110 +329,110 @@ const handleFormSubmit = () => {
           </div>
         )}
 
-{disks && disks.length > 0 && (
-    <>
-      <div className="font-bold">디스크 할당:</div>
-      <div className="section_table_outer py-1">
-        <table>
-          <thead>
-            <tr>
-              <th>별칭</th>
-              <th>가상 크기</th>
-              <th>포맷</th>
-              <th>대상</th>
-              <th>디스크 프로파일</th>
-            </tr>
-          </thead>
-          <tbody>
-            {disks.map((disk,index) => (
-              <tr key={disk.id}>
-                <td>{disk.diskImageVo?.alias || "없음"}</td>
-                <td>{(disk.diskImageVo?.virtualSize / (1024 ** 3) || 0).toFixed(0)} GiB</td>
-                <td>
-                <select
-                  id={`format-${index}`}
-                  value={disk.diskImageVo?.format || "RAW"} // 기본값 설정
-                  onChange={(e) => {
-                    const newFormat = e.target.value;
-                    disks[index].diskImageVo.format = newFormat; // 디스크 데이터 업데이트
-                    setSelectedFormat(newFormat); // 상태 업데이트 (선택적)
-                  }}
-                >
-                  {format.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label} {/* 화면에 표시될 한글 */}
-                    </option>
-                  ))}
-                </select>
-                <span> 선택된 포맷: {disk.diskImageVo?.format || "RAW"}</span>
-              </td>
-              <td>
-  <select
-    value={disk.diskImageVo?.storageDomainVo?.id || ""}
-    onChange={(e) => {
-      const selectedStorage = storageFromDataCenter.find(
-        (storage) => storage.id === e.target.value
-      );
-      if (selectedStorage) {
-        disk.diskImageVo.storageDomainVo = {
-          id: selectedStorage.id,
-          name: selectedStorage.name,
-        };
-        setSelectedStorageId(selectedStorage.id);
-        setForceRender((prev) => !prev);
-      }
-    }}
-  >
-    {storageFromDataCenter &&
-      storageFromDataCenter.map((storage) => (
-        <option key={storage.id} value={storage.id}>
-          {storage.name}
-        </option>
-      ))}
-  </select>
-</td>
-
-
-
-
-<td>
-  {selectedStorageId && diskProfiles ? (
-    <select
-      value={disk.diskImageVo?.diskProfileVo?.id || ""}
-      onChange={(e) => {
-        const selectedProfile = diskProfiles.find(
-          (profile) => profile.id === e.target.value
-        );
-        if (selectedProfile) {
-          disk.diskImageVo.diskProfileVo = {
-            id: selectedProfile.id,
-            name: selectedProfile.name,
-          };
-          setForceRender((prev) => !prev);
-        }
-      }}
-    >
-      {diskProfiles.map((profile) => (
-        <option key={profile.id} value={profile.id}>
-          {profile.name}
-        </option>
-      ))}
-    </select>
-  ) : (
-    <span>디스크 프로파일을 로드 중입니다...</span>
-  )}
-</td>
-
-              </tr>
+        {disks && disks.length > 0 && (
+          <>
+            <div className="font-bold">디스크 할당:</div>
+            <div className="section_table_outer py-1">
+              <table>
+                <thead>
+                  <tr>
+                    <th>별칭</th>
+                    <th>가상 크기</th>
+                    <th>포맷</th>
+                    <th>대상</th>
+                    <th>디스크 프로파일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {disks.map((disk,index) => (
+                    <tr key={disk.id}>
+                      <td>{disk.diskImageVo?.alias || "없음"}</td>
+                      <td>{(disk.diskImageVo?.virtualSize / (1024 ** 3) || 0).toFixed(0)} GiB</td>
+                      <td>
+                      <select
+                        id={`format-${index}`}
+                        value={disk.diskImageVo?.format || "RAW"} // 기본값 설정
+                        onChange={(e) => {
+                          const newFormat = e.target.value;
+                          disks[index].diskImageVo.format = newFormat; // 디스크 데이터 업데이트
+                          setSelectedFormat(newFormat); // 상태 업데이트 (선택적)
+                        }}
+                      >
+                        {format.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label} {/* 화면에 표시될 한글 */}
+                          </option>
+                        ))}
+                      </select>
+                      <span> 선택된 포맷: {disk.diskImageVo?.format || "RAW"}</span>
+                    </td>
+                    <td>
+        <select
+          value={disk.diskImageVo?.storageDomainVo?.id || ""}
+          onChange={(e) => {
+            const selectedStorage = storageFromDataCenter.find(
+              (storage) => storage.id === e.target.value
+            );
+            if (selectedStorage) {
+              disk.diskImageVo.storageDomainVo = {
+                id: selectedStorage.id,
+                name: selectedStorage.name,
+              };
+              setSelectedStorageId(selectedStorage.id);
+              setForceRender((prev) => !prev);
+            }
+          }}
+        >
+          {storageFromDataCenter &&
+            storageFromDataCenter.map((storage) => (
+              <option key={storage.id} value={storage.id}>
+                {storage.name}
+              </option>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </>
-  )}
-  {!disks || disks.length === 0 ? (
-    <div className="font-bold">연결된 디스크 데이터가 없습니다.</div>
-  ) : null}
+        </select>
+      </td>
+
+
+
+
+      <td>
+        {selectedStorageId && diskProfiles ? (
+          <select
+            value={disk.diskImageVo?.diskProfileVo?.id || ""}
+            onChange={(e) => {
+              const selectedProfile = diskProfiles.find(
+                (profile) => profile.id === e.target.value
+              );
+              if (selectedProfile) {
+                disk.diskImageVo.diskProfileVo = {
+                  id: selectedProfile.id,
+                  name: selectedProfile.name,
+                };
+                setForceRender((prev) => !prev);
+              }
+            }}
+          >
+            {diskProfiles.map((profile) => (
+              <option key={profile.id} value={profile.id}>
+                {profile.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span>디스크 프로파일을 로드 중입니다...</span>
+        )}
+      </td>
+
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+        {!disks || disks.length === 0 ? (
+          <div className="font-bold">연결된 디스크 데이터가 없습니다.</div>
+        ) : null}
 
         <div className="vnic_new_checkbox">
           <input

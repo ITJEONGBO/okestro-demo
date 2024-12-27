@@ -998,64 +998,9 @@ input[disabled] {
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
-/*..버튼*/
-.vm_bring_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    font-size: 0.34rem;
-    height: 85%;
-    width: 69%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-}
-.load_btn{
-    width:4%;
-    padding:0.1rem;
-    border:1px solid gray;
-    display: flex;
-    align-items: center;
-    cursor:pointer;
-}
-.vm_bring_table{
-   display:flex;
-   justify-content:space-between;
-   padding: 0.3rem;
-}
-.vm_bring_table>div{
-    width:44%;
-}
+
 /*가상머신세부 -네트워크인터페이스 - 새로만들기*/
-.new_network_interface{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 45%;
-    width: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-.radio_outer{
-    width: 100%;
-    justify-content: left;
-}
-.radio_outer>div{
-    display: flex; /* Flexbox 설정 추가 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.radio_outer input{
-    cursor: pointer;
-}
-.radio_outer input, .radio_outer img{
-    margin-right: 0.3rem;
-}
+
 /* 새로만들기(수정해야됨) */
 .vm_new_nav{
     font-size: 0.33rem;
@@ -1093,33 +1038,11 @@ input[disabled] {
     display: flex;
 
 }
-.edit_first_content>div{
-    display: flex;
-    justify-content: space-between;
-    padding: 0.2rem 0.29rem;
-}
-.edit_first_content>div:first-child{
 
-    padding-top: 0.3rem;
-}
-.edit_first_content{
-    border-bottom: 1px solid #cecece;
-    font-size: 0.32rem;
-}
 .datacenter_span{
     position:absolute;
     right: 21.5%;
     top: 14%;
-}
-
-.edit_first_content select{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    border: 1px solid #a7a6a6;
 }
 
 .edit_third_content{

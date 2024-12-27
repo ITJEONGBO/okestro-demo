@@ -241,9 +241,9 @@ const TableInfo = {
     { header: '설명', accessor: 'description' },
   ],
   DATACENTERS_FROM_STORAGE_DOMAIN : [
-    { header: '', accessor: 'icon', clickable: false },
+    { header: '', accessor: 'icon', clickable: false, width: '4%' },
     // { header: 'id', accessor: 'id', clickable: false },
-    { header: '이름', accessor: 'name', clickable: false },
+    { header: '이름', accessor: 'name', clickable: false , width: '17%'},
     { header: '데이터 센터 내의 도메인 상태', accessor: 'domainStatus', clickable: false },
   ],
   TEMPLATES_FROM_STORAGE_DOMAIN: [
@@ -306,7 +306,7 @@ const TableInfo = {
     
 //------------------------------------------
   DISKS_FROM_STORAGE_DOMAIN: [
-    { header: '별칭', accessor: 'alias', clickable: false },
+    { header: '별칭', accessor: 'alias', clickable: false , width: '16%' },
     { header: '부팅가능', accessor: 'icon1', clickable: false },
     { header: '공유가능', accessor: 'sharable', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
@@ -324,15 +324,14 @@ const TableInfo = {
 
   DISK_SNAPSHOT_FROM_STORAGE_DOMAIN: [
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '별칭', accessor: 'alias', clickable: false },
-    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '디스크 별칭', accessor: 'alias', clickable: false },
+    { header: '생성 일자', accessor: 'snapshotCreationDate', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
     { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
     { header: '인터페이스', accessor: 'interface', clickable: false },
-    { header: '생성 일자', accessor: 'snapshotCreationDate', clickable: false },
-    { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
     { header: '유형', accessor: 'type', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
+    { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
   ],
   
   TEMPLATE_VMS:[

@@ -219,6 +219,20 @@
 .label_name{
     font-size: '10px';
 }
+/*네트워크 인터페이스 새로만들기*/
+.new_network_interface{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 45%;
+    width: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+
 /* 
 .network_radio_group input[type="radio"] {
   transform: scale(0.5); 
