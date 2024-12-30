@@ -158,6 +158,7 @@ const TableInfo = {
   ],
   VNIC_PROFILES_FROM_NETWORK: [
     { header: '이름', accessor: 'name', clickable: false },
+    { header: '네트워크', accessor: 'networkVo', clickable: false },
     { header: '데이터 센터', accessor: 'dataCenter', clickable: true },
     { header: '네트워크 필터', accessor: 'networkFilter', clickable: false },
     { header: '포트 미러링', accessor: 'portMirroring', clickable: false },
@@ -638,7 +639,7 @@ HOST_NETWORK_INTERFACE: [
 
   EVENTS: [
     { header: '시간', accessor: 'time', clickable: false, width:'14%' },
-    { header: '알림', accessor: 'severity', clickable: false, width:'3%'},    
+    { header: '알림', accessor: 'severity', clickable: false, width:'2%'},    
     { header: '메세지', accessor: 'description', clickable: false},
     // { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
     // // { header: '소스', accessor: 'source', clickable: false },

@@ -257,7 +257,8 @@ const NetworkModal = ({
           </FormGroup>
           <hr/>
 
-          <FormGroup>
+          <FormGroup >
+            <div className='network_checkbox'>
             <input
               type="checkbox"
               id="vlan"
@@ -285,6 +286,7 @@ const NetworkModal = ({
                 }));
               }}
             />
+            </div>
           </FormGroup>
           
           <FormGroup label="">

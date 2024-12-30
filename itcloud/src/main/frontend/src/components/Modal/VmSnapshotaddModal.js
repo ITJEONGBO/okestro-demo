@@ -6,7 +6,7 @@ import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAddSnapshotFromVM, useDisksFromVM } from '../../api/RQHook';
 import TableInfo from '../table/TableInfo';
-
+import '../Modal/css/MVm.css';
 const VmSnapshotAddModal = ({ 
     isOpen, 
     onRequestClose,

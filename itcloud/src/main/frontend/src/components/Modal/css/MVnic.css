@@ -1,0 +1,41 @@
+/*vnic 새로만들기*/
+
+.vnic_new_content_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 68.4vh;
+    width: 43%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    }
+.vnic_new_contents{
+    font-size: 0.33rem;
+}
+
+.vnic_new_box{
+    padding: 1.2% 0.3rem;
+    display: flex;
+    justify-content: space-between;
+}
+.vnic_new_box>input,.vnic_new_box>select{
+    width: 50%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    background: white;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
+}
+.vnic_new_checkbox{
+    padding: 1.2% 0.3rem;
+    display:flex;
+}
+.vnic_new_checkbox input{
+    margin-right: 0.2rem;
+}

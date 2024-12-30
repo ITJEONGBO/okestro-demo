@@ -6,7 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useHost, useHostdeviceFromHost, useHostdevicesFromVM } from '../../../api/RQHook';
-
+import VmDeviceAddModal from '../../Modal/VmDeviceAddModal';
+import VmCPUPinningModal from '../../Modal/VmCPUPinningModal';
 // 이벤트 섹션
 const VmHostDevice = ({vm}) => {
   const [activePopup, setActivePopup] = useState(null);
@@ -14,15 +15,7 @@ const VmHostDevice = ({vm}) => {
   const closePopup = () => setActivePopup(null);
   // 호스트 장치
   const { id } = useParams();
-  // const { 
-  //   data: host,
-  //   status: networkStatus,
-  //   isRefetching: isNetworkRefetching,
-  //   refetch: hostRefetch, 
-  //   isError: isNetworkError,
-  //   error: networkError, 
-  //   isLoading: isNetworkLoading,
-  // } = useHost(id);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { 
     data: hostDevices,     
@@ -47,7 +40,7 @@ const VmHostDevice = ({vm}) => {
     return (
         <>
         <div className="header_right_btns">
-            <button onClick={() => openPopup('add_device')}>장치 추가</button>
+            <button onClick={() => setIsModalOpen(true)}>장치 추가</button>
             <button className='disabled'>장치 삭제</button>
             <button className='disabled'>vGPU 관리</button>
             <button onClick={() => openPopup('view_cpu')}>View CPU Pinning</button>
@@ -57,11 +50,20 @@ const VmHostDevice = ({vm}) => {
             data={hostDevices} 
             onRowClick={() => console.log('Row clicked')} 
           />
-      
 
-
-        {/*장치추가 팝업 */}
-        <Modal
+          {/*장치추가 팝업 */}
+          <VmDeviceAddModal
+            isOpen={isModalOpen}
+            onRequestClose={() => setIsModalOpen(false)}
+            hostDevices={hostDevices}
+          />
+          {/*View CPU Pinning 팝업 */}
+          <VmCPUPinningModal
+            isOpen={activePopup === 'view_cpu'}
+            onRequestClose={closePopup}
+          />
+       {/*장치추가 팝업 */}
+        {/* <Modal
         isOpen={activePopup === 'add_device'}
         onRequestClose={closePopup}
         contentLabel="장치추가"
@@ -122,10 +124,10 @@ const VmHostDevice = ({vm}) => {
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
-      </Modal>
+        </Modal> */}
 
-           {/*View CPU Pinning 팝업 */}
-           <Modal
+        {/*View CPU Pinning 팝업 */}
+        {/* <Modal
         isOpen={activePopup === 'view_cpu'}
         onRequestClose={closePopup}
         contentLabel="장치추가"
@@ -182,7 +184,7 @@ const VmHostDevice = ({vm}) => {
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
-      </Modal>
+        </Modal> */}
       </>
     );
   };

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import '../Modal/css/MVnic.css';
+
 import { 
   useAddVnicProfile, 
   useAllDataCenters, 
@@ -30,7 +32,7 @@ const VnicProfileModal = ({
     description: '',
     // passthrough: '',
     portMirroring: false,
-    // migration: '',
+    migration: false,
   });
   // const [networkFilter, setNetworkFilter] = useState('');
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
@@ -89,7 +91,8 @@ const VnicProfileModal = ({
         name: vnic?.name || '',
         description: vnic?.description || '',
         // passthrough: vnic.passThrough !== 'DISABLED',
-        // migration: vnic.migration || '', 
+        migration: vnic.migration || false, 
+        portMirroring: vnic.portMirroring || false,
         networkFilter: vnic?.networkFilterVo?.id || ''
       });
       setDataCenterVoId(vnic?.dataCenterVo?.id || '');
@@ -124,8 +127,8 @@ const VnicProfileModal = ({
       name: '',
       description: '',
       // passthrough: '',
-      portMirroring: '',
-      // migration: '',
+      portMirroring: false,
+      migration: false,
       // networkFilter: ''
     })
     setDataCenterVoId('');
@@ -246,7 +249,7 @@ const VnicProfileModal = ({
               />
             </FormGroup>
                       
-            {/* <FormGroup label="네트워크 필터">
+            <FormGroup label="네트워크 필터">
               <select
                 id="networkFilter"
                 value={formState.networkFilter}
@@ -258,10 +261,10 @@ const VnicProfileModal = ({
                   </option>
                 ))}
               </select>
-            </FormGroup> */}
+            </FormGroup>
 
-
-            {/* <div className="vnic_new_checkbox">
+{/* 
+            <div className="vnic_new_checkbox">
               <input 
                 type="checkbox" 
                 id="passthrough" 
@@ -269,17 +272,19 @@ const VnicProfileModal = ({
                 onChange={(e) => setFormState((prev) => ({ ...prev, passthrough: e.target.checked }))}
               />
               <label htmlFor="passthrough">통과</label>
-            </div>
-
-            <div className="vnic_new_checkbox">
-              <input 
-                type="checkbox" 
-                id="migratable" 
-                checked={formState.migratable} 
-                onChange={(e) => setFormState((prev) => ({ ...prev, migratable: e.target.checked }))}
-              />
-              <label htmlFor="passthrough">마이그레이션 가능</label>
             </div> */}
+
+          <div className="vnic_new_checkbox">
+            <input
+              type="checkbox"
+              id="migration"
+              checked={formState.migration} // formState.migration 값 반영
+              onChange={(e) =>
+                setFormState((prev) => ({ ...prev, migration: e.target.checked }))
+              }
+            />
+            <label htmlFor="migration">마이그레이션 가능</label>
+          </div>
             
             {/* 페일오버 vNIC 프로파일 */}
             {/* <div className="vnic_new_box">

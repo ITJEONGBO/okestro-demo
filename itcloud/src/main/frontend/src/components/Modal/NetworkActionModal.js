@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import Table from '../table/Table'; 
+import '../Modal/css/MNetwork.css';
 
 const NetworkActionModal = ({ 
     isOpen, 

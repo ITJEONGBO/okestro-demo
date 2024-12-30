@@ -55,122 +55,6 @@
     height: 98%;
 }
 
-
-/*article*/
-.section_header_right{
-    display: flex;
-    justify-content: space-between;
-    margin: 0.9% 0;
-}
-
-/*nav*/
-.lable_create {
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 42%;
-    width: 58%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
-}
-
-.content_outer,
-.content_outerd,
-.sto_content_outer,
-#disk_outer,#storage_domain_outer,
-#content_outer,
-#network_outer,
-#disk_outer,
-#snapshot_outer,
-#application_outer,
-#pregroup_outer,
-#pregroup_lable_outer,
-#guest_info_outer,
-#power_outer,
-#event_outer,
-#storage_volume_outer,
-#storage_storage_outer,
-#storage_cluster_outer,
-#storage_right_outer,
-#storage_logic_outer,
-#detail_datacenter_outer,
-#detail_machine_outer,
-#detail_template_outer,
-#detail_disk_outer,
-#detail_snapshot_outer,
-#detail_rent_outer,
-#detail_profile_outer,
-#detail_event_outer,
-#detail_right_outer,
-#host_machine_outer,
-#host_template_outer,
-#host_device_outer,
-#host_hook_outer,
-#host_right_outer,
-#host_profile_outer,
-#host_erita_outer,
-#host_event_outer,
-#detail_vnic_outer,
-#detail_cluster_outer,
-#detail_host_outer,
-#detail_virtual_outer,
-#detail_permission_outer
-
-{
-    width: 100%;
-    display: flex;
-    height: 88%;
-}
-#network_content_outer{
-    width: 100%;
-}
-
-.pregroup_content,
-#application_content,
-#snapshot_content_outer,
-#network_content_outer{
-    width: 100%;
-}
-/*마이그레이션 팝업*/
-
-#host{
-    width: 87.5%;
-    height: 5vh;
-    border-radius: 3px;
-}
-#migration_article>div:last-child{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-}
-#migration_article>div:last-child>div{
-    padding: 10px 0;
-}
-#migration_article>div:last-child>div:last-child{
-    width: 87.5%;
-    font-size: 0.36rem;
-    height: 5vh;
-    background-color: #ebebeb;;
-    border-radius: 3px;
-}
-
-#migration_footer>button{
-    cursor: pointer;
-    border: none;
-    border-radius: 3px;
-    padding:0.2rem;
-    letter-spacing: -1px;
-    font-size: 0.3rem;
-}
-#migration_footer>button:first-child{
-    background-color: #0066CC;
-    color:white
-}
 /*스냅샷*/
 #snapshot_content_outer,#network_content_outer{
     padding: 0.5rem 0.3rem 0 0;
@@ -357,16 +241,7 @@
         font-size: 0.3rem;
         padding: 0.03rem 0.2rem 0.03rem 0.2rem;
     }
-    /* .table_outer{
-        border: 1px solid black;
-        height: 50%;
-    }
-    .table_outer tbody span{
-        display: block;
-        width: 100%;
-        text-align: center;
-        border: none;
-    } */
+
     table{
         font-size: 0.33rem;
     }
@@ -640,7 +515,7 @@ input[disabled] {
   
   .snap_hidden_content.active {
     display: block;
-    max-height: 30vh;
+    max-height: 33vh;
     border: 1px solid #b9b9b9;
     border-top: none;
     color:gray;
@@ -718,56 +593,7 @@ input[disabled] {
     font-size: 0.34rem;
     padding: 2.5%;
 }
-/*애플리케이션*/
-#application_content{
-    padding: 1.2rem 0.3rem;
-    
-}
-.application_content_header{
-    display: flex;
-    font-size: 0.34rem;
-    margin-bottom: 0.3rem;
-}
-.application_content_header>div,.application_content_header>button{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.application_content_header>div{
-    padding: 0 0.3%;
-}
-.application_content_header>button{
-    padding: 0.35%;
-    cursor: pointer;
-    border: 1px solid #14417c;
-    border-radius: 3px;
-    color: rgb(10, 55, 107);
-    font-weight: 600;
-}
 
-#application_content table,.pregroup_content table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-#application_content th, #application_content td,
-.pregroup_content th, .pregroup_content td
- {
-    border: 1px solid #ddd;
-    font-size: 0.3rem;
-    padding: 0.03rem 0.2rem 0.03rem 0.2rem;
-    text-align: left;
-}
-#application_content td,.pregroup_content td{
-    cursor: pointer;
-}
-#application_content td:hover,.pregroup_content tbody tr:hover{
-    background-color: #ebececd8;
-}
-#application_content thead th,.pregroup_content thead th{
-    background-color: #d1e2eb;
-    font-weight: bold;
-}
 /*선호도 그룹 팝업(새로만들기)*/
 .pregroup_create_outer{
     position: fixed; /* 변경 */
@@ -869,137 +695,6 @@ input[disabled] {
     font-weight: 800;
     cursor: pointer;
 }
-/*선호도레이블(새로만들기) 팝업*/
-.lable_create_outer{
-    position: fixed; /* 변경 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000; /* 추가 */
-}
-.lable_create{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 42%;
-    width: 58%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1001; /* 추가 */
-}
-/*권한*/
-#power_outer span{
-    margin-right: 0.2rem;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-#power_outer table tr td:first-child,#event_outer tr td:first-child{
-    text-align: center;
-}
-
-
-
-/*호스트 장치(장치추가 팝업)*/
-.device_add_popup_outer{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    font-size: 0.34rem;
-    height: 92%;
-    width: 74%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
-    z-index: 1000;
-}
-.context-menu {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  list-style: none;
-  padding: 10px;
-  z-index: 1000;
-}
-
-.context-menu li {
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-.context-menu li:hover {
-  background-color: #eee;
-}
-.able_host_device_table{
-    height: 26vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-/*호스트 장치(View CPU Pinning 팝업)*/
-.device_view_popup_outer{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    font-size: 0.34rem;
-    height: 92%;
-    width: 42%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
-    z-index: 1000;
-}
-.device_view_popup{
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-    padding:0.5rem;
-    height: 79vh;
-}
-.device_view_boxs{
-    padding: 0.3rem 1.2rem
-}
-.device_view_boxs>span{
-    display:block;
-}
-.device_view_box{
-    box-shadow: 0 6px 7px rgba(0, 0, 0, 0.3);
-    width: 35%;
-    border-raius:3px;
-    height: 15vh;
-    padding: 0.1rem;
-}
-/*스냅샷 생성*/
-.snapshot_new_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    font-size: 0.34rem;
-    height: 52%;
-    width: 32%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
-    z-index: 1000;
-}
-.snapshot_new_table{
-    max-height: 21vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-
-/*가상머신세부 -네트워크인터페이스 - 새로만들기*/
 
 /* 새로만들기(수정해야됨) */
 .vm_new_nav{
@@ -1045,26 +740,7 @@ input[disabled] {
     top: 14%;
 }
 
-.edit_third_content{
-    padding: 2.3% 2% 2% 2%;
-    margin-bottom: 0.4rem;
-    display:flex;
-    justify-content: space-between;
-}
-.edit_third_content>div:nth-child(2){
-    display: flex;
-    justify-content: right;
 
-}
-.edit_third_content>div:nth-child(2)>button{
-    margin-right:0.2rem;
-}
-.edit_third_content button{
-    padding: 0.08rem 0.15rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    cursor: pointer;
-}
 .text_icon_box{
     display: flex; /* Flexbox 설정 추가 */
     justify-content: center; /* 수평 가운데 정렬 */
@@ -1089,75 +765,5 @@ input[disabled] {
     font-weight: 600;
     cursor: pointer;
 }
-.migration_popup_content{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 42%;
-    width: 53%;
-    font-size: 0.33rem;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-#migration_article_outer{
-    padding: 0.4rem;
-}
-#migration_article{
-    display: flex;
-    height: 40%;
-    flex-direction: column;
-    justify-content: space-between;
-}
-#migration_article_outer>span{
-    font-size: 0.36rem;
-    margin-bottom: 0.4rem;
-    display: block;
-}
-#migration_dropdown{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom:0.2rem;
-}
-#migration_dropdown>label{
-    padding:11px 0;
-}
-#migration_dropdown>label{
-    font-size: 0.36rem;
-    font-weight: 600;
-}
-/*...박스 가상머신복제*/
-.vm_copy_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 84.4vh;
-    width: 50%;
-    left: 50%;
-    font-size:0.33rem;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-.vm_copy_popup .template_edit_texts input[type="text"]{
-    width: 47%;
-}
-.vm_ova_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 40vh;
-    width: 30%;
-    left: 50%;
-    font-size:0.33rem;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
+
 /**/

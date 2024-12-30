@@ -16,7 +16,7 @@ const VnicProfileTable = ({
       columns={columns}
       data={vnicProfiles.map((vnic) => ({
         ...vnic,
-        network: (
+        networkVo: (
           <TableRowClick type="network" id={vnic?.networkVo?.id}>
             {vnic?.networkVo?.name}
           </TableRowClick>

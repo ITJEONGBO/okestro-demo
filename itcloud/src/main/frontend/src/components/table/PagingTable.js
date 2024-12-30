@@ -18,12 +18,12 @@ const PagingTable = ({
   const [tooltips, setTooltips] = useState({});
   const tableRef = useRef(null);
 
-  // 데이터 필터링 로직, 검색 쿼리를 기준으로 데이터 필터링
+  // 검색기능 데이터 필터링 로직, 검색 쿼리를 기준으로 데이터 필터링
   const filteredData = data.filter(item =>
     columns.some(column => {
       const value = item[column.accessor];
-      // 문자열을 소문자로 변환하고, startsWith로 검색어가 시작하는지 확인
-      return value && value.toString().toLowerCase().startsWith(searchQuery.toLowerCase());
+      // 문자열을 소문자로 변환하고, includes로 검색어가 포함되어 있는지 확인
+      return value && value.toString().toLowerCase().includes(searchQuery.toLowerCase());
     })
   );
 

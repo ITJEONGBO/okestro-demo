@@ -12,7 +12,11 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
-
+.cpu_res_box{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 2%;
+}
 .edit_aside {
     width: 30%;
     height: 95%;
@@ -117,6 +121,20 @@
     border-bottom: 1px solid #cecece;
     font-size: 0.32rem;
 }
+
+.edit_second_content input,
+#time_offset,
+#host_third_content>div:nth-child(n+2) select,
+.cpu_res_box select,
+.cpu_res input
+{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+
 .edit_second_content>div,#host_third_content>div{
     display: flex;
     justify-content: space-between;
@@ -177,6 +195,26 @@
     width: 94%;
     height: 3.3vh;
     padding: 0 3px;
+    cursor: pointer;
+}
+.edit_third_content{
+    padding: 2.3% 2% 2% 2%;
+    margin-bottom: 0.4rem;
+    display:flex;
+    justify-content: space-between;
+}
+.edit_third_content>div:nth-child(2){
+    display: flex;
+    justify-content: right;
+
+}
+.edit_third_content>div:nth-child(2)>button{
+    margin-right:0.2rem;
+}
+.edit_third_content button{
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
     cursor: pointer;
 }
 /*선호도*/
@@ -241,7 +279,26 @@
 .new_template_popup .edit_first_content{
     border-bottom:none;
 }
-
+/*스냅샷 생성*/
+.snapshot_new_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    font-size: 0.34rem;
+    height: 52%;
+    width: 32%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+    z-index: 1000;
+}
+.snapshot_new_table{
+    max-height: 21vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
 
 /*디스크 연결 팝업*/
 .storage_disk_new_popup{
@@ -289,8 +346,97 @@
  .vm_bring_table>div{
      width:44%;
  }
-/*삭제예정*/
+ /*호스트 장치(장치추가 팝업)*/
+.device_add_popup_outer{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    font-size: 0.34rem;
+    height: 92%;
+    width: 74%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+    z-index: 1000;
+}
 
+.able_host_device_table{
+    height: 26vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+/*호스트 장치(View CPU Pinning 팝업)*/
+.device_view_popup_outer{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    font-size: 0.34rem;
+    height: 92%;
+    width: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+    z-index: 1000;
+}
+.device_view_popup{
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+    padding:0.5rem;
+    height: 79vh;
+}
+.device_view_boxs{
+    padding: 0.3rem 1.2rem
+}
+.device_view_boxs>span{
+    display:block;
+}
+.device_view_box{
+    box-shadow: 0 6px 7px rgba(0, 0, 0, 0.3);
+    width: 35%;
+    border-raius:3px;
+    height: 15vh;
+    padding: 0.1rem;
+}
+/*마이그레이션 팝업*/
+#migration_article>div:last-child{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+#migration_article>div:last-child>div{
+    padding: 10px 0;
+}
+#migration_article>div:last-child>div:last-child{
+    width: 87.5%;
+    font-size: 0.36rem;
+    height: 5vh;
+    background-color: #ebebeb;;
+    border-radius: 3px;
+}
+
+/*삭제예정*/
+/* .context-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  list-style: none;
+  padding: 10px;
+  z-index: 1000;
+}
+
+.context-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.context-menu li:hover {
+  background-color: #eee;
+} */
 /* .res_second_content{
     padding: 2%;
 }
