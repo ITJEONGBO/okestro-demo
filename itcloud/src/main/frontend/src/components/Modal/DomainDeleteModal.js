@@ -77,7 +77,7 @@ const DomainDeleteModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_delete_popup">
+      <div className="domain_delete_popup">
         <div className="popup_header">
           <h1>스토리지 도메인 삭제</h1>
           <button onClick={onRequestClose}>
@@ -97,28 +97,31 @@ const DomainDeleteModal = ({
         </div>
 
         <div className="disk_delete_box" style={{display : 'flex'}}>
-          <input
-            type="checkbox"
-            id="format"
-            checked={format}
-            onChange={(e) => setFormat(e.target.checked)} // 체크 여부에 따라 true/false 설정
-          />
-          <label htmlFor="format">포맷 하시겠습니까?</label>
+          <div className='flex'>
+            <input
+              type="checkbox"
+              id="format"
+              checked={format}
+              onChange={(e) => setFormat(e.target.checked)} // 체크 여부에 따라 true/false 설정
+            />
+            <label htmlFor="format">포맷 하시겠습니까?</label>
+          </div>
+          <div className="disk_delete_box">
+            <select
+              value={hostName}
+              onChange={(e) => setHostName(e.target.value)}
+              disabled={!format} // format이 false면 비활성화
+            >
+              {hosts.map((host) => (
+                <option key={host.id} value={host.name}>
+                  {host.name} : {host.id}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="disk_delete_box">
-          <select
-            value={hostName}
-            onChange={(e) => setHostName(e.target.value)}
-            disabled={!format} // format이 false면 비활성화
-          >
-            {hosts.map((host) => (
-              <option key={host.id} value={host.name}>
-                {host.name} : {host.id}
-              </option>
-            ))}
-          </select>
-        </div>
+    
 
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>

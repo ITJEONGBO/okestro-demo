@@ -12,13 +12,14 @@ const DiskVms = ({diskId}) => {
   } = useAllVmsFromDisk(diskId, (e) => ({ ...e,}));
 
   const [selectedVm, setSelectedVm] = useState(null);
-  
+  const [selectedVms, setSelectedVms] = useState([]); // 선택된 VM
   return (
     <VmTable
       columns={TableInfo.VMS_FROM_DISK}
       vms={vms || []}
-      selectedVm={selectedVm}
-      setSelectedVm={setSelectedVm}
+      setSelectedVms={(selected) => {
+        if (Array.isArray(selected)) setSelectedVms(selected); // 유효한 선택만 반영
+      }}
     />
   );
 };

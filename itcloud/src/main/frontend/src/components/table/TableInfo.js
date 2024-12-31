@@ -34,7 +34,7 @@ const TableInfo = {
     { header: '설명', accessor: 'description' },
   ],
   NETWORK_FROM_DATACENTER: [
-    { header: '이름', accessor: 'name', clickable: true },
+    { header: '이름', accessor: 'name', clickable: true, width: '14%'   },
     { header: '설명', accessor: 'description', clickable: false },
   ],
   // 호스트 HOSTS

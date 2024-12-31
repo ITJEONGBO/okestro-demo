@@ -146,7 +146,7 @@ useEffect(() => {
           </div>
 
           <div className="backup_edit_content">
-            <div className="vnic_new_box" style={{ borderBottom: '1px solid gray', paddingBottom: '0.3rem' }}>
+            <div className="template_option_box" style={{ borderBottom: '1px solid gray', paddingBottom: '0.3rem' }}>
                 <label htmlFor="optimization">최적화 옵션</label>
                   <select
                     id="optimization"
@@ -159,7 +159,7 @@ useEffect(() => {
                       </option>
                     ))}
                   </select>
-                  <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.value || ''}</span>
+                  {/* <span>선택된 최적화 옵션: {optimizeOption.find(opt => opt.value === selectedOptimizeOption)?.value || ''}</span> */}
             </div>
             {selectedModalTab === 'general' && (
               <>
@@ -194,7 +194,7 @@ useEffect(() => {
                 </div>
 
                 <div className="flex">
-                  <div className="vnic_new_checkbox">
+                  <div className="t_new_checkbox">
                     <input
                       type="checkbox"
                       id="stateless"
@@ -203,7 +203,7 @@ useEffect(() => {
                     />
                     <label htmlFor="stateless">상태 비저장</label>
                   </div>
-                  <div className="vnic_new_checkbox">
+                  <div className="t_new_checkbox">
                     <input
                       type="checkbox"
                       id="start_in_pause_mode"
@@ -212,7 +212,7 @@ useEffect(() => {
                     />
                     <label htmlFor="start_in_pause_mode">일시정지 모드에서 시작</label>
                   </div>
-                  <div className="vnic_new_checkbox">
+                  <div className="t_new_checkbox">
                     <input
                       type="checkbox"
                       id="prevent_deletion"

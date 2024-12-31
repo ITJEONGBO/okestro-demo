@@ -1,10 +1,46 @@
 
 /*새로만들기*/
-.network_checkbox{
+.network_new_content{
+    height: 66vh;
+    overflow-y: auto; 
+    overflow-x: hidden;
+}
+.network_new_input{
     display: flex;
     justify-content: space-between;
     width: 100%;
+    align-items: center; 
 }
+.network_checkbox{
+    display: flex;
+    align-items: center; 
+}
+.network_checkbox_only{
+    display: flex;
+    width: 100%;
+    justify-content: left;
+    align-items: center; 
+}
+.network_new_radio_btn{
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+/* .network_new_radio_btn>div{
+    width: 30%;
+} */
+.network_new_radio_btn>div{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.network_new_radio>div{
+    display: flex;
+}
+.network_new_radio input[type="number"] {
+    width: 100%;
+} 
 .storage_right_btns{
     display: flex;
     font-size: 0.34rem;
@@ -29,6 +65,21 @@
     border-radius: 3px;
     color: rgb(10, 55, 107);
     font-weight: 600;
+}
+#network_new_cluster_form{
+    padding: 0.2rem 0.4rem;
+    margin-bottom: 1rem;
+ 
+}
+#network_new_cluster_form>span,#network_new_vnic_form>span{
+    font-size: 0.35rem;
+    font-weight: 600;
+}
+#network_new_cluster_form>div{
+    border: 1px solid rgb(209, 209, 209);
+    height: 37vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 /*vNic프로파일(새로만들기)*/
 

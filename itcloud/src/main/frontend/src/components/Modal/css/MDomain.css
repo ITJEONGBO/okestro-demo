@@ -269,3 +269,48 @@
   justify-content: center; /* 수평 가운데 정렬 */
   align-items: center; /* 수직 가운데 정렬 */
 }
+/*도메인 삭제*/
+.domain_delete_popup{
+  border: 1px solid #dfdddd;
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background: #fff;
+  top: 50%;
+  height: 33.4vh;
+  width: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+/*디스크 연결 팝업*/
+.storage_disk_new_popup{
+  border: 1px solid #dfdddd;
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background: #fff;
+  top: 50%;
+  height: 74%;
+  width: 50%;
+  left: 50%;
+  z-index:99999;
+  transform: translate(-50%, -50%);
+  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.disk_new_img_left,#disk_managed_block_left{
+  width: 60%;
+}
+.disk_new_img_left>div, #disk_managed_block_left >div{
+  display: flex;
+  justify-content: space-between;
+}
+.img_input_box select{
+  width: 55%;
+  height: 3.5vh;
+  border: 1px solid #8b8989;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.29rem; 
+  outline: none;
+}

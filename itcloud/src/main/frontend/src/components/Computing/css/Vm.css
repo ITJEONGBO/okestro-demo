@@ -315,22 +315,7 @@
     font-weight: 600;
     border-bottom: 2px solid rgb(35, 132, 243);
   }
-.disk_new_img,#managed_block_outer,#storage_lun_first,#directlun_outer>div:first-child{
-    display: flex;
-    padding: 0 0.35rem;
-    font-size: 0.33rem;
-}
-#storage_managed_outer{
-    font-size: 0.3rem;
-    padding-left: 0.35rem;
-}
-.disk_new_img_left,#disk_managed_block_left{
-    width: 60%;
-}
-.disk_new_img_left>div, #disk_managed_block_left >div{
-    display: flex;
-    justify-content: space-between;
-}
+
 
 input[disabled] {
     background-color: #f0f0f0; /* 회색 배경색 */

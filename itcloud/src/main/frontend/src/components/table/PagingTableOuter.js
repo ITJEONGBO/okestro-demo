@@ -8,7 +8,7 @@ const PagingTableOuter = ({
   onRowClick, 
   shouldHighlight1stCol = false, 
   clickableColumnIndex, 
-  itemsPerPage = 20, 
+  itemsPerPage = 15, 
   showSearchBox = true 
 }) => {
   return (

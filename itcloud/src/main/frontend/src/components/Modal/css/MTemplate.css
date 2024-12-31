@@ -32,4 +32,24 @@
     font-size: 0.29rem;
     outline: none;
 }
-
+.template_option_box{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2% 0.3rem;
+   
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.template_option_box select{
+    height: 3.5vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    width: 50%;
+    cursor: pointer;
+    font-size: 0.29rem;
+    border: 1px solid #a7a6a6;
+}
+.t_new_checkbox{
+    display: flex;
+    align-items: center;
+    margin-left:0.24rem;
+}

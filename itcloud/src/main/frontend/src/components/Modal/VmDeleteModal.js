@@ -35,6 +35,7 @@ const VmDeleteModal = ({
       setSelectedNames([data.name || data.alias || '']);
     }
   }, [data]);
+  
 
   useEffect(() => {
     setHasDisks(disks.length > 0);
@@ -73,7 +74,7 @@ const VmDeleteModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_delete_popup">
+      <div className="vm_delete_popup">
         <div className="popup_header">
           <h1>가상머신 삭제</h1>
           <button onClick={onRequestClose}>
@@ -93,6 +94,7 @@ const VmDeleteModal = ({
 
           {hasDisks && (
             <>
+            <div className='disk_delete_checkbox'>
               <input
                 type="checkbox"
                 id="diskDelete"
@@ -100,6 +102,7 @@ const VmDeleteModal = ({
                 onChange={(e) => setDiskDelete(e.target.checked)}
               />
               <label htmlFor="diskDelete">디스크 삭제</label>
+            </div>
             </>
           )}
         </div>

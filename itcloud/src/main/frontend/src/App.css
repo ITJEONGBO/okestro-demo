@@ -737,19 +737,7 @@ background-color: #6999D9;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
-#network_new_cluster_form{
-    padding: 0.2rem 0.4rem;
-    margin-bottom: 0.3rem;
 
-}
-#network_new_cluster_form>span,#network_new_vnic_form>span{
-    font-size: 0.35rem;
-    font-weight: 600;
-}
-#network_new_cluster_form>div{
-    border: 1px solid rgb(209, 209, 209);
-    height: 37vh;
-}
 .network_new_cluster_table{ 
     border-collapse: collapse;
     width: 100%;
@@ -822,10 +810,8 @@ textarea{
     box-sizing: border-box;
     border-radius: 4px;
     background: #fff;
-    /* height: 300px; */
-   
     top: 50%;
-    height: 29.4vh;
+    height: 22.4vh;
     width: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -1684,13 +1670,7 @@ textarea{
     font-size: 0.3rem;
     padding-left: 0.35rem;
 }
-.disk_new_img_left,#disk_managed_block_left{
-    width: 60%;
-}
-.disk_new_img_left>div, #disk_managed_block_left >div{
-    display: flex;
-    justify-content: space-between;
-}
+
 
 #disk_managed_block_left>span{
     color: red;

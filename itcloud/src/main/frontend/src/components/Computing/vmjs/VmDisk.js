@@ -1,216 +1,344 @@
-import {  faChevronLeft, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, Suspense } from 'react';
 import Modal from 'react-modal';
-import TableOuter from '../../table/TableOuter';
+import TablesOuter from '../../table/TablesOuter';
 import { useDisksFromVM } from '../../../api/RQHook';
 import DiskModal from '../../Modal/DiskModal';
 import DeleteModal from '../../Modal/DeleteModal';
 import TableInfo from '../../table/TableInfo';
 
+const VmDisk = ({ vm }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
+  const [modals, setModals] = useState({ create: false, edit: false, delete: false }); // 동작별 모달 관리
+  const [action, setAction] = useState(''); // 현재 동작 (create, edit 등)
+  const [activeDiskType, setActiveDiskType] = useState('all'); // 필터링된 디스크 유형
+  const [selectedDisks, setSelectedDisks] = useState([]); // 다중 선택된 디스크 관리
 
-// 디스크
-const VmDisk = ({vm}) => {
-
-    const [isJoinDiskModalOpen, setIsJoinDiskModalOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('img');
-  
-    const handleTabClick = (tab) => setActiveTab(tab);
-  
-    const [isVisible, setIsVisible] = useState(false);
-    const toggleContent = () => {
-      setIsVisible(!isVisible);
-    };
-    const [modals, setModals] = useState({ create: false, edit: false, delete: false });
-    const toggleModal = (type, isOpen) => {
-      setModals((prev) => ({ ...prev, [type]: isOpen }));
-  };
-    
-    const [activeDiskType, setActiveDiskType] = useState('all');
   const handleDiskTypeClick = (type) => {
-    setActiveDiskType(type);  // 여기서 type을 설정해야 함
-  };
-  
-    // 연결 팝업 열기/닫기 핸들러
-    const closeJoinDiskModal = () => setIsJoinDiskModalOpen(false);
-    const [activePopup, setActivePopup] = useState(null);
-    const openPopup = (popupType) => {
-        setActivePopup(popupType);
-      };
-    const closePopup = () => {
-        setActivePopup(null);
-    };
-    const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 유형 상태
-  // 컨텐츠 유형 변경 핸들러
-  const handleContentTypeChange = (event) => {
-    setActiveContentType(event.target.value);
+    setActiveDiskType(type); // 디스크 유형 변경
   };
 
-  // ...버튼
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const togglePopup = () => {
-    setIsPopupOpen(!isPopupOpen);
+  const toggleModal = (type, isOpen) => {
+    setModals((prev) => ({ ...prev, [type]: isOpen })); // 모달 열기/닫기
   };
-  // 팝업 외부 클릭 시 닫히도록 처리
-  const handlePopupBoxItemClick = (e) => e.stopPropagation();
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const popupBox = document.querySelector(".content_header_popup"); // 팝업 컨테이너 클래스
-      const popupBtn = document.querySelector(".content_header_popup_btn"); // 팝업 버튼 클래스
-      if (
-        popupBox &&
-        !popupBox.contains(event.target) &&
-        popupBtn &&
-        !popupBtn.contains(event.target)
-      ) {
-        setIsPopupOpen(false); // 팝업 외부 클릭 시 팝업 닫기
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside); // 이벤트 리스너 추가
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside); // 컴포넌트 언마운트 시 이벤트 리스너 제거
-    };
-  }, []);
 
-  // 모달들
- const [isModalOpen, setIsModalOpen] = useState(false);
-    const [action, setAction] = useState(''); // 'create' 또는 'edit'
-    const [selectedDisk, setSelectedDisk] = useState(null); // 선택된 디스크
-    const handleActionClick = (actionType) => {
-      setAction(actionType); // 동작 설정
-      setIsModalOpen(true); // 모달 열기
-    };
-
+  const handleActionClick = (actionType) => {
+    setAction(actionType);
+    setIsModalOpen(true);
+  };
 
   const { 
     data: disks, 
     status: disksStatus,
-    isRefetching: isDisksRefetching,
-    refetch: refetchDisks, 
-    isError: isDisksError, 
-    error: disksError, 
     isLoading: isDisksLoading,
-  } = useDisksFromVM(vm?.id, toTableItemPredicateDisks);
-  function toTableItemPredicateDisks(disk) {
-    return {
-        id: disk?.id,
-        alias: disk?.diskImageVo?.alias || '',  // 별칭
-        size:disk?.size || '',
-        icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
-        icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
-        connectionTarget: disk?.vmVo?.name || '', // 연결 대상
-        storageDomain: disk?.diskImageVo?.storageDomainVo?.name || '',  // 스토리지 도메인
-        virtualSize: disk?.diskImageVo?.virtualSize ? `${(disk.diskImageVo.virtualSize / (1024 ** 3)).toFixed(2)} GIB` : '',
-        status: disk?.diskImageVo?.status || '알 수 없음', // 상태
-        contentType: disk?.diskImageVo?.contentType || '알 수 없음', // 콘텐츠 유형
-        storageType: disk?.diskImageVo?.storageType || '',  // 유형
-        description: disk?.diskImageVo?.description || '' // 설명
-      }
+    refetch: refetchDisks,
+  } = useDisksFromVM(vm?.id);
+
+  const selectedIds = selectedDisks.map((disk) => disk.id).join(', ');
+
+  return (
+    <div>
+      <div className="disk_type">
+        <div className="flex">
+          <span>디스크 유형: </span>
+          <button
+            className={activeDiskType === 'all' ? 'active' : ''}
+            onClick={() => handleDiskTypeClick('all')}
+          >
+            모두
+          </button>
+          <button
+            className={activeDiskType === 'image' ? 'active' : ''}
+            onClick={() => handleDiskTypeClick('image')}
+          >
+            이미지
+          </button>
+          <button
+            className={activeDiskType === 'lun' ? 'active' : ''}
+            onClick={() => handleDiskTypeClick('lun')}
+          >
+            직접 LUN
+          </button>
+        </div>
+
+        <div className="header_right_btns">
+          <button onClick={() => handleActionClick('create')}>새로 만들기</button>
+          <button
+            onClick={() => handleActionClick('edit')}
+            disabled={selectedDisks.length !== 1} // 수정은 단일 선택만 가능
+          >
+            수정
+          </button>
+          <button
+            onClick={() => toggleModal('delete', true)}
+            disabled={selectedDisks.length === 0} // 삭제는 다중 선택 가능
+          >
+            제거
+          </button>
+        </div>
+      </div>
+
+      <span>선택된 디스크 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
+
+      {/* 테이블 렌더링 */}
+      <TablesOuter
+        columns={
+          activeDiskType === 'all'
+            ? TableInfo.ALL_DISK
+            : activeDiskType === 'image'
+            ? TableInfo.DISKS_FROM_
+            : TableInfo.LUN_DISK
+        }
+        data={disks}
+        onRowClick={(selected) => {
+          if (Array.isArray(selected)) setSelectedDisks(selected); // 다중 선택된 행 업데이트
+        }}
+      />
+
+      {/* 모달 처리 */}
+      <Suspense>
+        {(action === 'create' || action === 'edit') && (
+          <DiskModal
+            isOpen={isModalOpen}
+            onRequestClose={() => setIsModalOpen(false)}
+            editMode={action === 'edit'}
+            diskId={selectedDisks[0]?.id || null} // 선택된 디스크 중 첫 번째
+            vmId={vm?.id || ''}
+          />
+        )}
+        {modals.delete && selectedDisks.length > 0 && (
+          <DeleteModal
+            isOpen={modals.delete}
+            type="vmDisk"
+            onRequestClose={() => toggleModal('delete', false)}
+            contentLabel="디스크"
+            data={selectedDisks}
+            vmId={vm?.id}
+          />
+        )}
+      </Suspense>
+    </div>
+  );
+};
+
+// import {  faChevronLeft, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import React, { useState, useEffect, Suspense } from 'react';
+// import Modal from 'react-modal';
+// import TableOuter from '../../table/TableOuter';
+// import { useDisksFromVM } from '../../../api/RQHook';
+// import DiskModal from '../../Modal/DiskModal';
+// import DeleteModal from '../../Modal/DeleteModal';
+// import TableInfo from '../../table/TableInfo';
+
+
+// // 디스크
+// const VmDisk = ({vm}) => {
+
+//     const [isJoinDiskModalOpen, setIsJoinDiskModalOpen] = useState(false);
+//     const [activeTab, setActiveTab] = useState('img');
+  
+//     const handleTabClick = (tab) => setActiveTab(tab);
+  
+//     const [isVisible, setIsVisible] = useState(false);
+//     const toggleContent = () => {
+//       setIsVisible(!isVisible);
+//     };
+//     const [modals, setModals] = useState({ create: false, edit: false, delete: false });
+//     const toggleModal = (type, isOpen) => {
+//       setModals((prev) => ({ ...prev, [type]: isOpen }));
+//   };
     
-  };
+//     const [activeDiskType, setActiveDiskType] = useState('all');
+//   const handleDiskTypeClick = (type) => {
+//     setActiveDiskType(type);  // 여기서 type을 설정해야 함
+//   };
+  
+//     // 연결 팝업 열기/닫기 핸들러
+//     const closeJoinDiskModal = () => setIsJoinDiskModalOpen(false);
+//     const [activePopup, setActivePopup] = useState(null);
+//     const openPopup = (popupType) => {
+//         setActivePopup(popupType);
+//       };
+//     const closePopup = () => {
+//         setActivePopup(null);
+//     };
+//     const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 유형 상태
+//   // 컨텐츠 유형 변경 핸들러
+//   const handleContentTypeChange = (event) => {
+//     setActiveContentType(event.target.value);
+//   };
+
+//   // ...버튼
+//   const [isPopupOpen, setIsPopupOpen] = useState(false);
+//   const togglePopup = () => {
+//     setIsPopupOpen(!isPopupOpen);
+//   };
+//   // 팝업 외부 클릭 시 닫히도록 처리
+//   const handlePopupBoxItemClick = (e) => e.stopPropagation();
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       const popupBox = document.querySelector(".content_header_popup"); // 팝업 컨테이너 클래스
+//       const popupBtn = document.querySelector(".content_header_popup_btn"); // 팝업 버튼 클래스
+//       if (
+//         popupBox &&
+//         !popupBox.contains(event.target) &&
+//         popupBtn &&
+//         !popupBtn.contains(event.target)
+//       ) {
+//         setIsPopupOpen(false); // 팝업 외부 클릭 시 팝업 닫기
+//       }
+//     };
+//     document.addEventListener("mousedown", handleClickOutside); // 이벤트 리스너 추가
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside); // 컴포넌트 언마운트 시 이벤트 리스너 제거
+//     };
+//   }, []);
+
+//   // 모달들
+//  const [isModalOpen, setIsModalOpen] = useState(false);
+//     const [action, setAction] = useState(''); // 'create' 또는 'edit'
+//     const [selectedDisk, setSelectedDisk] = useState(null); // 선택된 디스크
+//     const handleActionClick = (actionType) => {
+//       setAction(actionType); // 동작 설정
+//       setIsModalOpen(true); // 모달 열기
+//     };
+
+
+//   const { 
+//     data: disks, 
+//     status: disksStatus,
+//     isRefetching: isDisksRefetching,
+//     refetch: refetchDisks, 
+//     isError: isDisksError, 
+//     error: disksError, 
+//     isLoading: isDisksLoading,
+//   } = useDisksFromVM(vm?.id, toTableItemPredicateDisks);
+//   function toTableItemPredicateDisks(disk) {
+//     return {
+//         id: disk?.id,
+//         alias: disk?.diskImageVo?.alias || '',  // 별칭
+//         size:disk?.size || '',
+//         icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
+//         icon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />,
+//         connectionTarget: disk?.vmVo?.name || '', // 연결 대상
+//         storageDomain: disk?.diskImageVo?.storageDomainVo?.name || '',  // 스토리지 도메인
+//         virtualSize: disk?.diskImageVo?.virtualSize ? `${(disk.diskImageVo.virtualSize / (1024 ** 3)).toFixed(2)} GIB` : '',
+//         status: disk?.diskImageVo?.status || '알 수 없음', // 상태
+//         contentType: disk?.diskImageVo?.contentType || '알 수 없음', // 콘텐츠 유형
+//         storageType: disk?.diskImageVo?.storageType || '',  // 유형
+//         description: disk?.diskImageVo?.description || '' // 설명
+//       }
+    
+//   };
   
 
   
 
   
-    return (
-        <>
-                <div className="disk_type">
+//     return (
+//         <>
+//                 <div className="disk_type">
 
-                  <div>
-                    <div className='flex'>
-                      <span>디스크유형 : </span>
-                      <div className='flex'>
-                        <button className={activeDiskType === 'all' ? 'active' : ''} onClick={() => handleDiskTypeClick('all')}>모두</button>
-                        <button className={activeDiskType === 'image' ? 'active' : ''} onClick={() => handleDiskTypeClick('image')}>이미지</button>
-                        <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
-                      </div>
-                    </div>
+//                   <div>
+//                     <div className='flex'>
+//                       <span>디스크유형 : </span>
+//                       <div className='flex'>
+//                         <button className={activeDiskType === 'all' ? 'active' : ''} onClick={() => handleDiskTypeClick('all')}>모두</button>
+//                         <button className={activeDiskType === 'image' ? 'active' : ''} onClick={() => handleDiskTypeClick('image')}>이미지</button>
+//                         <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
+//                       </div>
+//                     </div>
         
-                  </div>
+//                   </div>
 
-                  <div className="header_right_btns">
-                    {/* <button id="disk_popup_new"  onClick={() => openPopup('newDisk')}>새로 만들기</button> */}
-                    <button id="disk_popup_new" onClick={() => handleActionClick('create')}>새로 만들기</button>
-                    <button id="join_popup_btn" onClick={() => openPopup('disk_connection')}>연결</button>
-                    {/* <button onClick={() => openPopup('disk_edit')}>수정</button> */}
-                    <button onClick={() => selectedDisk?.id && handleActionClick('edit')}>수정</button>
-                    {/* <button onClick={() => openPopup('delete')}>제거</button> */}
-                    <button onClick={() => selectedDisk?.id && toggleModal('delete', true)} disabled={!selectedDisk?.id}>제거</button>
-                    <button className="content_header_popup_btn" onClick={togglePopup}>
-                      <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
-                      {isPopupOpen && (
-                          <div className="content_header_popup">
-                            <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(); }}>활성</div>
-                            <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>비활성화</div>
-                            <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>이동</div>
-                            <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>LUN 새로고침</div>
-                          </div>
-                        )}
-                    </button>
-                  </div>
-                </div>
+//                   <div className="header_right_btns">
+//                     {/* <button id="disk_popup_new"  onClick={() => openPopup('newDisk')}>새로 만들기</button> */}
+//                     <button id="disk_popup_new" onClick={() => handleActionClick('create')}>새로 만들기</button>
+//                     <button id="join_popup_btn" onClick={() => openPopup('disk_connection')}>연결</button>
+//                     {/* <button onClick={() => openPopup('disk_edit')}>수정</button> */}
+//                     <button onClick={() => selectedDisk?.id && handleActionClick('edit')}>수정</button>
+//                     {/* <button onClick={() => openPopup('delete')}>제거</button> */}
+//                     <button onClick={() => selectedDisk?.id && toggleModal('delete', true)} disabled={!selectedDisk?.id}>제거</button>
+//                     <button className="content_header_popup_btn" onClick={togglePopup}>
+//                       <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
+//                       {isPopupOpen && (
+//                           <div className="content_header_popup">
+//                             <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(); }}>활성</div>
+//                             <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>비활성화</div>
+//                             <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>이동</div>
+//                             <div onClick={(e) => { handlePopupBoxItemClick(e); openPopup(''); }}>LUN 새로고침</div>
+//                           </div>
+//                         )}
+//                     </button>
+//                   </div>
+//                 </div>
 
 
 
-                <span>id = {selectedDisk?.id || ''}</span>
+//                 <span>id = {selectedDisk?.id || ''}</span>
 
-                {activeDiskType === 'all' && (
-                  <TableOuter 
-                    columns={TableInfo.ALL_DISK}
-                    data={disks}
-                    onRowClick={(disk) => setSelectedDisk(disk)}
+//                 {activeDiskType === 'all' && (
+//                   <TableOuter 
+//                     columns={TableInfo.ALL_DISK}
+//                     data={disks}
+//                     onRowClick={(disk) => setSelectedDisk(disk)}
         
            
-                  />
-                )}
+//                   />
+//                 )}
 
-                {activeDiskType === 'image' && (
-                  <TableOuter 
-                    columns={TableInfo.DISKS_FROM_}
-                    data={disks}
-                    onRowClick={(disk) => setSelectedDisk(disk)}
-                  />
-                )}
+//                 {activeDiskType === 'image' && (
+//                   <TableOuter 
+//                     columns={TableInfo.DISKS_FROM_}
+//                     data={disks}
+//                     onRowClick={(disk) => setSelectedDisk(disk)}
+//                   />
+//                 )}
 
-                {activeDiskType === 'lun' && (
-                  <TableOuter 
-                    columns={TableInfo.LUN_DISK}
-                    data={disks}
-                    onRowClick={(disk) => setSelectedDisk(disk)}
-                  />
-                )}
+//                 {activeDiskType === 'lun' && (
+//                   <TableOuter 
+//                     columns={TableInfo.LUN_DISK}
+//                     data={disks}
+//                     onRowClick={(disk) => setSelectedDisk(disk)}
+//                   />
+//                 )}
 
-              {/* 모달 */}
-              <Suspense>
+//               {/* 모달 */}
+//               <Suspense>
        
-                    <>
-                      {(action === 'create' || action === 'edit') && (
-                        <DiskModal
-                          isOpen={isModalOpen}
-                          onRequestClose={() => setIsModalOpen(false)}
-                          editMode={action === 'edit'}
-                          diskId={selectedDisk?.id || null}
-                          vmId={vm?.id || ''}
-                          type="vmDisk"
-                        />
-                      )}
-                       {modals.delete  && selectedDisk &&(
-                        <DeleteModal
-                          isOpen={modals.delete}
-                          type='vmDisk'
-                          onRequestClose={() => toggleModal('delete', false)}
-                          contentLabel={"디스크"}
-                          data={selectedDisk}
-                          vmId={vm?.id}
-                        />
-                      )}
-                    </>
+//                     <>
+//                       {(action === 'create' || action === 'edit') && (
+//                         <DiskModal
+//                           isOpen={isModalOpen}
+//                           onRequestClose={() => setIsModalOpen(false)}
+//                           editMode={action === 'edit'}
+//                           diskId={selectedDisk?.id || null}
+//                           vmId={vm?.id || ''}
+//                           type="vmDisk"
+//                         />
+//                       )}
+//                        {modals.delete  && selectedDisk &&(
+//                         <DeleteModal
+//                           isOpen={modals.delete}
+//                           type='vmDisk'
+//                           onRequestClose={() => toggleModal('delete', false)}
+//                           contentLabel={"디스크"}
+//                           data={selectedDisk}
+//                           vmId={vm?.id}
+//                         />
+//                       )}
+//                     </>
                 
-                </Suspense>
-            </>
-                );
-              };
+//                 </Suspense>
+//             </>
+//                 );
+//               };
+
+
+
+
     //         {/*디스크(새로만들기)팝업 */}
     //         <Modal
     //         isOpen={activePopup === 'newDisk'}
