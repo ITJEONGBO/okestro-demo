@@ -76,17 +76,14 @@ const TableInfo = {
   VMS_FROM_HOST: [
     { header: '', accessor: 'icon', clickable: false, width: '10%' },
     { header: '이름', accessor: 'name', clickable: true, width: '20%' },
-    { header: '코멘트', accessor: 'comment', clickable: false, width: '20%' },
     { header: 'IP주소', accessor: 'ipv4', clickable: false, width: '20%' },
     { header: 'FQDN', accessor: 'fqdn', clickable: false, width: '20%' },
     { header: '상태', accessor: 'status', clickable: false, width: '10%' },
     { header: '클러스터', accessor: 'cluster', clickable: true, width: '20%' },
-    { header: '데이터센터', accessor: 'dataCenter', clickable: true, width: '20%' },
     { header: 'Memory', accessor: 'memoryUsage', clickable: false, width: '12%' },
     { header: 'CPU', accessor: 'cpuUsage', clickable: false, width: '12%' },
     { header: 'Network', accessor: 'networkUsage', clickable: false, width: '12%' },
     { header: '업타임', accessor: 'upTime', clickable: false, width: '20%' },
-    { header: '설명', accessor: 'description', clickable: false, width: '25%' }
   ],
   NETWORK_INTERFACE_FROM_HOST:[
     { header: '', accessor: 'icon' },

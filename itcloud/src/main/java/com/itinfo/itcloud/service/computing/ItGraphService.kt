@@ -181,8 +181,9 @@ class GraphServiceImpl(
 	}
 
 	override fun vmNetworkPerChart(): List<LineDto> {
-		val vmList: List<Vm> = conn.findAllVms(searchQuery = "status=up").getOrDefault(listOf())
-		return vmList.toVmNetworkLineDtos(conn)
+		log.info("vmNetworkPerChart ... ")
+		val vmInterfaceSampleHistoryEntities: List<VmInterfaceSamplesHistoryEntity> = vmInterfaceSamplesHistoryRepository.findVmNetworkMetricListChart()
+		return vmInterfaceSampleHistoryEntities.toVmNetworkLineDtos(conn)
 	}
 
 	override fun vmMetricChart(): List<UsageDto> {

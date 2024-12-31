@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.computing.findNetworkListPercent
+import com.itinfo.itcloud.repository.history.entity.VmInterfaceSamplesHistoryEntity
 import com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.findAllStatisticsFromVm
@@ -45,9 +46,8 @@ fun List<VmSamplesHistoryEntity>.toVmCpuLineDtos(conn: Connection): List<LineDto
     }
 
     return vmDataMap.map { (vmId, dataList) ->
-        val vm: Vm =
-            conn.findVm(vmId).getOrNull()
-                ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+        val vm: Vm = conn.findVm(vmId)
+            .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
         LineDto.builder {
             name { vm.name() }
             dataList { dataList }
@@ -66,8 +66,8 @@ fun List<VmSamplesHistoryEntity>.toVmMemoryLineDtos(conn: Connection): List<Line
     }
 
     return vmDataMap.map { (vmId, dataList) ->
-        val vm: Vm = conn.findVm(vmId).getOrNull()
-                ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+        val vm: Vm = conn.findVm(vmId)
+            .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
         LineDto.builder {
             name { vm.name() }
             dataList { dataList }
@@ -76,12 +76,24 @@ fun List<VmSamplesHistoryEntity>.toVmMemoryLineDtos(conn: Connection): List<Line
     }
 }
 
-fun Vm.toVmNetworkLineDto(conn: Connection): LineDto {
-    val statistics = conn.findAllStatisticsFromVm(this.id())
-    return LineDto.builder {
-        name { this@toVmNetworkLineDto.name() }
-        dataList { statistics.findNetworkListPercent() }
+
+fun List<VmInterfaceSamplesHistoryEntity>.toVmNetworkLineDtos(conn: Connection): List<LineDto> {
+    val vmDataMap = mutableMapOf<String, MutableList<Int>>()
+    val vmTimeMap = mutableMapOf<String, MutableList<LocalDateTime>>()
+
+    this@toVmNetworkLineDtos.forEach {
+        vmDataMap.computeIfAbsent(it.vmId.toString()) { mutableListOf() }.add(it.networkUsagePer)
+        vmTimeMap.computeIfAbsent(it.vmId.toString()) { mutableListOf() }.add(it.historyDatetime)
+    }
+
+    return vmDataMap.map { (vmId, dataList) ->
+        val vm: Vm = conn.findVm(vmId)
+            .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+        LineDto.builder {
+            name { vm.name() }
+            dataList { dataList }
+            time { vmTimeMap[vmId] ?: listOf() }
+        }
     }
 }
-fun List<Vm>.toVmNetworkLineDtos(conn: Connection): List<LineDto> =
-    this@toVmNetworkLineDtos.map { it.toVmNetworkLineDto(conn) }
+

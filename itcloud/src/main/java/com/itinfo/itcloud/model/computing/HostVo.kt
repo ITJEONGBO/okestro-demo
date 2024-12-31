@@ -265,6 +265,11 @@ fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfiguration
         bootingTime { ovirtDf.format(Date(statistics.findBootTime()* 1000)) }
         hostHwVo { this@toHostInfo.toHostHwVo() }
         hostSwVo { this@toHostInfo.toHostSwVo(hostConfigurationEntity) }
+        vmSizeVo {
+            SizeVo.builder {
+                upCnt { if(this@toHostInfo.summary().activePresent()) this@toHostInfo.summary().activeAsInteger() else 0 }
+            }
+        }
     }
 }
 

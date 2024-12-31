@@ -60,10 +60,8 @@ class UsageDto(
 }
 
 fun VmSamplesHistoryEntity.toVmCpuUsageDto(conn: Connection): UsageDto {
-    val vm: Vm =
-        conn.findVm(this@toVmCpuUsageDto.vmId.toString()).getOrNull()
-            ?: throw ErrorPattern.VM_NOT_FOUND.toException()
-
+    val vm: Vm = conn.findVm(this@toVmCpuUsageDto.vmId.toString())
+        .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
     return UsageDto.builder {
         name { vm.name() }
         cpuPercent { this@toVmCpuUsageDto.cpuUsagePercent }
@@ -74,9 +72,8 @@ fun List<VmSamplesHistoryEntity>.toVmCpuUsageDtos(conn: Connection): List<UsageD
 
 
 fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto {
-    val vm: Vm =
-        conn.findVm(this@toVmMemUsageDto.vmId.toString()).getOrNull()
-            ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+    val vm: Vm = conn.findVm(this@toVmMemUsageDto.vmId.toString())
+        .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
     return UsageDto.builder {
         name { vm.name() }
         memoryPercent { this@toVmMemUsageDto.memoryUsagePercent }
@@ -87,9 +84,8 @@ fun List<VmSamplesHistoryEntity>.toVmMemUsageDtos(conn: Connection): List<UsageD
 
 
 fun VmSamplesHistoryEntity.toVmUsageDto(conn: Connection): UsageDto {
-    val vm: Vm =
-        conn.findVm(this@toVmUsageDto.vmId.toString()).getOrNull()
-            ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+    val vm: Vm = conn.findVm(this@toVmUsageDto.vmId.toString())
+        .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
 
     return UsageDto.builder {
         id { vm.id() }
@@ -105,9 +101,8 @@ fun List<VmSamplesHistoryEntity>.toVmUsageDtos(conn: Connection): List<UsageDto>
 
 
 fun StorageDomainSamplesHistoryEntity.toStorageChart(conn: Connection): UsageDto {
-    val storageDomain: StorageDomain =
-        conn.findStorageDomain(this@toStorageChart.storageDomainId.toString())
-            .getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
+    val storageDomain: StorageDomain = conn.findStorageDomain(this@toStorageChart.storageDomainId.toString())
+        .getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
     val totalGB = (this@toStorageChart.availableDiskSizeGb + this@toStorageChart.usedDiskSizeGb).toDouble()
     return UsageDto.builder {
         id { storageDomain.id() }
@@ -120,9 +115,8 @@ fun List<StorageDomainSamplesHistoryEntity>.toStorageCharts(conn: Connection) =
 
 
 fun HostSamplesHistoryEntity.toHostCpuChart(conn: Connection): UsageDto {
-    val host: Host =
-        conn.findHost(this@toHostCpuChart.hostId.toString())
-            .getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toException()
+    val host: Host = conn.findHost(this@toHostCpuChart.hostId.toString())
+        .getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toException()
     return UsageDto.builder {
         name { host.name() }
         cpuPercent { this@toHostCpuChart.cpuUsagePercent }
@@ -132,9 +126,8 @@ fun List<HostSamplesHistoryEntity>.toHostCpuCharts(conn: Connection): List<Usage
     this@toHostCpuCharts.map { it.toHostCpuChart(conn) }
 
 fun HostSamplesHistoryEntity.toHostMemChart(conn: Connection): UsageDto {
-    val host: Host =
-        conn.findHost(this@toHostMemChart.hostId.toString())
-            .getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toException()
+    val host: Host = conn.findHost(this@toHostMemChart.hostId.toString())
+        .getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toException()
     return UsageDto.builder {
         name { host.name() }
         memoryPercent { this@toHostMemChart.memoryUsagePercent }
@@ -142,7 +135,6 @@ fun HostSamplesHistoryEntity.toHostMemChart(conn: Connection): UsageDto {
 }
 fun List<HostSamplesHistoryEntity>.toHostMemCharts(conn: Connection): List<UsageDto> =
     this@toHostMemCharts.map { it.toHostMemChart(conn) }
-
 
 
 /**

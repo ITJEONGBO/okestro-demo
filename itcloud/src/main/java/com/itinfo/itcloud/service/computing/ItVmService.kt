@@ -136,14 +136,11 @@ interface ItVmService {
 class VmServiceImpl(
 
 ) : BaseService(), ItVmService {
-	@Autowired private lateinit var diskVmElementRepository: DiskVmElementRepository
-	@Autowired private lateinit var itGraphService: ItGraphService
 
 	@Throws(Error::class)
 	override fun findAll(): List<VmVo> {
 		log.info("findAll ... ")
-		val res: List<Vm> =
-			conn.findVms()
+		val res: List<Vm> = conn.findVms()
 		return res.toVmsMenu(conn)
 	}
 
@@ -159,9 +156,8 @@ class VmServiceImpl(
 	@Throws(Error::class)
 	override fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo> {
 		log.info("findAllVnicProfilesFromCluster ... clusterId: {}", clusterId)
-		val cluster: Cluster =
-			conn.findCluster(clusterId).getOrNull()
-				?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+		val cluster: Cluster = conn.findCluster(clusterId)
+			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 
 		val res: List<VnicProfile> =
 			conn.findAllNetworks().getOrDefault(listOf())

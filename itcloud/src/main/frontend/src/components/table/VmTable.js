@@ -40,6 +40,7 @@ const VmTable = ({
               {vm.dataCenterVo.name}
             </TableRowClick>
           ): '',
+          ipv4: vm.ipv4 + ' ' + vm.ipv6,
           memoryUsage: vm.usageDto?.memoryPercent === null || vm.usageDto?.memoryPercent === undefined 
           ? '' : `${vm.usageDto.memoryPercent}%`,
           cpuUsage: vm.usageDto?.cpuPercent === null || vm.usageDto?.cpuPercent === undefined 

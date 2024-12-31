@@ -125,7 +125,7 @@ class VmSamplesHistoryEntity(
 	}
 }
 
-// 호스트 각각 현재 사용량 보여주는 거
+// 가상머신 각각 현재 사용량 보여주는 거
 fun VmSamplesHistoryEntity.getUsage(): UsageDto {
 	return UsageDto.builder {
 //		.id(hostId.toString())

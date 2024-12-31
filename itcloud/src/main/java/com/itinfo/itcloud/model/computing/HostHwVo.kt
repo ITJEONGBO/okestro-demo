@@ -70,22 +70,30 @@ class HostHwVo(
 
 /**
  * 호스트 하드웨어 정보 받기
- * @param host  호스트 객체
  * @return 하드웨어 정보
  */
 fun Host.toHostHwVo(): HostHwVo {
-   log.debug("Host.toHostHwVo ... ")
+    val hardwareInfo = this.hardwareInformation()
+    val cpuInfo = this.cpu()
+    val cpuTopology = if (cpuInfo.topologyPresent()) cpuInfo.topology() else null
+
+    val cpuSocket = cpuTopology?.socketsAsInteger() ?: 0
+    val cpuThread = cpuTopology?.threadsAsInteger() ?: 0
+    val cpuCore = cpuTopology?.coresAsInteger() ?: 0
+    val cpuTopologyAll = cpuSocket * cpuThread * cpuCore
+
    return HostHwVo.builder {
-       family { if (this@toHostHwVo.hardwareInformation().familyPresent()) this@toHostHwVo.hardwareInformation().family() else "" }
-       manufacturer { if(this@toHostHwVo.hardwareInformation().manufacturerPresent()) this@toHostHwVo.hardwareInformation().manufacturer() else "" }
-       productName { if (this@toHostHwVo.hardwareInformation().productNamePresent()) this@toHostHwVo.hardwareInformation().productName() else "" }
-       hwVersion { if (this@toHostHwVo.hardwareInformation().versionPresent()) this@toHostHwVo.hardwareInformation().version() else "" }
-       cpuName { if (this@toHostHwVo.cpu().namePresent()) this@toHostHwVo.cpu().name() else "" }
-       cpuType { if (this@toHostHwVo.cpu().typePresent()) this@toHostHwVo.cpu().type() else "" }
-       uuid { if (this@toHostHwVo.hardwareInformation().uuidPresent()) this@toHostHwVo.hardwareInformation().uuid() else "" }
-       serialNum { if (this@toHostHwVo.hardwareInformation().serialNumberPresent()) this@toHostHwVo.hardwareInformation().serialNumber() else "" }
-       cpuTopologySocket { if (this@toHostHwVo.cpu().topologyPresent()) this@toHostHwVo.cpu().topology().socketsAsInteger() else 0 }
-       cpuTopologyThread { if (this@toHostHwVo.cpu().topologyPresent()) this@toHostHwVo.cpu().topology().threadsAsInteger() else 0 }
-       cpuTopologyCore { if (this@toHostHwVo.cpu().topologyPresent()) this@toHostHwVo.cpu().topology().coresAsInteger() else 0 }
+       family { if (hardwareInfo.familyPresent()) hardwareInfo.family() else "" }
+       manufacturer { if(hardwareInfo.manufacturerPresent()) hardwareInfo.manufacturer() else "" }
+       productName { if (hardwareInfo.productNamePresent()) hardwareInfo.productName() else "" }
+       hwVersion { if (hardwareInfo.versionPresent()) hardwareInfo.version() else "" }
+       cpuName { if (cpuInfo.namePresent()) cpuInfo.name() else "" }
+       cpuType { if (cpuInfo.typePresent()) cpuInfo.type() else "" }
+       uuid { if (hardwareInfo.uuidPresent()) hardwareInfo.uuid() else "" }
+       serialNum { if (hardwareInfo.serialNumberPresent()) hardwareInfo.serialNumber() else "" }
+       cpuTopologySocket { cpuSocket }
+       cpuTopologyThread { cpuThread }
+       cpuTopologyCore { cpuCore }
+       cpuTopologyAll { cpuTopologyAll }
    }
 }

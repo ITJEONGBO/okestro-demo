@@ -23,16 +23,11 @@ const NetworkInfo = () => {
     refetch: networkRefetch,
     error: networkError,
     isLoading: isnetworkLoading,
-  } = useNetworkById(networkId, (e) => ({
-    ...e,
-  }));
+  } = useNetworkById(networkId, (e) => ({...e,}));
 
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
-  const [modals, setModals] = useState({
-    edit: false,
-    delete: false,
-  });
+  const [modals, setModals] = useState({ edit: false, delete: false });
   
   const sections = [
     { id: 'general', label: '일반' },

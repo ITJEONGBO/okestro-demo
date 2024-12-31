@@ -49,7 +49,7 @@ const HostGeneral = ({ hostId }) => {
             </tr>
             <tr>
               <th>논리 CPU 코어 수:</th>
-              <td>{host?.hostHwVo?.cpuTopologySocket}</td>
+              <td>{host?.hostHwVo?.cpuTopologyAll}</td>
             </tr>
             <tr>
               <th>온라인 논리 CPU 코어 수:</th>
@@ -89,7 +89,7 @@ const HostGeneral = ({ hostId }) => {
             </tr>
             <tr>
               <th>공유 메모리:</th>
-              <td>{host?.name}</td>
+              <td></td>
             </tr>
             <tr>
               <th>장치 통과:</th>
@@ -124,7 +124,7 @@ const HostGeneral = ({ hostId }) => {
           <tbody>
             <tr>
               <th>제조사:</th>
-              <td>{host?.hostHwVo?.name}</td>
+              <td>{host?.hostHwVo?.manufacturer}</td>
             </tr>
             <tr>
               <th>버전:</th>
@@ -140,7 +140,7 @@ const HostGeneral = ({ hostId }) => {
             </tr>
             <tr>
               <th>제품군:</th>
-              <td>{host?.hostHwVo?.name}</td>
+              <td>{host?.hostHwVo?.family}</td>
             </tr>
             <tr>
               <th>UUID:</th>

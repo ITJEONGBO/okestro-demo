@@ -204,8 +204,8 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun findOne(hostId: String): HostVo? {
 		log.info("findOne ... hostId: {}", hostId)
-		val res: Host? =
-			conn.findHost(hostId).getOrNull()
+		val res: Host? = conn.findHost(hostId)
+			.getOrNull()
 		val sw: HostConfigurationEntity =
 			hostConfigurationRepository.findFirstByHostIdOrderByUpdateDateDesc(UUID.fromString(hostId))
 		return res?.toHostInfo(conn, sw)
@@ -214,13 +214,12 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun add(hostVo: HostVo): HostVo? {
 		log.info("add ... ")
-		val res: Host? =
-			conn.addHost(
-				hostVo.toAddHostBuilder(),
-				hostVo.hostedEngine,
-				rutil.id,
-				rutil.password
-			).getOrNull()
+		val res: Host? = conn.addHost(
+			hostVo.toAddHostBuilder(),
+			hostVo.hostedEngine,
+			rutil.id,
+			rutil.password
+		).getOrNull()
 		return res?.toHostVo(conn)
 	}
 
