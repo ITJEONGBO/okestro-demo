@@ -83,6 +83,16 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun remove(hostId: String): Boolean
+	/**
+	 * [ItHostService.removeList]
+	 * 호스트 삭제
+	 * 가상머신 돌아가는게 있는지 -> 유지보수 상태인지 -> 삭제
+	 *
+	 * @param hostId List<[String]> 호스트 아이디 리스트
+	 * @return [Boolean]
+	 */
+	@Throws(Error::class)
+	fun removeList(hostIdList: List<String>): List<Boolean>
 
 	/**
 	 * [ItHostService.findAllVmsFromHost]
@@ -230,8 +240,7 @@ class HostServiceImpl(
 		//  com.itinfo.util.ovirt.error.ItCloudException: Fault reason is 'Operation Failed'. Fault detail is '[Cannot edit Host. Host parameters cannot be modified while Host is operational.
 		//  Please switch Host to Maintenance mode first.]'. HTTP response code is '409'. HTTP response message is 'Conflict'.
 		//  Host.Ext 에서 async(true) 사용해서 일단 편집기능은 되지않고 테스트는 가능
-		val res: Host? =
-			conn.updateHost(
+		val res: Host? = conn.updateHost(
 				hostVo.toEditHostBuilder()
 			).getOrNull()
 		return res?.toHostVo(conn)
@@ -240,10 +249,20 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun remove(hostId: String): Boolean {
 		log.info("remove ... hostId: {}", hostId)
-		val res: Result<Boolean> =
-			conn.removeHost(hostId)
+		val res: Result<Boolean> = conn.removeHost(hostId)
 		return res.isSuccess
 	}
+
+	@Throws(Error::class)
+	override fun removeList(hostIdList: List<String>): List<Boolean> {
+		// TODO not yet
+		log.info("removeList ... hostIdList ... {}", hostIdList)
+		val res: List<Result<Boolean>> = hostIdList.map { hostId ->
+			conn.removeHost(hostId)
+		}
+		return res.map { it.isSuccess }
+	}
+
 
 	@Throws(Error::class)
 	override fun findAllVmsFromHost(hostId: String): List<VmVo> {

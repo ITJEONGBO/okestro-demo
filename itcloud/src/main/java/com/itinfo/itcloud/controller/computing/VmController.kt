@@ -169,6 +169,34 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVm.remove(vmId, detachOnly))
 	}
 
+
+//	@ApiOperation(
+//		httpMethod="DELETE",
+//		value="가상머신 디스크 삭제(다중)",
+//		notes="선택된 가상머신의 디스크를 삭제한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//		ApiImplicitParam(name="diskAttachments", value="디스크 ID 목록", dataTypeClass=Array<DiskAttachmentVo>::class, required=true, paramType="body"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@DeleteMapping("/{vmId}/disks")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun removeDisks(
+//		@PathVariable vmId: String? = null,
+//		@RequestBody diskAttachments: List<DiskAttachmentVo>? = null,
+//	): ResponseEntity<Boolean> {
+//		if (vmId.isNullOrEmpty())
+//			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+//		if (diskAttachments == null)
+//			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
+//		log.info("/computing/vms/{}/disks ... 가상머신 디스크 삭제(다중) ", vmId)
+//		return ResponseEntity.ok(iVmDisk.removeMultiFromVm(vmId, diskAttachments))
+//	}
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="가상머신 내 어플리케이션 목록",

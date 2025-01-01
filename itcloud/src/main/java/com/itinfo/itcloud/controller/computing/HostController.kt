@@ -142,6 +142,29 @@ class HostController {
 		return ResponseEntity.ok(iHost.remove(hostId))
 	}
 
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="호스트 다중 삭제",
+		notes="호스트를 다중 삭제한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@DeleteMapping()
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun removeList(
+		@RequestBody hostIdList: List<String>? = null,
+	): ResponseEntity<List<Boolean>> {
+		if (hostIdList.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts ... 호스트 다중삭제")
+		return ResponseEntity.ok(iHost.removeList(hostIdList))
+	}
+
 
 	@ApiOperation(
 		httpMethod="GET",
