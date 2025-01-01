@@ -11,6 +11,8 @@ import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.HostOperationServiceImpl
+import com.itinfo.itcloud.service.computing.HostOperationServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
@@ -70,6 +72,16 @@ interface ItNetworkService {
 	 */
 	@Throws(Error::class)
 	fun remove(networkId: String): Boolean
+
+	/**
+	 * [ItNetworkService.removeMultiple]
+	 * 네트워크 다중 삭제
+	 *
+	 * @param networkIdList [String] 네트워크 Id list
+	 * @return Map<[String], [String]>
+	 */
+	@Throws(Error::class)
+	fun removeMultiple(networkIdList: List<String>): Map<String, String>
 	/**
 	 * [ItNetworkService.findNetworkProviderFromNetwork]
 	 * 네트워크 가져오기 - 네트워크 공급자 목록
@@ -163,18 +175,16 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun findAll(): List<NetworkVo> {
 		log.info("findAll ... ")
-		val networks: List<Network> =
-			conn.findAllNetworks()
-				.getOrDefault(listOf())
+		val networks: List<Network> = conn.findAllNetworks()
+			.getOrDefault(listOf())
 		return networks.toNetworksMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findOne(networkId: String): NetworkVo? {
 		log.info("findOne ... networkId: {}", networkId)
-		val res: Network? =
-			conn.findNetwork(networkId, "networklabels")
-				.getOrNull()
+		val res: Network? = conn.findNetwork(networkId, "networklabels")
+			.getOrNull()
 		return res?.toNetworkVo(conn)
 	}
 
@@ -208,9 +218,29 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun remove(networkId: String): Boolean {
 		log.info("remove ... ")
-		val res: Result<Boolean> =
-			conn.removeNetwork(networkId)
+		val res: Result<Boolean> = conn.removeNetwork(networkId)
 		return res.isSuccess
+	}
+
+	@Throws(Error::class)
+	override fun removeMultiple(networkIdList: List<String>): Map<String, String> {
+		val result = mutableMapOf<String, String>() // 성공/실패 결과를 저장할 Map
+
+		networkIdList.forEach { networkId ->
+			val networkName: String = conn.findNetwork(networkId).getOrNull()?.name().toString()
+			try {
+				log.info("removeMultiple ... networkId: {}", networkId)
+				val isSuccess = conn.removeNetwork(networkId).isSuccess
+
+				if (isSuccess) {
+					result[networkName] = "Success"
+				}
+			} catch (ex: Exception) {
+				log.error("Failed to remove network: $networkName", ex)
+				result[networkName] = "Failure: ${ex.message}" // 실패한 경우 메시지 추가
+			}
+		}
+		return result
 	}
 
 	@Throws(Error::class)

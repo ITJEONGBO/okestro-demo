@@ -2,6 +2,8 @@ package com.itinfo.itcloud.controller.network
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
+import com.itinfo.itcloud.controller.computing.HostController
+import com.itinfo.itcloud.controller.computing.HostController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -140,6 +142,30 @@ class NetworkController: BaseController() {
 		log.info("/networks/{} ... 네트워크 삭제", networkId)
 		return ResponseEntity.ok(iNetwork.remove(networkId))
 	}
+
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="네트워크 다중 삭제",
+		notes="네트워크를 다중 삭제한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkIdList", value="네트워크 ID 리스트", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@DeleteMapping()
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun remove(
+		@RequestBody networkIdList: List<String>? = null,
+	): ResponseEntity<Map<String, String>> {
+		if (networkIdList.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		log.info(" ... 네트워크 삭제")
+		return ResponseEntity.ok(iNetwork.removeMultiple(networkIdList))
+	}
+	
 
 	@ApiOperation(
 		httpMethod="GET",
