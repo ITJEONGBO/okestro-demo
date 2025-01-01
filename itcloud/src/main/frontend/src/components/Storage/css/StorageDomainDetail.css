@@ -1,10 +1,9 @@
-.content_detail_section{
+/* .content_detail_section{
     width: 96.7%;
     background: white;
     position: relative;
 }
 .table_container_center,.table_container_right{
-    /* margin: 20px;*/
     width: 31%;
  }
 
@@ -17,9 +16,9 @@
 }
 .storage_right_btns>span{
     margin-right: 0.2rem;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .storage_right_btns>div{
     width: 8%;
@@ -34,7 +33,7 @@
     color: rgb(10, 55, 107);
     font-weight: 600;
     background: white;
-}
+} */
 /*유지보수 팝업*/
 .maintenance_popup{
     position: absolute;

@@ -5,7 +5,7 @@ import VmDeleteModal from './VmDeleteModal';
 import VmSnapshotAddModal from './VmSnapshotaddModal';
 // import VmExportOVAModal from './VmExportOVAModal';
 
-const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm,selectedVms }) => {
+const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm,selectedVms = []}) => {
   const VmModal = React.lazy(() => import('../Modal/VmModal'));
   const VmDeleteModal = React.lazy(() => import('./VmDeleteModal'));
   const VmActionModal = React.lazy(() => import('../Modal/VmActionModal'));
