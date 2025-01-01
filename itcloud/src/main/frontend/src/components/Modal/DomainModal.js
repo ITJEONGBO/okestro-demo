@@ -565,7 +565,7 @@ const DomainModal = ({
       {/* NFS 의 경우 */}
       {isNfs && (
         <div className="storage_popup_iSCSI">
-          <div className="network_form_group">
+          <div className="domain_new_group">
             <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
             {editMode ? (
               <input
@@ -577,18 +577,24 @@ const DomainModal = ({
               />
             ) : (
               <>
-                <input
-                  type="text"
-                  placeholder="예: myserver.mydomain.com"
-                  value={storageAddress}
-                  onChange={(e) => setStorageAddress(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="예: /my/local/path"
-                  value={storagePath}
-                  onChange={(e) => setStoragePath(e.target.value)}
-                />
+              <div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="예: myserver.mydomain.com"
+                    value={storageAddress}
+                    onChange={(e) => setStorageAddress(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="예: /my/local/path"
+                    value={storagePath}
+                    onChange={(e) => setStoragePath(e.target.value)}
+                  />
+                </div>
+              </div>
               </>
             )}
           </div>
@@ -774,22 +780,26 @@ const DomainModal = ({
       <div className="tab_content">
         <div className="storage_specific_content">
           <FormGroup>
-            <label className='label_font_body'>디스크 공간 부족 경고 표시(%)</label>
-            <input
-              type="number"
-              value={formState.warning}
-              className='input_number'
-              onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
-            />
+            <div className='domain_num_box'>
+              <label className='label_font_body'>디스크 공간 부족 경고 표시(%)</label>
+              <input
+                type="number"
+                value={formState.warning}
+                className='input_number'
+                onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
+              />
+            </div>
           </FormGroup>
           <FormGroup>
-            <label className='label_font_body'>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-            <input
-              type="number"
-              value={formState.spaceBlocker}
-              className='input_number'
-              onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
-            />
+            <div className='domain_num_box'>
+              <label className='label_font_body'>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+              <input
+                type="number"
+                value={formState.spaceBlocker}
+                className='input_number'
+                onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
+              />
+            </div>
           </FormGroup>
         </div>
       </div>

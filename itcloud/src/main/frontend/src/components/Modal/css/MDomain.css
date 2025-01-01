@@ -25,10 +25,6 @@
   font-weight: bold;
 }
 
-.label_font_body{
-  font-size: 10px;
-}
-
 .tab_content{
   padding: 5px 10px;
 }
@@ -131,11 +127,24 @@
   width: 48%;
 
 }
+.domain_new_group{
+  font-size: 0.32rem;
+  padding: 0.2rem 0.3rem;
+  display: flex;
+  justify-content: space-between;
+}
 .domain_new_select{
   width: 100%;
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.3rem;
+}
+.domain_num_box{
+  font-size: 0.32rem;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2rem;
+  width: 100%;
 }
 .domain_new_select select, 
 .domain_new_select input,

@@ -323,6 +323,13 @@ const DiskModal = ({
           >
             이미지
           </div>
+          <div
+            id="storage_directlun_btn"
+            onClick={() => handleTabClick('directlun')}
+            className={activeTab === 'directlun' ? 'active' : ''}
+          >
+            직접 LUN
+          </div>
           {/* <div></div> */}
           {/* <div
             id="storage_directlun_btn"
@@ -334,7 +341,7 @@ const DiskModal = ({
         </div>
 
         {/*이미지*/}
-        {/* {activeTab === 'img' && ( */}
+        {activeTab === 'img' && (
           <div className="disk_new_img">
             <div className="disk_new_img_left">
 
@@ -541,8 +548,8 @@ const DiskModal = ({
             </div>
          
         </div>
-        {/* )} */}
-        {/* 직접LUN
+     )} 
+        {/* 직접LUN */}
         {activeTab === 'directlun' && (
           <div id="storage_directlun_outer">
             <div id="storage_lun_first">
@@ -582,7 +589,7 @@ const DiskModal = ({
               </div>
             </div>
           </div>
-        )} */}
+        )}
         <div className="edit_footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
