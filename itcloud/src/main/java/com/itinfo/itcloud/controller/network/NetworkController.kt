@@ -165,7 +165,7 @@ class NetworkController: BaseController() {
 		log.info(" ... 네트워크 삭제")
 		return ResponseEntity.ok(iNetwork.removeMultiple(networkIdList))
 	}
-	
+
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -523,6 +523,33 @@ class NetworkController: BaseController() {
 		return ResponseEntity.ok(iVnic.remove(vnicProfileId))
 	}
 
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="vnic 프로파일 삭제",
+		notes="vnic 프로파일을 삭제한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="vnicProfileIdList", value="Vnic Profile ID 리스트", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@DeleteMapping("/{networkId}/vnicProfiles")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun removeVnic(
+		@PathVariable networkId: String? = null,
+		@RequestBody vnicProfileIdList: List<String>? = null,
+	): ResponseEntity<Map<String, String>> {
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		if (vnicProfileIdList.isNullOrEmpty())
+			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
+		log.info("/{}/vnicProfiles ... vnic 프로파일 삭제", networkId)
+		return ResponseEntity.ok(iVnic.removeMultiple(vnicProfileIdList))
+	}
+	
 
 	// endregion
 
