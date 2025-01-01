@@ -5,6 +5,7 @@ import com.itinfo.itcloud.model.auth.RutilProperties
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -21,6 +22,15 @@ interface ItHostOperationService {
     @Throws(Error::class)
     fun deactivate(hostId: String): Boolean
     /**
+     * [ItHostOperationService.deactivateMultiple]
+     * 호스트 관리 - 다중 유지보수
+     *
+     * @param hostIds List<[String]> 호스트 아이디
+     * @return [Boolean]
+     */
+    @Throws(Error::class)
+    fun deactivateMultiple(hostIds: List<String>): Map<String, String>
+    /**
      * [ItHostOperationService.activate]
      * 호스트 관리 - 활성
      *
@@ -29,6 +39,15 @@ interface ItHostOperationService {
      */
     @Throws(Error::class)
     fun activate(hostId: String): Boolean
+    /**
+     * [ItHostOperationService.activateMultiple]
+     * 호스트 관리 - 다중 활성
+     *
+     * @param hostIds List<[String]> 호스트 아이디
+     * @return Map<[String], [String]>
+     */
+    @Throws(Error::class)
+    fun activateMultiple(hostIds: List<String>): Map<String, String>
     /**
      * [ItHostOperationService.restart]
      * 호스트 ssh 관리 - 재시작
@@ -85,16 +104,36 @@ interface ItHostOperationService {
 class HostOperationServiceImpl(
 
 ): BaseService(), ItHostOperationService {
-
     @Autowired private lateinit var rutil: RutilProperties
 
     @Throws(Error::class)
     override fun deactivate(hostId: String): Boolean {
         log.info("deactivate ... hostId: {}", hostId)
-        val res: Result<Boolean> =
-            conn.deactivateHost(hostId)
+        val res: Result<Boolean> = conn.deactivateHost(hostId)
         return res.isSuccess
     }
+
+    @Throws(Error::class)
+    override fun deactivateMultiple(hostIds: List<String>): Map<String, String> {
+        val result = mutableMapOf<String, String>() // 성공/실패 결과를 저장할 Map
+
+        hostIds.forEach { hostId ->
+            val hostName: String = conn.findHost(hostId).getOrNull()?.name().toString()
+            try {
+                log.info("deactivateMultiple ... hostId: {}", hostId)
+                val isSuccess = conn.deactivateHost(hostId).isSuccess
+
+                if (isSuccess) {
+                    result[hostName] = "Success"
+                }
+            } catch (ex: Exception) {
+                log.error("Failed to deactivate host: $hostName", ex)
+                result[hostName] = "Failure: ${ex.message}" // 실패한 경우 메시지 추가
+            }
+        }
+        return result // 성공/실패 결과 반환
+    }
+
 
     @Throws(Error::class)
     override fun activate(hostId: String): Boolean {
@@ -102,6 +141,27 @@ class HostOperationServiceImpl(
         val res: Result<Boolean> =
             conn.activateHost(hostId)
         return res.isSuccess
+    }
+
+    @Throws(Error::class)
+    override fun activateMultiple(hostIds: List<String>): Map<String, String> {
+        val result = mutableMapOf<String, String>() // 성공/실패 결과를 저장할 Map
+
+        hostIds.forEach { hostId ->
+            val hostName: String = conn.findHost(hostId).getOrNull()?.name().toString()
+            try {
+                log.info("activateMultiple ... hostId: {}", hostId)
+                val isSuccess = conn.activateHost(hostId).isSuccess
+
+                if (isSuccess) {
+                    result[hostName] = "Success"
+                }
+            } catch (ex: Exception) {
+                log.error("Failed to activate host: $hostName", ex)
+                result[hostName] = "Failure: ${ex.message}" // 실패한 경우 메시지 추가
+            }
+        }
+        return result
     }
 
     @Throws(UnknownHostException::class, Error::class)

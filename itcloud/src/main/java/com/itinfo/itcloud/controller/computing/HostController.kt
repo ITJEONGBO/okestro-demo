@@ -438,6 +438,30 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="POST",
+		value="호스트 다중 유지보수 모드전환",
+		notes="호스트를 다중 유지보수 모드로 전환한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/deactivate")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun deactivateList(
+		@RequestBody hostIdList: List<String>? = null,
+	): ResponseEntity<Map<String, String>> {
+		if (hostIdList.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/deactivate ... 호스트 다중 유지보수")
+		return ResponseEntity.ok(iHostOp.deactivateMultiple(hostIdList))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
 		value="호스트 활성화 모드전환",
 		notes="호스트를 활성화 모드로 전환한다"
 	)
@@ -458,6 +482,30 @@ class HostController {
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("/computing/hosts/{}/activate ... 호스트 활성", hostId)
 		return ResponseEntity.ok(iHostOp.activate(hostId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="호스트 다중 활성 모드전환",
+		notes="호스트를 다중 활성 모드로 전환한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/activate")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun activateList(
+		@RequestBody hostIdList: List<String>? = null,
+	): ResponseEntity<Map<String, String>> {
+		if (hostIdList.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/activate ... 호스트 다중 활성")
+		return ResponseEntity.ok(iHostOp.activateMultiple(hostIdList))
 	}
 
 
