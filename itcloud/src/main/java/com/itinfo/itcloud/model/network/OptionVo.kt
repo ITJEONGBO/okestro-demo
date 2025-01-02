@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.model.network
 
 import com.itinfo.itcloud.gson
+import org.ovirt.engine.sdk4.builders.BondingBuilder
 import org.ovirt.engine.sdk4.builders.OptionBuilder
 import org.ovirt.engine.sdk4.types.Option
 import org.slf4j.LoggerFactory
@@ -38,10 +39,33 @@ fun Option.toOptionVo(): OptionVo {
 fun List<Option>.toOptionVos(): List<OptionVo> =
     this@toOptionVos.map { it.toOptionVo() }
 
-fun OptionVo.toOptionBuilder(): Option {
+
+fun toDefaultModeOptionBuilder(): Option {
     return OptionBuilder()
-        .name(this@toOptionBuilder.name)
-        .value(this@toOptionBuilder.value)
-//        .type(this@toOptionBuilder.type)
+        .name("mode")
+        .value("4")
         .build()
 }
+fun toDefaultMiimonOptionBuilder(): Option {
+    return OptionBuilder()
+        .name("miimon")
+        .value("100")
+        .build()
+}
+
+fun toDefaultOption(): List<Option> {
+    return listOf(
+        toDefaultModeOptionBuilder(),
+        toDefaultMiimonOptionBuilder()
+    )
+}
+
+fun OptionVo.toOption(): Option {
+    return OptionBuilder()
+        .name(this@toOption.name)
+        .value(this@toOption.value)
+        .build()
+}
+fun List<OptionVo>.toOptions(): List<Option> =
+    this@toOptions.map { it.toOption() }
+

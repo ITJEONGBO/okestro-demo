@@ -2,6 +2,10 @@ package com.itinfo.itcloud.model.network
 
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.IdentifiedVo
+import org.ovirt.engine.sdk4.builders.HostNicBuilder
+import org.ovirt.engine.sdk4.builders.NetworkAttachmentBuilder
+import org.ovirt.engine.sdk4.builders.NetworkBuilder
+import org.ovirt.engine.sdk4.types.NetworkAttachment
 import java.io.Serializable
 
 /**
@@ -41,3 +45,26 @@ class NetworkAttachmentVo (
         inline fun builder(block: NetworkAttachmentVo.Builder.() -> Unit): NetworkAttachmentVo = NetworkAttachmentVo.Builder().apply(block).build()
     }
 }
+
+
+/**
+ * 호스트 네트워크 modified_network_attachments
+ * host_nic 빌더
+ */
+fun NetworkAttachmentVo.toModifiedNetworkAttachmentBuilder(): NetworkAttachmentBuilder {
+    return NetworkAttachmentBuilder()
+        .network(NetworkBuilder().id(this@toModifiedNetworkAttachmentBuilder.networkVo.id))
+        .hostNic(HostNicBuilder().id(this@toModifiedNetworkAttachmentBuilder.hostNicVo.id))
+        .ipAddressAssignments(this@toModifiedNetworkAttachmentBuilder.ipAddressAssignments.toIpAddressAssignments())
+//        .dnsResolverConfiguration()
+}
+
+fun NetworkAttachmentVo.toModifiedNetworkAttachment(): NetworkAttachment =
+    this@toModifiedNetworkAttachment.toModifiedNetworkAttachmentBuilder().build()
+
+
+// 여러개
+fun List<NetworkAttachmentVo>.toModifiedNetworkAttachments(): List<NetworkAttachmentBuilder> =
+    this@toModifiedNetworkAttachments.map { it.toModifiedNetworkAttachmentBuilder() }
+
+

@@ -7,6 +7,7 @@ import com.itinfo.itcloud.model.fromHostNicsToIdentifiedVos
 import com.itinfo.util.ovirt.findNicFromHost
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.BondingBuilder
+import org.ovirt.engine.sdk4.builders.HostNicBuilder
 import org.ovirt.engine.sdk4.types.Bonding
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.HostNic
@@ -16,18 +17,22 @@ import java.io.Serializable
 private val log = LoggerFactory.getLogger(BondingVo::class.java)
 
 class BondingVo (
+    val adPartnerMacAddress: String = "",
     val activeSlave: IdentifiedVo = IdentifiedVo(),  // hostNicvo
     val optionVos: List<OptionVo> = listOf(),
-    val slaves: List<HostNicVo> = listOf(),  // hostNic
+    val slaves: List<IdentifiedVo> = listOf(),  // hostNic
+//    val slaves: List<HostNicVo> = listOf(),  // hostNic
 ): Serializable {
     override fun toString(): String = gson.toJson(this)
 
     class Builder{
+        private var bAdPartnerMacAddress: String = ""; fun adPartnerMacAddress(block: () -> String?) { bAdPartnerMacAddress = block() ?: "" }
         private var bActiveSlave: IdentifiedVo = IdentifiedVo(); fun activeSlave(block: () -> IdentifiedVo?) { bActiveSlave = block() ?: IdentifiedVo() }
         private var bOptionVos: List<OptionVo> = listOf(); fun optionVos(block: () -> List<OptionVo>?) { bOptionVos = block() ?: listOf() }
-        private var bSlaves: List<HostNicVo> = listOf(); fun slaves(block: () -> List<HostNicVo>?) { bSlaves = block() ?: listOf() }
+        private var bSlaves: List<IdentifiedVo> = listOf(); fun slaves(block: () -> List<IdentifiedVo>?) { bSlaves = block() ?: listOf() }
+//        private var bSlaves: List<HostNicVo> = listOf(); fun slaves(block: () -> List<HostNicVo>?) { bSlaves = block() ?: listOf() }
 
-        fun build(): BondingVo = BondingVo(bActiveSlave, bOptionVos, bSlaves)
+        fun build(): BondingVo = BondingVo(bAdPartnerMacAddress, bActiveSlave, bOptionVos, bSlaves)
     }
 
     companion object{
@@ -38,10 +43,10 @@ class BondingVo (
 fun Bonding.toBondingVo(conn: Connection, hostId: String): BondingVo {
     val slaves = if (this@toBondingVo.slavesPresent()) {
         this@toBondingVo.slaves().mapNotNull { hostNic ->
-            // Extract the id from each slave
             val slaveId = hostNic.id()
             val nic: HostNic? = conn.findNicFromHost(hostId, slaveId).getOrNull()
-            nic?.toSlaveHostNicVo(conn)
+//            nic?.toSlaveHostNicVo(conn)
+            nic?.fromHostNicToIdentifiedVo()
         }
     } else listOf()
 
@@ -63,10 +68,16 @@ fun Bonding.toBondingVo(conn: Connection, hostId: String): BondingVo {
 /**
  * 호스트 네트워크 인터페이스
  */
-fun BondingVo.toBondingBuilder(): Bonding {
-
+fun BondingVo.toBondingBuilder(): BondingBuilder {
     return BondingBuilder()
-//        .options()
-//        .slaves()
-        .build()
+        .options(toDefaultOption()) // 기본 옵션지정
+        .slaves(this@toBondingBuilder.slaves.map { slave ->
+            HostNicBuilder()
+                .id(slave.id)
+                .build()
+        })
 }
+
+// 호스트 네트워크 설정 - 본딩 인터페이스 생성
+fun BondingVo.toBonding(): Bonding =
+    this@toBonding.toBondingBuilder().build()

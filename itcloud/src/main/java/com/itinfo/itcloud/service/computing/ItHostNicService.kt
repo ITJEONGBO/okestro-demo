@@ -54,7 +54,11 @@ class ItHostNicServiceImpl(
         log.info("findAllFromHost ... hostId: {}", hostId)
         val res: List<HostNic> = conn.findAllNicsFromHost(hostId)
             .getOrDefault(listOf())
-        return res.toHostNicVos(conn)
+
+        val bondingSlaveIds = res.flatMap { it.bonding()?.slaves()?.map { slave -> slave.id() } ?: emptyList() }.toSet()
+        val filteredNics = res.filterNot { it.id() in bondingSlaveIds }
+
+        return filteredNics.toHostNicVos(conn)
     }
 
     @Throws(Error::class)
@@ -68,7 +72,7 @@ class ItHostNicServiceImpl(
     @Throws(Error::class)
     override fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean {
         log.info("setUpNetworksFromHost ... hostId: {}", hostId)
-
+//        val res: HostNic
         TODO("Not yet implemented")
     }
 

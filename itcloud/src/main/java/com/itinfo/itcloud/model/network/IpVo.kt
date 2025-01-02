@@ -9,6 +9,7 @@ import java.io.Serializable
 class IpVo (
     val address: String = "",
     val gateway: String = "",
+    val netmask: String = "",
     val version: IpVersion = IpVersion.V4,
 ): Serializable {
     override fun toString(): String =
@@ -17,9 +18,10 @@ class IpVo (
     class Builder {
         private var bAddress: String = "";fun address(block: () -> String?) { bAddress = block() ?: "" }
         private var bGateway: String = "";fun gateway(block: () -> String?) { bGateway = block() ?: "" }
-        private var bVersion: IpVersion = IpVersion.V4;fun version(block: () -> IpVersion?) { bVersion = block() ?: IpVersion.V4 }
+        private var bNetmask: String = "";fun netmask(block: () -> String?) { bNetmask = block() ?: "" }
+        private var bVersion: IpVersion = IpVersion.V4; fun version(block: () -> IpVersion?) { bVersion = block() ?: IpVersion.V4 }
 
-        fun build(): IpVo = IpVo(bAddress, bGateway, bVersion)
+        fun build(): IpVo = IpVo(bAddress, bGateway, bNetmask, bVersion)
     }
 
     companion object {
@@ -27,9 +29,19 @@ class IpVo (
     }
 }
 
+fun Ip.toIp(): IpVo {
+    return IpVo.builder {
+        address { if (this@toIp.addressPresent()) this@toIp.address()  else null }
+        gateway { if (this@toIp.gatewayPresent()) this@toIp.gateway()  else null }
+        netmask { if(this@toIp.netmaskPresent()) this@toIp.netmask() else null }
+        version { if(this@toIp.versionPresent()) this@toIp.version() else null }
+    }
+}
+
 fun IpVo.toIpBuilder(): Ip =
     IpBuilder()
         .address(this@toIpBuilder.address)
-        .gateway(this@toIpBuilder.gateway)
-        .version(this@toIpBuilder.version)
+//        .gateway(this@toIpBuilder.gateway)
+        .netmask(this@toIpBuilder.netmask)
+//        .version(this@toIpBuilder.version)
         .build()

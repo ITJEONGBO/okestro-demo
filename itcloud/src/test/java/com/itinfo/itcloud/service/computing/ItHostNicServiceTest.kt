@@ -44,11 +44,10 @@ class ItHostNicServiceTest {
         log.debug("should_findAllHostNicFromHost ...")
 
         val result: List<HostNicVo> =
-            service.findAllFromHost(host04)
+            service.findAllFromHost("8d60dce0-a79a-46f2-b332-4f15492f3afa")
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
-//		assertThat(result.size, `is`(1))
     }
 
 
@@ -61,7 +60,7 @@ class ItHostNicServiceTest {
     @Test
     fun should_setUpNetworksFromHost() {
         log.debug("should_setUpNetworksFromHost ...")
-        val hostId = ""
+        val hostId = "c35ee370-b9f6-4c5b-9c65-fe2e716795b5"
         val networkVo: NetworkVo =
             NetworkVo.builder {
 

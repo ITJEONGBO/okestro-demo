@@ -1,6 +1,9 @@
 package com.itinfo.itcloud.model.network
 
 import com.itinfo.itcloud.gson
+import org.ovirt.engine.sdk4.builders.IpAddressAssignmentBuilder
+import org.ovirt.engine.sdk4.types.BootProtocol
+import org.ovirt.engine.sdk4.types.IpAddressAssignment
 import java.io.Serializable
 
 class IpAddressAssignmentVo (
@@ -21,3 +24,15 @@ class IpAddressAssignmentVo (
         inline fun builder(block: IpAddressAssignmentVo.Builder.() -> Unit): IpAddressAssignmentVo = IpAddressAssignmentVo.Builder().apply(block).build()
     }
 }
+
+/**
+ * 호스트 네트워크 설정에서 사용됨
+ */
+fun IpAddressAssignmentVo.toIpAddressAssignment(): IpAddressAssignment {
+    return IpAddressAssignmentBuilder()
+        .assignmentMethod(BootProtocol.fromValue(this@toIpAddressAssignment.assignmentMethod))
+        .ip(this@toIpAddressAssignment.ipVo.toIpBuilder())
+        .build()
+}
+fun List<IpAddressAssignmentVo>.toIpAddressAssignments(): List<IpAddressAssignment> =
+    this@toIpAddressAssignments.map { it.toIpAddressAssignment() }
