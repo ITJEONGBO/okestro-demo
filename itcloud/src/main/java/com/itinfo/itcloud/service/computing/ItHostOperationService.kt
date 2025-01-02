@@ -145,12 +145,12 @@ class HostOperationServiceImpl(
 
     @Throws(Error::class)
     override fun activateMultiple(hostIds: List<String>): Map<String, String> {
+        log.info("activateMultiple ... hostIds: $hostIds")
         val result = mutableMapOf<String, String>() // 성공/실패 결과를 저장할 Map
 
         hostIds.forEach { hostId ->
             val hostName: String = conn.findHost(hostId).getOrNull()?.name().toString()
             try {
-                log.info("activateMultiple ... hostId: {}", hostId)
                 val isSuccess = conn.activateHost(hostId).isSuccess
 
                 if (isSuccess) {

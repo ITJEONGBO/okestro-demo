@@ -144,8 +144,8 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="DELETE",
-		value="호스트 다중 삭제",
-		notes="호스트를 다중 삭제한다"
+		value="호스트 멀티 삭제",
+		notes="호스트를 멀티 삭제한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
@@ -153,16 +153,16 @@ class HostController {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@DeleteMapping()
+	@DeleteMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun removeList(
+	fun removeMultiple(
 		@RequestBody hostIdList: List<String>? = null,
 	): ResponseEntity<List<Boolean>> {
 		if (hostIdList.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts ... 호스트 다중삭제")
-		return ResponseEntity.ok(iHost.removeList(hostIdList))
+		log.info("/computing/hosts ... 호스트 다중 삭제")
+		return ResponseEntity.ok(iHost.removeMultiple(hostIdList))
 	}
 
 
@@ -438,8 +438,8 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="POST",
-		value="호스트 다중 유지보수 모드전환",
-		notes="호스트를 다중 유지보수 모드로 전환한다"
+		value="호스트 멀티 유지보수 모드전환",
+		notes="호스트를 멀티 유지보수 모드로 전환한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
@@ -456,7 +456,7 @@ class HostController {
 	): ResponseEntity<Map<String, String>> {
 		if (hostIdList.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/deactivate ... 호스트 다중 유지보수")
+		log.info("/computing/hosts/deactivate ... 호스트 멀티 유지보수")
 		return ResponseEntity.ok(iHostOp.deactivateMultiple(hostIdList))
 	}
 
@@ -486,8 +486,8 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="POST",
-		value="호스트 다중 활성 모드전환",
-		notes="호스트를 다중 활성 모드로 전환한다"
+		value="호스트 멀티 활성 모드전환",
+		notes="호스트를 멀티 활성 모드로 전환한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
@@ -504,7 +504,7 @@ class HostController {
 	): ResponseEntity<Map<String, String>> {
 		if (hostIdList.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/activate ... 호스트 다중 활성")
+		log.info("/computing/hosts/activate ... 호스트 멀티 활성")
 		return ResponseEntity.ok(iHostOp.activateMultiple(hostIdList))
 	}
 

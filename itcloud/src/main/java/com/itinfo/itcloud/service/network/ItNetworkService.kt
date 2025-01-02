@@ -75,7 +75,7 @@ interface ItNetworkService {
 
 	/**
 	 * [ItNetworkService.removeMultiple]
-	 * 네트워크 다중 삭제
+	 * 네트워크 복스 삭제
 	 *
 	 * @param networkIdList [String] 네트워크 Id list
 	 * @return Map<[String], [String]>

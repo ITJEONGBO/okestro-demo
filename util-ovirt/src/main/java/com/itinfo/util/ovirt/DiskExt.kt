@@ -115,11 +115,11 @@ fun Connection.moveDisk(diskId: String, domainId: String): Result<Boolean> = run
 	this@moveDisk.findDisk(diskId)
 		.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 
-	val storageDomain: StorageDomain =
-		this@moveDisk.findStorageDomain(domainId)
-			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+	val storageDomain: StorageDomain = this@moveDisk.findStorageDomain(domainId)
+		.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 
 	this.srvDisk(diskId).move().storageDomain(storageDomain).send()
+
 	if (!expectDiskStatus(diskId)) {
 		log.error("디스크 이동 실패 ... 시간 초과")
 		return Result.failure(Error("디스크 이동 실패 ... 시간 초과"))
@@ -133,12 +133,10 @@ fun Connection.moveDisk(diskId: String, domainId: String): Result<Boolean> = run
 }
 
 fun Connection.copyDisk(diskId: String, diskAlias: String, domainId: String): Result<Boolean> = runCatching {
-	val disk: Disk =
-		this.findDisk(diskId)
-			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
-	val storageDomain: StorageDomain =
-		this.findStorageDomain(domainId)
-			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+	val disk: Disk = this.findDisk(diskId)
+		.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+	val storageDomain: StorageDomain = this.findStorageDomain(domainId)
+		.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 
 	this.srvDisk(diskId).copy().disk(DiskBuilder().id(diskId).alias(diskAlias)).storageDomain(storageDomain).send()
 	// 근데 복사시 복사대상이 되는 디스크도 같이 Lock 걸리고 같이 잠김

@@ -84,15 +84,15 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun remove(hostId: String): Boolean
 	/**
-	 * [ItHostService.removeList]
+	 * [ItHostService.removeMultiple]
 	 * 호스트 삭제
 	 * 가상머신 돌아가는게 있는지 -> 유지보수 상태인지 -> 삭제
 	 *
-	 * @param hostId List<[String]> 호스트 아이디 리스트
+	 * @param hostIdList List<[String]> 호스트 아이디 리스트
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun removeList(hostIdList: List<String>): List<Boolean>
+	fun removeMultiple(hostIdList: List<String>): List<Boolean>
 
 	/**
 	 * [ItHostService.findAllVmsFromHost]
@@ -254,9 +254,9 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun removeList(hostIdList: List<String>): List<Boolean> {
+	override fun removeMultiple(hostIdList: List<String>): List<Boolean> {
 		// TODO not yet
-		log.info("removeList ... hostIdList ... {}", hostIdList)
+		log.info("removeMultiple ... hostIdList ... {}", hostIdList)
 		val res: List<Result<Boolean>> = hostIdList.map { hostId ->
 			conn.removeHost(hostId)
 		}

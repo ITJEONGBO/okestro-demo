@@ -145,8 +145,8 @@ class NetworkController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="DELETE",
-		value="네트워크 다중 삭제",
-		notes="네트워크를 다중 삭제한다"
+		value="네트워크 멀티 삭제",
+		notes="네트워크를 멀티 삭제한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="networkIdList", value="네트워크 ID 리스트", dataTypeClass=Array<String>::class, required=true, paramType="body"),
