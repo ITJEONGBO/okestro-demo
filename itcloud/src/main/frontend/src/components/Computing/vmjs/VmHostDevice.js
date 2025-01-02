@@ -38,30 +38,30 @@ const VmHostDevice = ({vm}) => {
     };
   }
     return (
-        <>
+      <>
         <div className="header_right_btns">
             <button onClick={() => setIsModalOpen(true)}>장치 추가</button>
             <button className='disabled'>장치 삭제</button>
             <button className='disabled'>vGPU 관리</button>
             <button onClick={() => openPopup('view_cpu')}>View CPU Pinning</button>
-          </div>
-          <TableOuter 
-            columns={TableColumnsInfo.DEVICE_FROM_HOST} 
-            data={hostDevices} 
-            onRowClick={() => console.log('Row clicked')} 
-          />
+        </div>
+        <TableOuter 
+          columns={TableColumnsInfo.DEVICE_FROM_HOST} 
+          data={hostDevices} 
+          onRowClick={() => console.log('Row clicked')} 
+        />
 
-          {/*장치추가 팝업 */}
-          <VmDeviceAddModal
-            isOpen={isModalOpen}
-            onRequestClose={() => setIsModalOpen(false)}
-            hostDevices={hostDevices}
-          />
-          {/*View CPU Pinning 팝업 */}
-          <VmCPUPinningModal
-            isOpen={activePopup === 'view_cpu'}
-            onRequestClose={closePopup}
-          />
+        {/*장치추가 팝업 */}
+        <VmDeviceAddModal
+          isOpen={isModalOpen}
+          onRequestClose={() => setIsModalOpen(false)}
+          hostDevices={hostDevices}
+        />
+        {/*View CPU Pinning 팝업 */}
+        <VmCPUPinningModal
+          isOpen={activePopup === 'view_cpu'}
+          onRequestClose={closePopup}
+        />
        {/*장치추가 팝업 */}
         {/* <Modal
         isOpen={activePopup === 'add_device'}

@@ -11,23 +11,22 @@ const VmDupl = ({
   onFetchVms, 
   status
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
-  const [action, setAction] = useState(null); // 현재 동작
-  const [selectedVms, setSelectedVms] = useState([]); // 선택된 VM
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [action, setAction] = useState(null);
+  const [selectedVms, setSelectedVms] = useState([]);
   const navigate = useNavigate();
 
   const handleActionClick = (actionType) => {
     if (actionType === 'templates') {
       navigate('/computing/vms/templates');
     } else {
-      setAction(actionType); // 동작 설정
-      setIsModalOpen(true); // 모달 열기
+      setAction(actionType);
+      setIsModalOpen(true);
     }
   };
 
 
   const hasDownStatus = selectedVms.some((vm) => vm.status === 'DOWN');  // 선택된 VM 중 DOWN 상태가 하나라도 있는지 확인
-  // const hasHostVo = selectedVms.some((vm) => vm.hostVo);// 호스트 유무확인
 
   const selectedIds = (Array.isArray(selectedVms) ? selectedVms : []).map((vm) => vm.id).join(', ');
   const hasHostVo = Array.isArray(selectedVms) && selectedVms.every((vm) => vm.hostVo?.id);
@@ -40,7 +39,7 @@ const VmDupl = ({
 
   return (
     <>
-     <div onClick={(e) => e.stopPropagation()}> 
+      <div onClick={(e) => e.stopPropagation()}> 
       <VmActionButtons
         onCreate={() => handleActionClick('create')} 
         onEdit={() => selectedVms.length === 1 && handleActionClick('edit')} 

@@ -16,7 +16,7 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm = {},selectedVms 
   useEffect(() => {
     if (selectedVm.id) {
       console.log('VM id:', selectedVm.id);
-      console.log('ABLEHOST:', ableHost);  // 이 로그를 통해 ableHost의 구조를 확인
+      console.log('ABLEHOST:', ableHost);
     }
   }, [selectedVm.id, ableHost]);
   
@@ -26,14 +26,13 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm = {},selectedVms 
 
   // 되는지 안되는지모름
   const handleSave = () => {
-    // 마이그레이션 실행: 선택된 VM ID와 호스트 ID를 사용
     migration({
       vmId: selectedVm.id,
       hostId: selectedHost,
     }, {
       onSuccess: () => {
         console.log('Migration successful');
-        onRequestClose(); // 모달 닫기
+        onRequestClose();
       },
       onError: (error) => {
         console.error('Migration error:', error);

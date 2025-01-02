@@ -44,7 +44,7 @@ const VnicProfileDupl = ({
         columns={columns}
         vnicProfiles={vnicProfiles}
         setSelectedVnicProfiles={(selected) => {
-          if (Array.isArray(selected)) setSelectedVnicProfiles(selected); // 유효한 선택만 반영
+          if (Array.isArray(selected)) setSelectedVnicProfiles(selected);
         }}
       />
 

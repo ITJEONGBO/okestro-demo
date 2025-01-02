@@ -1,13 +1,8 @@
 import React from 'react';
-import { useTemplate } from '../../../api/RQHook'; // 적절한 API 훅 경로 사용
+import { useTemplate } from '../../../api/RQHook';
 
 const TemplateGeneral = ({ templateId }) => {
-  // useTemplate 훅으로 템플릿 데이터 가져오기
   const { data: templateData, isLoading, isError } = useTemplate(templateId);
-
-
-
-
   return (
     <div className="cluster_general">
       <div className="table_container_center">

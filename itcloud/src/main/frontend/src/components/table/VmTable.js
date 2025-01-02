@@ -7,7 +7,7 @@ import { renderVmStatusIcon } from '../util/format';
 const VmTable = ({
   columns,
   vms,
-  setSelectedVms, // 선택된 VM을 저장하는 함수
+  setSelectedVms,
 }) => {
   const navigate = useNavigate();
 
@@ -15,7 +15,7 @@ const VmTable = ({
     navigate(`/computing/vms/${id}`);
   };
   const handleRowSelection = (selectedRows) => {
-    setSelectedVms(selectedRows); // 선택된 데이터 전달
+    setSelectedVms(selectedRows);
   };
   return (
     <>

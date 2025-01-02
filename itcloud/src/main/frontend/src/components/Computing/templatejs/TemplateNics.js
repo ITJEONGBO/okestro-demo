@@ -7,7 +7,7 @@ import TableInfo from "../../table/TableInfo";
 
 const TemplateNics = ({ templateId }) => {
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
-  const [selectedVnicProfiles, setSelectedVnicProfiles] = useState([]); // 다중 선택된 네트워크 인터페이스
+  const [selectedVnicProfiles, setSelectedVnicProfiles] = useState([]); 
 
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));

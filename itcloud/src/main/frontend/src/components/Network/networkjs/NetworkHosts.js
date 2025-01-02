@@ -33,7 +33,7 @@ const NetworkHosts = ({ networkId }) => {
     ),
     networkDeviceStatus: renderUpDownStatusIcon(host?.hostNicVos?.[0]?.status), 
     networkDevice: host?.hostNicVos?.[0]?.name, 
-    speed: host?.hostNicVos?.[0]?.speed, //? Math.round(formatBytesToMB(host.hostNicVos[0].speed)): ''
+    speed: host?.hostNicVos?.[0]?.speed,
     rx: host?.hostNicVos?.[0]?.rxSpeed ? Math.round(formatBytesToMB(host.hostNicVos[0].rxSpeed)): '',
     tx: host?.hostNicVos?.[0]?.txSpeed ? Math.round(formatBytesToMB(host.hostNicVos[0].txSpeed)): '',
     totalRx: host?.hostNicVos?.[0]?.rxTotalSpeed ? host.hostNicVos[0].rxTotalSpeed.toLocaleString() : '',

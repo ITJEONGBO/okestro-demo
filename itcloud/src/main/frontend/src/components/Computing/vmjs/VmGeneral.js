@@ -5,38 +5,38 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 const VmGeneral = ({ vm }) => {
   return (
     <>
-      <div className='vm_detail_general_boxs'>
-        <div className='detail_general_box'>
-            <table className="table">
-              <tbody>
-                <tr>
-                  <th>전원상태</th>
-                  <td>{vm?.status}</td>
-                </tr>
-                <tr>
-                  <th>게스트 운영 체제</th>
-                  <td>{vm?.osSystem}</td>
-                </tr>
-                <tr>
-                  <th>게스트 에이전트</th>
-                  <td>{vm?.guestInterfaceName}</td>
-                </tr>
-                <tr>
-                  <th>업타임</th>
-                  <td>{vm?.upTime}</td>
-                </tr>
-                <tr>
-                  <th>FQDN</th>
-                  <td>{vm?.fqdn}</td>
-                </tr>
-                <tr>
-                  <th>실행 호스트</th>
-                  <td>{vm?.hostVo?.name}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-            
+        <div className='vm_detail_general_boxs'>
+            <div className='detail_general_box'>
+                <table className="table">
+                    <tbody>
+                        <tr>
+                            <th>전원상태</th>
+                            <td>{vm?.status}</td>
+                        </tr>
+                        <tr>
+                            <th>게스트 운영 체제</th>
+                            <td>{vm?.osSystem}</td>
+                        </tr>
+                        <tr>
+                            <th>게스트 에이전트</th>
+                            <td>{vm?.guestInterfaceName}</td>
+                        </tr>
+                        <tr>
+                            <th>업타임</th>
+                            <td>{vm?.upTime}</td>
+                        </tr>
+                        <tr>
+                            <th>FQDN</th>
+                            <td>{vm?.fqdn}</td>
+                        </tr>
+                        <tr>
+                            <th>실행 호스트</th>
+                            <td>{vm?.hostVo?.name}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+                
             <div className='detail_general_box'>
                 <div>VM 하드웨어</div>
                 <table className="table">
@@ -64,7 +64,7 @@ const VmGeneral = ({ vm }) => {
                     </tbody>
                 </table>
             </div>
-            
+                
             <div className='detail_general_mini_box'>
                 <div>용량 및 사용량</div>
                 <div className='capacity_outer'>

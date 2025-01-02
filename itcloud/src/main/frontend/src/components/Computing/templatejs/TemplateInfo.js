@@ -96,12 +96,12 @@ const TemplateInfo = () => {
 
       {/* 편집 모달 */}
       {modals.edit && (
-      <TemplateEditModal
-        isOpen={modals.edit}
-        onRequestClose={() => toggleModal('edit', false)}
-        editMode={true} // 편집 모드 설정
-        templateId={templateId}
-      />
+        <TemplateEditModal
+          isOpen={modals.edit}
+          onRequestClose={() => toggleModal('edit', false)}
+          editMode={true} // 편집 모드 설정
+          templateId={templateId}
+        />
       )}
 
       {/* 삭제 모달 */}

@@ -39,8 +39,6 @@ const VmDeleteModal = ({
     }
   }, [data]);
   
-  
-
   useEffect(() => {
     setHasDisks(disks.length > 0);
   }, [disks]);
@@ -48,8 +46,8 @@ const VmDeleteModal = ({
   const handleDelete = () => {
     if (!selectedIds.length) {
       console.error('ID가 없습니다. 삭제 요청을 취소합니다.');
-      return;
-    }
+    return;
+  }
 
     selectedIds.forEach((id, index) => {
       deleteVm(
