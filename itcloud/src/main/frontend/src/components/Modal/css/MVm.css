@@ -388,6 +388,29 @@
     padding: 0.1rem;
 }
 /*마이그레이션 팝업*/
+.migration_popup_content{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    font-size: 0.34rem;
+    height: 42%;
+    width: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+.migration_article_outer{
+    padding:0.4rem;
+}
+.migration_dropdown{
+    margin-bottom: 0.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 #migration_article>div:last-child{
     width: 100%;
     display: flex;

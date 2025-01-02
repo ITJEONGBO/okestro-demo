@@ -12,7 +12,6 @@ const VmSnapshotAddModal = ({
     onRequestClose,
     snapshotData,
     vmId,
-    diskData
 }) => {
     const [id, setId] = useState(''); // 스냅샷 ID
     const [alias, setAlias] = useState(''); // 스냅샷 ID
@@ -21,11 +20,19 @@ const VmSnapshotAddModal = ({
  
     const { mutate: addSnapshotFromVM } = useAddSnapshotFromVM();
 
-
-  const {
-    data: snapshot,
-  } = useAddSnapshotFromVM(vmId);
-
+    const [bootable, setBootable] = useState(true);
+    const { data: disks } = useDisksFromVM(vmId, (e) => ({
+      ...e,
+      snapshot_check: (
+        <input
+          type="checkbox"
+          name="diskSelection"
+          onChange={(e) => setBootable(e.target.checked)} 
+        />
+      ),
+      alias: e?.diskImageVo?.alias,
+      description: e?.diskImageVo?.description,
+    }));
 
     const handleFormSubmit = () => {
       // 데이터 객체 생성
@@ -82,7 +89,7 @@ const VmSnapshotAddModal = ({
             <div className="snapshot_new_table">
               <TableOuter
                 columns={TableInfo.SNAPSHOT_NEW}
-                data={diskData} // 디스크 데이터 삽입
+                data={disks} // 디스크 데이터 삽입
                 onRowClick={() => console.log('Row clicked')}
               />
             </div>

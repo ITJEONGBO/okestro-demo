@@ -27,14 +27,18 @@ const VmDeleteModal = ({
     }
   }, [data]);
   useEffect(() => {
+    console.log('Modal Data:', data); // 전달된 데이터 확인
     if (Array.isArray(data)) {
       setSelectedIds(data.map((item) => item.id));
-      setSelectedNames(data.map((item) => item.name || item.alias || ''));
+      setSelectedNames(
+        data.map((item) => item.name || item.alias || '알 수 없는 이름') // 기본값 설정
+      );
     } else if (data) {
       setSelectedIds([data.id]);
-      setSelectedNames([data.name || data.alias || '']);
+      setSelectedNames([data.name || data.alias || '알 수 없는 이름']); // 기본값 설정
     }
   }, [data]);
+  
   
 
   useEffect(() => {
@@ -74,7 +78,7 @@ const VmDeleteModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vm_delete_popup">
+      <div className="vm_delete_popup" style={{ height: hasDisks ? '29.4vh' : '22.4vh' }}>
         <div className="popup_header">
           <h1>가상머신 삭제</h1>
           <button onClick={onRequestClose}>

@@ -1,8 +1,9 @@
-import React, { Suspense } from 'react';
+import React, { Suspense,useState } from 'react';
 import VmAddTemplateModal from './VmAddTemplateModal';
 import VmMigrationModal from './VmMigrationModal';
 import VmDeleteModal from './VmDeleteModal';
 import VmSnapshotAddModal from './VmSnapshotaddModal';
+import { useDisksFromVM } from '../../api/RQHook';
 // import VmExportOVAModal from './VmExportOVAModal';
 
 const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm,selectedVms = []}) => {
@@ -12,11 +13,26 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm,selectedVms 
   const VmonExportModal = React.lazy(() => import('../Modal/VmonExportModal'));
   const VmExportOVAModal = React.lazy(() => import('../Modal/VmExportOVAModal'));
 
+  const [bootable, setBootable] = useState(true);
+  const { data: disks } = useDisksFromVM(selectedVm?.id, (e) => ({
+    ...e,
+    snapshot_check: (
+      <input
+        type="checkbox"
+        name="diskSelection"
+        onChange={(e) => setBootable(e.target.checked)} 
+      />
+    ),
+    alias: e?.diskImageVo?.alias,
+    description: e?.diskImageVo?.description,
+  }));
+
+
   if (!isModalOpen || !action) return null;
 
   return (
     <Suspense>
-      {action === 'create' || action === 'edit' ? (
+      {action === 'create' || action === 'edit'  || action === 'copy' ? (
         <VmModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
@@ -24,12 +40,13 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm,selectedVms 
           vmId={selectedVm?.id}
           selectedVm={selectedVm}
         />
-      ) : action === 'snapshots' ? ( //스냅샷(수정필요)
+      ) : action === 'snapshots' ? ( //스냅샷
         <VmSnapshotAddModal
           isOpen={isModalOpen}
           onRequestClose={onRequestClose}
           snapshotData={selectedVm.snapshotData}
           vmId={selectedVm.id}
+    
         />
       ): action === 'delete' ? ( //삭제
         <VmDeleteModal

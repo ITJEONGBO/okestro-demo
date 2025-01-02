@@ -893,6 +893,7 @@ const VmModal = ({
                             onSelectDisk={handleDiskSelection}
                             excludedDiskIds={selectedDisks.map((disk) => disk.id)}
                             />
+                            
                             <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
                             <DiskModal
                             isOpen={isCreatePopupOpen}
@@ -944,51 +945,110 @@ const VmModal = ({
                   ) : (
                     // 생성 모드일 때
                     <div className="vm_plus_btn_outer">
-                      {/* 디스크가 있는 경우 */}
-                      {vmdisks.length > 0 ? (
-                        vmdisks.map((disk, index) => (
-                          <div key={disk.id} className="vm_plus_btn">
-                            <div>
-                              <span>디스크 이름: {disk.alias}</span>
-                              <span>크기: {disk.size} GB</span>
-                            </div>
+                    {/* 디스크가 있는 경우 */}
+                    {vmdisks.length > 0 ? (
+                      vmdisks.map((disk, index) => (
+                        <div key={disk.id} className="vm_plus_btn">
+                          <span>{disk.details?.alias || "알 수 없음"} 연결 중</span>
+                          <div className="flex">
+                            {/* 편집 버튼 */}
+                            <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
+                              편집
+                            </button>
+                            <DiskModal
+                              isOpen={isEditPopupOpen}
+                              onRequestClose={() => setIsEditPopupOpen(false)}
+                              editMode={true}
+                              diskId={disk.id}
+                              type="vm"
+                            />
                             <div className="flex">
-                              {/* 편집 버튼 */}
-                              <button className="mr-1" onClick={() => setIsEditPopupOpen(true)}>
-                                편집
-                              </button>
-                              <DiskModal
-                                isOpen={isEditPopupOpen}
-                                onRequestClose={() => setIsEditPopupOpen(false)}
-                                editMode={true}
-                                diskId={disk.id}
-                                type="vm"
-                              />
-                              <div className="flex">
-                                {/* 마지막 디스크에만 "+" 버튼 표시 */}
-                                {index === vmdisks.length - 1 && (
-                                  <button onClick={() => setShowAddOptions(!showAddOptions)}>+</button>
-                                )}
-                                {/* 삭제 버튼 */}
-                                <button onClick={() => handleRemoveDisk(disk.id)}>-</button>
-                              </div>
+                              {/* 마지막 디스크에만 "+" 버튼 표시 */}
+                              {index === vmdisks.length - 1 && (
+                                <button onClick={() => setShowAddOptions(!showAddOptions)}>+</button>
+                              )}
+                              {/* 삭제 버튼 */}
+                              <button onClick={() => handleRemoveDisk(disk.id)}>-</button>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        // 디스크가 없는 경우 연결/생성 버튼 표시
-                        <div className="flex float-right">
+                        </div>
+                      ))
+                    ) : (
+                      // 디스크가 없는 경우 연결/생성 버튼 표시
+                      <div className="flex float-right">
+                        <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
+                        <VmConnectionPlusModal
+  isOpen={isConnectionPopupOpen}
+  onRequestClose={() => setIsConnectionPopupOpen(false)}
+  vmId={vmId}
+  onSelectDisk={(diskId, diskDetails) => {
+    if (diskId) {
+      const newDisk = { id: diskId, details: diskDetails };
+      setSelectedDiskId(diskId); // 선택된 디스크 ID 업데이트
+      setSelectedDisks((prev) => [...prev, newDisk]); // 선택된 디스크 추가
+      setVmdisks((prev) => [...prev, newDisk]); // vmdisks에 추가
+      setIsConnectionPopupOpen(false); // 모달 닫기
+    } else {
+      alert("디스크를 선택하지 않았습니다!");
+    }
+  }}
+  excludedDiskIds={selectedDisks.map((disk) => disk.id)}
+/>
+
+                  
+                        {/* 선택된 디스크 정보 표시 */}
+                        {selectedDisks.length > 0 && (
+                          <div className="selected-disks">
+                            <ul>
+                              {selectedDisks.map((disk, index) => (
+                                <li key={index}>
+                                  <span>디스크 이름: {disk.details?.alias || "알 수 없음"}</span> 연결 중
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                  
+                        <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
+                        <DiskModal
+                          isOpen={isCreatePopupOpen}
+                          onRequestClose={() => setIsCreatePopupOpen(false)}
+                          editMode={false}
+                          vmId={vmId}
+                          type="vm"
+                          vmdisks={vmdisks}
+                          onDiskCreated={(createdDisk) => {
+                            handleDiskCreated(createdDisk); // 상태 업데이트
+                          }}
+                        />
+                        <button disabled={!selectedDisks.length}>+</button>
+                        <button disabled={!selectedDisks.length}>-</button>
+                      </div>
+                    )}
+                  
+                    {/* 추가 옵션: "+" 버튼을 눌렀을 때만 표시 */}
+                    {showAddOptions && (
+                      <div className="additional_disk_section">
+                        <div className="vm_plus_btn float-right">
                           <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
                           <VmConnectionPlusModal
-                            isOpen={isConnectionPopupOpen}
-                            onRequestClose={() => setIsConnectionPopupOpen(false)}
-                            vmId={vmId}
-                            onSelectDisk={(diskId, diskDetails) => {
-                              setSelectedDiskId(diskId); // 선택된 디스크 ID 업데이트
-                              setSelectedDisks((prev) => [...prev, { id: diskId, details: diskDetails }]); // 디스크 추가
-                            }}
-                            excludedDiskIds={selectedDisks.map((disk) => disk.id)}
-                          />
+  isOpen={isConnectionPopupOpen}
+  onRequestClose={() => setIsConnectionPopupOpen(false)}
+  vmId={vmId}
+  onSelectDisk={(diskId, diskDetails) => {
+    if (diskId) {
+      const newDisk = { id: diskId, details: diskDetails };
+      setSelectedDiskId(diskId); // 선택된 디스크 ID 업데이트
+      setSelectedDisks((prev) => [...prev, newDisk]); // 선택된 디스크 추가
+      setVmdisks((prev) => [...prev, newDisk]); // vmdisks에 추가
+      setIsConnectionPopupOpen(false); // 모달 닫기
+    } else {
+      alert("디스크를 선택하지 않았습니다!");
+    }
+  }}
+  excludedDiskIds={selectedDisks.map((disk) => disk.id)}
+/>
+
                           <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
                           <DiskModal
                             isOpen={isCreatePopupOpen}
@@ -998,47 +1058,18 @@ const VmModal = ({
                             type="vm"
                             vmdisks={vmdisks}
                             onDiskCreated={(createdDisk) => {
-                              handleDiskCreated(createdDisk); // 상태 업데이트
+                              handleDiskCreated(createdDisk);
                             }}
                           />
                           <button disabled>+</button>
-                          <button disabled>-</button>
+                          <button onClick={() => setShowAddOptions(false)}>-</button>
                         </div>
-                      )}
-                    
-                      {/* 추가 옵션 */}
-                      {showAddOptions && vmdisks.length > 0 && (
-                        <div className="additional_disk_section">
-                        <div className="vm_plus_btn float-right">
-                        <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
-                        <VmConnectionPlusModal
-                        isOpen={isConnectionPopupOpen}
-                        onRequestClose={() => setIsConnectionPopupOpen(false)}
-                        vmId={vmId}
-                        onSelectDisk={(diskId, diskDetails) => {
-                        setSelectedDiskId(diskId);
-                        setSelectedDisks((prev) => [...prev, { id: diskId, details: diskDetails }]);
-                        }}
-                        excludedDiskIds={selectedDisks.map((disk) => disk.id)}
-                        />
-                        <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
-                        <DiskModal
-                        isOpen={isCreatePopupOpen}
-                        onRequestClose={() => setIsCreatePopupOpen(false)}
-                        editMode={false}
-                        vmId={vmId}
-                        type="vm"
-                        vmdisks={vmdisks}
-                        onDiskCreated={(createdDisk) => {
-                        handleDiskCreated(createdDisk);
-                        }}
-                        />
-                        <button disabled>+</button>
-                        <button disabled>-</button>
-                        </div>
-                        </div>
-                      )}
+                      </div>
+                    )}
                     </div>
+                  
+                  
+                  
                   )}
                 </div>
                 <div className="edit_fourth_content" style={{ borderTop: 'none' }}>

@@ -12,7 +12,8 @@ import {
   faInfoCircle,
   faUser,
   faExclamationTriangle,
-  faChevronCircleRight
+  faChevronCircleRight,
+  faCog
 } from '@fortawesome/free-solid-svg-icons'
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
@@ -77,7 +78,7 @@ const SettingInfo = () => {
   return (
     <div id="section">
       <HeaderButton
-        titleIcon={faChevronCircleRight}
+        titleIcon={faCog}
         title="관리"
         // subtitle=" > 사용자 세션"
         additionalText="목록이름"

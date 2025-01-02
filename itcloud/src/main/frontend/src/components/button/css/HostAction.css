@@ -1,9 +1,11 @@
 .header_right_btns {
-  display: flex;
-  /* gap: 10px; */
-  
+  display:flex;
+  margin-bottom: 0.5rem;
+  justify-content: right;
 }
-
+.header_right_btns>button:last-child{
+  margin-right: 0 !important;
+}
 .dropdown-container {
   position: relative;
   display: inline-block;

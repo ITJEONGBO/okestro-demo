@@ -573,12 +573,12 @@ HOST_NETWORK_INTERFACE: [
 
   
   VMS_NIC: [
-    { header: '', accessor: 'icon', clickable: false },
+    { header: '', accessor: 'icon', clickable: false , width:'3%' },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
-    { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
+    { header: 'IP 주소', accessor: 'ipAddress', clickable: false }, // 스웨거 정보없음
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false },
+    { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false , width:'7%' },
     { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: 'vNIC Rx', accessor: 'vnicRx', clickable: false },
     { header: 'vNIC Tx', accessor: 'vnicTx', clickable: false },
@@ -590,12 +590,12 @@ HOST_NETWORK_INTERFACE: [
     { header: '이름', accessor: 'name', clickable: false },
   ],
   VMS_STOP: [
-    { header: '', accessor: 'icon', clickable: false },
+    { header: '', accessor: 'icon', clickable: false, width:'3%' },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false },
+    { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false , width:'7%'},
     { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: '설명', accessor: 'description', clickable: false }
   ],

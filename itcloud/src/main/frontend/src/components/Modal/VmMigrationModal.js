@@ -5,7 +5,7 @@ import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { useHostsForMigration, useMigration } from '../../api/RQHook';
 import '../Modal/css/MVm.css';
 
-const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm,selectedVms }) => {
+const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm = {},selectedVms }) => {
   const [selectedHost, setSelectedHost] = useState();
   const [isHaMode, setIsHaMode] = useState(false);
 
@@ -59,12 +59,12 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm,selectedVms }) =>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
-        <div id="migration_article_outer">
+        <div className="migration_article_outer">
           <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
 
           <div id="migration_article">
             <div>
-              <div id="migration_dropdown">
+              <div className="migration_dropdown">
                 <label htmlFor="host">
                   대상 호스트 <FontAwesomeIcon icon={faInfoCircle} fixedWidth />
                 </label>

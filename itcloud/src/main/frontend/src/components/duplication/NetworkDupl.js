@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import NetworkActionButtons from '../button/NetworkActionButtons';
 import NetworkTable from '../table/NetworkTable';
 import NetworkModals from '../Modal/NetworkModals';
+import AllActionButton from '../button/AllActionButton';
 
 const NetworkDupl = ({ 
   networks = [], 
@@ -24,10 +25,17 @@ const NetworkDupl = ({
   if (!Array.isArray(networks) || !Array.isArray(columns)) {
     return <p>유효하지 않은 데이터입니다.</p>;
   }
-
+  
+  const buttons = [
+    { label: '새로 만들기', onClick: () => handleActionClick('create') },
+    { label: '편집', onClick: () => selectedNetworks.length === 1 && handleActionClick('edit'), disabled: selectedNetworks.length !== 1 },
+    { label: '삭제', onClick: () => selectedNetworks.length > 0 && handleActionClick('delete'), disabled: selectedNetworks.length === 0 },
+    { label: '가져오기', onClick: () => handleActionClick('import') },
+  ];
   return (
     <div onClick={(e) => e.stopPropagation()}> {/* 테이블 외부 클릭 방지 */}
-      <NetworkActionButtons
+     <AllActionButton buttons={buttons} dropdowns={[]} />
+      {/* <NetworkActionButtons
         onCreate={() => handleActionClick('create')}
         onEdit={() => selectedNetworks.length === 1 && handleActionClick('edit')}
         onDelete={() => selectedNetworks.length > 0 && handleActionClick('delete')}
@@ -35,7 +43,7 @@ const NetworkDupl = ({
         isEditDisabled={!Array.isArray(selectedNetworks) || selectedNetworks.length !== 1} // 방어 코드 추가
         isDeleteDisabled={selectedNetworks.length === 0} // 삭제 버튼 조건
         status={selectedNetworks[0]?.status}
-      />
+      /> */}
       <span>선택된 네트워크 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
 
       <NetworkTable

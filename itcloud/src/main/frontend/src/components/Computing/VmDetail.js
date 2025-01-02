@@ -145,8 +145,8 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
 const buttons = [
     // { id: 'new_btn', label: '새로 만들기',onClick:() => openPopup('new')},
     { id: 'edit_btn', label: '편집', onClick:() => openPopup('edit')},
-    { id: 'run_btn', className:'disabled',label: <><i className="fa fa-play"></i>실행</>, onClick: () => console.log() },
-    { id: 'pause_btn', label: <><i className="fa fa-pause"></i>일시중지</>, onClick: () => console.log() },
+    { id: 'run_btn', className:'disabled',label: <><i className="fa fa-play"></i>실행</>, onClick:() => openPopup('start') },
+    { id: 'pause_btn', label: <><i className="fa fa-pause"></i>일시중지</>, onClick:() => openPopup('pause') },
     { id: 'stop_btn', label: <><i className="fa fa-stop"></i>종료</>, onClick:() => openPopup('stop') },
     { id: 'reboot_btn', label: <><i className="fa fa-repeat"></i>재부팅</>, onClick: () => console.log() },
     { id: 'snapshot_btn', label: '스냅샷 생성', onClick:() => openPopup('snapshot')},

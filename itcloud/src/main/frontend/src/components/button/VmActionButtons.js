@@ -49,12 +49,12 @@ const VmActionButtons = ({
 
   const manageActions = [
     { onClick: onStart, label: '실행', disabled: !isPauseDisabled },
-    { onClick: onPause, label: '일시중지',  disabled: isPauseDisabled},
+    { onClick: onPause, label: '일시중지',  disabled: isPauseDisabled || isDeleteDisabled},
     // { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || !isUp },
   ];
 
   const rebootOptions = [
-    { onClick: onReboot, label: '재부팅', disabled: isPauseDisabled  },
+    { onClick: onReboot, label: '재부팅', disabled: isPauseDisabled || isDeleteDisabled },
     { onClick: onReset, label: '재설정', disabled: isPauseDisabled  },
   ];
 
@@ -101,7 +101,7 @@ const VmActionButtons = ({
       ))}
 
   <div className="dropdown-container">
-      <button onClick={toggleRebootDropDown} disabled={isPauseDisabled}>
+      <button onClick={toggleRebootDropDown} disabled={isPauseDisabled || isDeleteDisabled}>
         재부팅
         <FontAwesomeIcon icon={isRebootDropDownOpen ? faChevronUp : faChevronDown} />
       </button>

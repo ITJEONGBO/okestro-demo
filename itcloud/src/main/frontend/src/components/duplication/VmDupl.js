@@ -53,7 +53,7 @@ const VmDupl = ({
         onReboot={() => selectedVms.length > 0 && handleActionClick('reboot')}  // 재부팅
         onReset={() => selectedVms.length > 0 && handleActionClick('reset')}  // 재설정
         templates={() => handleActionClick('templates')} 
-        snapshots={() => selectedVms?.id && handleActionClick('snapshots')} 
+        snapshots={() => selectedVms.length > 0 && handleActionClick('snapshots')} 
         migration={() => selectedVms.length > 0 && handleActionClick('migration')} 
         onExport={() => handleActionClick('onExport')} 
         onCopy={() => selectedVms.length === 1 && handleActionClick('onCopy')} 
