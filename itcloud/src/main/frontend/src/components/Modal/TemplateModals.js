@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import TemplateEditModal from './TemplateEditModal';
 import '../Modal/css/MTemplate.css';
 
 const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate,selectedTemplates }) => {
@@ -13,13 +12,12 @@ const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate,
       {action === 'add' ? (
         <span>생성</span>
       ) : action === 'edit' ? (
-
         <TemplateEditModal
-        isOpen={isModalOpen}
-        onRequestClose={onRequestClose}
-        editMode={true}
-        templateId={selectedTemplate?.id}
-        selectedTemplate={selectedTemplate}
+          isOpen={isModalOpen}
+          onRequestClose={onRequestClose}
+          editMode={true}
+          templateId={selectedTemplate?.id}
+          selectedTemplate={selectedTemplate}
         />
       ): action === 'delete' ? (
         <DeleteModal

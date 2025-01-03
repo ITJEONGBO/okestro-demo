@@ -50,7 +50,6 @@ const VmActionButtons = ({
   const manageActions = [
     { onClick: onStart, label: '실행', disabled: !isPauseDisabled },
     { onClick: onPause, label: '일시중지',  disabled: isPauseDisabled || isDeleteDisabled},
-    // { onClick: onReboot, label: '재부팅', disabled: isEditDisabled || !isUp },
   ];
 
   const rebootOptions = [
@@ -63,7 +62,7 @@ const VmActionButtons = ({
     { onClick: onPowerOff, label: '전원끔', disabled: isPauseDisabled  },
   ];
 
- // 드롭다운 외부 클릭 감지 코드 추가
+  // 드롭다운 외부 클릭 감지 코드 추가
   const dropdownRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -100,50 +99,50 @@ const VmActionButtons = ({
         </button>
       ))}
 
-  <div className="dropdown-container">
-      <button onClick={toggleRebootDropDown} disabled={isPauseDisabled || isDeleteDisabled}>
-        재부팅
-        <FontAwesomeIcon icon={isRebootDropDownOpen ? faChevronUp : faChevronDown} />
-      </button>
-      {isRebootDropDownOpen && (
-        <div className="dropdown-menu">
-          {rebootOptions.map(({ onClick, label }, index) => (
-            <button
-              key={index}
-              onClick={onClick}
-              className="dropdown-item"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      )}
-  </div>
+      <div className="dropdown-container">
+          <button onClick={toggleRebootDropDown} disabled={isPauseDisabled || isDeleteDisabled}>
+            재부팅
+            <FontAwesomeIcon icon={isRebootDropDownOpen ? faChevronUp : faChevronDown} />
+          </button>
+          {isRebootDropDownOpen && (
+            <div className="dropdown-menu">
+              {rebootOptions.map(({ onClick, label }, index) => (
+                <button
+                  key={index}
+                  onClick={onClick}
+                  className="dropdown-item"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+      </div>
 
-  <div className="dropdown-container">
-      <button onClick={toggleStopDropDown} disabled={isPauseDisabled}>
-        종료
-        <FontAwesomeIcon icon={isStopDropDownOpen ? faChevronUp : faChevronDown} />
-      </button>
-      {isStopDropDownOpen && (
-        <div className="dropdown-menu">
-          {stopOptions.map(({ onClick, label }, index) => (
-            <button
-              key={index}
-              onClick={onClick}
-              className="dropdown-item"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      )}
-  </div>
+      <div className="dropdown-container">
+          <button onClick={toggleStopDropDown} disabled={isPauseDisabled}>
+             종료
+            <FontAwesomeIcon icon={isStopDropDownOpen ? faChevronUp : faChevronDown} />
+          </button>
+          {isStopDropDownOpen && (
+            <div className="dropdown-menu">
+              {stopOptions.map(({ onClick, label }, index) => (
+                <button
+                  key={index}
+                  onClick={onClick}
+                  className="dropdown-item"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+      </div>
 
       {onConsole && <button onClick={onConsole} disabled={isEditDisabled}>콘솔</button>}
       {templates && <button onClick={templates}>템플릿</button>}
       {snapshots && <button onClick={snapshots} disabled={isEditDisabled}>스냅샷</button>}
-      {migration && <button onClick={migration} disabled={isMigrationDisabled}>마이그레이션</button>}
+      {migration && <button onClick={migration} disabled={isMigrationDisabled || isEditDisabled}>마이그레이션</button>}
 
       <div className="dropdown-container">
         <button ref={dropdownRef} onClick={toggleDropDown} className="manage-button">

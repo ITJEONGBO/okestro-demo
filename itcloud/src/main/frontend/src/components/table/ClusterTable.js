@@ -2,14 +2,15 @@ import React from 'react';
 import TablesOuter from './TablesOuter';
 import TableRowClick from './TableRowClick';
 import { useNavigate } from 'react-router-dom';
+import { renderClusterStatusIcon } from '../util/format';
 
 const ClusterTable = ({
   columns,
   clusters,
-  setSelectedCluster,
+  setSelectedClusters,
 }) => {
   const navigate = useNavigate();
-  
+
   const handleNameClick = (id) => {
     navigate(`/computing/clusters/${id}`);
   };
@@ -29,9 +30,10 @@ const ClusterTable = ({
           ),
         }))}
         shouldHighlight1stCol={true}
-        onRowClick={(row) => setSelectedCluster(row)}
+        onRowClick={(selectedRows) => setSelectedClusters(selectedRows)}
         clickableColumnIndex={[0]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
+        multiSelect={true} // 다중 선택 활성화
       />
     </>
   );

@@ -17,7 +17,7 @@ const TablesOuter = ({
 
   return (
     <div className="section_table_outer">
-      {showSearchBox && ( // showSearchBox가 true일 때만 렌더링
+      {showSearchBox && ( 
         <div className="search_box">
           <input type="text" />
           <button><FontAwesomeIcon icon={faSearch} fixedWidth /></button>
@@ -27,7 +27,7 @@ const TablesOuter = ({
       
       <Tables
         columns={columns}  
-        data={data}   // data가 없으면 Table 컴포넌트에서 처리
+        data={data}
         onRowClick={onRowClick} 
         clickableColumnIndex={clickableColumnIndex} 
         shouldHighlight1stCol={shouldHighlight1stCol} 

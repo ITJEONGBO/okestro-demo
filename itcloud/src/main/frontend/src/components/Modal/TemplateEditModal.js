@@ -43,25 +43,25 @@ const TemplateEditModal = ({
   const [selectedChipset, setSelectedChipset] = useState('Q35_OVMF'); // 칩셋 선택
 
   // 초기값설정
-useEffect(() => {
-  if (isOpen) {
-    const template = templateData || selectedTemplate;
-    if (template) {
-      setId(template?.id || '');
-      setName(template?.name || ''); // 이름안뜸
-      setDescription(template?.description || '');
-      setComment(template?.comment || '');
-      setOsSystem(template?.osSystem || '');
-      setStateless(template?.stateless || false);
-      setClsuterVoId(template.clusterVo?.id || '');
-      setClsuterVoName(template.clusterVo?.name || '');
-      setStartPaused(template?.startPaused || false);
-      setDeleteProtected(template?.deleteProtected || false);
-      setSelectedOptimizeOption(template?.optimizeOption || 'server');
-      setSelectedChipset(template?.chipsetFirmwareType || 'Q35_OVMF');
+  useEffect(() => {
+    if (isOpen) {
+      const template = templateData || selectedTemplate;
+      if (template) {
+        setId(template?.id || '');
+        setName(template?.name || ''); // 이름안뜸
+        setDescription(template?.description || '');
+        setComment(template?.comment || '');
+        setOsSystem(template?.osSystem || '');
+        setStateless(template?.stateless || false);
+        setClsuterVoId(template.clusterVo?.id || '');
+        setClsuterVoName(template.clusterVo?.name || '');
+        setStartPaused(template?.startPaused || false);
+        setDeleteProtected(template?.deleteProtected || false);
+        setSelectedOptimizeOption(template?.optimizeOption || 'server');
+        setSelectedChipset(template?.chipsetFirmwareType || 'Q35_OVMF');
+      }
     }
-  }
-}, [isOpen, templateData, selectedTemplate]);
+  }, [isOpen, templateData, selectedTemplate]);
 
   const handleFormSubmit = () => {
     if (!templateId) {
@@ -72,40 +72,37 @@ useEffect(() => {
       alert("이름을 입력해주세요.");
       return;
     }
-      const dataToSubmit = {
-        clusterVo: {
-          id : clsuterVoId || '',
-          name : clsuterVoName || '',
+    const dataToSubmit = {
+      clusterVo: {
+        id : clsuterVoId || '',
+        name : clsuterVoName || '',
+      },
+      id,
+      name,
+      description,
+      comment,
+      optimizeOption:selectedOptimizeOption,
+      osSystem
+    };
+    console.log('템플릿 Data:', dataToSubmit); 
+    if (editMode) {
+      dataToSubmit.id = id;
+      editTemplate(
+        {
+          templateId: id,
+          templateData: dataToSubmit,
         },
-        id,
-        name,
-        description,
-        comment,
-        optimizeOption:selectedOptimizeOption,
-        osSystem
-      };
-      console.log('템플릿 Data:', dataToSubmit); // 데이터를 서버로 보내기 전에 확인
-      if (editMode) {
-        dataToSubmit.id = id;
-        editTemplate(
-          {
-            templateId: id,
-            templateData: dataToSubmit,
+        {
+          onSuccess: () => {
+            alert("템플릿 편집 완료");
+            onRequestClose();
           },
-          {
-            onSuccess: () => {
-              alert("템플릿 편집 완료");
-              onRequestClose();
-            },
-            onError: (error) => {
-              console.error('Error editing cluster:', error);
-            },
-          }
-        );
-      }
-      
-
-    
+          onError: (error) => {
+            console.error('Error editing cluster:', error);
+          },
+        }
+      );
+    }
   };
 
 

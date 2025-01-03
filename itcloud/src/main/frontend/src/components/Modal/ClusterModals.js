@@ -4,7 +4,7 @@ const ClusterModals = ({
   isModalOpen, 
   action, 
   onRequestClose, 
-  selectedCluster,
+  selectedClusters,
   datacenterId
 }) => {
   const ClusterModal = React.lazy(() => import('../Modal/ClusterModal'));
@@ -16,20 +16,20 @@ const ClusterModals = ({
     <Suspense>
       {(action === 'create' || action === 'edit') && (
         <ClusterModal
-            isOpen={isModalOpen}
-            onRequestClose={onRequestClose}
-            editMode={action === 'edit'}
-            cId={selectedCluster?.id || null}
-            datacenterId={datacenterId}
+          isOpen={isModalOpen}
+          onRequestClose={onRequestClose}
+          editMode={action === 'edit'}
+          cId={selectedClusters.length === 1 ? selectedClusters[0].id : null}
+          datacenterId={datacenterId}
         />
       )}
       {action === 'delete' && (
         <DeleteModal
-            isOpen={isModalOpen}
-            type="Cluster"
-            onRequestClose={onRequestClose}
-            contentLabel="클러스터"
-            data={selectedCluster}
+          isOpen={isModalOpen}
+          type="Cluster"
+          onRequestClose={onRequestClose}
+          contentLabel="클러스터"
+          data={selectedClusters}
         />
       )}
     </Suspense>

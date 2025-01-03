@@ -84,6 +84,12 @@ export function icon(status) {
         style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' },
     };
       break;
+    case 'UNINITIALIZED':
+      iconProps = {
+        icon: faPlay,
+        style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' },
+    };
+      break;
     default:
       return status;
   }
@@ -106,19 +112,6 @@ export function icon(status) {
 // const sizeToGB = (data) => (data / Math.pow(1024, 3));
 // const formatSize = (size) => (sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`);
 
-
-export function renderHostStatusIcon(status) {
-  if (status === 'UP') {
-    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'green', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-  } else if (status === 'DOWN') {
-    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-  } else if (status === 'MAINTENANCE') {
-    return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
-  } else if (status === 'REBOOT') {
-    return <FontAwesomeIcon icon={faRefresh} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
-  }
-  return status;
-}
 
 export function renderHostStatus (status) {
   if (status === 'UP') {
@@ -165,5 +158,12 @@ export const renderDomainStatusIcon = (status) => {
 }
 
 export const renderEventStatusIcon = (status) => {
+  return icon(status);
+};
+
+export const renderDatacenterStatusIcon = (status) => {
+  return icon(status);
+};
+export const renderHostStatusIcon = (status) => {
   return icon(status);
 };

@@ -6,12 +6,8 @@ import VmTable from "../../table/VmTable";
 const DiskVms = ({diskId}) => {
   const { 
       data: vms, 
-      status: vmsStatus, 
-      isLoading: isVmsLoading, 
-      isError: isVmsError,
   } = useAllVmsFromDisk(diskId, (e) => ({ ...e,}));
 
-  const [selectedVm, setSelectedVm] = useState(null);
   const [selectedVms, setSelectedVms] = useState([]); // 선택된 VM
   return (
     <VmTable

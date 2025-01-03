@@ -7,8 +7,6 @@ import HostDupl from '../../duplication/HostDupl';
 const Hosts = () => {
   const {
       data: hosts,
-      refetch: refetchHosts,
-      isLoading: isHostsLoading
   } = useAllHosts((e) => ({ ...e }));
 
   return (

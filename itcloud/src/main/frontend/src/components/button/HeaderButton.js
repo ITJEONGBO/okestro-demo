@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../Input/IconButton';
-import './HeaderButton.css';
+import './css/HeaderButton.css';
 
 const HeaderButton = ({ 
   title, 
@@ -17,7 +17,7 @@ const HeaderButton = ({
 
   const handlePopupBoxItemClick = (item) => {
     if (item.onClick) {
-      item.onClick(); // 클릭 시 각 항목의 onClick을 호출
+      item.onClick();
     }
     console.log(`Clicked on ${item.label}`);
     setIsPopupBoxVisible(false); // 팝업 닫기
@@ -28,8 +28,6 @@ const HeaderButton = ({
     const handleClickOutside = (event) => {
       const popupBox = document.getElementById('popup_box');
       const popupBtn = document.getElementById('popup_btn');
-
-      // 팝업이나 팝업 버튼이 아닌 곳을 클릭했을 때 팝업 닫기
       if (popupBox && !popupBox.contains(event.target) && popupBtn && !popupBtn.contains(event.target)) {
         setIsPopupBoxVisible(false);
       }
@@ -82,7 +80,7 @@ const HeaderButton = ({
                     key={index}
                     className="popup_item"
                     onClick={(e) => {
-                      e.stopPropagation(); // div를 클릭했을 때는 닫히지 않도록 이벤트 전파 차단
+                      e.stopPropagation();
                       handlePopupBoxItemClick(item);
                     }}
                   >

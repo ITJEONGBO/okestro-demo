@@ -887,11 +887,11 @@ const VmModal = ({
                             <div className="flex">
                             <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
                             <VmConnectionPlusModal
-                            isOpen={isConnectionPopupOpen}
-                            onRequestClose={() => setIsConnectionPopupOpen(false)}
-                            vmId={vmId} // vmId를 넘겨줍니다.
-                            onSelectDisk={handleDiskSelection}
-                            excludedDiskIds={selectedDisks.map((disk) => disk.id)}
+                              isOpen={isConnectionPopupOpen}
+                              onRequestClose={() => setIsConnectionPopupOpen(false)}
+                              vmId={vmId} // vmId를 넘겨줍니다.
+                              onSelectDisk={handleDiskSelection}
+                              excludedDiskIds={selectedDisks.map((disk) => disk.id)}
                             />
                             
                             <button className="mr-1" onClick={() => setIsCreatePopupOpen(true)}>생성</button>
@@ -978,22 +978,22 @@ const VmModal = ({
                       <div className="flex float-right">
                         <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
                         <VmConnectionPlusModal
-  isOpen={isConnectionPopupOpen}
-  onRequestClose={() => setIsConnectionPopupOpen(false)}
-  vmId={vmId}
-  onSelectDisk={(diskId, diskDetails) => {
-    if (diskId) {
-      const newDisk = { id: diskId, details: diskDetails };
-      setSelectedDiskId(diskId); // 선택된 디스크 ID 업데이트
-      setSelectedDisks((prev) => [...prev, newDisk]); // 선택된 디스크 추가
-      setVmdisks((prev) => [...prev, newDisk]); // vmdisks에 추가
-      setIsConnectionPopupOpen(false); // 모달 닫기
-    } else {
-      alert("디스크를 선택하지 않았습니다!");
-    }
-  }}
-  excludedDiskIds={selectedDisks.map((disk) => disk.id)}
-/>
+                          isOpen={isConnectionPopupOpen}
+                          onRequestClose={() => setIsConnectionPopupOpen(false)}
+                          vmId={vmId}
+                          onSelectDisk={(diskId, diskDetails) => {
+                            if (diskId) {
+                              const newDisk = { id: diskId, details: diskDetails };
+                              setSelectedDiskId(diskId); // 선택된 디스크 ID 업데이트
+                              setSelectedDisks((prev) => [...prev, newDisk]); // 선택된 디스크 추가
+                              setVmdisks((prev) => [...prev, newDisk]); // vmdisks에 추가
+                              setIsConnectionPopupOpen(false); // 모달 닫기
+                            } else {
+                              alert("디스크를 선택하지 않았습니다!");
+                            }
+                          }}
+                          excludedDiskIds={selectedDisks.map((disk) => disk.id)}
+                        />
 
                   
                         {/* 선택된 디스크 정보 표시 */}

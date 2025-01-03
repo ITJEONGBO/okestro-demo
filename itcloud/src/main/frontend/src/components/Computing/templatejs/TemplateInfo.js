@@ -19,7 +19,6 @@ const TemplateInfo = () => {
   const { id: templateId, section } = useParams();
   const {
     data: template,
-    isLoading: isTemplateLoading,
   } = useTemplate(templateId);
 
   const navigate = useNavigate();
@@ -99,7 +98,7 @@ const TemplateInfo = () => {
         <TemplateEditModal
           isOpen={modals.edit}
           onRequestClose={() => toggleModal('edit', false)}
-          editMode={true} // 편집 모드 설정
+          editMode={true} 
           templateId={templateId}
         />
       )}

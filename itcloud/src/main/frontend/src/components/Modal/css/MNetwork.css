@@ -1,5 +1,20 @@
 
 /*새로만들기*/
+.network_new_popup {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 78.4%;
+    width: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.network_new_popup.edit-mode {
+    height: 73%;
+}
 .network_new_content{
     height: 66vh;
     overflow-y: auto; 
@@ -26,6 +41,50 @@
     display: flex;
     justify-content: right;
     align-items: center;
+}
+.network_form_group,
+.network_checkbox_type1,
+.network_radio_group,
+.network_checkbox_type3
+{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2% 2%;
+}
+.network_form_group input,
+.network_form_group select,
+.network_checkbox_type1>input[type="text"],
+.network_checkbox_type3 input
+{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
+    border: 1px solid  rgb(206, 206, 206);
+}
+
+.network_new_popup form{
+    height: 66vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+
+.network_new_cluster_table{ 
+    border-collapse: collapse;
+    width: 100%;
+    text-align: left;
+}
+.network_new_cluster_table thead{
+    background-color: #d1e2eb;
+    border-top: none;
+}
+
+.network_new_cluster_table th,.network_new_cluster_table td{
+    border: 1px solid rgb(209, 209, 209);
+    padding: 0.05rem;
 }
 /* .network_new_radio_btn>div{
     width: 30%;

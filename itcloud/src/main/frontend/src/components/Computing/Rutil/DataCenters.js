@@ -1,13 +1,10 @@
 import React, { useState, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../css/Computing.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
-import TablesOuter from '../../table/TablesOuter';
 import TableInfo from '../../table/TableInfo';
 import { useAllDataCenters } from '../../../api/RQHook';
+import TablesOuter from '../../table/TablesOuter';
+import { renderDatacenterStatusIcon } from '../../util/format';
 import DataCenterActionButtons from '../../button/DataCenterActionButtons';
-import TableOuter from '../../table/TableOuter';
 
 const DataCenterModal = React.lazy(() => import('../../Modal/DataCenterModal'));
 const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
@@ -15,81 +12,63 @@ const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 const DataCenters = () => {
   const {
     data: datacenters,
-    status: datacentersStatus,
-    isRefetching: isDatacentersRefetching,
-    refetch: refetchDatacenters,
-    isError: isDatacentersError,
-    error: datacentersError,
-    isLoading: isDatacentersLoading
   } = useAllDataCenters((e) => ({
     ...e,
-    icon: e?.status === 'UP' ? 
-      <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />
-      : <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />,
-    storageType: e?.storageType ? '로컬' : '공유됨',
-    status: e?.status === 'UNINITIALIZED' ? '초기화되지 않음' : 'UP'
   }));
 
-  const navigate = useNavigate();
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
-  const [selectedDataCenter, setSelectedDataCenter] = useState(null);
-  
+  const [selectedDataCenters, setSelectedDataCenters] = useState([]);
+
   const toggleModal = (type, isOpen) => {
     setModals((prev) => {
-      if (prev[type] === isOpen) return prev; // 이미 열려 있으면 무시
+      if (prev[type] === isOpen) return prev; 
       return { ...prev, [type]: isOpen };
     });
   };
 
-  const handleNameClick = (id) => {
-    navigate(`/computing/datacenters/${id}/clusters`);
-  };
+  const selectedIds = (Array.isArray(selectedDataCenters) ? selectedDataCenters : []).map(dc => dc.id).join(', ');
 
   return (
     <>
-       <DataCenterActionButtons
+      <DataCenterActionButtons
         onCreate={() => toggleModal('create', true)}
-        onEdit={() => selectedDataCenter?.id && toggleModal('edit', true)}
-        onDelete={() => selectedDataCenter?.id && toggleModal('delete', true)}
-        isEditDisabled={!selectedDataCenter?.id}
+        onEdit={() => selectedDataCenters.length === 1 && toggleModal('edit', true)}
+        onDelete={() => selectedDataCenters.length === 1 && toggleModal('delete', true)}
+        isEditDisabled={!Array.isArray(selectedDataCenters) || selectedDataCenters.length !== 1}
       />
-      <span>id = {selectedDataCenter?.id || ''}</span>
-
-      <TableOuter
+      <span>선택된 데이터센터 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
+      <TablesOuter
         columns={TableInfo.DATACENTERS}
-        data={datacenters || []}
-        // shouldHighlight1stCol={true}
-        onRowClick={(row, column, colIndex) => {
-          console.log('Row Clicked:', row); // 디버깅 추가
-          setSelectedDataCenter(row);
-          if (colIndex === 1) {
-            navigate(`/computing/datacenters/${row.id}/clusters`); 
-          }
-        }}
-        clickableColumnIndex={[1]} // "이름" 열의 인덱스 설정
-        // onClickableColumnClick={(row) => handleNameClick(row.id)}
+        data={(datacenters || []).map((dc) => ({
+          ...dc,
+          icon: renderDatacenterStatusIcon(dc?.status),
+          status: dc?.status === 'UNINITIALIZED' ? '초기화되지 않음' : 'UP',
+          storageType: dc?.storageType ? '로컬' : '공유됨',
+        }))}
+        onRowClick={(selectedRows) => setSelectedDataCenters(selectedRows)}
+        clickableColumnIndex={[1]}
+        multiSelect={true}
       />
 
-      {/* 모달 컴포넌트를 사용할 때만 로딩 */}
       <Suspense>
-        {(modals.create || (modals.edit && selectedDataCenter)) && (
+        {(modals.create || (modals.edit && Array.isArray(selectedDataCenters) && selectedDataCenters.length === 1)) && (
           <DataCenterModal
             isOpen={modals.create || modals.edit}
             onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
             editMode={modals.edit}
-            dcId={selectedDataCenter?.id || null}
+            dcId={Array.isArray(selectedDataCenters) && selectedDataCenters.length === 1 ? selectedDataCenters[0].id : null}
           />
         )}
-        {modals.delete && selectedDataCenter && (
+        {modals.delete && selectedDataCenters.length > 0 && (
           <DeleteModal
             isOpen={modals.delete}
             type='DataCenter'
             onRequestClose={() => toggleModal('delete', false)}
             contentLabel={'데이터센터'}
-            data={selectedDataCenter}
+            data={selectedDataCenters}
           />
         )}
-       </Suspense>
+      </Suspense>
     </>
   );
 };

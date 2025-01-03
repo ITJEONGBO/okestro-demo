@@ -19,13 +19,12 @@ const TableInfo = {
   ],
   CLUSTERS_FROM_DATACENTER: [
     { header: '이름', accessor: 'name' },
-    { header: '호환 버전', accessor: 'version' },  // 호환 버전 열 추가
+    { header: '호환 버전', accessor: 'version' },
     { header: '설명', accessor: 'description' }
   ],
   STORAGES_FROM_DATACENTER: [
-    // { header: '', accessor: 'icon' },
     { header: '상태', accessor: 'status' },
-    { header: 'crown', accessor: 'hostedEngine' }, // 이모티콘을 표시할 열
+    { header: 'crown', accessor: 'hostedEngine' },
     { header: '도메인 이름', accessor: 'name' },
     { header: '도메인 유형', accessor: 'domainType' },
     { header: '여유 공간 (GiB)', accessor: 'availableSize', clickable: false },
@@ -34,23 +33,19 @@ const TableInfo = {
     { header: '설명', accessor: 'description' },
   ],
   NETWORK_FROM_DATACENTER: [
-    { header: '이름', accessor: 'name', clickable: true, width: '14%'   },
+    { header: '이름', accessor: 'name', clickable: true, width: '14%'},
     { header: '설명', accessor: 'description', clickable: false },
   ],
-  // 호스트 HOSTS
-  // 가상머신 VMS
-  // 네트워크 NETOWORKS
 
   CLUSTERS: [
-    { header: '이름', accessor: 'name', clickable: true },
+    { header: '이름', accessor: 'name', clickable: true, width: '13%'},
     { header: '설명', accessor: 'description', clickable: false },
     { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },
-    { header: '호스트 수', accessor: 'hostCnt', clickable: false },
-    { header: '가상 머신 수', accessor: 'vmCnt', clickable: false },
+    { header: '호스트 수', accessor: 'hostCnt', clickable: false, width: '8%' },
+    { header: '가상 머신 수', accessor: 'vmCnt', clickable: false, width: '9%'  },
     { header: '코멘트', accessor: 'comment', clickable: false },
   ],
-  // 호스트 HOSTS
-  // 가상머신 VMS
+
   NETWORK_FROM_CLUSTER: [
     { header: '상태', accessor: 'status', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
@@ -102,10 +97,6 @@ const TableInfo = {
     { header: '벤더', accessor: 'vendorName', clickable: false },
     { header: '제품', accessor: 'productName', clickable: false },
     { header: '드라이버', accessor: 'driver', clickable: false },
-    // { header: '현재 사용중', accessor: 'currentlyUsed', clickable: false },
-    // { header: '가상 머신에 연결됨', accessor: 'connectedToVM', clickable: false },
-    // { header: 'IOMMU 그룹', accessor: 'iommuGroup', clickable: false },
-    // { header: 'Mdev 유형', accessor: 'mdevType', clickable: false },
   ],
 
   VMS: [
@@ -128,7 +119,6 @@ const TableInfo = {
   APPLICATIONS_FROM_VM: [
     { header: '설치된 애플리케이션', accessor: 'name' }
   ],
-  // 호스트 장치 DEVICE_FROM_HOST
 
   TEMPLATES:[
     { header: '이름', accessor: 'name', clickable: true },
@@ -142,13 +132,11 @@ const TableInfo = {
     { header: '설명', accessor: 'description', clickable: false },
   ],
 
-
   NETWORKS: [
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '데이터센터', accessor: 'datacenter', clickable: false },
     { header: '설명', accessor: 'description', clickable: false, width: '20%' },
-    // { header: '역할', accessor: 'vmrole', clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
     { header: '레이블', accessor: 'label', clickable: false },
     { header: 'MTU', accessor: 'mtu', clickable: false },
@@ -164,7 +152,6 @@ const TableInfo = {
   ],
   CLUSTERS_FRON_NETWORK: [
     { header: '이름', accessor: 'name', clickable: true, width: '15%' },
-    // { header: '호환 버전', accessor: 'version', clickable: false },
     { header: '연결된 네트워크', accessor: 'connect', clickable: false, width: '9%' },
     { header: '네트워크 상태', accessor: 'status', clickable: false , width: '10%'},
     { header: '필수 네트워크', accessor: 'required', clickable: false, width: '9%' },
@@ -216,13 +203,11 @@ const TableInfo = {
     { header: '이름', accessor: 'name', clickable: false },
     { header: '네트워크', accessor: 'network', clickable: true },
     { header: '데이터 센터', accessor: 'dataCenter', clickable: true },
-    // { header: '호환 버전', accessor: 'version', clickable: false },
     { header: '네트워크 필터', accessor: 'networkFilter', clickable: false },
     { header: '포트 미러링', accessor: 'portMirroring', clickable: false },
     { header: '통과', accessor: 'passThrough', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-
 
   STORAGE_DOMAINS: [
     { header: '상태', accessor: 'icon', width: '4%' },
@@ -240,7 +225,6 @@ const TableInfo = {
   ],
   DATACENTERS_FROM_STORAGE_DOMAIN : [
     { header: '', accessor: 'icon', clickable: false, width: '4%' },
-    // { header: 'id', accessor: 'id', clickable: false },
     { header: '이름', accessor: 'name', clickable: false , width: '17%'},
     { header: '데이터 센터 내의 도메인 상태', accessor: 'domainStatus', clickable: false },
   ],
@@ -369,8 +353,7 @@ const TableInfo = {
   ],
   
   STORAGE_DOMAINS_FROM_DISK: [
-    { header: '', accessor: 'icon', clickable: false },
-    // { header: '', accessor: 'hostedEngine', clickable: false },
+    { header: '', accessor: 'icon', clickable: false, width: '5%'  },
     { header: '도메인 이름', accessor: 'name', clickable: false },
     { header: '도메인 유형', accessor: 'domainType', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },

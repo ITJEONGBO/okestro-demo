@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './css/HostAction.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronUp, faChevronDown, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 
 const HostActionButtons = ({
   onCreate,
@@ -52,14 +52,13 @@ const HostActionButtons = ({
   const handleClick = (label, action) => {
     console.log(`Button clicked: ${label}`);
     action?.();
-    closeDropdowns(); // 동작 후 드롭다운 닫기
+    closeDropdowns(); 
   };
 
   const manageActions = [
     { onClick: onDeactivate, label: '유지보수', disabled: !isUp },
     { onClick: onActivate, label: '활성', disabled: isEditDisabled || !isMaintenance },
     { onClick: onRestart, label: '재시작', disabled: isEditDisabled || !isUp },
-    // { onClick: onStop, label: '중지', disabled: isEditDisabled || isUp },
     { onClick: onReInstall, label: '다시 설치', disabled: isEditDisabled || isUp },
     { onClick: onRegister, label: '인증서 등록', disabled: isEditDisabled || isUp },
   ];
@@ -103,8 +102,7 @@ const HostActionButtons = ({
 
       <div ref={dropdownRef2} className="dropdown-container">
         <button onClick={() => toggleDropDown('settings')} className="manage-button">
-          :
-          <FontAwesomeIcon icon={activeDropdown === 'settings' ? faChevronUp : faChevronDown} />
+          <FontAwesomeIcon icon={activeDropdown === 'settings' ? faEllipsisVertical : faEllipsisVertical} />
         </button>
         {activeDropdown === 'settings' && (
           <div className="dropdown-menu">

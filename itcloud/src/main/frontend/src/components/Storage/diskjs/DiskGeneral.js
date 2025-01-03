@@ -4,10 +4,6 @@ import { formatBytesToGB } from '../../util/format';
 const DiskGeneral = ({ diskId }) => {
   const {
     data: disk,
-    isRefetching: isDiskRefetching,
-    refetch: diskRefetch,
-    error: diskError,
-    isLoading: isDiskLoading,
   } = useDiskById(diskId, (e) => ({
     ...e,
   }));

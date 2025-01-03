@@ -8,12 +8,6 @@ import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 const AllDisk = () => {
   const { 
     data: disks,
-    status: disksStatus,
-    isRefetching: isDisksRefetching,
-    refetch: disksRefetch, 
-    isError: isDisksError, 
-    error: disksError, 
-    isLoading: isDiskssLoading,
   } = useAllDisks((e) => ({...e,}));
 
 

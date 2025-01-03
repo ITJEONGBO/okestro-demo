@@ -13,7 +13,7 @@ import {
 
 const FormGroup = ({ label, children }) => (
   <div className="network_form_group">
-    <label style={{ 'font-size': "13px" }}>{label}</label>
+    <label style={{ 'font-size': "0.32rem" }}>{label}</label>
     {children}
   </div>
 );
@@ -273,7 +273,7 @@ const NetworkModal = ({
                       }));
                     }}
                   />
-                  <label style={{ fontSize: "13px" }}>VLAN 태깅 활성화</label>
+                  <label style={{ fontSize: "0.32rem" }}>VLAN 태깅 활성화</label>
                 </div>
 
                 <input
@@ -308,7 +308,7 @@ const NetworkModal = ({
                     }));
                   }}
                 />
-                <label style={{ fontSize: "13px" }}>가상 머신 네트워크</label>
+                <label style={{fontSize: "0.32rem" }}>가상 머신 네트워크</label>
               </div>
             </FormGroup>
             
@@ -322,7 +322,7 @@ const NetworkModal = ({
                   onChange={(e) => setFormState((prev) => ({ ...prev, portIsolation: e.target.checked }))}
                   disabled={!formState.usageVm} // 가상 머신 네트워크가 비활성화되면 비활성화
                 />
-                <label style={{ fontSize: "13px" }}>포트 분리</label>
+                <label style={{ fontSize: "0.32rem" }}>포트 분리</label>
               </div>
             </FormGroup>
 
@@ -338,7 +338,7 @@ const NetworkModal = ({
                       checked={formState.mtu === '0'} // 기본값 상태 체크
                       onChange={() => setFormState((prev) => ({ ...prev, mtu: '0' }))}
                     />
-                    <label style={{ fontSize: "0.3rem" }}>기본값 (1500)</label>
+                    <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
                    </div>
                    <div>
                     <input
@@ -348,7 +348,7 @@ const NetworkModal = ({
                       checked={formState.mtu !== '0'} // 사용자 정의 상태 체크
                       onChange={() => setFormState((prev) => ({ ...prev, mtu: '' }))} // 사용자 정의 선택 시 값 초기화
                     />
-                    <label style={{ fontSize: "0.3rem"  }}>사용자 정의</label>
+                    <label style={{ fontSize: "0.32rem"  }}>사용자 정의</label>
                   </div>
                 </div>
                 

@@ -93,7 +93,7 @@ button{
 button[disabled],select[disabled],input[disabled]{
     background-color: #efefef;
     color: #6d6d6d;
-    cursor: no-drop;
+    cursor: no-drop !important;
 }
 .plusbtns{
     /* border:1px solid gray; */
@@ -617,47 +617,6 @@ background-color: #6999D9;
     font-weight:600;
 }
 
-/**/
-.network_new_outer {
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.network_new_popup {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 78.4%;
-    width: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.network_new_popup.edit-mode {
-    height: 73%;
-}
-.network_new_nav{
-    justify-content: space-between;
-    border-bottom: 1px solid rgb(206, 206, 206);
-
-    width: 30%;
-    background-color: #FAFAFA;
-    border-right: 1px solid #ddd;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
-.network_new_nav>div{
-    font-weight: 800;
-    font-size: 0.33rem;
-    width: 100%;
-    cursor: pointer;
-    padding: 0.4rem 0.2rem;
-
-}
 .active{
     color: #449bff;
 }
@@ -669,32 +628,9 @@ background-color: #6999D9;
 .inactive-tab {
     color: black;
 }
-.network_first_contents{
+/* .network_first_contents{
     padding: 0.1rem 0;
     border-bottom: 1px solid  rgb(206, 206, 206);;
-}
-.network_form_group,
-.network_checkbox_type1,
-.network_radio_group,
-.network_checkbox_type3
-{
-    display: flex;
-    justify-content: space-between;
-    padding: 1.2% 2%;
-}
-.network_form_group input,
-.network_form_group select,
-.network_checkbox_type1>input[type="text"],
-.network_checkbox_type3 input
-{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-    border: 1px solid  rgb(206, 206, 206);
 }
 
 .network_second_contents>span{
@@ -713,40 +649,13 @@ background-color: #6999D9;
 }
 .network_radio_group>div:nth-child(2){
    width: 46%;
-}
+} */
 /* .network_checkbox_type3>div,.network_new_vnic_buttons{
     display: flex;
     width: 6%;
 } */
 
-.network_new_popup form{
-    height: 66vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
 
-.network_new_cluster_table{ 
-    border-collapse: collapse;
-    width: 100%;
-    text-align: left;
-}
-.network_new_cluster_table thead{
-    background-color: #d1e2eb;
-    border-top: none;
-}
-
-.network_new_cluster_table th,.network_new_cluster_table td{
-    border: 1px solid rgb(209, 209, 209);
-    padding: 0.05rem;
-}
-#network_new_vnic_form{
-    padding: 0.5rem;
-}
-
-#network_new_vnic_form>div{
-    display: flex;
-    justify-content: space-between;
-}
 input[type="checkbox"],input[type="radio"]{
     margin-right:0.1rem;
     cursor:pointer;
@@ -867,7 +776,6 @@ textarea{
     display:flex;
     justify-content: space-between;
 }
-
 
 .disk_delete_box{
     padding:0.3rem;

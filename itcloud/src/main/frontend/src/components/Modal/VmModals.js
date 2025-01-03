@@ -1,7 +1,6 @@
 import React, { Suspense,useState } from 'react';
 import VmAddTemplateModal from './VmAddTemplateModal';
 import VmMigrationModal from './VmMigrationModal';
-import VmDeleteModal from './VmDeleteModal';
 import VmSnapshotAddModal from './VmSnapshotaddModal';
 import { useDisksFromVM } from '../../api/RQHook';
 // import VmExportOVAModal from './VmExportOVAModal';

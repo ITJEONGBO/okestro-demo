@@ -7,9 +7,6 @@ import ClusterDupl from '../../duplication/ClusterDupl';
 const Clusters = () => {
   const { 
     data: clusters, 
-    isRefetching: isClustersRefetching,
-    refetch: refetchClusters, 
-    isLoading: isClustersLoading,
   } = useAllClusters((e) => ({ ...e }));
 
   return (

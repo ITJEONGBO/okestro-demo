@@ -50,7 +50,7 @@ const DeleteModal = ({
       if (Array.isArray(data)) {
         // data가 배열인 경우
         setId(data.map((item) => item.id));
-        setName(data.map((item) => item.name || item.alias || ''));
+        setName(data.map((item) => item.name || item.alias || '').join(', '));
       } else {
         // data가 단일 객체인 경우
         setId([data.id]);
@@ -74,7 +74,10 @@ const DeleteModal = ({
       handleDelete(deleteDataCenter);
     } else if (type === 'Cluster') {
       console.log('Deleting Cluster');
-      handleDelete(deleteCluster);
+      id.forEach((clsuterId, index) => {
+        handleDelete(() => deleteCluster(clsuterId), name[index]); 
+      });
+      onRequestClose();
     } else if (type === 'Host') {
       console.log('Deleting Host');
       id.forEach((hostId, index) => {
@@ -83,13 +86,13 @@ const DeleteModal = ({
     } else if (type === 'Template') {
       console.log('Deleting Template');
       id.forEach((templateId, index) => {
-        handleDelete(() => deleteTemplate(templateId), name[index]); // 각 네트워크를 개별적으로 삭제
+        handleDelete(() => deleteTemplate(templateId), name[index]);
       });
       onRequestClose();
     } else if (type === 'Network') {
       console.log('Deleting Network');
       id.forEach((networkId, index) => {
-        handleDelete(() => deleteNetwork(networkId), name[index]); // 각 네트워크를 개별적으로 삭제
+        handleDelete(() => deleteNetwork(networkId), name[index]); 
       });
       onRequestClose();
     }else if (type === 'vnicProfile') {

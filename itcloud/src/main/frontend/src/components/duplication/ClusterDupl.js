@@ -2,45 +2,48 @@ import React, { useState } from 'react';
 import ClusterActionButtons from '../button/ClusterActionButtons';
 import ClusterTable from '../table/ClusterTable';
 import ClusterModals from '../Modal/ClusterModals';
+import AllActionButton from '../button/AllActionButton';
 
 const ClusterDupl = ({
   clusters,
   columns,
-  onFetchClusters,
-  status,
   datacenterId
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
-  const [action, setAction] = useState(null); // 현재 동작
-  const [selectedCluster, setSelectedCluster] = useState(null);
-  
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [action, setAction] = useState(null);
+  const [selectedClusters, setSelectedClusters] = useState([]);
+
   const handleActionClick = (actionType) => {
-    setAction(actionType); // 동작 설정
-    setIsModalOpen(true); // 모달 열기
+    setAction(actionType); 
+    setIsModalOpen(true); 
   };
+  const selectedIds = (Array.isArray(selectedClusters) ? selectedClusters : []).map(cluster => cluster.id).join(', ');
 
   return (
   <>
     <ClusterActionButtons
       onCreate={() => handleActionClick('create')}
-      onEdit={() => selectedCluster?.id && handleActionClick('edit')}
-      onDelete={() => selectedCluster?.id && handleActionClick('delete')}
-      isEditDisabled={!selectedCluster?.id}
+      onEdit={() => selectedClusters.length === 1 && handleActionClick('edit')}
+      onDelete={() => selectedClusters.length === 1 && handleActionClick('delete')}
+      isEditDisabled={selectedClusters.length !== 1}
     />
-    <span>id = {selectedCluster?.id || ''}</span>
+    <span>선택된 클러스터 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
 
     <ClusterTable
       columns={columns}
       clusters={clusters}
-      selectedCluster={selectedCluster}
-      setSelectedCluster={setSelectedCluster}
+      selectedClusters={selectedClusters}
+      setSelectedClusters={(selected) => {
+        if (Array.isArray(selected)) setSelectedClusters(selected);
+      }}
     />
 
     <ClusterModals
       isModalOpen={isModalOpen}
       action={action}
       onRequestClose={() => setIsModalOpen(false)}
-      selectedCluster={selectedCluster}
+      selectedCluster={selectedClusters.length > 0 ? selectedClusters[0] : null}
+      selectedClusters={selectedClusters}
       datacenterId={datacenterId}
     />
   </>

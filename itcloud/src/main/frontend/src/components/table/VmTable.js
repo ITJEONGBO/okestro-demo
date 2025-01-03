@@ -49,14 +49,6 @@ const VmTable = ({
           ? '' : `${vm.usageDto.networkPercent}%`,
         }))}
         shouldHighlight1stCol={true}
-        // onRowClick={(row) => {
-        //   console.log('Selected VM row:', row); // 선택된 행의 데이터를 확인
-        //   // 선택된 VM 정보와 데이터센터 ID 포함
-        //   setSelectedVms({
-        //     ...row,
-        //     dataCenterId: row?.dataCenterVo?.id, // 데이터센터 ID를 추가
-        //   });
-        // }}
         onRowClick={handleRowSelection}
         clickableColumnIndex={[1]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}

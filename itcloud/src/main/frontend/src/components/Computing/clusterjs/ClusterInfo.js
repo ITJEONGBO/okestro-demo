@@ -20,9 +20,6 @@ const ClusterInfo = () => {
   const { id: clusterId, section } = useParams();
   const {
     data: cluster,
-    refetch: clusterRefetch,
-    error: clusterError,
-    isLoading: isClusterLoading,
   } = useCluster(clusterId, (e) => ({...e,}));
 
   const navigate = useNavigate();

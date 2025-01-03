@@ -18,12 +18,6 @@ const DiskInfo = () => {
   const { id: diskId, section } = useParams();
   const {
     data: disk,
-    status: diskStatus,
-    isRefetching: isDiskRefetching,
-    refetch: diskRefetch,
-    isError: isDiskError,
-    error: diskError,
-    isLoading: isDiskLoading,
   } = useDiskById(diskId, (e) => ({
     ...e,
   }));

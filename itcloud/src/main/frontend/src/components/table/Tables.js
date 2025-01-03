@@ -36,29 +36,29 @@ const Tables = ({
   // 테이블 외부 클릭 시 선택된 행 초기화, 단 메뉴 박스,모달,headerbutton 제외
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        tableRef.current && 
-        !tableRef.current.contains(event.target) && 
-        (!menuRef.current || !menuRef.current.contains(event.target)) &&
-        !event.target.closest('.header_right_btns button') &&
-        !event.target.closest('.Overlay') 
-      ) {
-        setSelectedRowIndex(null);
-        setContextRowIndex(null);
-        if (typeof onRowClick === 'function') onRowClick(null); // 열 선택 해제 시 onRowClick에 null 전달
-      }
+        if (
+            tableRef.current &&
+            !tableRef.current.contains(event.target) &&
+            (!menuRef.current || !menuRef.current.contains(event.target)) &&
+            !event.target.closest('.header_right_btns button') &&
+            !event.target.closest('.Overlay')
+        ) {
+            setSelectedRowIndex(null); 
+            setSelectedRows([]);
+            if (typeof onRowClick === 'function') onRowClick([]);
+        }
     };
-  
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onRowClick]);
 
+
+
   // 테이블 정렬기능
   const [sortedData, setSortedData] = useState(data);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' }); 
   useEffect(() => {
     if (sortConfig.key) {
       sortData(data, sortConfig.key, sortConfig.direction);
@@ -104,15 +104,16 @@ const Tables = ({
       }));
     }
   };
+
   const handleRowClick = (rowIndex, e) => {
-    const clickedRow = sortedData[rowIndex]; // sortedData 사용으로 정렬 상태 유지
+    const clickedRow = sortedData[rowIndex];
     if (clickedRow) {
       if (e.ctrlKey) {
         setSelectedRows((prev) => {
           const updated = prev.includes(rowIndex)
             ? prev.filter((index) => index !== rowIndex)
             : [...prev, rowIndex];
-          const selectedData = updated.map((index) => sortedData[index]); // sortedData 기준으로 선택
+          const selectedData = updated.map((index) => sortedData[index]); 
           onRowClick(selectedData); // 선택된 데이터 배열 전달
           return updated;
         });
@@ -125,9 +126,9 @@ const Tables = ({
   };
   useEffect(() => {
     if (sortConfig.key) {
-      sortData(sortConfig.key, sortConfig.direction); // 현재 정렬 상태 유지
+      sortData(sortConfig.key, sortConfig.direction); 
     } else {
-      setSortedData(data); // 정렬 상태가 없는 경우 원본 데이터를 사용
+      setSortedData(data); 
     }
   }, [data, sortConfig]);
   
@@ -139,7 +140,7 @@ const Tables = ({
     const handleClickOutsideMenu = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setContextMenu(null);
-        setContextRowIndex(null); // 우클릭된 행의 배경색 초기화
+        setContextRowIndex(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutsideMenu);
