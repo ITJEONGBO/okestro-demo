@@ -4,7 +4,7 @@ import TableOuter from '../../table/TableOuter';
 import { useNetworkInterfaceFromHost } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';
 import NetworkHostModal from '../../Modal/NetworkHostModal';
-import { renderUpDownStatusIcon } from '../../util/format';
+import { formatNumberWithCommas, renderUpDownStatusIcon } from '../../util/format';
 
 const HostNics = ({ hostId }) => {
 
@@ -17,19 +17,17 @@ const HostNics = ({ hostId }) => {
     id: e?.id,
     name: e?.name,
     bridged: e?.bridged,
-    ipv4: e?.ipv4 || '',
-    ipv6: e?.ipv6 || '',
+    ipv4: e?.ip?.address || '',
+    ipv6: e?.ipv6?.address || '',
     macAddress: e?.macAddress,
     mtu: e?.mtu,
     status: e?.status,
     icon: renderUpDownStatusIcon(e?.status),
-    speed: e?.speed <= 0 ? '< 1' : e?.speed, // Mbps 단위 변환 후 숫자로만 반환
-    rxSpeed: e?.rxSpeed <= 0 ? '< 1' : e?.rxSpeed, // Rx 속도 Mbps 숫자만 반환
-    txSpeed: e?.txSpeed <= 0 ? '< 1' : e?.txSpeed, // Tx 속도 Mbps 숫자만 반환
-    rxTotalSpeed: e?.rxTotalSpeed || 0, // 총 Rx 속도 GB 숫자만 반환
-    txTotalSpeed: e?.txTotalSpeed || 0, // 총 Tx 속도 GB 숫자만 반환
-    rxTotalError: e?.rxTotalError || 0, // Rx 에러
-    txTotalError: e?.txTotalError || 0, // Tx 에러
+    speed: e?.speed <= 0 ? '< 1' : formatNumberWithCommas(e?.speed), // Mbps 단위 변환 후 숫자로만 반환
+    rxSpeed: e?.rxSpeed <= 0 ? '< 1' : formatNumberWithCommas(e?.rxSpeed), // Rx 속도 Mbps 숫자만 반환
+    txSpeed: e?.txSpeed <= 0 ? '< 1' : formatNumberWithCommas(e?.txSpeed), // Tx 속도 Mbps 숫자만 반환
+    rxTotalSpeed: e?.rxTotalSpeed ? formatNumberWithCommas(e?.rxTotalSpeed) : '0', // 총 Rx 속도 GB 숫자만 반환
+    txTotalSpeed: e?.txTotalSpeed ? formatNumberWithCommas(e?.txTotalSpeed) : '0', // 총 Tx 속도 GB 숫자만 반환
     hostName: e?.hostVo?.name || '', // 호스트 이름
     hostId: e?.hostVo?.id || '', // 호스트 ID
     networkName: e?.networkVo?.name || '', // 네트워크 이름
@@ -119,7 +117,7 @@ const HostNics = ({ hostId }) => {
           >
             <div className="section_table_outer">
               <TableOuter
-                columns={TableInfo.HOST_NETWORK_INTERFACE}
+                columns={TableInfo.NETWORK_INTERFACE_FROM_HOST}
                 data={[data]} // 개별 NIC 데이터만 전달
                 onRowClick={() => console.log('Row clicked')}
               />
@@ -129,7 +127,7 @@ const HostNics = ({ hostId }) => {
             <div className="host_network_hiddenbox">
               <div className="section_table_outer" style={{ marginLeft: '1.43rem' }}>
                 <TableOuter
-                  columns={TableInfo.NETWORKS_FROM_HOST}
+                  columns={TableInfo.NETWORK_FROM_HOST}
                   data={[data]} // 개별 NIC 데이터만 전달
                   onRowClick={() => console.log('Row clicked')}
                 />

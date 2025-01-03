@@ -1,8 +1,8 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.model.network.HostNicVo
-import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.IdentifiedVo
+import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.service.computing.ItHostServiceTest.Companion
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
@@ -44,7 +44,7 @@ class ItHostNicServiceTest {
         log.debug("should_findAllHostNicFromHost ...")
 
         val result: List<HostNicVo> =
-            service.findAllFromHost("8d60dce0-a79a-46f2-b332-4f15492f3afa")
+            service.findAllFromHost("c35ee370-b9f6-4c5b-9c65-fe2e716795b5")
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
@@ -60,16 +60,54 @@ class ItHostNicServiceTest {
     @Test
     fun should_setUpNetworksFromHost() {
         log.debug("should_setUpNetworksFromHost ...")
-        val hostId = "c35ee370-b9f6-4c5b-9c65-fe2e716795b5"
-        val networkVo: NetworkVo =
-            NetworkVo.builder {
-
-            }
+        val hostId = "a0816fc5-d06a-478e-850e-854b2e5a1f66" // host-05
+        val bonds: List<HostNicVo> =
+            listOf(
+                HostNicVo.builder {
+                    name { "bond1" }
+                    bondingVo {
+                        BondingVo.builder {
+                            slaves {
+                                listOf(
+                                    IdentifiedVo.builder { name { "ens192" } } ,
+                                    IdentifiedVo.builder { name { "ens224" } }
+//                                    IdentifiedVo.builder { id { "9d00376a-dce6-40f4-ae57-52149f42fcfb" } } ,
+//                                    IdentifiedVo.builder { id { "6045a812-7d28-4c9d-80aa-6d08fbea7869" } }
+                                )
+                            }
+                        }
+                    }
+                }
+            )
+        val networkAttach: List<NetworkAttachmentVo> =
+            listOf(
+                NetworkAttachmentVo.builder {
+                    networkVo {
+                        IdentifiedVo.builder {
+                            id { "3b38dba9-5b14-4345-b7da-96990423a8e1" }
+                        }
+                    }
+                    hostNicVo { IdentifiedVo.builder { name { "bond1" } } }
+//                    ipAddressAssignments {
+//                        listOf(
+//                            IpAddressAssignmentVo.builder {
+//                                assignmentMethod { "static" }
+//                                ipVo {
+//                                    IpVo.builder {
+//                                        address {  }
+//                                    }
+//                                }
+//                            }
+//                        )
+//                    }
+                }
+            )
 
         val result: Boolean =
-            service.setUpNetworksFromHost(hostId, networkVo)
+            service.setUpNetworksFromHost(hostId, bonds, networkAttach)
 
         assertThat(result, `is`(not(nullValue())))
+        println(result)
     }
 
 

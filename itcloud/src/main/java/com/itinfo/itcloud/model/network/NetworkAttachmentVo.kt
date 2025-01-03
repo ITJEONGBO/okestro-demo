@@ -53,8 +53,8 @@ class NetworkAttachmentVo (
  */
 fun NetworkAttachmentVo.toModifiedNetworkAttachmentBuilder(): NetworkAttachmentBuilder {
     return NetworkAttachmentBuilder()
-        .network(NetworkBuilder().id(this@toModifiedNetworkAttachmentBuilder.networkVo.id))
-        .hostNic(HostNicBuilder().id(this@toModifiedNetworkAttachmentBuilder.hostNicVo.id))
+        .network(NetworkBuilder().id(this@toModifiedNetworkAttachmentBuilder.networkVo.id).build())
+        .hostNic(HostNicBuilder().name(this@toModifiedNetworkAttachmentBuilder.hostNicVo.name).build())
         .ipAddressAssignments(this@toModifiedNetworkAttachmentBuilder.ipAddressAssignments.toIpAddressAssignments())
 //        .dnsResolverConfiguration()
 }
@@ -64,7 +64,7 @@ fun NetworkAttachmentVo.toModifiedNetworkAttachment(): NetworkAttachment =
 
 
 // 여러개
-fun List<NetworkAttachmentVo>.toModifiedNetworkAttachments(): List<NetworkAttachmentBuilder> =
-    this@toModifiedNetworkAttachments.map { it.toModifiedNetworkAttachmentBuilder() }
+fun List<NetworkAttachmentVo>.toModifiedNetworkAttachments(): List<NetworkAttachment> =
+    this@toModifiedNetworkAttachments.map { it.toModifiedNetworkAttachment() }
 
 

@@ -2,6 +2,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
 
+
+/***
+ * 숫자 구분
+ */
+export function formatNumberWithCommas(number) {
+  return number.toLocaleString(); // Locale 기반 쉼표 포맷
+}
+
 /**
  * Converts bytes to megaabytes and formats the result to one decimal place.
  * @param {number} bytes - The number of bytes to convert.

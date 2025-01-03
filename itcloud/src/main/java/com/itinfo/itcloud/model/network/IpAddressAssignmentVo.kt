@@ -14,10 +14,10 @@ class IpAddressAssignmentVo (
         gson.toJson(this)
 
     class Builder {
-        private var bName: String = "";fun name(block: () -> String?) { bName = block() ?: "" }
+        private var bAssignmentMethod: String = "";fun assignmentMethod(block: () -> String?) { bAssignmentMethod = block() ?: "" }
         private var bIpVo: IpVo = IpVo();fun ipVo(block: () -> IpVo?) { bIpVo = block() ?: IpVo() }
 
-        fun build(): IpAddressAssignmentVo = IpAddressAssignmentVo(bName, bIpVo)
+        fun build(): IpAddressAssignmentVo = IpAddressAssignmentVo(bAssignmentMethod, bIpVo)
     }
 
     companion object {

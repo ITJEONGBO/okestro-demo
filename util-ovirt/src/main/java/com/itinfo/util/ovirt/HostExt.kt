@@ -462,18 +462,6 @@ fun Connection.findNicFromHost(hostId: String, hostNicId: String): Result<HostNi
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.setUpNetworks(hostId: String): Result<Boolean> = runCatching {
-	this.srvHost(hostId).setupNetworks()/*.modifiedBonds().modifiedNetworkAttachments()*/.commitOnSuccess(true).send()
-
-	true
-	TODO("호스트 -> 네트워크 인터페이스")
-}.onSuccess {
-	Term.HOST_NIC.logSuccessWithin(Term.STATISTIC,"호스트 네트워크 설정", hostId)
-}.onFailure {
-	Term.HOST_NIC.logFailWithin(Term.STATISTIC,"호스트 네트워크 설정", it, hostId)
-	throw if (it is Error) it.toItCloudException() else it
-}
-
 
 
 fun Connection.findAllStatisticsFromHostNic(hostId: String, hostNicId: String): Result<List<Statistic>> = runCatching {
@@ -600,6 +588,17 @@ fun Connection.removeNetworkAttachmentFromHost(hostId: String, networkAttachment
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.removeNetworkAttachmentsFromHost(hostId: String, networkAttachments: List<NetworkAttachment>): Result<Boolean> = runCatching {
+	this.srvHost(hostId).setupNetworks().removedNetworkAttachments(networkAttachments).send()
+	this.srvHost(hostId).commitNetConfig().send()
+	true
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.NETWORK_ATTACHMENT, "제거", hostId)
+}.onFailure {
+	Term.HOST.logFailWithin(Term.NETWORK_ATTACHMENT, "제거", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 fun Connection.removeBondsFromHost(hostId: String, hostNics: List<HostNic> = listOf()): Result<Boolean> = runCatching {
 	this.srvHost(hostId).setupNetworks().removedBonds(hostNics).send()
 	this.srvHost(hostId).commitNetConfig().send()
@@ -613,19 +612,22 @@ fun Connection.removeBondsFromHost(hostId: String, hostNics: List<HostNic> = lis
 
 fun Connection.setupNetworksFromHost(
 	hostId: String,
-	hostNics: HostNic,
+	hostNics: List<HostNic> = listOf(),
 	networkAttachments: List<NetworkAttachment> = listOf()
 ): Result<Boolean> = runCatching {
-	if (networkAttachments.isEmpty())
+	if (hostNics.isEmpty())
+		this.srvHost(hostId).setupNetworks().modifiedNetworkAttachments(networkAttachments).send()
+	else if (networkAttachments.isEmpty())
 		this.srvHost(hostId).setupNetworks().modifiedBonds(hostNics).send()
 	else
 		this.srvHost(hostId).setupNetworks().modifiedBonds(hostNics).modifiedNetworkAttachments(networkAttachments).send()
+
 	this.srvHost(hostId).commitNetConfig().send()
 	true
 }.onSuccess {
-	Term.HOST.logSuccessWithin(Term.BOND, "설정", hostId)
+	Term.HOST.logSuccessWithin(Term.BOND, "호스트 네트워크 설정", hostId)
 }.onFailure {
-	Term.HOST.logFailWithin(Term.BOND, "설정", it, hostId)
+	Term.HOST.logFailWithin(Term.BOND, "호스트 네트워크 설정", it, hostId)
 	throw if (it is Error) it.toItCloudException() else it
 }
 

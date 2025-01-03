@@ -2,10 +2,7 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.*
-import com.itinfo.itcloud.model.network.HostNicVo
-import com.itinfo.itcloud.model.network.NetworkVo
-import com.itinfo.itcloud.model.network.toHostNicVo
-import com.itinfo.itcloud.model.network.toHostNicVos
+import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Error
@@ -37,11 +34,32 @@ interface ItHostNicService {
      * 호스트 네트워크 설정
      *
      * @param hostId [String] 호스트 Id
-     * @param network [NetworkVo] 네트워크 (미정)
+     * @param bonds List<[HostNic]> bonding 옵션
+     * @param networkAttachments List<[NetworkAttachmentVo]> 네트워크 연결 옵션
      * @return [Boolean] 아직미정
      */
     @Throws(Error::class)
-    fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean
+    fun setUpNetworksFromHost(hostId: String, bonds: List<HostNicVo>, networkAttachments: List<NetworkAttachmentVo>): Boolean
+    /**
+     * [ItHostNicService.removeBondsFromHost]
+     * 호스트 네트워크 본딩 삭제
+     *
+     * @param hostId [String] 호스트 Id
+     * @param bonds List<[HostNic]> bonding 옵션
+     * @return [Boolean] 아직미정
+     */
+    @Throws(Error::class)
+    fun removeBondsFromHost(hostId: String, bonds: List<HostNicVo>): Boolean
+    /**
+     * [ItHostNicService.removeBondsFromHost]
+     * 호스트 네트워크 분리 (할당된 네트워크)
+     *
+     * @param hostId [String] 호스트 Id
+     * @param networkAttachments List<[NetworkAttachmentVo]> 네트워크 연결 옵션
+     * @return [Boolean] 아직미정
+     */
+    @Throws(Error::class)
+    fun removeNetworkAttachmentFromHost(hostId: String, networkAttachments: List<NetworkAttachmentVo>): Boolean
 }
 
 @Service
@@ -70,10 +88,34 @@ class ItHostNicServiceImpl(
     }
 
     @Throws(Error::class)
-    override fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean {
+    override fun setUpNetworksFromHost(hostId: String, bonds: List<HostNicVo>, networkAttachments: List<NetworkAttachmentVo>): Boolean {
         log.info("setUpNetworksFromHost ... hostId: {}", hostId)
-//        val res: HostNic
-        TODO("Not yet implemented")
+        val res: Result<Boolean> = conn.setupNetworksFromHost(
+            hostId,
+            bonds.toModifiedBonds(),
+            networkAttachments.toModifiedNetworkAttachments()
+        )
+        return res.isSuccess
+    }
+
+    @Throws(Error::class)
+    override fun removeBondsFromHost(hostId: String, bonds: List<HostNicVo>): Boolean {
+        log.info("removeBondsFromHost ... hostId: {}", hostId)
+        val res: Result<Boolean> = conn.removeBondsFromHost(
+            hostId,
+            bonds.toModifiedBonds()
+        )
+        return res.isSuccess
+    }
+
+    @Throws(Error::class)
+    override fun removeNetworkAttachmentFromHost(hostId: String, networkAttachments: List<NetworkAttachmentVo>): Boolean {
+        log.info("removeNetworkAttachmentFromHost ... hostId: {}", hostId)
+        val res: Result<Boolean> = conn.removeNetworkAttachmentsFromHost(
+            hostId,
+            networkAttachments.toModifiedNetworkAttachments()
+        )
+        return res.isSuccess
     }
 
 

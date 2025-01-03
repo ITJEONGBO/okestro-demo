@@ -43,13 +43,20 @@ fun List<Option>.toOptionVos(): List<OptionVo> =
 fun toDefaultModeOptionBuilder(): Option {
     return OptionBuilder()
         .name("mode")
-        .value("4")
+        .type("Active-Backup")
+        .value("1")
         .build()
 }
 fun toDefaultMiimonOptionBuilder(): Option {
     return OptionBuilder()
         .name("miimon")
         .value("100")
+        .build()
+}
+fun toDefaultPolicyOptionBuilder(): Option {
+    return OptionBuilder()
+        .name("xmit_hash_policy")
+        .value("2")
         .build()
 }
 
