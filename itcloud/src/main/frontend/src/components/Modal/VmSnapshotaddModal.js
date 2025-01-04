@@ -7,7 +7,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAddSnapshotFromVM, useDisksFromVM } from '../../api/RQHook';
 import TableInfo from '../table/TableInfo';
 import '../Modal/css/MVm.css';
-const VmSnapshotAddModal = ({ 
+const VmSnapshotaddModal = ({ 
     isOpen, 
     onRequestClose,
     snapshotData,
@@ -106,4 +106,4 @@ const VmSnapshotAddModal = ({
   );
 };
 
-export default VmSnapshotAddModal;
+export default VmSnapshotaddModal;

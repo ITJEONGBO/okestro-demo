@@ -3,7 +3,7 @@ import PagingTableOuter from '../table/PagingTableOuter';
 
 const EventDupl = ({ 
   columns, 
-  data, 
+  data=[], 
   handleRowClick,
   showSearchBox = true  
 }) => {

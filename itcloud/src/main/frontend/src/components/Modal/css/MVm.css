@@ -440,6 +440,35 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
+/*ova내보내기*/
+.vm_ova_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 34.4vh;
+    font-size: 0.32rem;
+    width: 33%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.ova_new_box{
+    display: flex;
+    justify-content: space-between;
+    padding: 0.2rem;
+}
+.ova_new_box select,.ova_new_box input{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    border: 1px solid #a7a6a6;
+}
 /*삭제예정*/
 /* .context-menu {
   position: absolute;
