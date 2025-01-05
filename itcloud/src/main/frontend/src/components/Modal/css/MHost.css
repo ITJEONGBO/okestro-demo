@@ -4,8 +4,8 @@
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 81%;
-    width: 42%;
+    height: 67%;
+    width: 39%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
@@ -16,14 +16,14 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 75%;
+    height: 76%;
     padding: 0.2rem 0 ;
 }
 
 .host_new_content>div{
     display: flex;
     justify-content: space-between;
-    padding: 2% 2%;
+    padding: 0.2rem;
 }
 
 .host_new_content select,

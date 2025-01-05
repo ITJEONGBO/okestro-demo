@@ -94,6 +94,7 @@ button[disabled],select[disabled],input[disabled]{
     background-color: #efefef;
     color: #6d6d6d;
     cursor: no-drop !important;
+    border: 1px solid #ccc; /* 회색 테두리 */
 }
 .plusbtns{
     /* border:1px solid gray; */
@@ -120,7 +121,11 @@ button[disabled],select[disabled],input[disabled]{
     justify-content: center;
     align-items: center;
   }
-#section,#storage_section,#network_section,#setting_section,#detail_section{
+#section,
+#storage_section,
+#network_section,
+#setting_section,
+#detail_section{
     background-color: #ffffff;
     border-radius: 5px;
     width: 96.7%;
@@ -131,8 +136,6 @@ button[disabled],select[disabled],input[disabled]{
     width: 100%;
     padding: 0.6rem 0.3rem;
 }
-
-
 .content_header_right {  
     display: flex;
     justify-content: space-between;
@@ -187,61 +190,10 @@ button[disabled],select[disabled],input[disabled]{
     justify-content: center;
     align-items: center;
   }
-.storage_volume_new_popup{
-border: 1px solid #dfdddd;
-position: absolute;
-box-sizing: border-box;
-border-radius: 4px;
-background: #fff;
-top: 50%;
-height: 79%;
-width: 51%;
-left: 50%;
-transform: translate(-50%, -50%);
-box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.volume_first_content{
-padding: 0.4rem;
-font-size: 0.33rem;
-border-bottom: 1px solid #dfdddd ;
-}
-.volume_second_content,.volume_third_content{
-padding: 0.4rem;
-font-size: 0.33rem;
-}
-.volume_second_content>div{
-margin-bottom: 0.3rem;
-}
-.volume_second_content button{
-padding: 0.13rem;
-cursor: pointer;
-}
-.volume_checkboxs{
-display: flex;
-
-width: 56%;
-}
-.volume_checkbox{
-display: flex;
-}
-.volume_checkbox>label{
-display: flex; /* Flexbox 설정 추가 */
-justify-content: center; /* 수평 가운데 정렬 */
-align-items: center; /* 수직 가운데 정렬 */
-margin-left: 0.2rem;
-}
-.volume_third_content>h2{
-font-size: 0.4rem;
-margin-bottom: 0.2rem;
-}
-.volume_third_content>div{
-margin-bottom: 0.15rem;
-}
 .disabled_button{
 color: #d82626;
 background-color: #eeeeee;
 cursor: no-drop;
-
 }
 
 .storage_volume_snap_outer{
@@ -359,14 +311,9 @@ background:#DDDDDD;
 width: 100%;
 }
 
-#storage_section>div{
-height: 98%;
-}
-
 
 .content_header {
 border-right: 1px solid #dddddd;
-
 width: 12%;
 }
 
@@ -450,7 +397,6 @@ background-color: #6999D9;
 }
 /*네트워크 인터페이스 팝업창들*/
 /*새로만들기*/
-
 .network_popup{
     position: absolute;
     box-sizing: border-box;
@@ -463,8 +409,6 @@ background-color: #6999D9;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-
-
 .network_popup_content{
     height: 60%;
     padding: 1% 2%;
@@ -1092,123 +1036,6 @@ textarea{
     border: 1px solid gray;
 } */
 
-/*domain팝업1*/
-#popup_bg{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-#domain_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 64%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-#domain_article_outer{
-    padding: 8px 13px;
-    background-color: rgb(255, 255, 255);
-}
-.domain_article{
-    padding: 20px 0;
-    height: 13vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: 0.36rem;
-}
-.domain_article>div:first-child,.domain_article>label{
-    font-weight: 600;
-}
-.domain_article>div:last-child,.domain_article>select{
-    height: 54%;
-    border-radius: 3px;
-    padding-left: 7px;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: left; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    background-color: #4F4F4F;
-}
-.domain_article:nth-child(n+2)>div:last-child,.domain_article>select{
-    background-color: white;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1),  5px 2px 7px  rgba(0, 0, 0, 0.3);
-}
-.domain_article>select{
-    border: none;
-    outline: none;
-}
-#domain_checkbox{
-    position: relative;
-    width: 100%;
-    height: 50px;
-    margin-bottom:1%;
-}
-#domain_checkbox>label{
-    font-size: 0.35rem;
-}
-#domain_footer{
-    width: 40%;
-}
-#domain_footer>a{
-    cursor: pointer;
-    border-radius: 3px;
-    padding:13px;
-    letter-spacing: -1px;
-    font-size: 0.38rem;
-}
-#domain_footer>a:first-child{
-    background-color: #0066CC;
-    color:white
-}
-#domain_footer>a:last-child{
-    color:#0066CC ;
-}
-#domain_footer>a:last-child:hover{
-    color:black ;
-}
-/*domain팝업2*/
-#popup_bg2{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-#domain_popup2{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    width: 40%;
-    left: 50%;
-    height: 45%;                                                 
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-#domain2_article_outer{
-    font-size: 0.33rem;
-    padding: 10px 16px;
-    height: 58%;
-}
-#domain2_checkboxs{
-    color: #4F4F4F;
-    margin-bottom: 14px;
-}
-#domain2_checkboxs>div{
-    padding: 17px 0;
-}
 #warning{
     display: flex;
     padding: 20px;
@@ -1217,37 +1044,11 @@ textarea{
     border: 1px solid orange;
 
 }
-#warning>i{
-    color: orange;
-    font-size: 40px;
-}
-#warning>div{
-    width: 92%;
-}
-#domain2_footer{
-    border-top: 1px solid rgb(175, 175, 175);
-    display: flex;
-    justify-content: right;
-    padding: 24px 15px;
-    text-align: center;
-    height: 20%;
-}
-#domain2_footer>button{
-    cursor: pointer;
-    background-color: #36A1DA;
-    border: 1px solid #0066CC;
-    padding: 0 8px;
-    color: white;
-    font-size: 0.4rem;
-    vertical-align: middle;
-}
-
 #host{
     width: 87.5%;
     height: 5vh;
     border-radius: 3px;
 }
-
 
 /*hostdetail.js*/
 .host_detail_outer{
