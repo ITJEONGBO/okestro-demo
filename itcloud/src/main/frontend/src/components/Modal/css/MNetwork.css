@@ -370,8 +370,7 @@
     font-size: 0.34rem;
     padding: 0 0.4rem 0.4rem 0.4rem;
 }
-#network_bring_table_outer span,
-
+#network_bring_table_outer span
 {
     font-weight: 600;
     margin-bottom: 0.1rem;
@@ -394,6 +393,19 @@
     background-color: #d1e2eb;
     text-align: left;
     border-collapse: collapse;
+}
+/*호스트 네트워크설정*/
+.vnic_new_content_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 67%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
 /* 
 .network_radio_group input[type="radio"] {

@@ -25,6 +25,7 @@ import VmNetwork from './vmjs/VmNetwork';
 import VmDisk from './vmjs/VmDisk';
 import VmActionButtons from '../button/VmActionButtons';
 import VmModals from '../Modal/VmModals';
+import VmActionModal from '../Modal/VmActionModal';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -89,7 +90,19 @@ const VmDetail = () => {
     setSelectedModalTab(tab);
   };
 
-
+  const [modals, setModals] = useState({
+    edit: false,
+    delete: false,
+    pause: false,
+    stop: false,
+  });
+  
+  const toggleModal = (type, isOpen) => {
+    setModals((prev) => ({
+      ...prev,
+      [type]: isOpen,
+    }));
+  };
 
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -138,24 +151,24 @@ const VmDetail = () => {
     { id: 'hostDevices', label: '호스트 장치' },
     { id: 'events', label: '이벤트' }
   ];
-  
+
   // headerbutton 컴포넌트
   const buttons = [
     // { id: 'new_btn', label: '새로 만들기',onClick:() => openPopup('new')},
     { id: 'edit_btn', label: '편집', onClick:() => openPopup('edit')},
-    { id: 'run_btn', className:'disabled',label: <><i className="fa fa-play"></i>실행</>, onClick:() => openPopup('start') },
-    { id: 'pause_btn', label: <><i className="fa fa-pause"></i>일시중지</>, onClick:() => openPopup('pause') },
-    { id: 'stop_btn', label: <><i className="fa fa-stop"></i>종료</>, onClick:() => openPopup('stop') },
-    { id: 'reboot_btn', label: <><i className="fa fa-repeat"></i>재부팅</>, onClick: () => console.log() },
-    { id: 'snapshot_btn', label: '스냅샷 생성', onClick:() => openPopup('snapshot')},
+    { id: 'run_btn', label: <><i className="fa fa-play"></i> 실행</>, onClick: () => toggleModal('start', true) },
+    { id: 'pause_btn', label: '일시중지', onClick: () => toggleModal('pause', true) },
+    { id: 'stop_btn', label: <><i className="fa fa-stop"></i> 종료</>, onClick: () => toggleModal('stop', true) },
+    { id: 'reboot_btn', label: <><i className="fa fa-repeat"></i> 재부팅</>, onClick: () => toggleModal.log('reboot',true) },
+    { id: 'snapshot_btn', label: '스냅샷 생성', onClick:() => openPopup('snapshots')},
     { id: 'migration_btn', label: '마이그레이션', onClick:() => openPopup('migration')} ,
   ];
   const popupItems = [
-    { id: 'import', label: '가져오기', onClick: () => openPopup('bring') },
+    { id: 'import', label: '가져오기', onClick: () => openPopup('onExport') },
     { id: 'clone_vm', label: '가상 머신 복제',onClick: () => openPopup('vm_copy')  },
     { id: 'delete', label: '삭제',onClick: () => openPopup('delete')  },
-    { id: 'create_template', label: '템플릿 생성' },
-    { id: 'export_ova', label: 'OVA로 내보내기' ,onClick: () => openPopup('OVA') }
+    { id: 'create_template', label: '템플릿 생성', onClick: () => openPopup('addTemplate') },
+    { id: 'export_ova', label: 'OVA로 내보내기' ,onClick: () => openPopup('exportova') }
   ];
 
   const [shouldRefresh, setShouldRefresh] = useState(false);
@@ -169,11 +182,16 @@ const VmDetail = () => {
     isLoading: isVmLoading,
   } = useVmById(id);
   useEffect(() => {
+    if (vm) {
+      setSelectedVm(vm);
+    }
+  }, [vm]);
+  useEffect(() => {
     if (shouldRefresh) {
       vmRefetch();
     }
   }, [shouldRefresh, vmRefetch]);
-  
+ 
 
   const pathData = [vm?.name, sections.find(section => section.id === activeNavTab)?.label];
   const renderSectionContent = () => {
@@ -222,8 +240,23 @@ const VmDetail = () => {
         isModalOpen={isModalOpen}
         action={action}
         onRequestClose={closePopup}
-        selectedVm={selectedVm}
+        selectedVm={vm}
       />
+      {Object.keys(modals).map((key) => {
+        const label = buttons.find((item) => item.id === `${key}_btn`)?.label || key;
+        return (
+          modals[key] && (
+            <VmActionModal
+              key={key}
+              isOpen={modals[key]}
+              action={key}
+              onRequestClose={() => toggleModal(key, false)}
+              contentLabel={label}
+              data={vm}
+            />
+          )
+        );
+      })}
       <Footer/>
         {/*새로만들기(생성)추가팝업 */}
         {/* <Modal

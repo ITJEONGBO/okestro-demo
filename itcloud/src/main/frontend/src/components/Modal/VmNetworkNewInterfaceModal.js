@@ -44,70 +44,70 @@ const VmNetworkNewInterfaceModal = ({
     console.log('nicID아아아:', nicId); //잘찍힘
   }, [vmId,nicId]);
 
-   // 가상머신 내 네트워크인터페이스 목록
+  // 가상머신 내 네트워크인터페이스 목록
+  const { 
+    data: nics 
+  } = useNetworkInterfaceFromVM(vmId);
+
+  // 가상머신 내 네트워크인터페이스 상세
     const { 
-      data: nics 
-    } = useNetworkInterfaceFromVM(vmId);
+    data: nicsdetail
+  } = useNetworkInterfaceByVMId(vmId,nicId);
 
-    // 가상머신 내 네트워크인터페이스 상세
-      const { 
-      data: nicsdetail
-    } = useNetworkInterfaceByVMId(vmId,nicId);
+  useEffect(() => {
+    console.log('nics 데이터:', nicsdetail);
+  }, [nicsdetail]); // nics 데이터가 변경될 때마다 실행
+  
+  //    가상머신 내 네트워크인터페이스 상세조회
+  // const { 
+  //   data: nicDetail
+  // } = useNetworkInterfaceByVMId(vmId, editMode && nicId ? nicId : null);
+  // useEffect(() => {
+  //   if (editMode && nicDetail) {
+  //     console.log('가상머신 네트워크 인터페이스 상세 정보:', nicDetail);
+  //   }
+  // }, [editMode, nicDetail]);
 
-    useEffect(() => {
-      console.log('nics 데이터:', nicsdetail);
-    }, [nicsdetail]); // nics 데이터가 변경될 때마다 실행
-    
-//    가상머신 내 네트워크인터페이스 상세조회
-    // const { 
-    //   data: nicDetail
-    // } = useNetworkInterfaceByVMId(vmId, editMode && nicId ? nicId : null);
-    // useEffect(() => {
-    //   if (editMode && nicDetail) {
-    //     console.log('가상머신 네트워크 인터페이스 상세 정보:', nicDetail);
-    //   }
-    // }, [editMode, nicDetail]);
-
-    // 모든 vnic프로파일 목록
-    const { 
-      data: vnics 
-    } = useAllVnicProfiles((e)=>({
-      ...e
-    }));
+  // 모든 vnic프로파일 목록
+  const { 
+    data: vnics 
+  } = useAllVnicProfiles((e)=>({
+    ...e
+  }));
 
 
-      useEffect(() => {
-        console.log('useEffect 호출 - nicData 상태:', nicData);
-        if (editMode && nicData && nicsdetail) {
-          console.log('vnicProfileVo:', nicData.vnicProfileVo?.name);
-          setId(nicData.id);
-          setName(nicData.name);
-          setVnicProfileVoId(nicsdetail.vnicProfileVo?.id || '');
-          setVnicProfileVoName(nicsdetail.vnicProfileVo?.name || '');
-          setSelectedInterface(nicData.interface_ || 'VIRTIO');
-          setLinked(nicsdetail.linked);
-          setPlugged(nicsdetail.plugged); // 기본값 설정
-          setStatus(nicData.status);
-          setMacAddress(nicData.macAddress);
-        } else {
-          resetForm();
-        }
-      }, [isOpen, editMode, nicData, vmId, nics,nicData,nicsdetail]);
+  useEffect(() => {
+    console.log('useEffect 호출 - nicData 상태:', nicData);
+    if (editMode && nicData && nicsdetail) {
+      console.log('vnicProfileVo:', nicData.vnicProfileVo?.name);
+      setId(nicData.id);
+      setName(nicData.name);
+      setVnicProfileVoId(nicsdetail.vnicProfileVo?.id || '');
+      setVnicProfileVoName(nicsdetail.vnicProfileVo?.name || '');
+      setSelectedInterface(nicData.interface_ || 'VIRTIO');
+      setLinked(nicsdetail.linked);
+      setPlugged(nicsdetail.plugged); // 기본값 설정
+      setStatus(nicData.status);
+      setMacAddress(nicData.macAddress);
+    } else {
+      resetForm();
+    }
+  }, [isOpen, editMode, nicData, vmId, nics,nicData,nicsdetail]);
 
 
-      const resetForm = () => {
-        if (!editMode) {
-          setName('');
-          setSelectedInterface('VIRTIO');
-          setLinked(true);
-          setPlugged(true);
-          setProfile('');
-          setMacAddress('');
-          setStatus('up');
-          setConnectionStatus('connected');
-        }
-      };
-      
+  const resetForm = () => {
+    if (!editMode) {
+      setName('');
+      setSelectedInterface('VIRTIO');
+      setLinked(true);
+      setPlugged(true);
+      setProfile('');
+      setMacAddress('');
+      setStatus('up');
+      setConnectionStatus('connected');
+    }
+  };
+  
 
   const handleSubmit = () => {
     console.log('Submitting namedddddddd:', name);
@@ -120,7 +120,7 @@ const VmNetworkNewInterfaceModal = ({
       interface_: selectedInterface,
       linked,
       plugged,
-   
+  
     };
   
     console.log('네트워크인터페이스 생성, 편집데이터:', dataToSubmit); 
@@ -188,41 +188,39 @@ const VmNetworkNewInterfaceModal = ({
             />
           </div>
           <div className="select_box">
-  <label htmlFor="profile">프로파일</label>
-  <select
-    id="profile"
-    value={vnicProfileVoId} // vnicProfileVoId를 상태로 연결
-    onChange={(e) => {
-      setVnicProfileVoId(e.target.value); // 선택된 프로파일 ID 업데이트
-      const selectedVnic = vnics?.find((vnic) => vnic.id === e.target.value);
-      setVnicProfileVoName(selectedVnic ? selectedVnic.name : ''); // 선택된 프로파일 이름 업데이트
-    }}
-  >
-    <option value="">프로파일을 선택하세요</option>
-    {vnics?.map((vnic) => (
-      <option key={vnic.id} value={vnic.id}>
-        {vnic.name} {/* 각 프로파일의 이름을 표시 */}
-      </option>
-    ))}
-  </select>
-</div>
+            <label htmlFor="profile">프로파일</label>
+            <select
+              id="profile"
+              value={vnicProfileVoId} // vnicProfileVoId를 상태로 연결
+              onChange={(e) => {
+                setVnicProfileVoId(e.target.value); // 선택된 프로파일 ID 업데이트
+                const selectedVnic = vnics?.find((vnic) => vnic.id === e.target.value);
+                setVnicProfileVoName(selectedVnic ? selectedVnic.name : ''); // 선택된 프로파일 이름 업데이트
+              }}
+            >
+            <option value="">프로파일을 선택하세요</option>
+            {vnics?.map((vnic) => (
+              <option key={vnic.id} value={vnic.id}>
+                {vnic.name} {/* 각 프로파일의 이름을 표시 */}
+              </option>
+            ))}
+            </select>
+          </div>
           <div className="network_form_group">
-  <label htmlFor="type">유형</label>
-  <select
-    id="type"
-    value={selectedInterface} // 선택된 값을 상태로 연결
-    onChange={(e) => setSelectedInterface(e.target.value)} // 선택 시 상태 업데이트
-  >
-    {interfaceOptions.map((option) => (
-      <option key={option.value} value={option.value}>
-        {option.label} {/* 화면에 표시될 한글 */}
-      </option>
-    ))}
-  </select>
-  <span>선택된 유형: {selectedInterface}</span>
-</div>
-
-
+            <label htmlFor="type">유형</label>
+            <select
+              id="type"
+              value={selectedInterface} // 선택된 값을 상태로 연결
+              onChange={(e) => setSelectedInterface(e.target.value)} // 선택 시 상태 업데이트
+            >
+              {interfaceOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label} {/* 화면에 표시될 한글 */}
+                </option>
+              ))}
+            </select>
+            <span>선택된 유형: {selectedInterface}</span>
+          </div>
 
           <div className="plug_radio_btn">
             <span>링크 상태</span>
@@ -255,35 +253,34 @@ const VmNetworkNewInterfaceModal = ({
           </div>
 
           <div className="plug_radio_btn">
-  <span>카드 상태</span>
-  <div>
-    <div className="radio_outer">
-      <div>
-        <input
-          type="radio"
-          name="plugged_status"
-          id="plugged"
-          checked={plugged === true}
-          onChange={() => setPlugged(true)}
-        />
-        <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
-        <label htmlFor="plugged">연결됨</label>
-      </div>
-      <div>
-          <input
-            type="radio"
-            name="plugged_status"
-            id="unplugged"
-            checked={plugged === false}
-            onChange={() => setPlugged(false)}
-          />
-        <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
-        <label htmlFor="unplugged">분리</label>
-      </div>
-    </div>
-  </div>
+            <span>카드 상태</span>
+            <div>
+              <div className="radio_outer">
+                <div>
+                  <input
+                    type="radio"
+                    name="plugged_status"
+                    id="plugged"
+                    checked={plugged === true}
+                    onChange={() => setPlugged(true)}
+                  />
+                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
+                  <label htmlFor="plugged">연결됨</label>
+                </div>
+                <div>
+                    <input
+                      type="radio"
+                      name="plugged_status"
+                      id="unplugged"
+                      checked={plugged === false}
+                      onChange={() => setPlugged(false)}
+                    />
+                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
+                  <label htmlFor="unplugged">분리</label>
+                </div>
+              </div>
+            </div>
           </div>
-
 
         </div>
 

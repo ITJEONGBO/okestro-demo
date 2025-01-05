@@ -28,7 +28,7 @@ const VmModals = ({ isModalOpen, action, onRequestClose, selectedVm,selectedVms 
 
 
   if (!isModalOpen || !action) return null;
-
+  console.log('VM 정보dddd:', selectedVm);
   return (
     <Suspense>
       {action === 'create' || action === 'edit'  || action === 'copy' ? (

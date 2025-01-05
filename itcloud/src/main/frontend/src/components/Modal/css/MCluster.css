@@ -27,7 +27,7 @@
 }
 
 .cluster_new_content select,
-.cluster_new_content input{
+.cluster_new_content input[type="text"]{
     width: 47%;
     height: 3.3vh;
     padding: 0 3px;

@@ -71,7 +71,7 @@ const NetworkHostModal = ({
       >
         <div className="vnic_new_content_popup">
           <div className="popup_header">
-            <h1>호스트 host01.ititinfo.com 네트워크 설정</h1>
+            <h1>호스트 네트워크 설정</h1>
             <button onClick={onRequestClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           

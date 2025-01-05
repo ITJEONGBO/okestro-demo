@@ -27,7 +27,7 @@
 }
 
 .host_new_content select,
-.host_new_content input{
+.host_new_content input[type="text"]{
     width: 47%;
     height: 3.3vh;
     padding: 0 3px;

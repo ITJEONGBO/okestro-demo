@@ -119,9 +119,9 @@ const DataCenterModal = ({
         </div>
 
         <div className="datacenter_new_content">
-          <div >
-            <input type="hidden" id="id" value={id} onChange={() => {}} /> {/* id는 읽기 전용이므로 onChange를 추가하지 않음 */}
-          </div>
+          {/* <div >
+            <input type="hidden" id="id" value={id} onChange={() => {}} /> 
+          </div> */}
           <div>
             <label htmlFor="name1">이름</label>
             <input

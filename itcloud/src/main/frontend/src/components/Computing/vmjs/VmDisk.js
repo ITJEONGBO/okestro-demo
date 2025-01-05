@@ -34,7 +34,18 @@ const VmDisk = ({ vm }) => {
     isLoading: isDisksLoading,
     refetch: refetchDisks,
   } = useDisksFromVM(vm?.id);
-
+  const formattedDisks = disks?.map((disk) => ({
+    alias: disk.alias,
+    id: disk.id,
+    icon1: disk.bootable ? '🔑' : '',
+    icon2: disk.readOnly ? '🔒' : '',
+    connectionTarget: disk.vmVo?.name || 'N',
+    storageDomain: disk.diskImageVo.storageDomainVo?.name || 'N/A',
+    virtualSize: `${(disk.diskImageVo.virtualSize / (1024 ** 3)).toFixed(0)} GB`,
+    status: disk.diskImageVo.status,
+    storageType: disk.diskImageVo.storageType,
+    description: disk.diskImageVo.description || '',
+  })) || [];
   const selectedIds = selectedDisks.map((disk) => disk.id).join(', ');
 
   return (
@@ -90,7 +101,7 @@ const VmDisk = ({ vm }) => {
             ? TableInfo.DISKS_FROM_
             : TableInfo.LUN_DISK
         }
-        data={disks}
+        data={formattedDisks}
         onRowClick={(selected) => {
           if (Array.isArray(selected)) setSelectedDisks(selected); // 다중 선택된 행 업데이트
         }}

@@ -105,9 +105,6 @@
     width: 60%;
 }
 
-#migration_footer>button:last-child{
-    color:#0066CC ;
-}
 
 
 /*네트워크 인터페이스*/
@@ -246,9 +243,6 @@
     padding: 0.03rem 0.2rem 0.03rem 0.2rem;
 }
 
-    table{
-        font-size: 0.33rem;
-    }
     #disk_content td:first-child
     #disk_content td:nth-child(3),
     #disk_content td:nth-child(4),

@@ -120,7 +120,7 @@ const VmActionButtons = ({
       </div>
 
       <div className="dropdown-container">
-          <button onClick={toggleStopDropDown} disabled={isPauseDisabled}>
+          <button onClick={toggleStopDropDown} disabled={isPauseDisabled || isDeleteDisabled}>
              종료
             <FontAwesomeIcon icon={isStopDropDownOpen ? faChevronUp : faChevronDown} />
           </button>
@@ -155,7 +155,7 @@ const VmActionButtons = ({
             {onCopy && <button className="dropdown-item" onClick={onCopy} disabled={isEditDisabled}>가상머신 복제</button>}
             {onDelete && <button className="dropdown-item" onClick={onDelete} disabled={isDeleteDisabled}>삭제</button>}
             {addTemplate && <button className="dropdown-item" onClick={addTemplate} disabled={isEditDisabled || !isPauseDisabled}>템플릿 생성</button>}
-            {exportOva && <button className="dropdown-item" onClick={exportOva}>OVA로 내보내기</button>}
+            {exportOva && <button className="dropdown-item" onClick={exportOva} disabled={isDeleteDisabled}>OVA로 내보내기</button>}
           </div>
         )}
       </div>

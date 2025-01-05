@@ -534,6 +534,7 @@ background-color: #6999D9;
 .table {
     border-collapse: collapse;
     width: 100%;
+    font-size: 0.33rem;
 }
 .table th, .table td {
     padding: 6px;
@@ -777,15 +778,7 @@ textarea{
     justify-content: space-between;
 }
 
-.disk_delete_box{
-    padding:0.3rem;
-    font-size:0.4rem;
-}
-.disk_delete_box>div{
-    padding: 0.4rem;
 
-    color: #3737ba;
-}
 .disk_type{
     display:flex;
     font-size: 0.35rem;
@@ -1263,15 +1256,9 @@ textarea{
     height: 88%;
 }
 
-/**/
-
 .detail_machine_outer,#detail_template_outer{
     padding: 1.4rem 0;
 }
-.table_outer2{
-    height: 50%;
-}
-
 
 
 /*storage_volume_option_box*/
@@ -1342,56 +1329,7 @@ textarea{
 /*content_info*/
 
 /*네트워크 인터페이스*/
-.network_content{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.34rem;
-    border-bottom: 1px solid rgb(226, 226, 226);
-    cursor: pointer;
-}
-.network_content:hover{
-    background-color: #ebececd8;
-}
-.network_content>div:first-child{
-    padding: 0.5rem 0.3rem;
-}
-.network_content i{
-    color: #757575;
-    padding: 0.05rem;
-}
-.network_content i:first-child{
-    padding-right: 0.3rem;
-    border-right: 1px solid #757575;
-    font-size: 0.2rem;
-}
-.network_content>div:nth-child(n+2){
-    text-align: center;
-    padding-top: 0.4rem;
-}
-.network_content>div>div:nth-child(2){
-    font-size: 0.27rem;
-    color:#4F4F4F;
-}
-.network_content_detail{
-    height: 27vh;
-    font-size: 0.3rem;
-    padding: 0.2rem;
-    display:flex;
-    width:100%;
-}
-.network_content_detail_box{
-    width:33.3%;
-}
-.network_content_detail_box>div:first-child{
-    font-size:0.4rem;
-    font-weight:bold;
-}
 
-.network_content_detail_box .snap_table{
-    font-size:0.3rem;
-    height:60%;
-}
 .select_box select,
 .input_box input{
     width: 47%;
@@ -1510,46 +1448,6 @@ textarea{
     border: none;
 }
 
-/*디스크팝업*/
-    /*새로만들기*/
-/* .disk_popup_outer{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.disk_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 86%;
-    width: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-#join_new_nav{
-    padding: 0.35rem;
-    width: 50%;
-    font-size: 0.3rem;
-    display: flex;
-}
-#join_new_nav>div{
-    padding: 0.09rem;
-    margin-right: 2%;
-    cursor: pointer;
-}
- #join_new_nav>div:first-child{
-    color: rgb(35, 132, 243); 
-    font-weight: 600;
-    border-bottom: 2px solid rgb(35, 132, 243);
-} */
-
 .disk_new_img,#managed_block_outer,#storage_lun_first,#directlun_outer>div:first-child{
     display: flex;
     padding: 0 0.35rem;
@@ -1650,7 +1548,7 @@ textarea{
 
     /*연결*/
 /* 기존 스타일 유지 */
-#join_popup_outer {
+/* #join_popup_outer {
     position: absolute;
     top: 0;
     left: 0;
@@ -1701,7 +1599,7 @@ textarea{
 #join_img_content tbody td{
     padding:1%;
     border-bottom: 1px solid rgb(190, 190, 190);
-}
+} */
 /*스냅샷 생성팝업*/
 /* .snap_create_outer{
     display: none;
@@ -1828,204 +1726,8 @@ textarea{
     color: rgb(10, 55, 107);
     font-weight: 600;
 }
-/*스토리지 팝업창들*/
-.disk_option{
-    background-color: #e6e6e6;
-    font-size: 0.34rem;
-    font-weight: 600;
-    padding: 0.35rem 0.4rem;
-}
-.disk_new_img_right button{
-    padding: 0.1rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.hidden_checkbox{
-    display: flex;
-    
-}
-.hidden_checkbox input{
-    text-align: left;
-    width: 1.5%;
-    margin-right: 0.1rem;
-}
-.hidden_checkbox label{
-display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
 
 
-    /*볼륨(새로 만들기*/
-/* .storage_volume_new_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 79%;
-    width: 51%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-.volume_first_content{
-    padding: 0.4rem;
-    font-size: 0.33rem;
-    border-bottom: 1px solid #dfdddd ;
-}
-.volume_second_content,.volume_third_content{
-    padding: 0.4rem;
-    font-size: 0.33rem;
-}
-.volume_second_content>div{
-    margin-bottom: 0.3rem;
-}
-.volume_second_content button{
-    padding: 0.13rem;
-    cursor: pointer;
-}
-.volume_checkboxs{
-    display: flex;
-
-    width: 56%;
-}
-.volume_checkbox{
-    display: flex;
-}
-.volume_checkbox>label{
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    margin-left: 0.2rem;
-}
-.volume_third_content>h2{
-    font-size: 0.4rem;
-    margin-bottom: 0.2rem;
-}
-.volume_third_content>div{
-    margin-bottom: 0.15rem;
-} */
-
-    /*볼륨(스냅샷)*/
-/* .storage_volume_snap_outer{
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-.storage_volume_snap_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 65%;
-    width: 51%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-.volume_snap_first_content{
-    font-size: 0.33rem;
-    padding: 0.4rem;
-}
-.volume_snap_first_content>h2{
-    font-size: 0.4rem;
-}
-.volume_snap_table{
-    border: 1px solid rgb(185, 185, 185);
-    height: 25vh;
-}
-.volume_snap_table table{
-    border-collapse: collapse;
-    width: 100%;
-}
-.volume_snap_table thead>tr{
-    background-color:#dadada;
-}
-.volume_snap_table th,.volume_snap_table td{
-    padding: 0.05rem;
-    text-align: left;
-} */
-/*------------------------------------------------------------*/
-
-/*클러스터(네트워크 관리)*/
-.network_popup_table{
-    font-size: 0.3rem;
-    
-}
-.network_popup_table>table{
-    width: 100%;
-    border-collapse: collapse;
-}
-.network_popup_table thead{
-    background-color: #dddddd;
-}
-.network_popup_table thead th{
-    padding: 0.12rem 0;
-}
-.network_popup_table tbody td{
-    border-right: 1px solid #dddddd;
-}
-.network_popup_table tbody td:last-child{
-    border-right: none;
-}
-.network_popup_table>.vnic_new_checkbox{
-   text-align: center;
-}
-/*호스트(호스트 네트워크 설정)*/
-.net_keeper_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 70vh;
-    width: 55%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-.host_network_contents_outer{
-    font-size: 0.34rem;
-}
-.host_network_header{
-    padding: 0.3rem;
-}
-.host_network_header>i{
-    margin-right: 0.2rem;
-}
-
-.host_right_btns{
-    display: flex;
-    align-items: center; /* 수직 가운데 정렬 */
-    height: 13%;
-}
-.host_right_btns>button{
-    padding: 0.06rem 0.14rem;
-}
-
-.host_network_bottom{
-    border-top: 1px solid #d1d1d1;
-}
-.host_network_bottom>div{
-    display: flex;
-    width: 40%;
-    justify-content: space-between;
-}
-.capacity>div{
-    display:flex;
-        display: flex; /* Flexbox 설정 추가 */
-
-    align-items: center; /* 수직 가운데 정렬 */
-}
 /*설치 버튼 팝업*/
 #install_box{
     right: 1.5rem;

@@ -323,3 +323,38 @@
   font-size: 0.29rem; 
   outline: none;
 }
+/*디스크 삭제모달*/
+.disk_delete_box{
+  padding:0.2rem;
+  font-size:0.4rem;
+}
+.disk_delete_box>div{
+  padding: 0.4rem;
+  color: #3737ba;
+}
+/*스토리지 팝업창들*/
+.disk_option{
+  background-color: #e6e6e6;
+  font-size: 0.34rem;
+  font-weight: 600;
+  padding: 0.35rem 0.4rem;
+}
+.disk_new_img_right button{
+  padding: 0.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.hidden_checkbox{
+  display: flex;
+  
+}
+.hidden_checkbox input{
+  text-align: left;
+  width: 1.5%;
+  margin-right: 0.1rem;
+}
+.hidden_checkbox label{
+  display: flex; /* Flexbox 설정 추가 */
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+}

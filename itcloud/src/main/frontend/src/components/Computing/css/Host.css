@@ -1,4 +1,20 @@
-
+.host_content_outer{
+    font-size: 0.32rem;
+}
+.host_table_outer{
+    padding: 0.2rem;
+    height: 64vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+.host_table{
+    text-align: left;
+}
+.host_tabs .tab_button{
+    width: 15%;
+    padding: 0.4rem 0.2rem;
+    border-radius: 3px;
+}
 .edit_first_content input,
 .host_textbox input,
 .host_text_raido_box input[type='text'],
@@ -120,6 +136,7 @@
   justify-content: flex-start; /* 왼쪽 정렬 (필요에 따라 center, space-around로 변경 가능) */
   gap: 10px; /* 버튼 간격 */
   margin-bottom: 20px; /* 아래 여백 */
+  font-size: 0.32rem;
 }
 
 .tab_button {
