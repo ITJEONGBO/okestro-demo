@@ -33,6 +33,24 @@ const VmGeneral = ({ vm }) => {
                             <th>실행 호스트</th>
                             <td>{vm?.hostVo?.name}</td>
                         </tr>
+                        <tr>
+                            <th>클러스터</th>
+                            <td>
+                                <div className='related_object'>
+                                    <FontAwesomeIcon icon={faTimes} fixedWidth />
+                                    <span className="text-blue-500 font-bold">{vm?.clusterVo?.name || '#'}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>호스트</th>
+                            <td>
+                                <div className='related_object'>
+                                    <FontAwesomeIcon icon={faTimes} fixedWidth />
+                                    <span className="text-blue-500 font-bold">{vm?.hostVo?.name || '#'}</span>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -151,22 +169,10 @@ const VmGeneral = ({ vm }) => {
                                 <th>커널 버전:</th>
                                 <td>{vm?.kernelVersion || ''}</td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div className="table_container_center">
-                    <table className="table">
-                        <tbody>
                             <tr>
                                 <th>시간대:</th>
                                 <td>{vm?.timeOffset || 'KST(UTC+09:00)'}</td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div className="table_container_center">
-                    <table className="table">
-                        <tbody>
                             <tr>
                                 <th>로그인된 사용자:</th>
                                 <td>{vm?.loggedInUser || ''}</td>
@@ -182,6 +188,7 @@ const VmGeneral = ({ vm }) => {
                         </tbody>
                     </table>
                 </div>
+
             </div>
         </div>
     </>

@@ -1,4 +1,4 @@
-/*일반파트*/
+수직/*일반파트*/
 .vm_detail_general_boxs{
     display:flex;
     justify-content:space-between;
@@ -6,7 +6,7 @@
 }
 .detail_general_box{
     border: 1px solid #dedede;
-    width: 33%;
+    width: 29%;
     height: 38vh;
 }
 .detail_general_mini_box{
@@ -42,7 +42,7 @@
 }
 .related_object{
     display:flex;
-    padding:0.1rem 0;
+    
 }
 .detail_general_boxs_bottom{
     width:100%;

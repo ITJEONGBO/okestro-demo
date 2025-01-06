@@ -122,8 +122,7 @@ const VmDetail = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-  const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 연결 팝업 상태
-  const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
+
   const [action, setAction] = useState(null); // 현재 동작
   const [selectedVm, setSelectedVm] = useState(null);
   
