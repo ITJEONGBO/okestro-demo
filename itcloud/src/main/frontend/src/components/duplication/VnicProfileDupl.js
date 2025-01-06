@@ -6,8 +6,6 @@ import VnicProfileModals from '../Modal/VnicProfileModals';
 const VnicProfileDupl = ({ 
   vnicProfiles = [], 
   columns = [], 
-  onFetchVnicProfiles, 
-  status,
   networkId,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태

@@ -1,12 +1,19 @@
 import React from 'react';
 import TablesOuter from './TablesOuter';
 import TableRowClick from './TableRowClick';
+import { useNavigate } from 'react-router-dom';
 
 const VnicProfileTable = ({
   columns,
   vnicProfiles,
   setSelectedVnicProfiles, // 다중 선택된 vNIC 프로파일을 관리하기 위한 함수
 }) => {
+
+  const navigate = useNavigate();
+  
+  const handleNameClick = (id) => {
+    navigate(`/networks/vnicProfiles/${id}`);
+  };
   const handleRowSelection = (selectedRows) => {
     setSelectedVnicProfiles(selectedRows); // 선택된 데이터 전달
   };
@@ -32,6 +39,7 @@ const VnicProfileTable = ({
       shouldHighlight1stCol={true}
       onRowClick={handleRowSelection} // 다중 선택된 행 데이터를 업데이트
       clickableColumnIndex={[0]}
+      onClickableColumnClick={(row) => handleNameClick(row.id)}
     />
   );
 };

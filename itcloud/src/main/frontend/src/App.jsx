@@ -30,6 +30,8 @@ import DomainInfo from './components/Storage/domainjs/DomainInfo';
 import DiskInfo from './components/Storage/diskjs/DiskInfo';
 import SettingInfo from './components/Setting/SettingInfo';
 import { IconGallery } from '@storybook/blocks';
+import AllVnic from './components/vnicjs/AllVnic';
+import VnicInfo from './components/vnicjs/VnicInfo';
 
 // import NetworkDetail from './components/Network/NetworkDetail';
 // import TemplateDetail from './components/Computing/TemplateDetail';
@@ -130,6 +132,10 @@ const App = () => {
               <Route path="/networks/datacenters/:id/:section" element={<DataCenterInfo />} />
               <Route path="/networks/:id" element={<NetworkInfo />} /> 
               <Route path="/networks/:id/:section" element={<NetworkInfo />} /> 
+
+              <Route path="/networks/vnicProfiles" element={<AllVnic />} />
+              <Route path="/networks/vnicProfiles/:id" element={<VnicInfo />} />
+              <Route path="/networks/vnicProfiles/:id/:section" element={<VnicInfo />} />
 
               <Route path="/storages/rutil-manager" element={<RutilManager />} />
               <Route path="/storages/rutil-manager/:section" element={<RutilManager />} />

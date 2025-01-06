@@ -1,5 +1,5 @@
 .header{
-    height: 5%;
+    height: 5.5%;
     margin: 0 auto;
     border-radius: 5px;
     padding: 0 0.3rem;
@@ -36,18 +36,17 @@
     font-size: 0.4rem;
 }
 .header_left > div{
-    padding: 0 0.1rem;
+    padding: 0 0.15rem;
     cursor: pointer;
     color: rgb(0, 0, 0);
 }
 .header_left > div > i {
-    
     font-size: 1.2em;
     cursor: pointer;
 }
 .header_left > div:hover{
     border-radius: 50%;
-    background-color: #a4d9db;
+    background-color: #ebececd8;
 }
 /* Header 아이콘들 */
 .user_btn,
@@ -75,10 +74,11 @@
     background-color: #ffffff;
     z-index: 3;
     width: 11.65vw;
-    left: -95%;
+    left: -138%;
+    right: 0;
     font-size: 0.3rem;
     border: 1px solid rgb(204, 204, 204);
-    top: 112%;
+    top: 121%;
     height: 89.6vh;
     border-radius: 2px;
 }

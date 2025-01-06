@@ -121,3 +121,13 @@ td {
 .my_context_menu > div:hover {
   background-color:#ededed;
 }
+/*강조되는 글씨씨*/
+.row-click{
+  color: blue;
+  cursor: pointer; 
+  font-weight:600;  
+  textAlign: left;
+}
+.row-click:hover{
+  text-decoration: underline;
+}

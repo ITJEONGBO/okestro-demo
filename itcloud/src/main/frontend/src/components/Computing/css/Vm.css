@@ -1,18 +1,18 @@
-수직/*일반파트*/
+/*일반파트*/
+
 .vm_detail_general_boxs{
     display:flex;
     justify-content:space-between;
     margin-bottom:0.3rem;
+    border:1px solid #dedede;
 }
 .detail_general_box{
-    border: 1px solid #dedede;
-    width: 29%;
+    width: 35%;
     height: 38vh;
 }
 .detail_general_mini_box{
-    width: 15%;
+    width: 25%;
     height: 38vh;
-    border: 1px solid #dedede;
 }
 .detail_general_mini_box>div:first-child,
 .detail_general_box>div:first-child
@@ -31,7 +31,7 @@
 .capacity_outer{
     flex-direction: column;
     display:flex;
-    height:86%;
+    height:70%;
     justify-content:space-between;
 }
 .capacity_box{
@@ -42,11 +42,42 @@
 }
 .related_object{
     display:flex;
-    
+    align-items: center;
+}
+.vm_table_container{
+    width:100%;
 }
 .detail_general_boxs_bottom{
     width:100%;
+    display:flex;
+    justify-content:space-between;
+    height: 53%;
+}
+.vm-general-box{
+    display:flex;
+    font-size:0.36rem;
+    align-items: center;
+    font-weight:600;
+    border-bottom:1px solid #dedede;
+    padding:0.1rem;
+}
+.vm-general-bottom-box{
+    width: 33%;
     border: 1px solid #dedede;
+}
+.vm-add-snapshot-btn{
+    display:flex;
+    font-size:0.32rem;
+    align-items: center;
+    background:#d7e8ef;
+    padding:0.1rem;
+    width:27%;
+    margin: 0.2rem;
+}
+.vm-add-snapshot-btn:hover{
+    font-weight:600;
+    cursor:pointer;
+    color:blue;
 }
 /**/
 

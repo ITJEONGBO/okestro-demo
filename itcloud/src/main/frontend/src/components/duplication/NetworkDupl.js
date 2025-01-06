@@ -3,6 +3,7 @@ import NetworkActionButtons from '../button/NetworkActionButtons';
 import NetworkTable from '../table/NetworkTable';
 import NetworkModals from '../Modal/NetworkModals';
 import AllActionButton from '../button/AllActionButton';
+import { useNavigate } from 'react-router-dom';
 
 const NetworkDupl = ({ 
   networks = [], 
@@ -13,10 +14,15 @@ const NetworkDupl = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [action, setAction] = useState(null);
   const [selectedNetworks, setSelectedNetworks] = useState([]); // 다중 선택된 네트워크
-
+  const navigate = useNavigate();
+  
   const handleActionClick = (actionType) => {
-    setAction(actionType);
-    setIsModalOpen(true);
+    if (actionType === 'vnic') {
+      navigate('/networks/vnicProfiles');
+    } else {
+      setAction(actionType);
+      setIsModalOpen(true);
+    }
   };
 
   const selectedIds = (Array.isArray(selectedNetworks) ? selectedNetworks : []).map((network) => network.id).join(', ');
@@ -31,6 +37,7 @@ const NetworkDupl = ({
     { label: '편집', onClick: () => selectedNetworks.length === 1 && handleActionClick('edit'), disabled: selectedNetworks.length !== 1 },
     { label: '삭제', onClick: () => selectedNetworks.length > 0 && handleActionClick('delete'), disabled: selectedNetworks.length === 0 },
     { label: '가져오기', onClick: () => handleActionClick('import') },
+    { label: 'VNIC 프로파일', onClick: () => handleActionClick('vnic') },
   ];
   return (
     <div onClick={(e) => e.stopPropagation()}> {/* 테이블 외부 클릭 방지 */}

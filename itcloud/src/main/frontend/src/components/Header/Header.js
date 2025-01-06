@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faBell, faUser
+  faBell, faRotate, faUser
 } from '@fortawesome/free-solid-svg-icons'
 import { adjustFontSize } from '../../UIEvent';
 import './Header.css';
@@ -74,6 +74,9 @@ const Header = ({ setAuthenticated }) => {
             </div>
 
             <div className="header_left">
+                <div onClick={() => window.location.reload()} style={{ cursor: 'pointer' }}>
+                  <FontAwesomeIcon icon={faRotate} fixedWidth />
+                </div>
                 {/* 알림 */}
                 <div 
                   className="fa-bell-wrapper" 

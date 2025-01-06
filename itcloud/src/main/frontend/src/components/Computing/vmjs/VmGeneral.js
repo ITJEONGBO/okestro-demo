@@ -1,8 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faComputer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import VmGeneralChart from "./VmGeneralChart";
 
 // 애플리케이션 섹션
 const VmGeneral = ({ vm }) => {
+
+    
   return (
     <>
         <div className='vm_detail_general_boxs'>
@@ -10,8 +13,12 @@ const VmGeneral = ({ vm }) => {
                 <table className="table">
                     <tbody>
                         <tr>
-                            <th>전원상태</th>
-                            <td>{vm?.status}</td>
+                            <th >전원상태</th>
+                            <td class="!text-blue-500 font-bold">{vm?.status}</td>
+                        </tr>
+                        <tr>
+                            <th>IP 주소</th>
+                            <td>{vm?.osSystem}</td>
                         </tr>
                         <tr>
                             <th>게스트 운영 체제</th>
@@ -51,11 +58,29 @@ const VmGeneral = ({ vm }) => {
                                 </div>
                             </td>
                         </tr>
+                        <tr>
+                            <th>네트워크</th>
+                            <td>
+                                <div className='related_object'>
+                                    <FontAwesomeIcon icon={faTimes} fixedWidth />
+                                    <span className="text-blue-500 font-bold">{vm?.hostVo?.name || '#'}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>스토리지 도메인</th>
+                            <td>
+                                <div className='related_object'>
+                                    <FontAwesomeIcon icon={faTimes} />
+                                    <span>{vm?.storageDomainVo?.name || ''}</span>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
                 
-            <div className='detail_general_box'>
+            <div className='detail_general_box mr-8'>
                 <div>VM 하드웨어</div>
                 <table className="table">
                     <tbody>
@@ -89,31 +114,31 @@ const VmGeneral = ({ vm }) => {
                     <div className='capacity'>
                         <div>CPU</div>
                         <div className='capacity_box'>
-                            <div>{vm?.usageDto?.cpuPercent || '#'}%</div>
-                            <div>사용됨</div>
+                            <div>{vm?.usageDto?.cpuPercent || '#'}% 사용됨</div>
+                       
                             <div>{vm?.cpuTopologyCnt || '#'} CPU 할당됨</div>
                         </div>
                     </div>
                     <div className='capacity'>
                         <div>메모리</div>
                         <div className='capacity_box'>
-                            <div>{vm?.usageDto?.memoryPercent || '#'}%</div>
-                            <div>사용됨</div>
+                            <div>{vm?.memoryUsed || '#'}% 사용됨</div>
+              
                             <div>{Math.round(vm?.memoryActual / 1024 / 1024) || '#'} MB 할당됨</div>
                         </div>
                     </div>
                     <div className='capacity'>
                         <div>스토리지</div>
                         <div className='capacity_box'>
-                            <div>20%</div>
-                            <div>사용됨</div>
+                            <div>20% 사용됨</div>
+                
                             <div>300 GB 할당됨</div>
                         </div>
                     </div>
                 </div>  
             </div>
 
-            <div className='detail_general_mini_box'>
+            {/* <div className='detail_general_mini_box'>
                 <div>관련 개체</div>
                 <div className='capacity_outer'>
                     <div className='capacity'>
@@ -145,12 +170,13 @@ const VmGeneral = ({ vm }) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
 
         <div className='detail_general_boxs_bottom'>
-            <div className="tables">
-                <div className="table_container_center">
+
+            <div className="vm-general-bottom-box">     
+                <div className="vm_table_container">
                     <table className="table">
                         <tbody>
                             <tr>
@@ -188,9 +214,33 @@ const VmGeneral = ({ vm }) => {
                         </tbody>
                     </table>
                 </div>
+            </div>
 
+            <div className="vm-general-bottom-box">
+                <div className="vm-general-box">
+                    <FontAwesomeIcon icon={faComputer} className="mr-0.5"/>
+                    <div className="mr-0.5">스냅샷</div>
+                    <div>2</div>
+                </div>
+
+                <div className="vm-add-snapshot-btn">
+                    <FontAwesomeIcon icon={faPlus} className="mr-0.5"/>
+                    <div className="mr-0.5">스냅샷 생성</div>
+                </div>
+            </div>
+
+            <div className="vm-general-bottom-box">
+                <div className="vm-general-box">
+                    <FontAwesomeIcon icon={faComputer} className="mr-0.5"/>
+                    <div>디스크</div>
+                </div>
+                <div className="disk-bar">
+                    <VmGeneralChart /> 
+                </div>
             </div>
         </div>
+
+     
     </>
   );
 };
