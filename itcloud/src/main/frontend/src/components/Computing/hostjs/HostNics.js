@@ -1,6 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import Modal from 'react-modal';
-import TableOuter from '../../table/TableOuter';
+import TablesOuter from '../../table/TablesOuter';
 import { useNetworkInterfaceFromHost } from '../../../api/RQHook';
 import TableInfo from '../../table/TableInfo';
 import NetworkHostModal from '../../Modal/NetworkHostModal';
@@ -116,7 +115,7 @@ const HostNics = ({ hostId }) => {
             onClick={() => toggleHiddenBox(index)} // 클릭 시 해당 박스만 열리거나 닫힘
           >
             <div className="section_table_outer">
-              <TableOuter
+              <TablesOuter
                 columns={TableInfo.NETWORK_INTERFACE_FROM_HOST}
                 data={[data]} // 개별 NIC 데이터만 전달
                 onRowClick={() => console.log('Row clicked')}
@@ -126,7 +125,7 @@ const HostNics = ({ hostId }) => {
           {visibleBoxes.includes(index) && ( // 박스가 열려 있을 때만 보임
             <div className="host_network_hiddenbox">
               <div className="section_table_outer" style={{ marginLeft: '1.43rem' }}>
-                <TableOuter
+                <TablesOuter
                   columns={TableInfo.NETWORK_FROM_HOST}
                   data={[data]} // 개별 NIC 데이터만 전달
                   onRowClick={() => console.log('Row clicked')}

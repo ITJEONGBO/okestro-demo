@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import TablesOuter from '../table/TablesOuter';
-import TableInfo from '../table/TableInfo';
 import { faArrowsAltH, faBan, faCaretDown, faCheck, faCircle, faDesktop, faExclamationTriangle, faFan, faNetworkWired, faPencilAlt, faPlay, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const NetworkHostModal = ({ 
