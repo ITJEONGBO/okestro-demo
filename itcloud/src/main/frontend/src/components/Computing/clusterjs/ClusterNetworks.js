@@ -1,10 +1,8 @@
-import {useHostFromCluster, useLogicalFromCluster, useVMFromCluster} from "../../../api/RQHook";
-import HostDu from "../../duplication/HostDu";
+import { useLogicalFromCluster } from "../../../api/RQHook";
 import React, { useState } from 'react';
 import TableColumnsInfo from "../../table/TableColumnsInfo";
-import TableOuter from "../../table/TableOuter";
+import TablesOuter from "../../table/TablesOuter";
 import { useNavigate } from 'react-router-dom';
-import VmDu from "../../duplication/VmDu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrown, faExclamationTriangle, faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import Modal from 'react-modal';
@@ -56,7 +54,7 @@ const ClusterNetworks = ({ clusterId }) => {
             <button onClick={() => selectedNetwork?.id && toggleModal('delete', true)} disabled={!selectedNetwork?.id}>제거</button>
         </div>
         <span>id = {selectedNetwork?.id || ''}</span>
-        <TableOuter
+        <TablesOuter
           columns={TableColumnsInfo.LUNS} 
           data={networks} 
           clickableColumnIndex={[0]} 

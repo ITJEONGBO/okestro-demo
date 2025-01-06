@@ -1,18 +1,18 @@
 import React from 'react';
 import '../css/Computing.css';
 import { useAllClusters } from '../../../api/RQHook';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import ClusterDupl from '../../duplication/ClusterDupl';
 
 const Clusters = () => {
   const { 
-    data: clusters, 
+    data: clusters = [], 
   } = useAllClusters((e) => ({ ...e }));
 
   return (
     <>
       <ClusterDupl
-        columns={TableInfo.CLUSTERS}
+        columns={TableColumnsInfo.CLUSTERS}
         clusters={clusters || []}
       />
     </>

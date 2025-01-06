@@ -1,6 +1,6 @@
 import { useState } from 'react'; 
 import {useAllHostsFromNetwork} from "../../../api/RQHook";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TablesOuter from "../../table/TablesOuter";
 import NetworkHostModal from '../../Modal/NetworkHostModal';
 import TableRowClick from '../../table/TableRowClick';
@@ -78,8 +78,8 @@ const NetworkHosts = ({ networkId }) => {
       <TablesOuter
         columns={
           activeFilter === "connected"
-            ? TableInfo.HOSTS_FROM_NETWORK
-            : TableInfo.HOSTS_DISCONNECT_FROM_NETWORK
+            ? TableColumnsInfo.HOSTS_FROM_NETWORK
+            : TableColumnsInfo.HOSTS_DISCONNECT_FROM_NETWORK
         }
         data={filteredHosts}
         onRowClick={(row) => setSelectedHost(row)}

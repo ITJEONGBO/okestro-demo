@@ -6,7 +6,7 @@ import TablesOuter from '../../table/TablesOuter';
 import { useDisksFromVM } from '../../../api/RQHook';
 import DiskModal from '../../Modal/DiskModal';
 import DeleteModal from '../../Modal/DeleteModal';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 
 const VmDisk = ({ vm }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
@@ -96,10 +96,10 @@ const VmDisk = ({ vm }) => {
       <TablesOuter
         columns={
           activeDiskType === 'all'
-            ? TableInfo.ALL_DISK
+            ? TableColumnsInfo.ALL_DISK
             : activeDiskType === 'image'
-            ? TableInfo.DISKS_FROM_
-            : TableInfo.LUN_DISK
+            ? TableColumnsInfo.DISKS_FROM_
+            : TableColumnsInfo.LUN_DISK
         }
         data={formattedDisks}
         onRowClick={(selected) => {
@@ -141,7 +141,7 @@ const VmDisk = ({ vm }) => {
 // import { useDisksFromVM } from '../../../api/RQHook';
 // import DiskModal from '../../Modal/DiskModal';
 // import DeleteModal from '../../Modal/DeleteModal';
-// import TableInfo from '../../table/TableInfo';
+// import TableColumnsInfo from '../../table/TableColumnsInfo';
 
 
 // // 디스크
@@ -292,7 +292,7 @@ const VmDisk = ({ vm }) => {
 
 //                 {activeDiskType === 'all' && (
 //                   <TableOuter 
-//                     columns={TableInfo.ALL_DISK}
+//                     columns={TableColumnsInfo.ALL_DISK}
 //                     data={disks}
 //                     onRowClick={(disk) => setSelectedDisk(disk)}
         
@@ -302,7 +302,7 @@ const VmDisk = ({ vm }) => {
 
 //                 {activeDiskType === 'image' && (
 //                   <TableOuter 
-//                     columns={TableInfo.DISKS_FROM_}
+//                     columns={TableColumnsInfo.DISKS_FROM_}
 //                     data={disks}
 //                     onRowClick={(disk) => setSelectedDisk(disk)}
 //                   />
@@ -310,7 +310,7 @@ const VmDisk = ({ vm }) => {
 
 //                 {activeDiskType === 'lun' && (
 //                   <TableOuter 
-//                     columns={TableInfo.LUN_DISK}
+//                     columns={TableColumnsInfo.LUN_DISK}
 //                     data={disks}
 //                     onRowClick={(disk) => setSelectedDisk(disk)}
 //                   />

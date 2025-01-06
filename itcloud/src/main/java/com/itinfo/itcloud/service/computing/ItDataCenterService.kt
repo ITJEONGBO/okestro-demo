@@ -295,14 +295,15 @@ class DataCenterServiceImpl(
 			.getOrDefault(listOf())
 			.flatMap { conn.findAllDisksFromStorageDomain(it.id()).getOrDefault(listOf()) }
 
-		return res.map { disk ->
-			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
-				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
-
-			// ID가 템플릿일 수도, VM일 수도 있으므로 먼저 템플릿과 VM을 구분하여 조회
-			val id: String = diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
-			disk.toDiskMenu(conn, id)
-		}
+//		return res.map { disk ->
+//			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
+//				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
+//
+//			// ID가 템플릿일 수도, VM일 수도 있으므로 먼저 템플릿과 VM을 구분하여 조회
+//			val id: String = diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
+//			disk.toDiskMenu(conn, id)
+//		}
+		return res.toDiskMenus(conn)
 	}
 
 	@Throws(Error::class)

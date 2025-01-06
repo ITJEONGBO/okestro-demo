@@ -405,7 +405,7 @@ const DiskModal = ({
                 //       <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
                 //     ) : (
                 //       <Table
-                //         columns={TableInfo.FIBRE}
+                //         columns={TableColumnsInfo.FIBRE}
                 //         data={fibres}
                 //         onRowClick={(row) => console.log('선택한 행 데이터:', row)}
                 //         shouldHighlight1stCol={true}

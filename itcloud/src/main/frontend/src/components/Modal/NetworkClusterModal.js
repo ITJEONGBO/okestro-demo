@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TablesOuter from '../table/TablesOuter';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import { faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useAllClustersFromNetwork } from '../../api/RQHook';
 
@@ -62,7 +62,7 @@ const NetworkClusterModal = ({
         </div>
         
         <TablesOuter 
-          columns={TableInfo.CLUSTERS_POPUP} 
+          columns={TableColumnsInfo.CLUSTERS_POPUP} 
           data={clusters || []}
           onRowClick={() => console.log('Row clicked')} 
         />

@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import TableOuter from '../table/TableOuter';
+import TablesOuter from '../table/TablesOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAddSnapshotFromVM, useDisksFromVM } from '../../api/RQHook';
-import TableInfo from '../table/TableInfo';
 import '../Modal/css/MVm.css';
 const VmSnapshotaddModal = ({ 
     isOpen, 
@@ -87,8 +86,8 @@ const VmSnapshotaddModal = ({
           <div>
             <div className="font-bold">포함할 디스크 :</div>
             <div className="snapshot_new_table">
-              <TableOuter
-                columns={TableInfo.SNAPSHOT_NEW}
+              <TablesOuter
+                columns={TableColumnsInfo.SNAPSHOT_NEW}
                 data={disks} // 디스크 데이터 삽입
                 onRowClick={() => console.log('Row clicked')}
               />

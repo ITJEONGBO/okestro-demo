@@ -1,6 +1,6 @@
 import React, { useState, Suspense } from 'react';
 import '../css/Computing.css';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllDataCenters } from '../../../api/RQHook';
 import TablesOuter from '../../table/TablesOuter';
 import { renderDatacenterStatusIcon } from '../../util/format';
@@ -11,7 +11,7 @@ const DeleteModal = React.lazy(() => import('../../Modal/DeleteModal'));
 
 const DataCenters = () => {
   const {
-    data: datacenters,
+    data: datacenters = [],
   } = useAllDataCenters((e) => ({
     ...e,
   }));
@@ -38,7 +38,7 @@ const DataCenters = () => {
       />
       <span>선택된 데이터센터 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
       <TablesOuter
-        columns={TableInfo.DATACENTERS}
+        columns={TableColumnsInfo.DATACENTERS}
         data={(datacenters || []).map((dc) => ({
           ...dc,
           icon: renderDatacenterStatusIcon(dc?.status),

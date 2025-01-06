@@ -1,7 +1,7 @@
 import {useHostsFromDataCenter, useNetworksFromDataCenter} from "../../../api/RQHook";
 import HostDu from "../../duplication/HostDu";
 import { useNavigate } from 'react-router-dom';
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TemplateDu from "../../duplication/TemplateDu";
 
 
@@ -37,7 +37,7 @@ const DatacenterHost = ({ dataCenter }) => {
         <>
          <TemplateDu 
             data={hosts} 
-            columns={TableInfo.HOSTS_ALL_DATA} 
+            columns={TableColumnsInfo.HOSTS_ALL_DATA} 
             onRowClick={(row, column, colIndex) => {
               if (colIndex === 0) {
                 navigate(`/computing/hosts/${row.id}`); 

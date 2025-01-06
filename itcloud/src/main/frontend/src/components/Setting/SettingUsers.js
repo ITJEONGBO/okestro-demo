@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import TableInfo from './../table/TableInfo';
+import TableColumnsInfo from './../table/TableColumnsInfo';
 import { useAllUsers } from "./../../api/RQHook";
 import TablesOuter from '../table/TablesOuter';
 // import HostDupl from './../duplication/HostDupl';
@@ -25,7 +25,7 @@ const SettingUsers = () => {
       <span>id = {selectedUser?.id || ''}</span>
 
       <TablesOuter
-        columns={TableInfo.SETTING_USER}
+        columns={TableColumnsInfo.SETTING_USER}
         data={users}
         onRowClick={(row) => setSelectedUser(row)}
       />      

@@ -1,7 +1,7 @@
 import React from 'react';
 import '../css/Computing.css';
 import {faDesktop } from '@fortawesome/free-solid-svg-icons';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllTemplates } from '../../../api/RQHook';
 import TemplateDupl from '../../duplication/TemplateDupl';
 import HeaderButton from '../../button/HeaderButton';
@@ -21,7 +21,7 @@ const AllTemplates = () => {
     <>
       <TemplateDupl
         templates={templates || []}
-        columns={TableInfo.TEMPLATES}
+        columns={TableColumnsInfo.TEMPLATES}
         type='rutil'
       />      
     </>

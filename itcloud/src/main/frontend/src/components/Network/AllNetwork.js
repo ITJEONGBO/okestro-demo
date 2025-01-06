@@ -5,7 +5,7 @@ import { adjustFontSize } from '../../UIEvent';
 import { useAllNetworks } from '../../api/RQHook';
 import './css/Network.css';
 import NetworkDupl from '../duplication/NetworkDupl';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import {faServer} from '@fortawesome/free-solid-svg-icons'
 
 const AllNetwork = () => {
@@ -32,7 +32,7 @@ const AllNetwork = () => {
       </div>
       <div className="host_btn_outer">
         <NetworkDupl
-          columns={TableInfo.NETWORKS}
+          columns={TableColumnsInfo.NETWORKS}
           networks={networks || []}
         />
       </div>

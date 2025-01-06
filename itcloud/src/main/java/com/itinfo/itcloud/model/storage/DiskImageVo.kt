@@ -114,42 +114,42 @@ fun List<Disk>.toDiskIdNames(): List<DiskImageVo> =
  * 디스크 목록
  * 스토리지도메인 - 디스크 목록
  */
-fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
-	val storageDomain: StorageDomain? =
-		conn.findStorageDomain(this.storageDomains().first().id()).getOrNull()
+fun Disk.toDiskMenu(conn: Connection,/* id: String*/): DiskImageVo {
+	val storageDomain: StorageDomain? = conn.findStorageDomain(this.storageDomains().first().id())
+		.getOrNull()
 
-	var vmIdentifiedVo: IdentifiedVo? = null
-	var templateIdentifiedVo: IdentifiedVo? = null
-
-	if (id.isNotEmpty()) {
-		val vmCache = mutableMapOf<String, Vm?>()
-		val templateCache = mutableMapOf<String, Template?>()
-
-		val vm = vmCache.getOrPut(id) {
-			try { conn.findVm(id).getOrNull() }
-			catch (e: Exception) { null }
-		}
-
-		val template = templateCache.getOrPut(id) {
-			if (vm == null) {
-				try { conn.findTemplate(id).getOrNull() }
-				catch (e: Exception) { null }
-			} else { null }
-		}
-
-		vmIdentifiedVo = vm?.let {
-			IdentifiedVo.builder {
-				id { it.id() }
-				name { it.name() }
-			}
-		}
-		templateIdentifiedVo = template?.let {
-			IdentifiedVo.builder {
-				id { it.id() }
-				name { it.name() }
-			}
-		}
-	}
+//	var vmIdentifiedVo: IdentifiedVo? = null
+//	var templateIdentifiedVo: IdentifiedVo? = null
+//
+//	if (id.isNotEmpty()) {
+//		val vmCache = mutableMapOf<String, Vm?>()
+//		val templateCache = mutableMapOf<String, Template?>()
+//
+//		val vm = vmCache.getOrPut(id) {
+//			try { conn.findVm(id).getOrNull() }
+//			catch (e: Exception) { null }
+//		}
+//
+//		val template = templateCache.getOrPut(id) {
+//			if (vm == null) {
+//				try { conn.findTemplate(id).getOrNull() }
+//				catch (e: Exception) { null }
+//			} else { null }
+//		}
+//
+//		vmIdentifiedVo = vm?.let {
+//			IdentifiedVo.builder {
+//				id { it.id() }
+//				name { it.name() }
+//			}
+//		}
+//		templateIdentifiedVo = template?.let {
+//			IdentifiedVo.builder {
+//				id { it.id() }
+//				name { it.name() }
+//			}
+//		}
+//	}
 
 	return DiskImageVo.builder {
 		id { this@toDiskMenu.id() }
@@ -162,12 +162,14 @@ fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 		sparse { this@toDiskMenu.sparse() }
 		storageType { this@toDiskMenu.storageType() }
 		description { this@toDiskMenu.description() }
-		connectVm { vmIdentifiedVo }
-		connectTemplate { templateIdentifiedVo }
+//		connectVm { vmIdentifiedVo }
+//		connectTemplate { templateIdentifiedVo }
+		// TODO 연결대상 관리
 
 	}
 }
-
+fun List<Disk>.toDiskMenus(conn: Connection, /*vmId: String*/): List<DiskImageVo> =
+	this@toDiskMenus.map { it.toDiskMenu(conn, /*vmId*/) }
 
 fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 	val diskProfile: DiskProfile? =

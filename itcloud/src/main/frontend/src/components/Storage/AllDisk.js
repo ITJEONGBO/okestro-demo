@@ -1,6 +1,6 @@
 import React from 'react';
 import HeaderButton from '../button/HeaderButton';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAllDisks } from '../../api/RQHook';
 import DiskDupl from '../duplication/DiskDupl';
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
@@ -23,7 +23,7 @@ const AllDisk = () => {
         />
         <div className="host_btn_outer">
           <DiskDupl 
-            columns={TableInfo.DISKS}
+            columns={TableColumnsInfo.DISKS}
             disks={disks || []}          
           />
         </div>

@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faDesktop, faInfoCircle, faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
 import VmDu from '../duplication/VmDu';
 import { Tooltip } from 'react-tooltip';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import VmDupl from '../duplication/VmDupl';
 
 // React Modal 설정
@@ -94,7 +94,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
       <>
       <VmDupl
         vms={vms || []}
-        columns={TableInfo.VMS}
+        columns={TableColumnsInfo.VMS}
       />
     </>
       </div>  

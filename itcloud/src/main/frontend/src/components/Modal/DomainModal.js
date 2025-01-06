@@ -4,7 +4,7 @@ import './css/MDomain.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import Table from '../table/Table';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import { 
   useAddDomain, 
   useAllDataCenters, 
@@ -613,7 +613,7 @@ const DomainModal = ({
               <>
                 { editMode ? (
                   <Table
-                    columns={TableInfo.LUNS_TARGETS}
+                    columns={TableColumnsInfo.LUNS_TARGETS}
                     data={
                       domain?.hostStorageVo?.logicalUnits?.map((logicalUnit) => ({
                         abled: logicalUnit.storageDomainId === "" ? "OK" : "NO",
@@ -661,7 +661,7 @@ const DomainModal = ({
                         <button className='search_button' onClick={handleLoginIscsi}>로그인</button>
 
                         <Table
-                          columns={TableInfo.TARGETS_LUNS}
+                          columns={TableColumnsInfo.TARGETS_LUNS}
                           data={iscsiSearchResults}
                           onRowClick={handleRowClick}
                           shouldHighlight1stCol={true}
@@ -700,7 +700,7 @@ const DomainModal = ({
                 ): (
                   // create
                   <Table
-                    columns={TableInfo.LUNS_TARGETS}
+                    columns={TableColumnsInfo.LUNS_TARGETS}
                     data={iscsis}
                     onRowClick={handleRowClick}
                     shouldHighlight1stCol={true}
@@ -726,7 +726,7 @@ const DomainModal = ({
               <>
                 {editMode ? (
                   <Table
-                    columns={TableInfo.FIBRE}
+                    columns={TableColumnsInfo.FIBRE}
                     data={
                       domain?.hostStorageVo?.logicalUnits?.map((logicalUnit) => ({
                         abled: logicalUnit.storageDomainId === "" ? "OK" : "NO",
@@ -751,7 +751,7 @@ const DomainModal = ({
 
                     {fcpSearchResults?.length > 0 && (
                       <Table
-                        columns={TableInfo.FIBRE_IMPORT}
+                        columns={TableColumnsInfo.FIBRE_IMPORT}
                         data={fcpSearchResults}
                         onRowClick={handleRowClick}
                         // shouldHighlight1stCol={true}
@@ -760,7 +760,7 @@ const DomainModal = ({
                   </>
                 ): (
                   <Table
-                    columns={TableInfo.FIBRE}
+                    columns={TableColumnsInfo.FIBRE}
                     data={fibres}
                     onRowClick={handleRowClick}
                     shouldHighlight1stCol={true}

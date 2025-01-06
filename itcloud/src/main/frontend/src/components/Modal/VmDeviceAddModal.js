@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import TableOuter from '../table/TableOuter';
+import TablesOuter from '../table/TablesOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import '../Modal/css/MVm.css';
 
@@ -47,7 +47,7 @@ const VmDeviceAddModal = ({ isOpen, onRequestClose, hostDevices }) => {
         <div className="p-1">
           <span className="font-bold">사용 가능한 호스트 장치</span>
           <div className="able_host_device_table">
-            <TableOuter
+            <TablesOuter
               columns={TableColumnsInfo.ALL_DISK}
               data={hostDevices}
               onRowClick={() => console.log('Row clicked')}
@@ -58,7 +58,7 @@ const VmDeviceAddModal = ({ isOpen, onRequestClose, hostDevices }) => {
         <div className="p-1">
           <span className="font-bold">연결 호스트 장치</span>
           <div className="able_host_device_table">
-            <TableOuter
+            <TablesOuter
               columns={TableColumnsInfo.ALL_DISK}
               data={hostDevices}
               onRowClick={() => console.log('Row clicked')}

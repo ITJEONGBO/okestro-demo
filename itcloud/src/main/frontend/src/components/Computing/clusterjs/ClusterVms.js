@@ -1,5 +1,5 @@
 import React from 'react';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import {useVMFromCluster} from "../../../api/RQHook";
 import VmDupl from '../../duplication/VmDupl';
 
@@ -17,7 +17,7 @@ const ClusterVms = ({ clusterId }) => {
     <>
       <VmDupl
         vms={vms || []}
-        columns={TableInfo.VMS}
+        columns={TableColumnsInfo.VMS}
       />
     </>
   );

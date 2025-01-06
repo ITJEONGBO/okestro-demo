@@ -1,7 +1,7 @@
 import React from 'react';
 import {useHostdeviceFromHost} from "../../../api/RQHook";
 import PagingTableOuter from "../../table/PagingTableOuter";
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 
 const HostDevices = ({ hostId }) => {
   const { 
@@ -14,7 +14,7 @@ const HostDevices = ({ hostId }) => {
   return (
     <>
       <PagingTableOuter
-        columns={TableInfo.DEVICE_FROM_HOST} 
+        columns={TableColumnsInfo.DEVICE_FROM_HOST} 
         data={hostDevices} 
       />
     </>

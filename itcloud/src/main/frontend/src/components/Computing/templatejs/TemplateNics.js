@@ -3,7 +3,7 @@ import TablesOuter from "../../table/TablesOuter";
 import { Suspense, useState } from "react";
 import TemplateNeworkNewInterModal from "../../Modal/TemplateNeworkNewInterModal";
 import DeleteModal from "../../Modal/DeleteModal";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 
 const TemplateNics = ({ templateId }) => {
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
@@ -48,7 +48,7 @@ const TemplateNics = ({ templateId }) => {
 
       {/* vNIC 프로파일 테이블 */}
       <TablesOuter
-        columns={TableInfo.NICS_FROM_TEMPLATES}
+        columns={TableColumnsInfo.NICS_FROM_TEMPLATES}
         onRowClick={handleRowSelection} // 다중 선택된 행 업데이트
         data={vnicProfiles}
         clickableColumnIndex={[3, 4]} // 클릭 가능한 열 인덱스
@@ -95,7 +95,7 @@ export default TemplateNics;
 // import { faTimes } from "@fortawesome/free-solid-svg-icons";
 // import VnicProfileModal from "../../Modal/VnicProfileModal";
 // import DeleteModal from "../../Modal/DeleteModal";
-// import TableInfo from "../../table/TableInfo";
+// import TableColumnsInfo from "../../table/TableColumnsInfo";
 // import VmNetworkNewInterfaceModal from "../../Modal/VmNetworkNewInterfaceModal";
 // import TemplateNeworkNewInterModal from "../../Modal/TemplateNeworkNewInterModal";
 
@@ -137,7 +137,7 @@ export default TemplateNics;
 //         <span>id = {selectedVnicProfiles?.id || ''}</span>
 //         {/* vNIC 프로파일 */}
 //         <TableOuter
-//           columns={TableInfo.NICS_FROM_TEMPLATES} 
+//           columns={TableColumnsInfo.NICS_FROM_TEMPLATES} 
 //           onRowClick={(row) => setSelectedVnicProfiles(row)}
 //           data={vnicProfiles}
 //           clickableColumnIndex={[3,4]} 

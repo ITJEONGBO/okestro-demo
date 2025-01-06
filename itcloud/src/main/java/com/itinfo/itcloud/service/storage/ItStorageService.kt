@@ -377,12 +377,13 @@ class StorageServiceImpl(
 		val res: List<Disk> = conn.findAllDisksFromStorageDomain(storageDomainId)
 			.getOrDefault(listOf())
 
-		return res.map { disk ->
-			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
-				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
-			val vmId: String = diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
-			disk.toDiskMenu(conn, vmId)
-		}
+//		return res.map { disk ->
+//			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
+//				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
+//			val vmId: String = diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
+//			disk.toDiskMenu(conn, vmId)
+//		}
+		return res.toDiskMenus(conn)
 	}
 
 	@Throws(Error::class)

@@ -1,7 +1,7 @@
 import React from 'react';
 import { faDesktop, faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TablesOuter from "../../table/TablesOuter";
 import {useAllTemplateFromDomain} from "../../../api/RQHook";
 import { formatBytesToGB } from '../../util/format';
@@ -59,7 +59,7 @@ const DomainTemplates = ({ domainId }) => {
   return (
     <>
       <TablesOuter 
-        columns={TableInfo.TEMPLATES_FROM_STORAGE_DOMAIN}
+        columns={TableColumnsInfo.TEMPLATES_FROM_STORAGE_DOMAIN}
         data={templates} 
       />
     </>

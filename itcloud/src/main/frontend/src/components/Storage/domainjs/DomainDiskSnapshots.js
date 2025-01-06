@@ -1,6 +1,6 @@
 import { useState } from 'react'; 
 import { useAllDiskSnapshotFromDomain} from "../../../api/RQHook";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TablesOuter from "../../table/TablesOuter";
 import DeleteModal from '../../Modal/DeleteModal';
 
@@ -30,7 +30,7 @@ const DomainDiskSnapshots = ({ domainId }) => {
       </div>
 
       <TablesOuter
-        columns={TableInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
+        columns={TableColumnsInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
         data={diskSnapshots}
       />
 

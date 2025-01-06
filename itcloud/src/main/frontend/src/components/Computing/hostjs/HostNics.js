@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import TablesOuter from '../../table/TablesOuter';
 import { useNetworkInterfaceFromHost } from '../../../api/RQHook';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import NetworkHostModal from '../../Modal/NetworkHostModal';
 import { formatNumberWithCommas, renderUpDownStatusIcon } from '../../util/format';
 
@@ -116,7 +116,7 @@ const HostNics = ({ hostId }) => {
           >
             <div className="section_table_outer">
               <TablesOuter
-                columns={TableInfo.NETWORK_INTERFACE_FROM_HOST}
+                columns={TableColumnsInfo.NETWORK_INTERFACE_FROM_HOST}
                 data={[data]} // 개별 NIC 데이터만 전달
                 onRowClick={() => console.log('Row clicked')}
               />
@@ -126,7 +126,7 @@ const HostNics = ({ hostId }) => {
             <div className="host_network_hiddenbox">
               <div className="section_table_outer" style={{ marginLeft: '1.43rem' }}>
                 <TablesOuter
-                  columns={TableInfo.NETWORK_FROM_HOST}
+                  columns={TableColumnsInfo.NETWORK_FROM_HOST}
                   data={[data]} // 개별 NIC 데이터만 전달
                   onRowClick={() => console.log('Row clicked')}
                 />

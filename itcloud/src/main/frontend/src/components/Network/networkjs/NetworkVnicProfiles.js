@@ -1,7 +1,7 @@
 import React from "react";
 import { useAllVnicProfilesFromNetwork } from "../../../api/RQHook";
 import VnicProfileDupl from "../../duplication/VnicProfileDupl";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 
 const NetworkVnicProfiles = ({networkId}) => {
   const { 
@@ -15,7 +15,7 @@ const NetworkVnicProfiles = ({networkId}) => {
   return (
     <>
       <VnicProfileDupl
-        columns={TableInfo.VNIC_PROFILES_FROM_NETWORK}
+        columns={TableColumnsInfo.VNIC_PROFILES_FROM_NETWORK}
         vnicProfiles={vnicProfiles || []}
         networkId={networkId}
       />

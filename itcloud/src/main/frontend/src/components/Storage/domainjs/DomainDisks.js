@@ -1,6 +1,6 @@
 import React from 'react'; 
 import { useAllDiskFromDomain} from "../../../api/RQHook";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import DiskDupl from '../../duplication/DiskDupl';
 
 const DomainDisks = ({ domainId }) => {
@@ -16,7 +16,7 @@ const DomainDisks = ({ domainId }) => {
   return (
     <>
       <DiskDupl
-        columns={TableInfo.DISKS_FROM_STORAGE_DOMAIN}
+        columns={TableColumnsInfo.DISKS_FROM_STORAGE_DOMAIN}
         disks={disks || []}
       />
     </>

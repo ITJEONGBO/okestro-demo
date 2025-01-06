@@ -1,11 +1,9 @@
 import { faCamera, faChevronRight, faExclamationTriangle, faEye, faNewspaper, faServer, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Suspense, useEffect, useState } from 'react';
-import Modal from 'react-modal';
-import TableOuter from '../../table/TableOuter';
+import TablesOuter from '../../table/TablesOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useDisksFromVM, useSnapshotFromVM } from '../../../api/RQHook';
-import TableInfo from '../../table/TableInfo';
 import VmSnapshotaddModal from '../../Modal/VmSnapshotaddModal';
 import DeleteModal from '../../Modal/DeleteModal';
 
@@ -201,8 +199,8 @@ const VmSnapshot = ({vm}) => {
               {/* Disk Section */}
               {activeSection === 'disk' && selectedSnapshot?.id === snapshot.id && (
                 <div className="snap_hidden_content active">
-                  <TableOuter
-                    columns={TableInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
+                  <TablesOuter
+                    columns={TableColumnsInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
                     data={snapshots}
                     onRowClick={() => console.log('Row clicked')}
                   />

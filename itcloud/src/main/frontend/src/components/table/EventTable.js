@@ -2,7 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
 import PagingTableOuter from '../table/PagingTableOuter';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 
 const EventTable = ({ events } ) => {  
   const renderSeverityIcon = (severity) => {
@@ -29,7 +29,7 @@ const EventTable = ({ events } ) => {
   return (
     <>
       <PagingTableOuter
-        columns={TableInfo.EVENTS}
+        columns={TableColumnsInfo.EVENTS}
         data={transformedEvents}
         showSearchBox={true}
       />

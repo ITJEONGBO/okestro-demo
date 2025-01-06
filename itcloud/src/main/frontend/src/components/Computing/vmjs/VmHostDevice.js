@@ -3,7 +3,7 @@ import {faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import TableOuter from '../../table/TableOuter';
+import TablesOuter from '../../table/TablesOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useHost, useHostdeviceFromHost, useHostdevicesFromVM } from '../../../api/RQHook';
 import VmDeviceAddModal from '../../Modal/VmDeviceAddModal';
@@ -45,7 +45,7 @@ const VmHostDevice = ({vm}) => {
             <button className='disabled'>vGPU 관리</button>
             <button onClick={() => openPopup('view_cpu')}>View CPU Pinning</button>
         </div>
-        <TableOuter 
+        <TablesOuter 
           columns={TableColumnsInfo.DEVICE_FROM_HOST} 
           data={hostDevices} 
           onRowClick={() => console.log('Row clicked')} 

@@ -17,7 +17,7 @@ import Permission from '../Modal/Permission';
 import './css/AllDomain.css';
 import Table from '../table/Table';
 import { useAllStorageDomains } from '../../api/RQHook';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import DomainsModal from '../Modal/DomainModal';
 
 import DeleteModal from '../Modal/DeleteModal';
@@ -284,7 +284,7 @@ console.log("selectedDomain아아아아:", selectedDomain);
 
                 {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
                 <TableOuter
-                  columns={TableInfo.STORAGE_DOMAINS} 
+                  columns={TableColumnsInfo.STORAGE_DOMAINS} 
                   data={domaindata} 
                   onRowClick={(row, column, colIndex) => {
                     setSelectedDomain(row);

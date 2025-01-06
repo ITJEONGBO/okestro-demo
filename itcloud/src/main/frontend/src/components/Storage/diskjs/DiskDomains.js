@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAllStorageDomainFromDisk } from "../../../api/RQHook";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import { formatBytesToGBToFixedZero, renderDomainStatusIcon } from '../../util/format';
 import TablesOuter from '../../table/TablesOuter';
 
@@ -20,7 +20,7 @@ const DiskDomains = ({ diskId }) => {
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <TablesOuter
-        columns={TableInfo.STORAGE_DOMAINS_FROM_DISK}
+        columns={TableColumnsInfo.STORAGE_DOMAINS_FROM_DISK}
         data={(domains || []).map((domain) => ({
           ...domain,
           icon: renderDomainStatusIcon(domain.status),

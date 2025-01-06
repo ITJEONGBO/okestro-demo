@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import TableOuter from "../table/TableOuter";
+import TablesOuter from "../table/TablesOuter";
 import TableColumnsInfo from "../table/TableColumnsInfo";
-import TableInfo from "../table/TableInfo";
 import { useFindDiskListFromVM } from "../../api/RQHook";
 
 const VmConnectionPlusModal = ({
@@ -83,14 +82,14 @@ const VmConnectionPlusModal = ({
           </div>
         </div>
         {activeTab === "img" && (
-          <TableOuter
-            columns={TableInfo.VIRTUAL_DISK}
+          <TablesOuter
+            columns={TableColumnsInfo.VIRTUAL_DISK}
             data={disks}
             onRowClick={() => console.log("Row clicked in 이미지 탭")}
           />
         )}
         {activeTab === "directlun" && (
-          <TableOuter
+          <TablesOuter
             columns={TableColumnsInfo.VMS_STOP}
             data={[]} // 직접 LUN 데이터를 여기에 추가하세요.
             onRowClick={() => console.log("Row clicked in 직접 LUN 탭")}

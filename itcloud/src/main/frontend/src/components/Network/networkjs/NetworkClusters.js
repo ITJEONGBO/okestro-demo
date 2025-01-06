@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAllClustersFromNetwork} from "../../../api/RQHook";
 import { useState } from 'react'; 
 import { faChevronLeft, faPlay } from "@fortawesome/free-solid-svg-icons";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TablesOuter from "../../table/TablesOuter";
 import NetworkClusterModal from "../../Modal/NetworkClusterModal";
 
@@ -47,7 +47,7 @@ const NetworkClusters = ({ networkId }) => {
       </div>
     
       <TablesOuter
-        columns={TableInfo.CLUSTERS_FRON_NETWORK}
+        columns={TableColumnsInfo.CLUSTERS_FRON_NETWORK}
         data={clusters || []}
       />
 

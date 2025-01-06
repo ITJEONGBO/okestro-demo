@@ -1,7 +1,7 @@
 import { Suspense, useState } from 'react';
 import { useAllVmsFromNetwork } from "../../../api/RQHook";
 import TablesOuter from "../../table/TablesOuter";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableRowClick from "../../table/TableRowClick";
 import { formatBytesToMB, renderUpDownStatusIcon, renderVmStatusIcon } from "../../util/format";
 import VmDeleteModal from '../../Modal/VmDeleteModal';
@@ -83,8 +83,8 @@ const NetworkVms = ({ networkId }) => {
       <TablesOuter
         columns={
           activeFilter === "running" 
-          ? TableInfo.VMS_NIC 
-          : TableInfo.VMS_STOP
+          ? TableColumnsInfo.VMS_NIC 
+          : TableColumnsInfo.VMS_STOP
         }
         data={filteredVms}
         onRowClick={(rows) => {

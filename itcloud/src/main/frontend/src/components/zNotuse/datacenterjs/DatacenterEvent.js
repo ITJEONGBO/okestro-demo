@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {useEventsFromDataCenter} from "../../../api/RQHook";
 import EventDu from "../../duplication/EventDu";
 import { faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 
 
 
@@ -31,7 +31,7 @@ const DatacenterEvent = ({ dataCenter }) => {
 
     return (
         <EventDu 
-            columns={TableInfo.EVENTS}
+            columns={TableColumnsInfo.EVENTS}
             data={events}
             handleRowClick={() => console.log('Row clicked')}
         />

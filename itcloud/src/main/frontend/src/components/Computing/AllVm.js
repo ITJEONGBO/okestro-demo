@@ -5,7 +5,7 @@ import './css/Vm.css';
 import Footer from '../footer/Footer';
 import {useAllVMs } from '../../api/RQHook';
 import { faDesktop } from '@fortawesome/free-solid-svg-icons';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import VmDupl from '../duplication/VmDupl';
 
 // React Modal 설정
@@ -29,7 +29,7 @@ const AllVm = () => {
       <div className="host_btn_outer">
         <VmDupl
           vms={vms || []}
-          columns={TableInfo.VMS}
+          columns={TableColumnsInfo.VMS}
         />    
       </div>
       <Footer/>

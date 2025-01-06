@@ -1,6 +1,6 @@
 import { useAllTemplatesFromNetwork } from "../../../api/RQHook";
 import TablesOuter from '../../table/TablesOuter';
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 
 // 애플리케이션 섹션
 const NetworkTemplates = ({ networkId }) => {
@@ -17,7 +17,7 @@ const NetworkTemplates = ({ networkId }) => {
       <div className="header_right_btns">
       </div>
       <TablesOuter
-        columns={TableInfo.TEMPLATES_FROM_NETWORK}
+        columns={TableColumnsInfo.TEMPLATES_FROM_NETWORK}
         data={templates}
         onRowClick={() => console.log("Row clicked")}
       />

@@ -11,8 +11,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import './css/Vm.css';
 import Footer from '../footer/Footer';
-import TableOuter from '../table/TableOuter';
-import TableColumnsInfo from '../table/TableColumnsInfo';
 import NavButton from '../navigation/NavButton';
 import { useVmById } from '../../api/RQHook';
 import Path from '../Header/Path';

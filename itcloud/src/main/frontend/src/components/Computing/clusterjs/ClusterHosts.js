@@ -1,5 +1,5 @@
 import React from 'react';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useHostFromCluster } from "../../../api/RQHook";
 import HostDupl from '../../duplication/HostDupl';
 
@@ -15,7 +15,7 @@ const ClusterHosts = ({ clusterId }) => {
     <>
       <HostDupl
         hosts={hosts || []}
-        columns={TableInfo.HOSTS}
+        columns={TableColumnsInfo.HOSTS}
         clusterId={clusterId}
       />
     </>

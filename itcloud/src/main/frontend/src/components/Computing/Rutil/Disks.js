@@ -1,21 +1,24 @@
 import React from 'react';
 import '../css/Computing.css';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllDisks } from '../../../api/RQHook';
 import DiskDupl from '../../duplication/DiskDupl';
 
 const Disks = () => {
   const { 
-    data: disks,
+    data: disks = [],
     refetch: refetchDisks, 
     error: disksError, 
     isLoading: isDisksLoading,
-  } = useAllDisks((e) => ({ ...e }));
+  } = useAllDisks((e) => ({ 
+    ...e,
+    connected : e?.connectVm?.name || e?.connectTemplate?.name
+   }));
 
   return (
     <>
       <DiskDupl 
-        columns={TableInfo.DISKS}
+        columns={TableColumnsInfo.DISKS}
         disks={disks || []}
       />
     </>

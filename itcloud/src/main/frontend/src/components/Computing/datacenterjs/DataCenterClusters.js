@@ -1,6 +1,6 @@
 import React from 'react';
 import { useClustersFromDataCenter } from '../../../api/RQHook';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import ClusterDupl from '../../duplication/ClusterDupl';
 
 const DataCenterClusters = ({ datacenterId }) => {
@@ -12,7 +12,7 @@ const DataCenterClusters = ({ datacenterId }) => {
     <>
       <ClusterDupl
         clusters={clusters || []}
-        columns={TableInfo.CLUSTERS_FROM_DATACENTER}
+        columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER}
         datacenterId={datacenterId}
       />
     </>

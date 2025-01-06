@@ -1,18 +1,18 @@
 import React  from 'react';
 import '../css/Computing.css';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllHosts } from '../../../api/RQHook';
 import HostDupl from '../../duplication/HostDupl';
 
 const Hosts = () => {
   const {
-      data: hosts,
+      data: hosts = [],
   } = useAllHosts((e) => ({ ...e }));
 
   return (
     <>
       <HostDupl
-        columns={TableInfo.HOSTS}
+        columns={TableColumnsInfo.HOSTS}
         hosts={hosts || []}        
       />
     </>

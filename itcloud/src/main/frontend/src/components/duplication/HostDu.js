@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSearch, faChevronDown, faEllipsisV, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import TableColumnsInfo from '../table/TableColumnsInfo';
-import TableOuter from '../table/TableOuter';
+import TableColumnsInfo from '../zNotuse/TableColumnsInfo';
+import TablesOuter from '../table/TablesOuter';
 import './css/HostDu.css';
 import Modal from 'react-modal';
 
@@ -130,7 +130,7 @@ useEffect(() => {
         </div>
       </div>
       
-      <TableOuter
+      <TablesOuter
         columns={columns} 
         data={data} 
         onRowClick={onRowClick} 

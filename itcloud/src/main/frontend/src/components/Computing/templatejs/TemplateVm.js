@@ -1,8 +1,8 @@
 import React from 'react';
 import '../css/Computing.css'
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllVMs, useAllVmsFromTemplate } from '../../../api/RQHook';
-import TableOuter from '../../table/TableOuter';
+import TablesOuter from '../../table/TablesOuter';
 
 const TemplateVm = ({templateId}) => {
     
@@ -18,8 +18,8 @@ const TemplateVm = ({templateId}) => {
 
   return (
     <>
-        <TableOuter
-          columns={TableInfo.TEMPLATE_VMS} 
+        <TablesOuter
+          columns={TableColumnsInfo.TEMPLATE_VMS} 
           data={vms} 
           className="template_chart"
           clickableColumnIndex={[1]} 

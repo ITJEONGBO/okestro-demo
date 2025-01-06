@@ -4,7 +4,7 @@ import { faPlay, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { useAllDataCenterFromDomain, useDomainById } from "../../../api/RQHook";
 import TablesOuter from '../../table/TablesOuter';
 import TableRowClick from '../../table/TableRowClick';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import DomainActionButtons from '../../button/DomainActionButtons';
 import DomainModals from '../../Modal/DomainModals';
 
@@ -57,7 +57,7 @@ const DomainDatacenters = ({ domainId }) => {
       <span>선택된 데이터센터 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>  
 
       <TablesOuter
-        columns={TableInfo.DATACENTERS_FROM_STORAGE_DOMAIN}
+        columns={TableColumnsInfo.DATACENTERS_FROM_STORAGE_DOMAIN}
         data={datacenters.map((datacenter) => ({
           ...datacenter,
           icon: renderStatusIcon(datacenter.domainStatus),
@@ -94,7 +94,7 @@ export default DomainDatacenters;
 // import { useAllDataCenterFromDomain, useDomainById } from "../../../api/RQHook";
 // import TablesOuter from '../../table/TablesOuter';
 // import TableRowClick from '../../table/TableRowClick';
-// import TableInfo from '../../table/TableInfo';
+// import TableColumnsInfo from '../../table/TableColumnsInfo';
 // import DomainActionButtons from '../../button/DomainActionButtons';
 // import DomainModals from '../../Modal/DomainModals';
 
@@ -145,7 +145,7 @@ export default DomainDatacenters;
 //       <span>id = {selectedDataCenter?.id || ''}</span>  
 
 //       <TablesOuter
-//         columns={TableInfo.DATACENTERS_FROM_STORAGE_DOMAIN}
+//         columns={TableColumnsInfo.DATACENTERS_FROM_STORAGE_DOMAIN}
 //         data={datacenters.map((datacenter) => ({
 //           ...datacenter,
 //           icon: renderStatusIcon(datacenter.domainStatus),

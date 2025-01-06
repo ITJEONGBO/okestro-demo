@@ -3,7 +3,7 @@ import TableColumnsInfo from "../table/TableColumnsInfo";
 import TableOuter from "../table/TableOuter";
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, Suspense } from 'react'; 
-import TableInfo from "../table/TableInfo";
+import TableColumnsInfo from "../table/TableColumnsInfo";
 import DeleteModal from "../Modal/DeleteModal";
 
 // 애플리케이션 섹션
@@ -43,7 +43,7 @@ const NetworkTemplate = ({ network }) => {
 
         <span>id = {selectedTemplates?.name || ''}</span>
         <TableOuter 
-          columns={TableInfo.TEMPLATES_FROM_NETWORK}
+          columns={TableColumnsInfo.TEMPLATES_FROM_NETWORK}
           data={templates}
           onRowClick={(row, column, colIndex) => {
             console.log('선택한 vNIC Profile 행 데이터:', row);

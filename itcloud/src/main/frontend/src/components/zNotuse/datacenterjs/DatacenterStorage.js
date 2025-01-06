@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {useDomainsFromDataCenter} from "../../../api/RQHook";
 import TableColumnsInfo from "../../table/TableColumnsInfo";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
 import { useNavigate } from 'react-router-dom';
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
@@ -80,7 +80,7 @@ const DatacenterStorage = ({ dataCenter }) => {
                 </button>
               </div>
               <TableOuter 
-                columns={TableInfo.STORAGES_FROM_DATACENTER} 
+                columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} 
                 data={domains}
                 onRowClick={() => {}}
                 onContextMenuItems={() => [

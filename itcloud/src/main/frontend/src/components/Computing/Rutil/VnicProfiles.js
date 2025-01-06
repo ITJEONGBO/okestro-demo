@@ -1,12 +1,12 @@
 import React from 'react';
 import '../css/Computing.css';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllVnicProfiles } from '../../../api/RQHook';
 import VnicProfileDupl from '../../duplication/VnicProfileDupl';
 
 const VnicProfiles = () => {
   const { 
-    data: vnicProfiles, 
+    data: vnicProfiles = [], 
     refetch: refetchVnicProfiles, 
     isError: isVnicProfilesError, 
     error: vnicProfilesError, 
@@ -17,7 +17,7 @@ const VnicProfiles = () => {
   return (
     <>
       <VnicProfileDupl
-        columns={TableInfo.VNIC_PROFILES}
+        columns={TableColumnsInfo.VNIC_PROFILES}
         vnicProfiles={vnicProfiles || []}
       />
     </>

@@ -2,7 +2,7 @@ import React from 'react';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
 import DomainDupl from '../duplication/DomainDupl';
-import TableInfo from '../table/TableInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAllStorageDomains } from '../../api/RQHook'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 
@@ -25,7 +25,7 @@ const AllDomain = () => {
         />
         <div className="host_btn_outer">
           <DomainDupl
-            columns={TableInfo.STORAGE_DOMAINS}
+            columns={TableColumnsInfo.STORAGE_DOMAINS}
             domains={storageDomains || []}            
             type={'domain'}
           />

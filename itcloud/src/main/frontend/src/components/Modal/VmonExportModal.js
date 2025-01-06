@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import TableOuter from '../table/TableOuter';
+import TablesOuter from '../table/TablesOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAllDataCenters, useAllHosts } from '../../api/RQHook';
 
@@ -101,7 +101,7 @@ const VmonExportModal = ({ isOpen, onRequestClose, selectedVm }) => {
         <div className="vm_bring_table">
           <div>
             <div className="font-bold">소스 상의 가상 머신</div>
-            <TableOuter
+            <TablesOuter
               columns={TableColumnsInfo.VM_BRING_POPUP}
               data={[]}
               onRowClick={() => console.log('Row clicked')}
@@ -109,7 +109,7 @@ const VmonExportModal = ({ isOpen, onRequestClose, selectedVm }) => {
           </div>
           <div>
             <div className="font-bold">가져오기할 가상 머신</div>
-            <TableOuter
+            <TablesOuter
               columns={TableColumnsInfo.VM_BRING_POPUP}
               data={[]}
               onRowClick={() => console.log('Row clicked')}

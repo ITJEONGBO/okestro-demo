@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/DataCenter.css';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useVMsFromDataCenter } from '../../../api/RQHook';
 import VmDupl from '../../duplication/VmDupl';
 
@@ -25,7 +25,7 @@ const DataCenterVms = ({datacenterId}) => {
     <>
       <VmDupl
         vms={vms || []}
-        columns={TableInfo.VMS}
+        columns={TableColumnsInfo.VMS}
       />
     </>
   );

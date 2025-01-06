@@ -1,5 +1,5 @@
 import React from 'react';
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import { useVmFromHost } from "../../../api/RQHook";
 import VmDupl from '../../duplication/VmDupl';
 
@@ -15,7 +15,7 @@ const HostVms = ({ hostId }) => {
     <>
       <VmDupl
         vms={vms || []}
-        columns={TableInfo.VMS_FROM_HOST}
+        columns={TableColumnsInfo.VMS_FROM_HOST}
       />
     </>
   );

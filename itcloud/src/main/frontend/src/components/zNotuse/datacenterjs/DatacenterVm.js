@@ -1,7 +1,7 @@
 import {useNetworksFromDataCenter, useVMsFromDataCenter} from "../../../api/RQHook";
 import VmDu from "../../duplication/VmDu";
 import TableColumnsInfo from "../../table/TableColumnsInfo";
-import TableInfo from "../../table/TableInfo";
+import TableColumnsInfo from "../../table/TableColumnsInfo";
 import TableOuter from "../../table/TableOuter";
 import { useNavigate } from 'react-router-dom';
 
@@ -36,7 +36,7 @@ const DatacenterVm = ({ dataCenter }) => {
     return (
         <>
         <VmDu 
-           columns={TableInfo.VM_CHART}
+           columns={TableColumnsInfo.VM_CHART}
            data={vms}
            onRowClick={(row, column, colIndex) => {
             if (colIndex === 1) {

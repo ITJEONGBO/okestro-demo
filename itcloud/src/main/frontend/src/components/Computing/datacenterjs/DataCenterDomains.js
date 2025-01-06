@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/DataCenter.css';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useDomainsFromDataCenter } from '../../../api/RQHook';
 import DomainDupl from '../../duplication/DomainDupl';
 
@@ -19,7 +19,7 @@ const DataCenterDomains = ({datacenterId}) => {
     <>
       <DomainDupl
         domains={storageDomains || []}
-        columns={TableInfo.STORAGE_DOMAINS}
+        columns={TableColumnsInfo.STORAGE_DOMAINS}
         type={'datacenter'}
         datacenterId={datacenterId}
       />

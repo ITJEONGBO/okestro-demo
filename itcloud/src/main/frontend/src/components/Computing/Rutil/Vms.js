@@ -1,12 +1,12 @@
 import React from 'react';
 import '../css/Computing.css'
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllVMs } from '../../../api/RQHook';
 import VmDupl from '../../duplication/VmDupl';
 
 const Vms = () => {
   const {
-    data: vms, 
+    data: vms = [], 
     status: vmsStatus,
     isRefetching: isVmsRefetching,
     refetch: refetchVms, 
@@ -23,7 +23,7 @@ const Vms = () => {
     <>
       <VmDupl
         vms={vms || []}
-        columns={TableInfo.VMS}
+        columns={TableColumnsInfo.VMS}
       />
     </>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/DataCenter.css';
-import TableInfo from '../../table/TableInfo';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useHostsFromDataCenter } from '../../../api/RQHook';
 import HostDupl from '../../duplication/HostDupl';
 
@@ -16,7 +16,7 @@ const DataCenterHosts = ({datacenterId}) => {
     <>
       <HostDupl
         hosts={hosts || []}
-        columns={TableInfo.HOSTS}
+        columns={TableColumnsInfo.HOSTS}
       />
     </>
   );

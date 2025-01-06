@@ -243,18 +243,20 @@ class DiskServiceImpl(
     @Throws(Error::class)
     override fun findAll(): List<DiskImageVo> {
         log.info("findAll ... ")
-        val res: List<Disk> =
-            conn.findAllDisks().getOrDefault(listOf())
+        val res: List<Disk> = conn.findAllDisks()
+            .getOrDefault(listOf())
+            .filter { it.contentType() != DiskContentType.OVF_STORE }
 
-        val diskIds = res.map { UUID.fromString(it.id()) }
-        val diskVmElements = diskVmElementRepository.findByDiskIdIn(diskIds)
-        val diskVmElementMap = diskVmElements.associateBy { it.diskId }
-
-        return res.parallelStream().map { disk ->
-            val diskVmElementEntityOpt = diskVmElementMap[UUID.fromString(disk.id())]
-            val id: String = diskVmElementEntityOpt?.toVmId() ?: ""
-            disk.toDiskMenu(conn, id)
-        }.toList()
+//        val diskIds = res.map { UUID.fromString(it.id()) }
+//        val diskVmElements = diskVmElementRepository.findByDiskIdIn(diskIds)
+//        val diskVmElementMap = diskVmElements.associateBy { it.diskId }
+//
+//        return res.parallelStream().map { disk ->
+//            val diskVmElementEntityOpt = diskVmElementMap[UUID.fromString(disk.id())]
+//            val id: String = diskVmElementEntityOpt?.toVmId() ?: ""
+//            disk.toDiskMenu(conn, id)
+//        }.toList()
+        return res.toDiskMenus(conn)
     }
 
     @Throws(Error::class)
