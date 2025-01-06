@@ -2,12 +2,10 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
-import com.itinfo.itcloud.controller.computing.VmController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.network.NetworkVo
-import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.service.computing.ItClusterService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,7 +38,7 @@ class ClusterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="클러스터의 정보 상세조회",
+		value="클러스터 정보 상세조회",
 		notes="선택된 클러스터의 정보를 조회한다"
 	)
 	@ApiImplicitParams(
@@ -53,10 +51,9 @@ class ClusterController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun cluster(
-		@PathVariable clusterId: String? = null
+		@PathVariable(required = true) clusterId: String
 	): ResponseEntity<ClusterVo?> {
-		if (clusterId.isNullOrEmpty())
-			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		checkClusterId(clusterId)
 		log.info("/computing/clusters/{} ... 클러스터 상세정보", clusterId)
 		return ResponseEntity.ok(iCluster.findOne(clusterId))
 	}
@@ -100,7 +97,7 @@ class ClusterController: BaseController() {
 	)
 	@PutMapping("/{clusterId}")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.CREATED)
+	@ResponseStatus(HttpStatus.OK)
 	fun update(
 		@PathVariable clusterId: String? = null,
 		@RequestBody cluster: ClusterVo? = null,
@@ -135,6 +132,7 @@ class ClusterController: BaseController() {
 		log.info("/computing/clusters/{} ... 클러스터 삭제", clusterId)
 		return ResponseEntity.ok(iCluster.remove(clusterId))
 	}
+
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -181,7 +179,6 @@ class ClusterController: BaseController() {
 		log.info("/computing/clusters/{}/vms ... 클러스터 가상머신 목록", clusterId)
 		return ResponseEntity.ok(iCluster.findAllVmsFromCluster(clusterId))
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -329,28 +326,36 @@ class ClusterController: BaseController() {
 	}
 
 
-	@Deprecated("필요없음")
-	@ApiOperation(
-		httpMethod="GET",
-		value="권한 목록",
-		notes="선택된 클러스터의 권한 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{clusterId}/permissions")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun permissions(
-		@PathVariable clusterId: String? = null
-	): ResponseEntity<List<PermissionVo>> {
-		if (clusterId.isNullOrEmpty())
+//	@Deprecated("필요없음")
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="권한 목록",
+//		notes="선택된 클러스터의 권한 목록을 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{clusterId}/permissions")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun permissions(
+//		@PathVariable clusterId: String? = null
+//	): ResponseEntity<List<PermissionVo>> {
+//		if (clusterId.isNullOrEmpty())
+//			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+//		log.info("/computing/clusters/{}/permissions ... 클러스터 권한", clusterId)
+//		return ResponseEntity.ok(iCluster.findAllPermissionsFromCluster(clusterId))
+//	}
+
+	// 클러스터 아이디 검사 함수
+	private fun checkClusterId(clusterId: String?) {
+		if (clusterId.isNullOrEmpty()) {
+			log.error("Cluster ID is null or empty")
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("/computing/clusters/{}/permissions ... 클러스터 권한", clusterId)
-		return ResponseEntity.ok(iCluster.findAllPermissionsFromCluster(clusterId))
+		}
 	}
 
 

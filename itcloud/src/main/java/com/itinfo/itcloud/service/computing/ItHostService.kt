@@ -42,19 +42,6 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findOne(hostId: String): HostVo?
-
-//	/**
-//	 * [ItHostService.findStatusUp]
-//	 * 호스트 목록 ( status)
-//	 *
-//	 * @return List<[HostVo]> 호스트 목록
-//	 */
-//	@Throws(Error::class)
-//	fun findStatusUp(): List<HostVo>
-
-	// 호스트 생성창
-	// 		클러스터 목록 [ItClusterService.findAll]
-
 	/**
 	 * [ItHostService.add]
 	 * 호스트 생성 (전원관리 제외)
@@ -103,8 +90,6 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromHost(hostId: String): List<VmVo>
-	// 생성, 편집, 삭제, 실행, 일시중지, 종료, 호스트 네트워크 복사, 재부팅, 콘솔, 템플릿 목록, 스냅샷 생성, 마이그레이션
-
 	/**
 	 * [ItHostService.findAllHostDevicesFromHost]
 	 * 호스트 호스트장치 목록
@@ -174,7 +159,6 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun loginIscsiFromHost(hostId: String, iscsiDetailVo: IscsiDetailVo): Boolean
 
-
 	/**
 	 * [ItHostService.findAllPermissionsFromHost]
 	 * 호스트 권한 목록
@@ -198,17 +182,20 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun findAll(): List<HostVo> {
 		log.info("findAll ... ")
-		val hosts: List<Host> =
-			conn.findAllHosts().getOrDefault(listOf())
-		return hosts.map { host ->
-			val hostNic: HostNic? =
-				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
+		val res: List<Host> = conn.findAllHosts()
+			.getOrDefault(listOf())
 
-			val usageDto: UsageDto? =
-				if(host.status() == HostStatus.UP) hostNic?.id()?.let { itGraphService.hostPercent(host.id(), it) }
-				else null
+		return res.map { host ->
+			val hostNic: HostNic? = conn.findAllNicsFromHost(host.id())
+				.getOrDefault(listOf()).firstOrNull()
+			val usageDto: UsageDto? = calculateUsage(host, hostNic)
 			host.toHostMenu(conn, usageDto)
 		}
+	}
+	private fun calculateUsage(host: Host, hostNic: HostNic?): UsageDto? {
+		return if (host.status() == HostStatus.UP && hostNic != null) {
+			itGraphService.hostPercent(host.id(), hostNic.id())
+		} else null
 	}
 
 	@Throws(Error::class)
@@ -216,8 +203,7 @@ class HostServiceImpl(
 		log.info("findOne ... hostId: {}", hostId)
 		val res: Host? = conn.findHost(hostId)
 			.getOrNull()
-		val sw: HostConfigurationEntity =
-			hostConfigurationRepository.findFirstByHostIdOrderByUpdateDateDesc(UUID.fromString(hostId))
+		val sw: HostConfigurationEntity = hostConfigurationRepository.findFirstByHostIdOrderByUpdateDateDesc(UUID.fromString(hostId))
 		return res?.toHostInfo(conn, sw)
 	}
 
@@ -267,38 +253,34 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun findAllVmsFromHost(hostId: String): List<VmVo> {
 		log.info("findAllVmsFromHost ... hostId: {}", hostId)
-		val res: List<Vm> =
-			conn.findAllVmsFromHost(hostId).getOrDefault(listOf())
+		val res: List<Vm> = conn.findAllVmsFromHost(hostId)
+			.getOrDefault(listOf())
 		return res.toVmsMenu(conn)
 	}
-
 
 
 	@Throws(Error::class)
 	override fun findAllHostDevicesFromHost(hostId: String): List<HostDeviceVo> {
 		log.info("findAllHostDevicesFromHost ... hostId: {}", hostId)
-		val res: List<HostDevice> =
-			conn.findAllHostDeviceFromHost(hostId).getOrDefault(listOf())
+		val res: List<HostDevice> = conn.findAllHostDeviceFromHost(hostId)
+			.getOrDefault(listOf())
 		return res.toHostDeviceVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllEventsFromHost(hostId: String): List<EventVo> {
 		log.info("findAllEventsFromHost ... ")
-		val host: Host =
-			conn.findHost(hostId).getOrNull()
-				?: throw ErrorPattern.HOST_NOT_FOUND.toException()
-
-		val res: List<Event> =
-			conn.findAllEvents("host.name= ${host.name()}").getOrDefault(listOf())
+		val host: Host = conn.findHost(hostId)
+			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toException()
+		val res: List<Event> = conn.findAllEvents("host.name= ${host.name()}")
+			.getOrDefault(listOf())
 		return res.toEventVos()
 	}
 
 	@Throws(Error::class)
 	override fun findAllIscsiFromHost(hostId: String): List<HostStorageVo> {
 		log.info("findAllIscsiFromHost... hostId: {}", hostId)
-		conn.findHost(hostId)
-			.getOrNull() ?: return listOf()
+		conn.findHost(hostId).getOrNull() ?: return listOf()
 		val res: List<HostStorage> = conn.findAllStoragesFromHost(hostId)
 			.getOrDefault(listOf())
 			.filter { it.type() == StorageType.ISCSI }
@@ -335,8 +317,7 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun loginIscsiFromHost(hostId: String, iscsiDetailVo: IscsiDetailVo): Boolean {
 		log.info("loginIscsiFromHost... hostId: {}", hostId)
-		val res: Result<Boolean> =
-			conn.loginIscsiFromHost(hostId, iscsiDetailVo.toLoginIscsi())
+		val res: Result<Boolean> = conn.loginIscsiFromHost(hostId, iscsiDetailVo.toLoginIscsi())
 		return res.isSuccess
 	}
 
@@ -344,8 +325,8 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun findAllPermissionsFromHost(hostId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromHost ... hostId: {}", hostId)
-		val res: List<Permission> =
-			conn.findAllPermissionFromHost(hostId).getOrDefault(listOf())
+		val res: List<Permission> = conn.findAllPermissionFromHost(hostId)
+			.getOrDefault(listOf())
 		return res.toPermissionVos(conn)
 	}
 

@@ -61,6 +61,16 @@ interface ItHostOperationService {
     )
     fun restart(hostId: String): Boolean
     /**
+     * [ItHostOperationService.activateMultiple]
+     * 호스트 관리 - 다중 재시작
+     *
+     * @param hostIds List<[String]> 호스트 아이디
+     * @return Map<[String], [String]>
+     */
+//    @Throws(Error::class)
+//    fun restartMultiple(hostIds: List<String>): Map<String, String>
+
+    /**
      * [ItHostOperationService.enrollCertificate]
      * 설치 - 인증서 등록
      *
@@ -171,10 +181,14 @@ class HostOperationServiceImpl(
         val name = rutil.id
         val password = rutil.password
         log.info("Host ID: {}, Password: {}", name, password)
-        val res: Result<Boolean> =
-            conn.restartHost(hostId, name, password)
+        val res: Result<Boolean> = conn.restartHost(hostId, name, password)
         return res.isSuccess
     }
+
+//    @Throws(UnknownHostException::class, Error::class)
+//    override fun restartMultiple(hostIds: List<String>): Map<String, String> {
+//        TODO("Not yet implemented")
+//    }
 
     // TODO 인증서 등록에 대한 조건이 뭔지 모르겠음 (활성화 조건을 모름)
     @Throws(Error::class)

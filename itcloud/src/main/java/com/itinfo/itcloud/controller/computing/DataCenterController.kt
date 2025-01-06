@@ -2,13 +2,10 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
-import com.itinfo.itcloud.controller.storage.StorageController
-import com.itinfo.itcloud.controller.storage.StorageController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.network.NetworkVo
-import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.computing.ItDataCenterService
 import io.swagger.annotations.Api
@@ -47,7 +44,7 @@ class DataCenterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="데이터센터의 정보 상세조회",
+		value="데이터센터 정보 상세조회",
 		notes="선택된 데이터센터의 정보를 조회한다"
 	)
 	@ApiImplicitParams(
@@ -214,8 +211,8 @@ class DataCenterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="스토리지도메인 목록 조회",
-		notes="선택된 데이터센터의 스토리지도메인 목록을 조회한다"
+		value="스토리지 도메인 목록 조회",
+		notes="선택된 데이터센터의 스토리지 도메인 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -238,8 +235,8 @@ class DataCenterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="디스크 생성에 사용될 스토리지 도메인 목록",
-		notes="선택된 데이터센터가 가지고 있는 스토리지 도메인 목록"
+		value="활성화된 스토리지 도메인 목록",
+		notes="선택된 데이터센터의 활성화된 스토리지 도메인 목록 (디스크 생성에 사용)"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -307,29 +304,29 @@ class DataCenterController: BaseController() {
 	}
 
 
-	@Deprecated("필요없음")
-	@ApiOperation(
-		httpMethod="GET",
-		value="권한 목록 조회",
-		notes="선택된 데이터센터의 권한 목록울 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}/permissions")
-	@ResponseStatus(HttpStatus.OK)
-	@ResponseBody
-	fun permissions(
-		@PathVariable dataCenterId: String? = null,
-	): ResponseEntity<List<PermissionVo>> {
-		if (dataCenterId.isNullOrEmpty())
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/permissions ... 데이터센터 권한 목록", dataCenterId)
-		return ResponseEntity.ok(iDataCenter.findAllPermissionsFromDataCenter(dataCenterId))
-	}
+//	@Deprecated("필요없음")
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="권한 목록 조회",
+//		notes="선택된 데이터센터의 권한 목록울 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{dataCenterId}/permissions")
+//	@ResponseStatus(HttpStatus.OK)
+//	@ResponseBody
+//	fun permissions(
+//		@PathVariable dataCenterId: String? = null,
+//	): ResponseEntity<List<PermissionVo>> {
+//		if (dataCenterId.isNullOrEmpty())
+//			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+//		log.info("/computing/dataCenters/{}/permissions ... 데이터센터 권한 목록", dataCenterId)
+//		return ResponseEntity.ok(iDataCenter.findAllPermissionsFromDataCenter(dataCenterId))
+//	}
 
 
 	companion object {

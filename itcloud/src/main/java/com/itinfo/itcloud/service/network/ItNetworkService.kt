@@ -38,10 +38,6 @@ interface ItNetworkService {
 	@Throws(ItemNotFoundException::class, Error::class)
 	fun findOne(networkId: String): NetworkVo?
 
-	// 네트워크 생성창
-	// 		데이터센터 목록 [ItDataCenterService.findAll]
-	// 		클러스터 목록(연결,필수) [ItDataCenterService.findAllClusterFromDataCenter]
-
 	/**
 	 * [ItNetworkService.add]
 	 * 네트워크 생성
@@ -162,7 +158,7 @@ interface ItNetworkService {
 	 * @param networkId [String] 네트워크 아이디
 	 * @return List<[PermissionVo]>
 	 */
-	@Deprecated("사용안")
+	@Deprecated("사용안함")
 	@Throws(Error::class)
 	fun findAllPermissionsFromNetwork(networkId: String): List<PermissionVo>
 }
@@ -192,13 +188,9 @@ class NetworkServiceImpl(
 	override fun add(networkVo: NetworkVo): NetworkVo? {
 		// dc 다르면 중복명 가능
 		log.info("addNetwork ... ")
-		val res: Network? = conn.addNetwork(
+		val res: Network = conn.addNetwork(
 			networkVo.toAddNetworkBuilder()
-		).getOrNull()
-
-		if(res == null){
-			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-		}
+		).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 
 		// 생성 후에 나온 network Id로 클러스터 네트워크 생성 및 레이블 생성 가능
 		networkVo.toAddClusterAttach(conn, res.id())	// 클러스터 연결, 필수 선택
@@ -351,9 +343,8 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun findAllPermissionsFromNetwork(networkId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromNetwork ... ")
-		val permissions: List<Permission> =
-			conn.findAllPermissionsFromNetwork(networkId)
-				.getOrDefault(listOf())
+		val permissions: List<Permission> = conn.findAllPermissionsFromNetwork(networkId)
+			.getOrDefault(listOf())
 		return permissions.toPermissionVos(conn)
 	}
 

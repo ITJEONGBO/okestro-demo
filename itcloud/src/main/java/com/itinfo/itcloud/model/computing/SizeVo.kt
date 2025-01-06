@@ -96,13 +96,24 @@ fun Cluster.findVmCntFromCluster(conn: Connection): SizeVo {
     }
 }
 
-fun Host.findVmCntFromHost(conn: Connection): SizeVo {
-    val allVms: List<Vm> = conn.findAllVmsFromHost(this@findVmCntFromHost.id()).getOrDefault(listOf())
-    val allCnt: Int = allVms.size
-    val upCnt: Int = allVms.count { it.status() == VmStatus.UP }
-    return SizeVo.builder {
-        allCnt { allCnt }
-        upCnt { upCnt }
-        downCnt { allCnt - upCnt }
-    }
+/**
+ * 해당 호스트가 가진 가상머신의 개수 (전체, up, down)
+ * @return [SizeVo]
+ */
+fun Host.findVmCntFromHost(): SizeVo = SizeVo.builder {
+    val summary = this@findVmCntFromHost.summary()
+    allCnt { if (summary.totalPresent()) summary.totalAsInteger() else 0 }
+    upCnt { if (summary.activePresent()) summary.activeAsInteger() else 0 }
+    downCnt { if (summary.activePresent() && summary.totalPresent()) summary.totalAsInteger() - summary.activeAsInteger() else 0 }
 }
+
+//fun Host.findVmCntFromHost(conn: Connection): SizeVo {
+//    val allVms: List<Vm> = conn.findAllVmsFromHost(this@findVmCntFromHost.id()).getOrDefault(listOf())
+//    val allCnt: Int = allVms.size
+//    val upCnt: Int = allVms.count { it.status() == VmStatus.UP }
+//    return SizeVo.builder {
+//        allCnt { allCnt }
+//        upCnt { upCnt }
+//        downCnt { allCnt - upCnt }
+//    }
+//}

@@ -1,5 +1,6 @@
 import React, { useState, Suspense } from 'react';
 import '../css/Computing.css';
+import { useNavigate } from 'react-router-dom';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 import { useAllDataCenters } from '../../../api/RQHook';
 import TablesOuter from '../../table/TablesOuter';
@@ -15,6 +16,7 @@ const DataCenters = () => {
   } = useAllDataCenters((e) => ({
     ...e,
   }));
+  const navigate = useNavigate();
 
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
   const [selectedDataCenters, setSelectedDataCenters] = useState([]);
@@ -24,6 +26,10 @@ const DataCenters = () => {
       if (prev[type] === isOpen) return prev; 
       return { ...prev, [type]: isOpen };
     });
+  };
+
+  const handleNameClick = (id) => {
+    navigate(`/computing/datacenters/${id}/clusters`);
   };
 
   const selectedIds = (Array.isArray(selectedDataCenters) ? selectedDataCenters : []).map(dc => dc.id).join(', ');
@@ -42,11 +48,13 @@ const DataCenters = () => {
         data={(datacenters || []).map((dc) => ({
           ...dc,
           icon: renderDatacenterStatusIcon(dc?.status),
+          
           status: dc?.status === 'UNINITIALIZED' ? '초기화되지 않음' : 'UP',
           storageType: dc?.storageType ? '로컬' : '공유됨',
         }))}
         onRowClick={(selectedRows) => setSelectedDataCenters(selectedRows)}
         clickableColumnIndex={[1]}
+        onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true}
       />
 

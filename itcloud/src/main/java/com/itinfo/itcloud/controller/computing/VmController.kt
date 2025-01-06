@@ -170,6 +170,10 @@ class VmController: BaseController() {
 	}
 
 
+
+
+
+
 //	@ApiOperation(
 //		httpMethod="DELETE",
 //		value="가상머신 디스크 삭제(다중)",

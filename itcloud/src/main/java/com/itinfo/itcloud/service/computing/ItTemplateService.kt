@@ -36,10 +36,6 @@ interface ItTemplateService {
 	 */
 	@Throws(Error::class)
 	fun findOne(templateId: String): TemplateVo?
-
-	// 템플릿 생성창 - 클러스터 목록 [ItClusterService.findAll]
-	// 템플릿 생성창 - cpuProfile 목록 []
-
 	/**
 	 * [ItTemplateService.findAllDiskAttachmentsFromVm]
 	 * 디스크 목록(가상머신) [ItVmDiskService.findAllFromVm] 약간 다름
@@ -49,11 +45,9 @@ interface ItTemplateService {
 	 */
 	@Throws(Error::class)
 	fun findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachmentVo>
-
 	// 템플릿 생성창
 	// 		스토리지 목록(가상머신) [ItStorageService.findAllFromDataCenter]
 	// 		디스크 프로파일 목록(가상머신) [ItStorageService.findAllDiskProfilesFromStorageDomain]
-
 	/**
 	 * [ItTemplateService.add]
 	 * 템플릿 생성 (Vm Status != up)
@@ -192,126 +186,114 @@ class TemplateServiceImpl(
 	@Throws(Error::class)
 	override fun findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachmentVo> {
 		log.info("findAllDisksFromVm ... vmId: {}", vmId)
-		val res: List<DiskAttachment> =
-			conn.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
-
+		val res: List<DiskAttachment> = conn.findAllDiskAttachmentsFromVm(vmId)
+			.getOrDefault(listOf())
 		return res.toDiskAttachmentsToTemplate(conn)
 	}
 
 	@Throws(Error::class)
 	override fun add(vmId: String, templateVo: TemplateVo): TemplateVo? {
 		log.info("add ... ")
-		val res: Template? =
-			conn.addTemplate(
-				vmId,
-				templateVo.toAddTemplateBuilder()
-			).getOrNull()
+		val res: Template? = conn.addTemplate(
+			vmId,
+			templateVo.toAddTemplateBuilder()
+		).getOrNull()
 		return res?.toTemplateInfo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun update(templateVo: TemplateVo): TemplateVo? {
 		log.info("update ... templateId: {}", templateVo.id)
-		val res: Template? =
-			conn.updateTemplate(
-				templateVo.id,
-				templateVo.toEditTemplateBuilder()
-			).getOrNull()
+		val res: Template? = conn.updateTemplate(
+			templateVo.id,
+			templateVo.toEditTemplateBuilder()
+		).getOrNull()
 		return res?.toTemplateInfo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun remove(templateId: String): Boolean {
 		log.info("remove ... templateId: {}", templateId)
-		val res: Result<Boolean> =
-			conn.removeTemplate(templateId)
+		val res: Result<Boolean> = conn.removeTemplate(templateId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun findAllVmsFromTemplate(templateId: String): List<VmVo> {
 		log.info("findAllVmsFromTemplate ... templateId: {}", templateId)
-		val vms: List<Vm> =
-			conn.findAllVms().getOrDefault(listOf())
-				.filter {
-					it.templatePresent() && it.template().id() == templateId
-				}
+		val vms: List<Vm> = conn.findAllVms()
+			.getOrDefault(listOf())
+			.filter { it.templatePresent() && it.template().id() == templateId }
 		return vms.toVmVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllNicsFromTemplate(templateId: String): List<NicVo> {
 		log.info("findAllNicsFromTemplate ... templateId: {}", templateId)
-		val res: List<Nic> =
-			conn.findAllNicsFromTemplate(templateId).getOrDefault(listOf())
+		val res: List<Nic> = conn.findAllNicsFromTemplate(templateId)
+			.getOrDefault(listOf())
 		return res.toNicVosFromTemplate(conn)
 	}
 
 	@Throws(Error::class)
 	override fun addNicFromTemplate(templateId: String, nicVo: NicVo): NicVo? {
 		log.info("addNicFromTemplate ... templateId: {}", templateId)
-		val res: Nic? =
-			conn.addNicFromTemplate(
-				templateId,
-				nicVo.toAddNicBuilder()
-			).getOrNull()
+		val res: Nic? = conn.addNicFromTemplate(
+			templateId,
+			nicVo.toAddNicBuilder()
+		).getOrNull()
 		return res?.toNicVoFromTemplate(conn)
 	}
 
 	@Throws(Error::class)
 	override fun updateNicFromTemplate(templateId: String, nicVo: NicVo): NicVo? {
 		log.info("updateNicFromTemplate ... templateId: {}", templateId)
-		val res: Nic? =
-			conn.updateNicFromTemplate(
-				templateId,
-				nicVo.toEditNicBuilder()
-			).getOrNull()
+		val res: Nic? = conn.updateNicFromTemplate(
+			templateId,
+			nicVo.toEditNicBuilder()
+		).getOrNull()
 		return res?.toNicVoFromTemplate(conn)
 	}
 
 	@Throws(Error::class)
 	override fun removeNicFromTemplate(templateId: String, nicId: String): Boolean {
 		log.info("removeNicFromTemplate ... templateId: {}", templateId)
-		val res: Result<Boolean> =
-			conn.removeNicFromTemplate(templateId, nicId)
+		val res: Result<Boolean> = conn.removeNicFromTemplate(templateId, nicId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun findAllDisksFromTemplate(templateId: String): List<DiskAttachmentVo> {
 		log.info("findAllDisksFromTemplate ... templateId: {}", templateId)
-		val res: List<DiskAttachment> =
-			conn.findAllDiskAttachmentsFromTemplate(templateId).getOrDefault(listOf())
-				.filter { it.diskPresent() }
+		val res: List<DiskAttachment> = conn.findAllDiskAttachmentsFromTemplate(templateId)
+			.getOrDefault(listOf())
+			.filter { it.diskPresent() }
 		return res.toDiskAttachmentsToTemplate(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllStorageDomainsFromTemplate(templateId: String): List<StorageDomainVo> {
 		log.info("findAllStorageDomainsFromTemplate ... ")
-		val res: List<StorageDomain> =
-			conn.findAllDiskAttachmentsFromTemplate(templateId)
-				.getOrDefault(listOf())
-				.mapNotNull { diskAttachment ->
-					val disk: Disk? =
-						conn.findDisk(diskAttachment.disk().id()).getOrNull()
-
-					disk?.storageDomains()?.first()?.let {
-						conn.findStorageDomain(it.id()).getOrNull()
-					}
+		val res: List<StorageDomain> = conn.findAllDiskAttachmentsFromTemplate(templateId)
+			.getOrDefault(listOf())
+			.mapNotNull { diskAttachment ->
+				val disk: Disk? = conn.findDisk(diskAttachment.disk().id()).getOrNull()
+				disk?.storageDomains()?.first()?.let {
+					conn.findStorageDomain(it.id()).getOrNull()
 				}
-				.distinctBy { it.id() } // ID를 기준으로 중복 제거
+			}
+			.distinctBy { it.id() } // ID를 기준으로 중복 제거
 		return res.toStorageDomainSizes()
 	}
 
 	@Throws(Error::class)
 	override fun findAllEventsFromTemplate(templateId: String): List<EventVo> {
 		log.info("findAllEventsFromTemplate ... ")
-		val template: Template? =
-			conn.findTemplate(templateId).getOrNull()
-		val res: List<Event> =
-			conn.findAllEvents().getOrDefault(listOf())
-				.filter { it.templatePresent() && it.template().name() == template?.name() }
+		val template: Template? = conn.findTemplate(templateId)
+			.getOrNull()
+		val res: List<Event> = conn.findAllEvents()
+			.getOrDefault(listOf())
+			.filter { it.templatePresent() && it.template().name() == template?.name() }
 		return res.toEventVos()
 	}
 

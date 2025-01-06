@@ -180,7 +180,7 @@ fun List<Network>.toNetworkVos(conn: Connection): List<NetworkVo> =
 
 fun Network.toClusterNetworkVo(conn: Connection): NetworkVo {
 	val usages: List<NetworkUsage> = this@toClusterNetworkVo.usages()
-
+	// TODO 할당을 어떻게 나타낼거냐
 	return NetworkVo.builder {
 		id { this@toClusterNetworkVo.id() }
 		name { this@toClusterNetworkVo.name() }

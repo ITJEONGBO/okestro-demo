@@ -1,17 +1,12 @@
 package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.controller.storage.StorageController
-import com.itinfo.itcloud.controller.storage.StorageController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
-import com.itinfo.itcloud.model.network.NetworkVo
-import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.HostStorageVo
 import com.itinfo.itcloud.model.storage.IscsiDetailVo
-import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.computing.ItHostNicService
 import com.itinfo.itcloud.service.computing.ItHostOperationService
 import com.itinfo.itcloud.service.computing.ItHostService
@@ -47,7 +42,7 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value = "호스트의 정보 상세조회",
+		value = "호스트 정보 상세조회",
 		notes = "선택된 호스트의 정보를 조회한다"
 	)
 	@ApiImplicitParams(
@@ -330,30 +325,29 @@ class HostController {
 	}
 
 
-	// ------------------------------------------
-	@Deprecated("필요없음")
-	@ApiOperation(
-		httpMethod="GET",
-		value="호스트 권한 목록",
-		notes="선택된 호스트의 권한 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{hostId}/permissions")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun permissions(
-		@PathVariable hostId: String? = null
-	): ResponseEntity<List<PermissionVo>> {
-		log.info("/computing/hosts/{}/permissions ... 호스트 권한 목록", hostId)
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		return ResponseEntity.ok(iHost.findAllPermissionsFromHost(hostId))
-	}
+//	@Deprecated("필요없음")
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="호스트 권한 목록",
+//		notes="선택된 호스트의 권한 목록을 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{hostId}/permissions")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun permissions(
+//		@PathVariable hostId: String? = null
+//	): ResponseEntity<List<PermissionVo>> {
+//		log.info("/computing/hosts/{}/permissions ... 호스트 권한 목록", hostId)
+//		if (hostId.isNullOrEmpty())
+//			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+//		return ResponseEntity.ok(iHost.findAllPermissionsFromHost(hostId))
+//	}
 
 
 
@@ -451,7 +445,7 @@ class HostController {
 	@PostMapping("/deactivate")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	fun deactivateList(
+	fun deactivateMultiple(
 		@RequestBody hostIdList: List<String>? = null,
 	): ResponseEntity<Map<String, String>> {
 		if (hostIdList.isNullOrEmpty())
@@ -499,7 +493,7 @@ class HostController {
 	@PostMapping("/activate")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	fun activateList(
+	fun activateMultiple(
 		@RequestBody hostIdList: List<String>? = null,
 	): ResponseEntity<Map<String, String>> {
 		if (hostIdList.isNullOrEmpty())
@@ -557,6 +551,30 @@ class HostController {
 		log.info("/computing/hosts/{}/restart ... 호스트 ssh 재시작", hostId)
 		return ResponseEntity.ok(iHostOp.restart(hostId))
 	}
+
+//	@ApiOperation(
+//		httpMethod="POST",
+//		value="호스트 멀티 재시작",
+//		notes="호스트를 멀티 재시작 한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 201, message = "CREATED"),
+//		ApiResponse(code = 404, message = "NOT_FOUND")
+//	)
+//	@PostMapping("/restart")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.CREATED)
+//	fun restartMultiple(
+//		@RequestBody hostIdList: List<String>? = null,
+//	): ResponseEntity<Boolean> {
+//		if (hostIdList.isNullOrEmpty())
+//			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+//		log.info("/computing/hosts/restart ... 호스트 ssh 재시작")
+//		return ResponseEntity.ok(iHostOp.restartMultiple(hostIdList))
+//	}
 
 
 

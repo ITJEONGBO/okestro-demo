@@ -180,7 +180,7 @@ class HostVo (
 }
 
 /**
- * 클러스터 id&name
+ * 호스트 id&name
  */
 fun Host.toHostIdName(): HostVo = HostVo.builder {
     id { this@toHostIdName.id() }
@@ -190,70 +190,68 @@ fun List<Host>.toHostsIdName(): List<HostVo> =
     this@toHostsIdName.map { it.toHostIdName() }
 
 /**
- * 호스트 목록
+ * 호스트 메뉴 목록
+ *
+ * @param conn [Connection]
+ * @param usageDto [UsageDto]? 호스트 사용량
+ * @return [HostVo]
  */
 fun Host.toHostMenu(conn: Connection, usageDto: UsageDto?): HostVo {
-    val cluster: Cluster? = conn.findCluster(this@toHostMenu.cluster().id())
-        .getOrNull()
-
-    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
-        conn.findDataCenter(it).getOrNull()
-    }
-
-    val hostedVm = conn.findAllVmsFromHost(this@toHostMenu.id())
-        .getOrDefault(listOf())
-        .any { it.origin() == "managed_hosted_engine" }
+    val host = this@toHostMenu
+    val cluster: Cluster? = if(host.clusterPresent()) conn.findCluster(host.cluster().id()).getOrNull() else null
+    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
+    val hostedVm = conn.isHostedEngineVm(host.id())
 
     return HostVo.builder {
-        id { this@toHostMenu.id() }
-        name { this@toHostMenu.name() }
-        comment { this@toHostMenu.comment() }
-        status { this@toHostMenu.status() }
-//        ksm { this@toHostMenu.ksm().enabled() }
-        hostedEngine { this@toHostMenu.hostedEnginePresent() }
+        id { host.id() }
+        name { host.name() }
+        comment { host.comment() }
+        status { host.status() }
+        ksm { host.ksm().enabled() }
+        hostedEngine { host.hostedEnginePresent() }
         hostedEngineVM { hostedVm }
-        address { this@toHostMenu.address() }
+        address { host.address() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
-        vmSizeVo {
-            SizeVo.builder {
-                allCnt { if(this@toHostMenu.summary().totalPresent()) this@toHostMenu.summary().totalAsInteger() else 0 }
-                upCnt { if(this@toHostMenu.summary().activePresent()) this@toHostMenu.summary().activeAsInteger() else 0 }
-                downCnt { if(this@toHostMenu.summary().activePresent() && this@toHostMenu.summary().totalPresent()) this@toHostMenu.summary().totalAsInteger() - this@toHostMenu.summary().activeAsInteger() else 0}
-            }
-        }
+        vmSizeVo { host.findVmCntFromHost() }
         usageDto { usageDto }
-        spmStatus { this@toHostMenu.spm().status() }
+        spmStatus { host.spm().status() }
     }
 }
 
-
+/**
+ * 호스트 상세정보
+ *
+ * @param conn [Connection]
+ * @param hostConfigurationEntity [HostConfigurationEntity]? 호스트 사용량
+ * @return [HostVo]
+ */
 fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfigurationEntity): HostVo {
-    val statistics: List<Statistic> =
-        conn.findAllStatisticsFromHost(this@toHostInfo.id()).getOrDefault(listOf())
+    val host = this@toHostInfo
+    val statistics: List<Statistic> = conn.findAllStatisticsFromHost(this@toHostInfo.id()).getOrDefault(listOf())
+    val cluster: Cluster? = if(host.clusterPresent()) conn.findCluster(host.cluster().id()).getOrNull() else null
 
     return HostVo.builder {
-        id { this@toHostInfo.id() }
-        name { this@toHostInfo.name() }
-        comment { this@toHostInfo.comment() }
-        status { this@toHostInfo.status() }
-        clusterVo { if(this@toHostInfo.clusterPresent()) conn.findCluster(this@toHostInfo.cluster().id()).getOrNull()?.fromClusterToIdentifiedVo() else null}
-        address { this@toHostInfo.address() }
-        hostedActive { if(this@toHostInfo.hostedEnginePresent()) this@toHostInfo.hostedEngine().active() else false }
-        hostedScore { if(this@toHostInfo.hostedEnginePresent()) this@toHostInfo.hostedEngine().scoreAsInteger() else 0 }
-        iscsi { if(this@toHostInfo.iscsiPresent()) this@toHostInfo.iscsi().initiator() else "" }
-        kdump { this@toHostInfo.kdumpStatus() }
-        ksm { this@toHostInfo.ksm().enabled() }
-        seLinux { this@toHostInfo.seLinux().mode() }
-//        hostedEngine { this@toHostVo.spm().status().equals(SpmStatus.SPM) } //다시 알아보기 (우선순위 숫자에 따라 다른건지?)
-        sshPort { this@toHostInfo.ssh().portAsInteger() }
-        spmPriority { this@toHostInfo.spm().priorityAsInteger() }
-        vgpu { this@toHostInfo.vgpuPlacement().value() }
-        transparentPage { this@toHostInfo.transparentHugePages().enabled() }
+        id { host.id() }
+        name { host.name() }
+        comment { host.comment() }
+        status { host.status() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        address { host.address() }
+        hostedActive { if(host.hostedEnginePresent()) host.hostedEngine().active() else false }
+        hostedScore { if(host.hostedEnginePresent()) host.hostedEngine().scoreAsInteger() else 0 }
+        iscsi { if(host.iscsiPresent()) host.iscsi().initiator() else "" }
+        kdump { host.kdumpStatus() }
+        ksm { host.ksm().enabled() }
+        seLinux { host.seLinux().mode() }
+        sshPort { host.ssh().portAsInteger() }
+        spmPriority { host.spm().priorityAsInteger() }
+        vgpu { host.vgpuPlacement().value() }
+        transparentPage { host.transparentHugePages().enabled() }
+        memoryMax { host.maxSchedulingMemory() }
         memoryTotal { statistics.findMemory("memory.total") }
         memoryUsed { statistics.findMemory("memory.used") }
         memoryFree { statistics.findMemory("memory.free") }
-        memoryMax { this@toHostInfo.maxSchedulingMemory() }
         memoryShared { statistics.findSpeed("memory.shared") } // 문제잇음
         swapTotal { statistics.findSpeed("swap.total") }
         swapFree { statistics.findSpeed("swap.free") }
@@ -263,13 +261,9 @@ fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfiguration
         hugePage1048576Total { statistics.findPage("hugepages.1048576.total") }
         hugePage1048576Free { statistics.findPage("hugepages.1048576.free") }
         bootingTime { ovirtDf.format(Date(statistics.findBootTime()* 1000)) }
-        hostHwVo { this@toHostInfo.toHostHwVo() }
-        hostSwVo { this@toHostInfo.toHostSwVo(hostConfigurationEntity) }
-        vmSizeVo {
-            SizeVo.builder {
-                upCnt { if(this@toHostInfo.summary().activePresent()) this@toHostInfo.summary().activeAsInteger() else 0 }
-            }
-        }
+        hostHwVo { host.toHostHwVo() }
+        hostSwVo { host.toHostSwVo(hostConfigurationEntity) }
+        vmSizeVo { host.findVmCntFromHost() }
     }
 }
 
@@ -324,71 +318,52 @@ fun HostVo.toAddHostBuilder(): Host =
 /**
  * 호스트 편집 빌더
  */
-fun HostVo.toEditHostBuilder(): Host =
-    this@toEditHostBuilder.toHostBuilder()
-        .id(this@toEditHostBuilder.id)
-        .os(OperatingSystemBuilder().customKernelCmdline("vfio_iommu_type1.allow_unsafe_interrupts=1").build()) //?
-        .build()
+fun HostVo.toEditHostBuilder(): Host = this@toEditHostBuilder.toHostBuilder()
+    .id(this@toEditHostBuilder.id)
+//    .os(OperatingSystemBuilder().customKernelCmdline("vfio_iommu_type1.allow_unsafe_interrupts=1").build()) //?
+    .build()
 
 
 /**
  * 호스트 전체 출력
  */
 fun Host.toHostVo(conn: Connection): HostVo {
-    val statistics: List<Statistic> =
-        conn.findAllStatisticsFromHost(this@toHostVo.id())
-            .getOrDefault(listOf())
-    val cluster: Cluster? =
-        conn.findCluster(this@toHostVo.cluster().id())
-            .getOrNull()
-    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
-        conn.findDataCenter(it).getOrNull()
-    }
-    val vms: List<Vm> =
-        conn.findAllVms()
-            .getOrDefault(listOf())
-            .filter { it.hostPresent() && it.host().id() == this@toHostVo.id() }
-    val hostNics: List<HostNic> =
-        conn.findAllNicsFromHost(this@toHostVo.id())
-            .getOrDefault(listOf())
+    val host = this@toHostVo
+    val cluster: Cluster? = if(host.clusterPresent()) conn.findCluster(host.cluster().id()).getOrNull() else null
+    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
+    val hostedVm = conn.isHostedEngineVm(host.id())
+    val vms: List<Vm> = conn.findAllVms()
+        .getOrDefault(listOf())
+        .filter { it.hostPresent() && it.host().id() == this@toHostVo.id() }
+    val hostNics: List<HostNic> = conn.findAllNicsFromHost(this@toHostVo.id()).getOrDefault(listOf())
+    val statistics: List<Statistic> = conn.findAllStatisticsFromHost(host.id()).getOrDefault(listOf())
 
     return HostVo.builder {
-        id { this@toHostVo.id() }
-        name { this@toHostVo.name() }
-        comment { this@toHostVo.comment() }
-        address { this@toHostVo.address() }
-        devicePassThrough { this@toHostVo.devicePassthrough().enabled() }
-        hostedActive { if(this@toHostVo.hostedEnginePresent()) this@toHostVo.hostedEngine().active() else false }
-        hostedScore { if(this@toHostVo.hostedEnginePresent()) this@toHostVo.hostedEngine().scoreAsInteger() else 0 }
-        iscsi { if(this@toHostVo.iscsiPresent()) this@toHostVo.iscsi().initiator() else "" }
-        kdump { this@toHostVo.kdumpStatus() }
-        ksm { this@toHostVo.ksm().enabled() }
-        seLinux { this@toHostVo.seLinux().mode() }
-//        hostedEngine { this@toHostVo.spm().status().equals(SpmStatus.SPM) } //다시 알아보기 (우선순위 숫자에 따라 다른건지?)
-        spmPriority { this@toHostVo.spm().priorityAsInteger() }
-        spmStatus { this@toHostVo.spm().status() }
-        sshFingerPrint { this@toHostVo.ssh().fingerprint() }
-        sshPort { this@toHostVo.ssh().portAsInteger() }
-        sshPublicKey { this@toHostVo.ssh().publicKey() }
-        status { this@toHostVo.status() }
-        transparentPage { this@toHostVo.transparentHugePages().enabled() }
-        vmSizeVo {
-            if (this@toHostVo.summaryPresent()) {
-                val allCnt = if (this@toHostVo.summary().totalPresent()) this@toHostVo.summary().totalAsInteger() else 0
-                val upCnt = if (this@toHostVo.summary().activePresent()) this@toHostVo.summary().activeAsInteger() else 0
-                val downCnt = allCnt - upCnt
-                SizeVo.builder {
-                    allCnt { allCnt }
-                    upCnt { upCnt }
-                    downCnt { downCnt }
-                }
-            } else null
-        }
-        vmMigratingCnt { this@toHostVo.summary().migratingAsInteger() }
+        id { host.id() }
+        name { host.name() }
+        comment { host.comment() }
+        address { host.address() }
+        devicePassThrough { host.devicePassthrough().enabled() }
+        hostedEngine { host.hostedEnginePresent() }
+        hostedActive { if(host.hostedEnginePresent()) host.hostedEngine().active() else false }
+        hostedScore { if(host.hostedEnginePresent()) host.hostedEngine().scoreAsInteger() else 0 }
+        iscsi { if(host.iscsiPresent()) host.iscsi().initiator() else "" }
+        kdump { host.kdumpStatus() }
+        ksm { host.ksm().enabled() }
+        seLinux { host.seLinux().mode() }
+        spmPriority { host.spm().priorityAsInteger() }
+        spmStatus { host.spm().status() }
+        sshFingerPrint { host.ssh().fingerprint() }
+        sshPort { host.ssh().portAsInteger() }
+        sshPublicKey { host.ssh().publicKey() }
+        status { host.status() }
+        transparentPage { host.transparentHugePages().enabled() }
+        vmSizeVo { host.findVmCntFromHost() }
+        vmMigratingCnt { host.summary().migratingAsInteger() }
         memoryTotal { statistics.findMemory("memory.total") }
         memoryUsed { statistics.findMemory("memory.used") }
         memoryFree { statistics.findMemory("memory.free") }
-        memoryMax { this@toHostVo.maxSchedulingMemory() }
+        memoryMax { host.maxSchedulingMemory() }
         memoryShared { statistics.findSpeed("memory.shared") } // 문제잇음
         swapTotal { statistics.findSpeed("swap.total") }
         swapFree { statistics.findSpeed("swap.free") }
@@ -398,8 +373,8 @@ fun Host.toHostVo(conn: Connection): HostVo {
         hugePage1048576Total { statistics.findPage("hugepages.1048576.total") }
         hugePage1048576Free { statistics.findPage("hugepages.1048576.free") }
         bootingTime { ovirtDf.format(Date(statistics.findBootTime())) }
-        hostHwVo { this@toHostVo.toHostHwVo() }
-//        hostSwVo { this@toHostVo.toHostSwVo() }
+        hostHwVo { host.toHostHwVo() }
+//        hostSwVo { host.toHostSwVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 //        hostNicVos { hostNics.fromHostNicsToIdentifiedVos() }
@@ -409,3 +384,18 @@ fun Host.toHostVo(conn: Connection): HostVo {
 }
 fun List<Host>.toHostVos(conn: Connection): List<HostVo> =
     this@toHostVos.map { it.toHostVo(conn) }
+
+
+
+
+
+/**
+ * 해당 호스트가 hosted_engine 가상머신을 가졌는 지 여부
+ * @param hostId [String]
+ * @return [Boolean]
+ */
+fun Connection.isHostedEngineVm(hostId: String): Boolean {
+    return this@isHostedEngineVm.findAllVmsFromHost(hostId)
+        .getOrDefault(listOf())
+        .any { it.origin() == "managed_hosted_engine" }
+}

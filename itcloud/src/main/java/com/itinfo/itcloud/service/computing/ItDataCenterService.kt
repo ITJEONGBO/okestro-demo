@@ -79,8 +79,6 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
-	// 생성, 편집, 삭제
-
 	/**
 	 * [ItDataCenterService.findAllHostsFromDataCenter]
 	 * 데이터센터가 가지고있는 호스트 목록
@@ -90,8 +88,6 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo>
-	// 생성, 편집, 삭제, 유지보수, 활성, 인증서 등록, 호스트 네트워크 복사
-
 	/**
 	 * [ItDataCenterService.findAllVmsFromDataCenter]
 	 * 데이터센터가 가지고있는 가상머신 목록
@@ -101,8 +97,6 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo>
-	// 생성, 편집, 삭제, 실행, 일시중지, 종료, 호스트 네트워크 복사, 재부팅, 콘솔, 템플릿 목록, 스냅샷 생성, 마이그레이션, OVA로 내보내기
-
 	/**
 	 * [ItDataCenterService.findAllStorageDomainsFromDataCenter]
 	 * 데이터센터가 가지고있는 스토리지 도메인 목록
@@ -121,18 +115,15 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllActiveStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
-	// 생성, 분리, 활성, 유지보수
 	/**
 	 * [ItDataCenterService.findAllDisksFromDataCenter]
-	 * 스토리지 도메인 - 디스크 목록 (데이터센터가 가진)
-	 * 데이터센터 - 스토리지도메인이 가진 디스크
+	 * 데이터센터가 가지고있는 디스크 목록 (데이터센터에 속한 스토리지 도메인이 가지고 있는 디스크 목록)
 	 *
 	 * @param dataCenterId [String] 데이터센터 Id
 	 * @return List<[DiskImageVo]> 디스크 목록
 	 */
 	@Throws(Error::class)
 	fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo>
-
 	/**
 	 * [ItDataCenterService.findAllNetworksFromDataCenter]
 	 * 데이터센터가 가지고있는 네트워크 목록
@@ -142,8 +133,6 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
-	// 생성, 편집, 삭제
-
 	/**
 	 * [ItDataCenterService.findAllEventsFromDataCenter]
 	 * 데이터센터가 가지고 있는 이벤트 목록
@@ -211,18 +200,18 @@ class DataCenterServiceImpl(
 	@Throws(Error::class)
 	override fun add(dataCenterVo: DataCenterVo): DataCenterVo? {
 		log.info("add ... ")
-		val addBuilder = dataCenterVo.toAddDataCenterBuilder()
-		val res: DataCenter? = conn.addDataCenter(addBuilder)
-			.getOrNull()
+		val res: DataCenter? = conn.addDataCenter(
+			dataCenterVo.toAddDataCenterBuilder()
+		).getOrNull()
 		return res?.toDataCenterVoInfo()
 	}
 
 	@Throws(Error::class)
 	override fun update(dataCenterVo: DataCenterVo): DataCenterVo? {
 		log.info("update ... ")
-		val editBuilder = dataCenterVo.toEditDataCenterBuilder()
-		val res: DataCenter? = conn.updateDataCenter(editBuilder)
-			.getOrNull()
+		val res: DataCenter? = conn.updateDataCenter(
+			dataCenterVo.toEditDataCenterBuilder()
+		).getOrNull()
 		return res?.toDataCenterVoInfo()
 	}
 
@@ -239,7 +228,6 @@ class DataCenterServiceImpl(
 		log.info("findAllClustersFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Cluster> = conn.findAllClustersFromDataCenter(dataCenterId)
 			.getOrDefault(listOf())
-//			.filter { it.cpuPresent() }
 		return res.toClustersMenu(conn)
 	}
 
@@ -248,19 +236,19 @@ class DataCenterServiceImpl(
 		log.debug("findAllHostsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Host> = conn.findAllHostsFromDataCenter(dataCenterId)
 			.getOrDefault(listOf())
-			.filter { it.status() == HostStatus.UP }
 
 		return res.map { host ->
 			val hostNic: HostNic? = conn.findAllNicsFromHost(host.id())
 				.getOrDefault(listOf()).firstOrNull()
-
-			val usageDto: UsageDto? = if(host.status() == HostStatus.UP && hostNic != null) {
-				itGraphService.hostPercent(host.id(), hostNic.id())
-			} else {
-				null
-			}
+			val usageDto = calculateUsage(host, hostNic)
 			host.toHostMenu(conn, usageDto)
 		}
+	}
+
+	private fun calculateUsage(host: Host, hostNic: HostNic?): UsageDto? {
+		return if (host.status() == HostStatus.UP && hostNic != null) {
+			itGraphService.hostPercent(host.id(), hostNic.id())
+		} else null
 	}
 
 	@Throws(Error::class)
@@ -287,7 +275,6 @@ class DataCenterServiceImpl(
 			.filter { it.status() == StorageDomainStatus.ACTIVE }
 		return res.toActiveDomains()
 	}
-
 
 	@Throws(Error::class)
 	override fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo> {
@@ -318,14 +305,13 @@ class DataCenterServiceImpl(
 	@Throws(Error::class)
 	override fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo> {
 		log.info("findAllEventsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val dataCenter: DataCenter = conn.findDataCenter(dataCenterId)
-			.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
+		val dataCenter: DataCenter? = conn.findDataCenter(dataCenterId)
+			.getOrNull()
 		val res: List<Event> = conn.findAllEvents()
 			.getOrDefault(listOf())
 			.filter {(it.dataCenterPresent() && (
-						(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
-						(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter.name())
-			))}
+					(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
+					(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter?.name())))}
 		return res.toEventVos()
 	}
 
@@ -344,27 +330,21 @@ class DataCenterServiceImpl(
 	@Throws(Error::class)
 	override fun dashboardComputing(): List<DataCenterVo> {
 		log.info("dashboardComputing ... ")
-		val res: List<DataCenter> =
-			conn.findAllDataCenters()
-				.getOrDefault(listOf())
+		val res: List<DataCenter> = conn.findAllDataCenters().getOrDefault(listOf())
 		return res.toDataCenterVos(conn, findNetworks = false, findStorageDomains = false, findClusters = true)
 	}
 
 	@Throws(Error::class)
 	override fun dashboardNetwork(): List<DataCenterVo> {
 		log.info("dashboardNetwork ... ")
-		val res: List<DataCenter> =
-			conn.findAllDataCenters()
-				.getOrDefault(listOf())
+		val res: List<DataCenter> = conn.findAllDataCenters().getOrDefault(listOf())
 		return res.toDataCenterVos(conn, findNetworks = true, findStorageDomains = false, findClusters = false)
 	}
 
 	@Throws(Error::class)
 	override fun dashboardStorage(): List<DataCenterVo> {
 		log.info("dashboardStorage ... ")
-		val res: List<DataCenter> =
-			conn.findAllDataCenters()
-				.getOrDefault(listOf())
+		val res: List<DataCenter> = conn.findAllDataCenters().getOrDefault(listOf())
 		return res.toDataCenterVos(conn, findNetworks = false, findStorageDomains = true, findClusters = false)
 	}
 
