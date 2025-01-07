@@ -1,11 +1,17 @@
 package com.itinfo.itcloud.service.network
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.model.computing.TemplateVo
+import com.itinfo.itcloud.model.computing.VmVo
+import com.itinfo.itcloud.model.computing.toTemplateIdNames
+import com.itinfo.itcloud.model.computing.toVmsIdName
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.computing.HostOperationServiceImpl
 import com.itinfo.itcloud.service.computing.HostOperationServiceImpl.Companion
 import com.itinfo.util.ovirt.*
+import org.ovirt.engine.sdk4.types.Template
+import org.ovirt.engine.sdk4.types.Vm
 import org.ovirt.engine.sdk4.types.VnicProfile
 import org.springframework.stereotype.Service
 
@@ -72,6 +78,25 @@ interface ItVnicProfileService{
      */
     @Throws(Error::class)
     fun removeMultiple(vnicProfileIdList: List<String>): Map<String, String>
+
+    /**
+     * [ItVnicProfileService.findAllVmsFromVnicProfile]
+     * vNIC Profile가 가지고있는 가상머신 목록
+     *
+     * @param vnicProfileId [String] vnicProfile id
+     * @return List<[VmVo]>
+     */
+    @Throws(Error::class)
+    fun findAllVmsFromVnicProfile(vnicProfileId: String): List<VmVo>
+    /**
+     * [ItVnicProfileService.findAllTemplatesFromVnicProfile]
+     * 네트워크 - 템플릿 목록
+     *
+     * @param vnicProfileId [String] vnicProfile id
+     * @return List<[TemplateVo]>
+     */
+    @Throws(Error::class)
+    fun findAllTemplatesFromVnicProfile(vnicProfileId: String): List<TemplateVo>
 
 }
 @Service
@@ -147,6 +172,32 @@ class VnicProfileServiceImpl(
             }
         }
         return result
+    }
+
+    @Throws(Error::class)
+    override fun findAllVmsFromVnicProfile(vnicProfileId: String): List<VmVo> {
+        log.info("findAllVmsFromVnicProfile ... vnicProfileId: {}", vnicProfileId)
+        val res: List<Vm> = conn.findAllVms(follow = "nics")
+            .getOrDefault(listOf())
+            .filter { vm ->
+                vm.nicsPresent() && vm.nics().any { nic ->
+                    nic.vnicProfilePresent() && nic.vnicProfile().id() == vnicProfileId
+                }
+            }
+        return res.toVmsIdName()
+    }
+
+    @Throws(Error::class)
+    override fun findAllTemplatesFromVnicProfile(vnicProfileId: String): List<TemplateVo> {
+        log.info("findAllTemplatesFromVnicProfile ... vnicProfileId: {}", vnicProfileId)
+        val res: List<Template> = conn.findAllTemplates(follow = "nics")
+            .getOrDefault(listOf())
+            .filter { template ->
+                template.nicsPresent() && template.nics().any { nic ->
+                    nic.vnicProfilePresent() && nic.vnicProfile().id() == vnicProfileId
+                }
+            }
+        return res.toTemplateIdNames()
     }
 
 
