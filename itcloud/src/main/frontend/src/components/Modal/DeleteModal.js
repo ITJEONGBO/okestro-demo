@@ -163,7 +163,7 @@ const DeleteModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={true} // isopen
       onRequestClose={onRequestClose}
       contentLabel={`${contentLabel}`}
       className="Modal"

@@ -1,24 +1,38 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import HostActionButtons from '../button/HostActionButtons';
 import HostTable from '../table/HostTable';
+import HostModal from '../Modal/HostModal';
+import HostActionModal from '../Modal/HostActionModal';
+import DeleteModal from '../Modal/DeleteModal';
+
+// const HostModal = React.lazy(() => import('../Modal/HostModal'));
+// const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
+// const HostActionModal = React.lazy(() => import('../Modal/HostActionModal'));
 
 const HostDupl = ({ 
   hosts, 
   columns, 
   clusterId
 }) => {
-  const [selectedHosts, setSelectedHosts] = useState([]); // 다중 선택된 호스트
-  const selectedIds = (Array.isArray(selectedHosts) ? selectedHosts : [])
-    .map((host) => host.id)
-    .join(', ');
+  const [activeModal, setActiveModal] = useState(null);
+  const [selectedHosts, setSelectedHosts] = useState([]);
+
+  const selectedIds = selectedHosts.map((host) => host.id).join(', ');
+  
+  // const openModal = (action) => setActiveModal(action);
+  const openModal = (action) => {
+    console.log('Opening modal:', action); // Debug log
+    setActiveModal(action);
+  };
+  const closeModal = () => setActiveModal(null);
 
   return (
     <>
-      <HostActionButtons    
+      <HostActionButtons
+        openModal={openModal}
         isEditDisabled={selectedHosts.length !== 1}
         isDeleteDisabled={selectedHosts.length === 0}
-        status={selectedHosts[0]?.status} // 첫 번째 선택된 호스트의 상태
-        selectedHost={selectedHosts.length > 0 ? selectedHosts[0] : null} // 다중 선택된 호스트 전달
+        status={selectedHosts[0]?.status}
         selectedHosts={selectedHosts}
         clusterId={clusterId}
       />
@@ -28,10 +42,41 @@ const HostDupl = ({
         columns={columns}
         hosts={hosts}
         selectedHosts={selectedHosts} // 다중 선택 상태 전달
-        setSelectedHosts={(selected) => {
-          if (Array.isArray(selected)) setSelectedHosts(selected); // 유효한 선택만 반영
-        }}
+        setSelectedHosts={(selected) => Array.isArray(selected) && setSelectedHosts(selected)}
       />
+
+      
+      {/* <Suspense fallback={<div>Loading...</div>}> */}
+        {activeModal === 'create' && (
+          <HostModal
+            clusterId={clusterId}
+            onClose={closeModal}
+          />
+        )}
+        {activeModal === 'edit' && (
+          <HostModal
+            editMode
+            hId={selectedHosts[0]?.id || null}
+            clusterId={clusterId}
+            onClose={closeModal}
+          />
+        )}
+        {activeModal === 'delete' && (
+          <DeleteModal
+            type="Host"
+            contentLabel="호스트 삭제"
+            data={selectedHosts}
+            onRequestClose={closeModal}
+          />
+        )}
+        {activeModal === 'manageAction' && (
+          <HostActionModal
+            action={activeModal}
+            data={selectedHosts?.[0]}
+            onRequestClose={closeModal}
+          />
+        )}
+      {/* </Suspense> */}
     </>
   );
 };

@@ -11,11 +11,11 @@ import {
 } from '../../api/RQHook';
 
 const HostModal = ({ 
-  isOpen, 
-  onRequestClose, 
+  // isOpen, 
   editMode = false, 
   hId,
   clusterId,
+  onClose,
 }) => {
   const [formState, setFormState] = useState({
     id: '',
@@ -127,7 +127,7 @@ const HostModal = ({
         {
           onSuccess: () => {
             alert("Host 편집 완료")
-            onRequestClose();  // 성공 시 모달 닫기
+            onClose();  // 성공 시 모달 닫기
           },
           onError: (error) => {
             console.error('Error editing Host:', error);
@@ -140,7 +140,7 @@ const HostModal = ({
       addHost(dataToSubmit, {
         onSuccess: () => {
           alert("Host 생성 완료")
-          onRequestClose();
+          onClose();
         },
         onError: (error) => {
           console.error('Error adding Host:', error);
@@ -152,8 +152,8 @@ const HostModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel={editMode ? '호스트 편집' : '새로 만들기'}
       className="Modal"
       overlayClassName="Overlay"
@@ -162,7 +162,7 @@ const HostModal = ({
       <div className="host_new_popup">
         <div className="popup_header">
           <h1>{editMode ? '호스트 편집' : '새 호스트'}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -312,7 +312,7 @@ const HostModal = ({
 
         <div className="edit_footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

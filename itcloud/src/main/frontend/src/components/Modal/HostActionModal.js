@@ -30,6 +30,19 @@ const HostActionModal = ({
     }
   }, [data]);
 
+  const getContentLabel = (contentLabel) => {
+    switch (contentLabel) {
+      case 'deactivate': return '유지보수';
+      case 'activate': return '활성';
+      case 'restart': return '재시작';
+      case 'reinstall': return '다시 설치';
+      case 'register': return '인증서 등록';
+      case 'haon': return 'HA 활성화';
+      case 'haoff': return 'HA 비활성화';
+      default: return '';
+    }
+  };
+
   const handleFormSubmit = () => {
     if (!id) {
       console.error('ID가 없습니다.');
@@ -88,7 +101,7 @@ const HostActionModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={true}
       onRequestClose={onRequestClose}
       contentLabel={`${contentLabel}`}
       className="Modal"
@@ -106,7 +119,7 @@ const HostActionModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data.name} 를(을) {contentLabel}하시겠습니까? </span>
+            <span> {data.name} 를(을) {getContentLabel}하시겠습니까? </span>
           </div>
         </div>
 
