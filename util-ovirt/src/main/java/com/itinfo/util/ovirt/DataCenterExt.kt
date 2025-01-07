@@ -201,6 +201,7 @@ fun Connection.findAllNetworksFromDataCenter(dataCenterId: String): Result<List<
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+// AttachedStorageDomainsService
 fun Connection.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId: String): AttachedStorageDomainsService =
 	this.srvDataCenter(dataCenterId).storageDomainsService()
 
@@ -262,14 +263,14 @@ fun Connection.deactivateAttachedStorageDomainFromDataCenter(dataCenterId: Strin
 	if(this.findDataCenter(dataCenterId).isFailure) {
 		throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
 	}
-	val storageDomain: StorageDomain =
-		this.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
-			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+	val storageDomain: StorageDomain = this.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+		.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 
 	if(storageDomain.status() == StorageDomainStatus.MAINTENANCE){
 		throw Error("maintenance 실패 ... $storageDomainId 가 이미 유지관리 상태") // return 대신 throw
 	}
 
+	// force == ovf 업데이트 여부
 	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).deactivate().force(true).send()
 	true
 }.onSuccess {

@@ -104,6 +104,8 @@ class NetworkVo (
 		inline fun builder(block: NetworkVo.Builder.() -> Unit): NetworkVo =  NetworkVo.Builder().apply(block).build()
 	}
 }
+
+
 fun Network.toNetworkIdName(): NetworkVo = NetworkVo.builder {
 	id { this@toNetworkIdName.id() }
 	name { this@toNetworkIdName.name() }
@@ -113,25 +115,25 @@ fun List<Network>.toNetworksIdName(): List<NetworkVo> =
 
 
 fun Network.toNetworkMenu(conn: Connection): NetworkVo {
-	val dataCenter: DataCenter? =
-		conn.findDataCenter(this@toNetworkMenu.dataCenter().id()).getOrNull()
+	val network = this@toNetworkMenu
+	val dataCenter: DataCenter? = conn.findDataCenter(this@toNetworkMenu.dataCenter().id()).getOrNull()
  	return NetworkVo.builder {
-		id { this@toNetworkMenu.id() }
-		name { this@toNetworkMenu.name() }
-		description { this@toNetworkMenu.description() }
-		comment { this@toNetworkMenu.comment() }
-		mtu { this@toNetworkMenu.mtu().toInt() }
-		portIsolation { this@toNetworkMenu.portIsolation() }
+		id { network.id() }
+		name { network.name() }
+		description { network.description() }
+		comment { network.comment() }
+		mtu { network.mtu().toInt() }
+		portIsolation { network.portIsolation() }
 		datacenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 //		openStackNetwork {
-//			if (this@toNetworkMenu.externalProviderPresent())
-//				conn.findOpenStackNetworkProvider(this@toNetworkMenu.externalProvider().id())
+//			if (network.externalProviderPresent())
+//				conn.findOpenStackNetworkProvider(network.externalProvider().id())
 //					.getOrNull()
 //					?.toOpenStackNetworkVo(conn)
 //			else
 //				null
 //		}
-		vlan { if (this@toNetworkMenu.vlanPresent()) this@toNetworkMenu.vlan().idAsInteger() else 0 }
+		vlan { if (network.vlanPresent()) network.vlan().idAsInteger() else 0 }
 	}
 }
 fun List<Network>.toNetworksMenu(conn: Connection): List<NetworkVo> =
@@ -139,37 +141,33 @@ fun List<Network>.toNetworksMenu(conn: Connection): List<NetworkVo> =
 
 
 fun Network.toNetworkVo(conn: Connection): NetworkVo {
-	val vnicProfileVos: List<VnicProfile> =
-		conn.findAllVnicProfiles().getOrDefault(listOf())
-			.filter { it.network().id() == this@toNetworkVo.id() }
+	val network = this@toNetworkVo
+	val vnicProfileVos: List<VnicProfile> = conn.findAllVnicProfiles().getOrDefault(listOf())
+		.filter { it.network().id() == network.id() }
 
-	val usages: MutableList<NetworkUsage>? =
-		conn.findNetwork(this@toNetworkVo.id())
-			.getOrNull()
-			?.usages()
-	val dataCenter: DataCenter? =
-		conn.findDataCenter(this@toNetworkVo.dataCenter().id()).getOrNull()
+	val usages: MutableList<NetworkUsage>? = conn.findNetwork(network.id())
+		.getOrNull()?.usages()
+	val dataCenter: DataCenter? = conn.findDataCenter(network.dataCenter().id())
+		.getOrNull()
 
 	return NetworkVo.builder {
-		id { this@toNetworkVo.id() }
-		name { this@toNetworkVo.name() }
-		description { this@toNetworkVo.description() }
-		comment { this@toNetworkVo.comment() }
-		mtu { this@toNetworkVo.mtu().toInt() }
-		portIsolation { this@toNetworkVo.portIsolation() }
-		stp { this@toNetworkVo.stp() }
+		id { network.id() }
+		name { network.name() }
+		description { network.description() }
+		comment { network.comment() }
+		mtu { network.mtu().toInt() }
+		portIsolation { network.portIsolation() }
+		stp { network.stp() }
 		usage { usages?.toUsagesVo() }
-		vdsmName { this@toNetworkVo.vdsmName() }
+		vdsmName { network.vdsmName() }
 		datacenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 		openStackNetworkVo {
-			if(this@toNetworkVo.externalProviderPresent())
-				conn.findOpenStackNetworkProvider(this@toNetworkVo.externalProvider().id())
-					.getOrNull()
-					?.toOpenStackNetworkVo(conn)
-			else
-				null
+			if(network.externalProviderPresent())
+				conn.findOpenStackNetworkProvider(network.externalProvider().id())
+					.getOrNull()?.toOpenStackNetworkVo(conn)
+			else null
 		}
-		vlan { if (this@toNetworkVo.vlanPresent()) this@toNetworkVo.vlan().idAsInteger() else 0}
+		vlan { if (network.vlanPresent()) network.vlan().idAsInteger() else 0}
 		vnicProfileVos { vnicProfileVos.fromVnicProfilesToIdentifiedVos() }
 	}
 }
@@ -201,19 +199,19 @@ fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
  * VnicProfile은 기본생성만 /qos는 제외항목, 네트워크필터도 vdsm으로 고정(?)
  */
 fun NetworkVo.toNetworkBuilder(): NetworkBuilder {
-
+	val network = this@toNetworkBuilder
 	return NetworkBuilder()
-		.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.datacenterVo.id).build())
-		.name(this@toNetworkBuilder.name)
-		.description(this@toNetworkBuilder.description)
-		.comment(this@toNetworkBuilder.comment)
-		.mtu(this@toNetworkBuilder.mtu)  // 제한수가 있음
-		.vlan(if (this@toNetworkBuilder.vlan != 0) VlanBuilder().id(this@toNetworkBuilder.vlan) else null)
-		.usages(if(this@toNetworkBuilder.usage.vm){ NetworkUsage.VM } else null)
-		.portIsolation(this@toNetworkBuilder.portIsolation)
+		.dataCenter(DataCenterBuilder().id(network.datacenterVo.id).build())
+		.name(network.name)
+		.description(network.description)
+		.comment(network.comment)
+		.mtu(network.mtu)  // 제한수가 있음
+		.vlan(if (network.vlan != 0) VlanBuilder().id(network.vlan) else null)
+		.usages(if(network.usage.vm){ NetworkUsage.VM } else null)
+		.portIsolation(network.portIsolation)
 //	.externalProvider(
-//		if(this@toNetworkBuilder.openStackNetworkVo.id.isNotEmpty())
-//			OpenStackNetworkProviderBuilder().id(this@toNetworkBuilder.openStackNetworkVo.id)
+//		if(network.openStackNetworkVo.id.isNotEmpty())
+//			OpenStackNetworkProviderBuilder().id(network.openStackNetworkVo.id)
 //		else
 //			null
 //	)

@@ -128,66 +128,39 @@ fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 	this@toStorageDomainIdNames.map { it.toStorageDomainIdName() }
 
 
-
-fun StorageDomain.toDomainStatus(conn: Connection): StorageDomainVo {
-	val dataCenter: DataCenter? =
-		if(this@toDomainStatus.dataCenterPresent())
-			conn.findDataCenter(this@toDomainStatus.dataCenter().id()).getOrNull()
-		else null
-
-	return StorageDomainVo.builder {
-		status { this@toDomainStatus.status() }
-	}
+fun StorageDomain.toDomainStatus(): StorageDomainVo {
+	return StorageDomainVo.builder { status { this@toDomainStatus.status() } }
 }
-fun List<StorageDomain>.toDomainStatuss(conn: Connection): List<StorageDomainVo> =
-	this@toDomainStatuss.map { it.toDomainStatus(conn) }
+fun List<StorageDomain>.toDomainStatuss(): List<StorageDomainVo> =
+	this@toDomainStatuss.map { it.toDomainStatus() }
 
-fun StorageDomain.toDiskSize(): BigInteger? {
-	log.info(
-		"Checking disk size: availablePresent={}, usedPresent={}, available={}, used={}",
-		this@toDiskSize.availablePresent(),
-		this@toDiskSize.usedPresent(),
-		this@toDiskSize.available(),
-		this@toDiskSize.used(),
-//		this@toDiskSize.available().add(this@toDiskSize.used())
-	)
-	return if (!this@toDiskSize.availablePresent() || this@toDiskSize.available() == null ||
-		!this@toDiskSize.usedPresent() || this@toDiskSize.used() == null) {
-		null
-	} else {
-		this@toDiskSize.available().add(this@toDiskSize.used())
-	}
-
-}
 
 
 fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
-	val dataCenter: DataCenter? = if(this@toStorageDomainMenu.dataCentersPresent()) conn.findDataCenter(this@toStorageDomainMenu.dataCenters().first().id())
-		.getOrNull() else null
+	val storageDomain = this@toStorageDomainMenu
+	val dataCenter: DataCenter? = resolveDataCenter(conn)
 	val storageDomainStatus = dataCenter?.let {
-		conn.findAttachedStorageDomainFromDataCenter(it.id(), this@toStorageDomainMenu.id())
+		conn.findAttachedStorageDomainFromDataCenter(it.id(), storageDomain.id())
 			.getOrNull()?.status()
 	}
-	val hostedVm = conn.findAllVmsFromStorageDomain(this@toStorageDomainMenu.id())
+	val hostedVm = conn.findAllVmsFromStorageDomain(storageDomain.id())
 		.getOrDefault(listOf())
 		.any { it.origin() == "managed_hosted_engine" }
 
 	return StorageDomainVo.builder {
-		id { this@toStorageDomainMenu.id() }
-		name { this@toStorageDomainMenu.name() }
-		description { this@toStorageDomainMenu.description() }
+		id { storageDomain.id() }
+		name { storageDomain.name() }
+		description { storageDomain.description() }
 		status { storageDomainStatus }
 		hostedEngine { hostedVm }
-		comment { this@toStorageDomainMenu.comment() }
-		domainType { this@toStorageDomainMenu.type().value() }
-		domainTypeMaster { this@toStorageDomainMenu.masterPresent() && this@toStorageDomainMenu.master() }
-		storageType {
-			this@toStorageDomainMenu.storagePresent().let { this@toStorageDomainMenu.storage().type().value() }
-		}
-		format { this@toStorageDomainMenu.storageFormat() }
-		usedSize { this@toStorageDomainMenu.used() }
-		availableSize { this@toStorageDomainMenu.available() }
-		diskSize { this@toStorageDomainMenu.toDiskSize() }
+		comment { storageDomain.comment() }
+		domainType { storageDomain.type().value() }
+		domainTypeMaster { storageDomain.masterPresent() && storageDomain.master() }
+		storageType { storageDomain.storagePresent().let { storageDomain.storage().type().value() } }
+		format { storageDomain.storageFormat() }
+		usedSize { storageDomain.used() }
+		availableSize { storageDomain.available() }
+		diskSize { storageDomain.toDiskSize() }
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }
@@ -200,78 +173,50 @@ fun StorageDomain.toActiveDomain(): StorageDomainVo {
 		name { this@toActiveDomain.name() }
 		usedSize { this@toActiveDomain.used() }
 		availableSize { this@toActiveDomain.available() }
-		diskSize { this@toActiveDomain.available().add(this@toActiveDomain.used()) }
+		diskSize { this@toActiveDomain.toDiskSize() }
 	}
 }
 fun List<StorageDomain>.toActiveDomains(): List<StorageDomainVo> =
 	this@toActiveDomains.map { it.toActiveDomain()}
 
 
-fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
-	val diskProfiles: List<DiskProfile> = conn.findAllDiskProfilesFromStorageDomain(this@toStorageDomainVo.id())
-		.getOrDefault(listOf())
+fun StorageDomain.toStorageDomainInfoVo(conn: Connection): StorageDomainVo {
+	val storageDomain = this@toStorageDomainInfoVo
+	val dataCenter: DataCenter? = resolveDataCenter(conn)
+	val hostStorage: HostStorage = storageDomain.storage()
 	val disks: List<Disk> = conn.findAllDisks()
 		.getOrDefault(listOf())
-		.filter { it.storageDomainsPresent() && it.storageDomains().first().id() == this@toStorageDomainVo.id()
-	}
-	val dataCenter: DataCenter? =
-		if(this@toStorageDomainVo.dataCentersPresent()) conn.findDataCenter(this@toStorageDomainVo.dataCenters().first().id()).getOrNull()
-		else null
-	val hostStorage: HostStorage = this@toStorageDomainVo.storage()
+		.filter { it.storageDomainsPresent() && it.storageDomains().first().id() == storageDomain.id() }
+	val diskProfiles: List<DiskProfile> = conn.findAllDiskProfilesFromStorageDomain(storageDomain.id()).getOrDefault(listOf())
 
 	return StorageDomainVo.builder {
-		id { this@toStorageDomainVo.id() }
-		name { this@toStorageDomainVo.name() }
-		description { this@toStorageDomainVo.description() }
-//		status { status }
-		comment { this@toStorageDomainVo.comment() }
-		domainType { this@toStorageDomainVo.type().value() }
-		domainTypeMaster { if(this@toStorageDomainVo.masterPresent()) this@toStorageDomainVo.master() else false}
-		storageType { if(this@toStorageDomainVo.storagePresent()) this@toStorageDomainVo.storage().type().value() else null }
-		format { this@toStorageDomainVo.storageFormat() }
-		usedSize { this@toStorageDomainVo.used() }
-		availableSize { this@toStorageDomainVo.available() }
-		commitedSize { this@toStorageDomainVo.committed() }
+		id { storageDomain.id() }
+		name { storageDomain.name() }
+		description { storageDomain.description() }
+		comment { storageDomain.comment() }
+		domainType { storageDomain.type().value() }
+		domainTypeMaster { if(storageDomain.masterPresent()) storageDomain.master() else false}
+		storageType { if(storageDomain.storagePresent()) storageDomain.storage().type().value() else null }
+		format { storageDomain.storageFormat() }
+		usedSize { storageDomain.used() }
+		availableSize { storageDomain.available() }
+		commitedSize { storageDomain.committed() }
 		profileVos { diskProfiles.fromDiskProfilesToIdentifiedVos()  }
-		diskSize {
-//			 TODO: 이거 처리 어떻게 해야하는지 확립필요
-			if (this@toStorageDomainVo.availablePresent()) this@toStorageDomainVo.available().add(this@toStorageDomainVo.used())
-			else BigInteger.ZERO
-		}
+		diskSize { storageDomain.toDiskSize() }
 		diskImageVos { disks.toDiskImageVos(conn) }
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
-		warning { this@toStorageDomainVo.warningLowSpaceIndicatorAsInteger() }
-		spaceBlocker { this@toStorageDomainVo.criticalSpaceActionBlockerAsInteger() }
-		storageAddress { this@toStorageDomainVo.storage().address() + this@toStorageDomainVo.storage().path() } // 경로
-//		nfsVersion { this@toStorageDomainVo.storage().nfsVersion().value() }
+		warning { storageDomain.warningLowSpaceIndicatorAsInteger() }
+		spaceBlocker { storageDomain.criticalSpaceActionBlockerAsInteger() }
+		storageAddress { storageDomain.storage().address() + storageDomain.storage().path() } // 경로
+//		nfsVersion { storageDomain.storage().nfsVersion().value() }
 		hostStorageVo { hostStorage.toHostStorageVoByType() }
 	}
 }
-fun List<StorageDomain>.toStorageDomainVos(conn: Connection): List<StorageDomainVo> =
-	this@toStorageDomainVos.map { it.toStorageDomainVo(conn) }
-
-fun HostStorage.toHostStorageVoByType(): HostStorageVo {
-	return when (this.type()) {
-		StorageType.ISCSI -> this.toIscsiStorageVo()
-		StorageType.FCP ->this.toFibreStorageVo()
-		else -> HostStorageVo()
-	}
-}
-
-fun StorageDomain.toStorageDomainSize(): StorageDomainVo {
-	return StorageDomainVo.builder {
-		id { this@toStorageDomainSize.id() }
-		name { this@toStorageDomainSize.name() }
-		usedSize { this@toStorageDomainSize.used() }
-		availableSize { this@toStorageDomainSize.available() }
-	}
-}
-fun List<StorageDomain>.toStorageDomainSizes(): List<StorageDomainVo> =
-	this@toStorageDomainSizes.map { it.toStorageDomainSize() }
+fun List<StorageDomain>.toStorageDomainInfoVos(conn: Connection): List<StorageDomainVo> =
+	this@toStorageDomainInfoVos.map { it.toStorageDomainInfoVo(conn) }
 
 
-
-// region: 빌더
+// region: builder
 /**
  * 스토리지 도메인 생성 빌더
  * 기본
@@ -296,9 +241,9 @@ fun StorageDomainVo.toStorageDomainBuilder(): StorageDomainBuilder {
 		)
 }
 
-fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
-	return this@toAddStorageDomainBuilder.toStorageDomainBuilder().build()
-}
+fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain =
+	this@toAddStorageDomainBuilder.toStorageDomainBuilder().build()
+
 
 fun StorageDomainVo.toImportStorageDomainBuilder(): StorageDomain {
 
@@ -312,10 +257,7 @@ fun StorageDomainVo.toImportStorageDomainBuilder(): StorageDomain {
 		.criticalSpaceActionBlocker(this@toImportStorageDomainBuilder.spaceBlocker)  //디스크 공간 동작 차단
 //		.dataCenters(*arrayOf(DataCenterBuilder().id(this@toImportStorageDomainBuilder.dataCenterVo.id).build()))
 		.host(HostBuilder().name(this@toImportStorageDomainBuilder.hostVo.name).build())
-		.storage(
-			HostStorageBuilder()
-				.type(StorageType.fromValue(this@toImportStorageDomainBuilder.storageType))
-		)
+		.storage(HostStorageBuilder().type(StorageType.fromValue(this@toImportStorageDomainBuilder.storageType)))
 		.build()
 }
 
@@ -378,3 +320,49 @@ fun StorageDomainVo.toEditStorageDomainBuilder(): StorageDomain {
 }
 
 // endregion
+
+
+
+// 데이터센터 찾기
+fun StorageDomain.resolveDataCenter(conn: Connection): DataCenter? {
+	return if(this@resolveDataCenter.dataCentersPresent()) conn.findDataCenter(this@resolveDataCenter.dataCenters().first().id()).getOrNull() else null
+}
+
+
+// 디스크 사이즈 계산
+fun StorageDomain.toDiskSize(): BigInteger? {
+	log.info(
+		"Checking disk size: availablePresent={}, usedPresent={}, available={}, used={}",
+		this@toDiskSize.availablePresent(),
+		this@toDiskSize.usedPresent(),
+		this@toDiskSize.available(),
+		this@toDiskSize.used()
+	)
+	return if (!this@toDiskSize.availablePresent() || this@toDiskSize.available() == null ||
+		!this@toDiskSize.usedPresent() || this@toDiskSize.used() == null) {
+		null
+	} else {
+		this@toDiskSize.available().add(this@toDiskSize.used())
+	}
+}
+
+
+fun HostStorage.toHostStorageVoByType(): HostStorageVo {
+	return when (this.type()) {
+		StorageType.ISCSI -> this.toIscsiStorageVo()
+		StorageType.FCP ->this.toFibreStorageVo()
+		else -> HostStorageVo()
+	}
+}
+
+fun StorageDomain.toStorageDomainSize(): StorageDomainVo {
+	return StorageDomainVo.builder {
+		id { this@toStorageDomainSize.id() }
+		name { this@toStorageDomainSize.name() }
+		usedSize { this@toStorageDomainSize.used() }
+		availableSize { this@toStorageDomainSize.available() }
+	}
+}
+fun List<StorageDomain>.toStorageDomainSizes(): List<StorageDomainVo> =
+	this@toStorageDomainSizes.map { it.toStorageDomainSize() }
+

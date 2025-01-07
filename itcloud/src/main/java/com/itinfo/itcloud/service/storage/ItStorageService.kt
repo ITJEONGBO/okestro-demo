@@ -258,7 +258,6 @@ interface ItStorageService {
 class StorageServiceImpl(
 
 ): BaseService(), ItStorageService {
-
 	@Autowired private lateinit var diskVmElementRepository: DiskVmElementRepository
 
 	@Throws(Error::class)
@@ -275,39 +274,37 @@ class StorageServiceImpl(
 		log.info("findOne... ")
 		val res: StorageDomain? = conn.findStorageDomain(storageDomainId)
 			.getOrNull()
-		return res?.toStorageDomainVo(conn)
+		return res?.toStorageDomainInfoVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun add(storageDomainVo: StorageDomainVo): StorageDomainVo? {
 		log.info("add ... storageDomain name: {}", storageDomainVo.name)
-		val res: StorageDomain? =
-			conn.addStorageDomain(
-				storageDomainVo.toAddStorageDomainBuilder(),
-				storageDomainVo.dataCenterVo.id
-			).getOrNull()
-		return res?.toStorageDomainVo(conn)
+		val res: StorageDomain? = conn.addStorageDomain(
+			storageDomainVo.toAddStorageDomainBuilder(),
+			storageDomainVo.dataCenterVo.id
+		).getOrNull()
+		return res?.toStorageDomainInfoVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun import(storageDomainVo: StorageDomainVo): StorageDomainVo? {
 		log.info("import ... storageDomain name: {}", storageDomainVo.name)
 		val res: StorageDomain? = conn.importFcpStorageDomain(
-				storageDomainVo.toImportStorageDomainBuilder(),
+			storageDomainVo.toImportStorageDomainBuilder(),
 //				storageDomainVo.dataCenterVo.id
-			).getOrNull()
-		return res?.toStorageDomainVo(conn)
+		).getOrNull()
+		return res?.toStorageDomainInfoVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun update(storageDomainVo: StorageDomainVo): StorageDomainVo? {
 		log.info("update ... storageDomain name: {}", storageDomainVo.name)
-		val res: StorageDomain? =
-			conn.updateStorageDomain(
-				storageDomainVo.id,
-				storageDomainVo.toEditStorageDomainBuilder(),
-			).getOrNull()
-		return res?.toStorageDomainVo(conn)
+		val res: StorageDomain? = conn.updateStorageDomain(
+			storageDomainVo.id,
+			storageDomainVo.toEditStorageDomainBuilder(),
+		).getOrNull()
+		return res?.toStorageDomainInfoVo(conn)
 	}
 
 	@Throws(Error::class)

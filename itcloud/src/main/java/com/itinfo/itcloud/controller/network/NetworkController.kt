@@ -2,8 +2,6 @@ package com.itinfo.itcloud.controller.network
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
-import com.itinfo.itcloud.controller.computing.HostController
-import com.itinfo.itcloud.controller.computing.HostController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -154,7 +152,7 @@ class NetworkController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@DeleteMapping()
+	@DeleteMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun remove(
@@ -346,34 +344,31 @@ class NetworkController: BaseController() {
 		return ResponseEntity.ok(iNetwork.findAllTemplatesFromNetwork(networkId))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value = "네트워크 권한 목록",
-		notes = "선택된 네트워크의 권한 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{networkId}/permissions")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	@Deprecated("사용안함")
-	fun permissions(
-		@PathVariable networkId: String? = null,
-	): ResponseEntity<List<PermissionVo>> {
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		log.info("/networks/{}/permissions ... 네트워크 권한 목록", networkId)
-		return ResponseEntity.ok(iNetwork.findAllPermissionsFromNetwork(networkId))
-	}
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value = "네트워크 권한 목록",
+//		notes = "선택된 네트워크의 권한 목록을 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{networkId}/permissions")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	@Deprecated("사용안함")
+//	fun permissions(
+//		@PathVariable networkId: String? = null,
+//	): ResponseEntity<List<PermissionVo>> {
+//		if (networkId.isNullOrEmpty())
+//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+//		log.info("/networks/{}/permissions ... 네트워크 권한 목록", networkId)
+//		return ResponseEntity.ok(iNetwork.findAllPermissionsFromNetwork(networkId))
+//	}
 
-
-	// region: vnicProfile
 	@Autowired private lateinit var iVnic: ItVnicProfileService
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -396,9 +391,6 @@ class NetworkController: BaseController() {
 		log.info("/networks/{}/vnicProfiles ... 네트워크 vnic profile 목록", networkId)
 		return ResponseEntity.ok(iVnic.findAllFromNetwork(networkId))
 	}
-
-
-	// endregion
 
 	companion object {
 		private val log by LoggerDelegate()
