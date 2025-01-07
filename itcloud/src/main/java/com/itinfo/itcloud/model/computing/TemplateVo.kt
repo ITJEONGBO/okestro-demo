@@ -144,6 +144,13 @@ class TemplateVo(
 	}
 }
 
+fun Template.toTemplateIdName(): TemplateVo = TemplateVo.builder {
+	id { this@toTemplateIdName.id() }
+	name { this@toTemplateIdName.name() }
+}
+fun List<Template>.toTemplateIdNames(): List<TemplateVo> =
+	this@toTemplateIdNames.map { it.toTemplateIdName() }
+
 
 fun Template.toTemplateMenu(conn: Connection): TemplateVo {
 	val cluster: Cluster? =
