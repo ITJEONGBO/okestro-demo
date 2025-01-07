@@ -23,13 +23,13 @@ import org.springframework.boot.test.context.SpringBootTest
 class ItHostNicServiceTest {
     @Autowired private lateinit var service: ItHostNicService
 
-    private lateinit var host01: String
-    private lateinit var host04: String
+    private lateinit var host03: String
+    private lateinit var host05: String
 
     @BeforeEach
     fun setup() {
-        host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
-        host04 = "c35ee370-b9f6-4c5b-9c65-fe2e716795b5"
+        host03 = "950e9bb2-ee63-467e-b0f8-901f3d630866"
+        host05 = "a0816fc5-d06a-478e-850e-854b2e5a1f66"
     }
 
 
@@ -44,7 +44,7 @@ class ItHostNicServiceTest {
         log.debug("should_findAllHostNicFromHost ...")
 
         val result: List<HostNicVo> =
-            service.findAllFromHost("c35ee370-b9f6-4c5b-9c65-fe2e716795b5")
+            service.findAllFromHost(host05)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
@@ -60,7 +60,7 @@ class ItHostNicServiceTest {
     @Test
     fun should_setUpNetworksFromHost() {
         log.debug("should_setUpNetworksFromHost ...")
-        val hostId = "a0816fc5-d06a-478e-850e-854b2e5a1f66" // host-05
+
         val bonds: List<HostNicVo> =
             listOf(
                 HostNicVo.builder {
@@ -104,7 +104,7 @@ class ItHostNicServiceTest {
             )
 
         val result: Boolean =
-            service.setUpNetworksFromHost(hostId, bonds, networkAttach)
+            service.setUpNetworksFromHost(host05, bonds, networkAttach)
 
         assertThat(result, `is`(not(nullValue())))
         println(result)

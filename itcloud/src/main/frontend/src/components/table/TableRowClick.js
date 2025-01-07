@@ -11,7 +11,6 @@ const TableRowClick = ({
 
   const handleClick = (e) => {
     e.stopPropagation(); // 테이블 row 클릭과 충돌 방지
-    // if (!id) return;
 
     const paths = {
       datacenter: `/computing/datacenters/${id}/clusters`,
@@ -28,7 +27,7 @@ const TableRowClick = ({
     if (path) 
         navigate(path);
     else 
-    console.warn(`Unknown navigation type: ${type}`);
+      console.warn(`Unknown navigation type: ${type}`);
   };
 
   return (
