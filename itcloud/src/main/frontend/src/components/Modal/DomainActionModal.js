@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   useActivateDomain, 
   useAttachDomain,
+  useDestroyDomain,
   useDetachDomain,
   useMaintenanceDomain
 } from '../../api/RQHook';
@@ -24,6 +25,7 @@ const DomainActionModal = ({
   const { mutate: attachDomain } = useAttachDomain();
   const { mutate: detachDomain } = useDetachDomain();
   const { mutate: maintenanceDomain } = useMaintenanceDomain();
+  const { mutate: destroyDomain } = useDestroyDomain();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,6 +59,9 @@ const DomainActionModal = ({
     } else if (action === 'maintenance') {
       console.log(`maintenance ${id}, dc: ${datacenterId}` )
       handleAction(maintenanceDomain)
+    } else if (action === 'destroy') { 
+      console.log(`destroy ${id}` )
+      handleAction(destroyDomain)
     }
   }
 

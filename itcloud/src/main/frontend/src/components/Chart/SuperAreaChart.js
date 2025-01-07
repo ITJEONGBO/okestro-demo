@@ -59,6 +59,7 @@ const SuperAreaChart = ({ vmPer }) => {
     <AreaChart 
       series={series}
       datetimes={datetimes}
+      
     />
   );
 };

@@ -1919,9 +1919,23 @@ migrateHostsFromVM: async (vmId) => {
    * 
    * @see
    */
-  findVnicProfile: async (networkId, vnicId) => makeAPICall({
+  findVnicProfile: async (vnicId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_VNIC_PROFILE_FROM_NETWORK(networkId, vnicId),
+    url: ENDPOINTS.FIND_VNIC_PROFILE(vnicId),
+  }),
+
+ /**
+   * @name ApiManager.findAllHostsFromNetwork
+   * @description vnic profile내 가상머신신 목록
+   *
+   * @param {string} vnicProfileId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllVmsFromVnicProfiles : async (vnicProfileId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VMS_VNIC_PROFILE(vnicProfileId),
   }),
 
   /**
@@ -2262,6 +2276,22 @@ migrateHostsFromVM: async (vmId) => {
       data: domainId,
     });
   },
+
+  /**
+   * @name ApiManager.activateDomain
+   * @description 스토리지 도메인 파괴
+   * 
+   * @param {String} domainId - 도메인 ID
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  destroyDomain: async (domainId) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.DESTORY_STORAGE_DOMAIN(domainId), 
+      data: {domainId}
+    });
+  },
+
 
   /**
    * @name ApiManager.activateDomain

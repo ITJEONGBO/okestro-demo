@@ -133,9 +133,9 @@ const App = () => {
               <Route path="/networks/:id" element={<NetworkInfo />} /> 
               <Route path="/networks/:id/:section" element={<NetworkInfo />} /> 
 
-              <Route path="/networks/vnicProfiles" element={<AllVnic />} />
-              <Route path="/networks/vnicProfiles/:id" element={<VnicInfo />} />
-              <Route path="/networks/vnicProfiles/:id/:section" element={<VnicInfo />} />
+              <Route path="/vnicProfiles" element={<AllVnic />} />
+              <Route path="/vnicProfiles/:id/" element={<VnicInfo />} />
+              <Route path="/vnicProfiles/:id/:section" element={<VnicInfo />} />
 
               <Route path="/storages/rutil-manager" element={<RutilManager />} />
               <Route path="/storages/rutil-manager/:section" element={<RutilManager />} />

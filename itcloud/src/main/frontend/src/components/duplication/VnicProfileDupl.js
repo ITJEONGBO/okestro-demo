@@ -17,14 +17,12 @@ const VnicProfileDupl = ({
     setIsModalOpen(true); // 모달 열기
   };
 
-  const selectedIds = (Array.isArray(selectedVnicProfiles) ? selectedVnicProfiles : [])
-    .map((profile) => profile.id)
-    .join(', ');
 
-  // 데이터 유효성 검사
-  if (!Array.isArray(vnicProfiles) || !Array.isArray(columns)) {
-    return <p>유효하지 않은 데이터입니다.</p>;
-  }
+const selectedIds = Array.isArray(selectedVnicProfiles)
+  ? selectedVnicProfiles.map((nic) => nic.id || "알 수 없음").join(", ") // ID를 문자열로 변환
+  : "선택된 항목이 없습니다.";
+
+
 
   return (
     <div onClick={(e) => e.stopPropagation()}> {/* 테이블 외부 클릭 방지 */}

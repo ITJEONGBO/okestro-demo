@@ -18,7 +18,7 @@ const NetworkDupl = ({
   
   const handleActionClick = (actionType) => {
     if (actionType === 'vnic') {
-      navigate('/networks/vnicProfiles');
+      navigate('/vnicProfiles');
     } else {
       setAction(actionType);
       setIsModalOpen(true);

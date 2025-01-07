@@ -173,14 +173,18 @@ const ENDPOINTS = {
   FIND_DATA_CENTERS_FROM_NETWORK: (openstackNetworkId) => `/api/v1/networks/import/datacenters/${openstackNetworkId}`,
   IMPORT_NETWORK: () => `/api/v1/networks/import`,
   
-  FIND_ALL_VNIC_PROFILES: () =>  `/api/v1/networks/vnicProfiles`,
   FIND_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
-  FIND_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
   ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
   EDIT_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
   DELETE_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
 
   //endregion: Network
+
+  //region: VnicProfile
+  FIND_ALL_VNIC_PROFILES: () =>  `/api/v1/vnicProfiles`,
+  FIND_VNIC_PROFILE: ( vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
+  FIND_VMS_VNIC_PROFILE: ( vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}/vms`,
+  //endregion: VnicProfile
 
   //region: StorageDomain
   FIND_ALL_STORAGE_DOMAINS: () => `/api/v1/storages/domains`,

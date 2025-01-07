@@ -2153,43 +2153,6 @@ export const useAllVnicProfilesFromNetwork = (networkId, mapPredicate) => useQue
 });
 
 /**
- * @name useAllVnicProfiles
- * @description VNIC 프로필 목록조회 useQuery훅
- * 
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.findAllVnicProfiles
- */
-export const useAllVnicProfiles = (mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['allVnicProfiles'],
-  queryFn: async () => {
-    const res = await ApiManager.findAllVnicProfiles()
-    return res?.map((e) => mapPredicate(e)) ?? []
-  }
-})
-
-/**
- * @name useVnicProfile
- * @description vnic profile 상세조회 useQuery 훅
- * 
- * @param {string} vnicId vnic profile ID
- * @returns useQuery 훅
- */
-export const useVnicProfile = (networkId, vnicId) => useQuery({
-  queryKey: ['vnicId', vnicId],
-  queryFn: async () => {
-    if (!vnicId) return {};  
-    console.log(`Fetching vnic profile with ID: ${vnicId}`);
-    const res = await ApiManager.findVnicProfile(networkId, vnicId);
-    return res ?? {};
-  },
-  staleTime: 0,
-  cacheTime: 0,
-});
-
-/**
  * @name useAddNetwork
  * @description 네트워크 생성 useMutation 훅
  * 
@@ -2249,7 +2212,64 @@ export const useDeleteNetwork = () => {
 };
 
 
+//region: VnicProfiles -----------------vnic프로파일일---------------------
+/**
+ * @name useAllVnicProfiles
+ * @description 모든 VNIC 프로파일 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllVnicProfiles
+ */
+export const useAllVnicProfiles = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allVnicProfiles'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllVnicProfiles()
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
 
+/**
+ * @name useVnicProfile
+ * @description vnic profile 상세조회 useQuery 훅
+ * 
+ * @param {string} vnicId vnic profile ID
+ * @returns useQuery 훅
+ */
+export const useVnicProfile = (vnicId) => useQuery({
+  queryKey: ['vnicId', vnicId],
+  queryFn: async () => {
+    if (!vnicId) return {};  
+    console.log(`Fetching vnic profile with ID: ${vnicId}`);
+    const res = await ApiManager.findVnicProfile( vnicId);
+    return res ?? {};
+  },
+  staleTime: 0,
+  cacheTime: 0,
+});
+
+/**
+ * @name useAllVmsFromVnicProfiles
+ * @description  VNIC 내 가상머신  목록조회 useQuery훅
+ * 
+ * @param {string} vnicProfileId 네트워크ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllVmsFromVnicProfiles
+ */
+export const useAllVmsFromVnicProfiles = (vnicProfileId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllVmsFromVnicProfiles', vnicProfileId],
+  queryFn: async () => {
+    console.log(`useAllVmsFromVnicProfiles모든목록조회 ... ${vnicProfileId}`);
+    const res = await ApiManager.findAllVmsFromVnicProfiles(vnicProfileId);
+    return res?.map((e) => mapPredicate(e)) ?? [];
+  },
+  enabled: !!vnicProfileId, 
+});
 
 
 /**
@@ -2626,6 +2646,25 @@ export const useDeleteDomain = () => {
     onError: (error) => {
       console.error('Error deleting domain:', error);
     },
+  });
+};
+
+/**
+ * @name useActivateDomain
+ * @description 도메인파괴 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useDestroyDomain = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({domainId}) => await ApiManager.destroyDomain(domainId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allStorageDomains');
+    },
+    onError: (error) => {
+      console.error('Error destroy domain:', error);
+    },  
   });
 };
 

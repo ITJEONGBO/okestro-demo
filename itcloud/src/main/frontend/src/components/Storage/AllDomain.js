@@ -10,9 +10,6 @@ import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 const AllDomain = () => {
   const {
     data: storageDomains,
-    refetch: refetchStorageDomains,
-    error: storageDomainsError,
-    isLoading: isStorageDomainsLoading
   } = useAllStorageDomains((e) => ({...e,}));
 
 

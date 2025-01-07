@@ -35,6 +35,7 @@ const MainOuter = ({ children }) => {
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [contextMenuTarget, setContextMenuTarget] = useState(null);
     const [activeSection, setActiveSection] = useState('general');
+    const [isInitialLoad, setIsInitialLoad] = useState(true); // 초기 대시보드섹션 설정
 
     // url에 따라 맞는버튼 색칠
     const [selectedDiv, setSelectedDiv] = useState(null);
@@ -122,7 +123,16 @@ const MainOuter = ({ children }) => {
         fetchData();
     }, [navStorageDomainsRefetch]);
  
-  
+    useEffect(() => {
+        const waveGraph = document.querySelector('.wave_graph');
+        if (waveGraph) {
+            if (selected === 'dashboard' && asidePopupVisible) {
+                waveGraph.style.marginLeft = '0'; // Dashboard일 때 aside_popup이 열려있으면 margin-left를 0으로
+            } else {
+                waveGraph.style.marginLeft = '1rem'; // 기본값
+            }
+        }
+    }, [selected, asidePopupVisible]); // selected와 asidePopupVisible이 변경될 때 실행
     // 새로고침해도 섹션유지-----------------------------
     const [isSecondVisible, setIsSecondVisible] = useState(
         JSON.parse(localStorage.getItem('isSecondVisible')) || false
@@ -231,18 +241,10 @@ const MainOuter = ({ children }) => {
             navigate(`/storages/disks/${diskName}`);
         }
     };
-
-    useEffect(() => {
-        if (location.pathname === '/') {
-            setAsidePopupVisible(false);  // 대시보드일 때 aside_popup을 닫음
-        }
-    }, [location.pathname]);
-
     // 대시보드 경로일 때 aside_popup을 열지 않도록 처리
     const handleAsidePopupBtnClick = () => {
-        if (location.pathname !== '/') {  // 대시보드 경로가 아닌 경우에만 토글 가능
-            setAsidePopupVisible(prev => !prev);
-        }
+        setAsidePopupVisible((prev) => !prev); 
+
     };
 
     const handleClick = (id) => {
@@ -259,12 +261,23 @@ const MainOuter = ({ children }) => {
     };
       
     const renderAsidePopupContent = () => {
-        if (selected === 'event' || selected === 'settings') {
-            // 이벤트와 설정에서는 이전에 선택한 섹션의 콘텐츠를 표시
+        if (isInitialLoad && selected === 'dashboard') {
+            return renderAsidePopup('computing');
+        }
+        // 이벤트와 설정에서는 이전에 선택한 섹션의 콘텐츠를 표시
+        if (selected === 'event' || selected === 'settings' ||  selected === 'dashboard') {
             return lastSelected ? renderAsidePopup(lastSelected) : <div>선택된 내용이 없습니다.</div>;
         }
         return renderAsidePopup(selected); // 현재 선택된 항목의 콘텐츠를 표시
     };
+
+    // 초기에는 가상머신 섹션을 마지막 섹션으로 설정
+    useEffect(() => {
+        if (isInitialLoad && selected === 'dashboard') {
+            setLastSelected('computing'); 
+        }
+        setIsInitialLoad(false); 
+    }, [isInitialLoad, selected]);
 
     const renderAsidePopup = (selected) => {
         return (
@@ -650,6 +663,7 @@ const MainOuter = ({ children }) => {
     useEffect(() => {
         // 페이지가 처음 로드될 때 기본적으로 dashboard가 선택되도록 설정
         setSelected('dashboard');
+        setLastSelected('computing');
         toggleAsidePopup('dashboard');
     }, []);
     useEffect(() => {
@@ -693,7 +707,7 @@ const MainOuter = ({ children }) => {
             newBackgroundColor.event = 'rgb(218, 236, 245)';
         } else if (id === 'settings') {
             newBackgroundColor.settings = 'rgb(218, 236, 245)';
-        }
+        } 
         setAsidePopupBackgroundColor(newBackgroundColor);
     };
 
@@ -731,19 +745,18 @@ const MainOuter = ({ children }) => {
                 <div id="nav">
                     {/*대시보드버튼 */}
                     <Link to='/' className="link-no-underline">
-                        <div
-                            id="aside_popup_dashboard_btn"
-                            className={getClassNames('dashboard')}
-                            onClick={() => {
-                                if (location.pathname !== '/') {  // 대시보드 경로가 아닌 경우에만 동작
-                                    setAsidePopupVisible(true);
-                                }
-                            }}
-                            style={{ backgroundColor: asidePopupBackgroundColor.dashboard }}
-                        >
-                            <FontAwesomeIcon icon={faThLarge} fixedWidth/>
-                        </div>
-                    </Link>
+        <div
+            id="aside_popup_dashboard_btn"
+            className={getClassNames('dashboard')}
+            onClick={() => {
+                handleClick('dashboard'); // 선택 상태 업데이트
+                setAsidePopupVisible(true); // 대시보드 클릭 시 열림
+            }}
+            style={{ backgroundColor: asidePopupBackgroundColor.dashboard }}
+        >
+            <FontAwesomeIcon icon={faThLarge} fixedWidth />
+        </div>
+    </Link>
                     {/*가상머신 버튼 */}
                     <Link to='/computing/vms' className="link-no-underline">
                         <div
@@ -811,8 +824,9 @@ const MainOuter = ({ children }) => {
                         </div>
                     </Link>
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}>
-                        <FontAwesomeIcon icon={asidePopupVisible ? faChevronLeft : faChevronRight} fixedWidth />
-                    </button>
+        <FontAwesomeIcon icon={asidePopupVisible ? faChevronLeft : faChevronRight} fixedWidth />
+    </button>
+
                 </div>
             </div>
             <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>

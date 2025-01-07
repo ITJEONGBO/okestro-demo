@@ -21,8 +21,7 @@
 /*-----중복 */
 
 .content_outer,
-.content_outerd,
-.sto_content_outer,
+/* .sto_content_outer,
 #disk_outer,#storage_domain_outer,
 #content_outer,
 #network_outer,
@@ -62,23 +61,21 @@
 #detail_host_outer,
 #detail_virtual_outer,
 #detail_template_outer2,
-#detail_permission_outer,
-/*컴퓨팅 테이블아우터*/
+#detail_permission_outer, */
 .computing_table_outer
 {
     width: 100%;
     display: flex;
     height: 88%;
 }
-.pregroup_content,
+/* .pregroup_content,
 #application_content,
 #snapshot_content_outer,
 #network_content_outer{
     width: 100%;
-}
+} */
 form{
     width: 100%;
-  
 }
 form>div{
     font-size: 0.32rem;
@@ -94,10 +91,9 @@ button[disabled],select[disabled],input[disabled]{
     background-color: #efefef;
     color: #6d6d6d;
     cursor: no-drop !important;
-    border: 1px solid #ccc; /* 회색 테두리 */
+    border: 1px solid #ccc; 
 }
 .plusbtns{
-    /* border:1px solid gray; */
     display: flex;
     align-items: center; 
     border-radius: 2px;
@@ -121,6 +117,7 @@ button[disabled],select[disabled],input[disabled]{
     justify-content: center;
     align-items: center;
   }
+
 #section,
 #storage_section,
 #network_section,
@@ -142,7 +139,6 @@ button[disabled],select[disabled],input[disabled]{
     align-items: center;
     width:100%;
 }
-
 
 .edit_footer {
     position: fixed;
@@ -178,32 +174,7 @@ button[disabled],select[disabled],input[disabled]{
     border: 1px solid #295b9c;
 
 }
-.Overlay {
-    /* 오버레이 스타일 */
-    background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-.disabled_button{
-color: #d82626;
-background-color: #eeeeee;
-cursor: no-drop;
-}
 
-.storage_volume_snap_outer{
-display: none;
-position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-}
 .storage_volume_snap_popup{
 border: 1px solid #dfdddd;
 position: absolute;
@@ -215,7 +186,7 @@ height: 65%;
 width: 51%;
 left: 50%;
 transform: translate(-50%, -50%);
-box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 .volume_snap_first_content{
 font-size: 0.33rem;
@@ -320,7 +291,6 @@ width: 12%;
 .content_header_left {
 font-size: 0.65rem;
 border-radius: 3px;
-/* margin-top: 0.2rem; */
 }
 
 .content_header_left div {
@@ -1545,6 +1515,21 @@ textarea{
     border: 2px solid #007bff; /* 선택된 NIC의 테두리를 강조 */
     background-color: #f0f8ff; /* 선택된 배경 */
   }
+
+
+/* Computing.css */
+.cluster_general{
+    display: flex;
+    padding: 0.2rem;
+}
+.table_storage_domain_detail{
+    width: 58%;
+}
+.color-primary { color: #76a314 }
+.color-primary:hover { color: #76a314 }
+.bgcolor-primary { background: #8ec452 }
+.bgcolor-primary:hover { background: #76a314 }
+
 /*반응형*/
 @media (max-width:1390px) {
 
@@ -1559,23 +1544,3 @@ textarea{
 @media screen and (max-width:482px) {
 
 }
-
-
-
-/* Computing.css */
-
-
-  
-.cluster_general{
-    display: flex;
-    padding: 0.2rem;
-}
-.table_storage_domain_detail{
-    width: 58%;
-}
-
-
-.color-primary { color: #76a314 }
-.color-primary:hover { color: #76a314 }
-.bgcolor-primary { background: #8ec452 }
-.bgcolor-primary:hover { background: #76a314 }

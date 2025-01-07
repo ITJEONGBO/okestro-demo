@@ -12,7 +12,7 @@ const VnicProfileTable = ({
   const navigate = useNavigate();
   
   const handleNameClick = (id) => {
-    navigate(`/networks/vnicProfiles/${id}`);
+    navigate(`/vnicProfiles/${id}/vms`);
   };
   const handleRowSelection = (selectedRows) => {
     setSelectedVnicProfiles(selectedRows); // 선택된 데이터 전달

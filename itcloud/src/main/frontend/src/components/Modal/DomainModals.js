@@ -58,6 +58,7 @@ const getContentLabel = (action) => {
     case 'activate': return '활성';
     case 'attach': return '연결';
     case 'detach': return '분리';
+    case 'destroy': return '파괴';
     case 'maintenance': return '유지 관리 모드로 설정ㅉ';
     default: return '';
   }

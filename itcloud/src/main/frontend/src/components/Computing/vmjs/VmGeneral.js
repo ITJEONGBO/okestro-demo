@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComputer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faComputer, faDatabase, faEarthAmericas, faNetworkWired, faPlus, faServer, faSitemap, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
 import VmGeneralChart from "./VmGeneralChart";
 
 // 애플리케이션 섹션
@@ -44,7 +44,7 @@ const VmGeneral = ({ vm }) => {
                             <th>클러스터</th>
                             <td>
                                 <div className='related_object'>
-                                    <FontAwesomeIcon icon={faTimes} fixedWidth />
+                                    <FontAwesomeIcon icon={faEarthAmericas} fixedWidth className="mr-0.5"/>
                                     <span className="text-blue-500 font-bold">{vm?.clusterVo?.name || '#'}</span>
                                 </div>
                             </td>
@@ -53,17 +53,17 @@ const VmGeneral = ({ vm }) => {
                             <th>호스트</th>
                             <td>
                                 <div className='related_object'>
-                                    <FontAwesomeIcon icon={faTimes} fixedWidth />
-                                    <span className="text-blue-500 font-bold">{vm?.hostVo?.name || '#'}</span>
+                                    <FontAwesomeIcon icon={faUser} fixedWidth className="mr-0.5"/>
+                                    <span className="text-blue-500 font-bold"> {vm?.hostVo?.name || '#'}</span>
                                 </div>
-                            </td>
+                            </td>   
                         </tr>
                         <tr>
                             <th>네트워크</th>
                             <td>
                                 <div className='related_object'>
-                                    <FontAwesomeIcon icon={faTimes} fixedWidth />
-                                    <span className="text-blue-500 font-bold">{vm?.hostVo?.name || '#'}</span>
+                                    <FontAwesomeIcon icon={faServer} fixedWidth className="mr-0.5"/>
+                                    <span className="text-blue-500 font-bold"> {vm?.hostVo?.name || '#'}</span>
                                 </div>
                             </td>
                         </tr>
@@ -71,7 +71,7 @@ const VmGeneral = ({ vm }) => {
                             <th>스토리지 도메인</th>
                             <td>
                                 <div className='related_object'>
-                                    <FontAwesomeIcon icon={faTimes} />
+                                    <FontAwesomeIcon icon={faDatabase} fixedWidth className="mr-0.5"/>
                                     <span>{vm?.storageDomainVo?.name || ''}</span>
                                 </div>
                             </td>

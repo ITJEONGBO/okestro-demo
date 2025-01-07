@@ -215,7 +215,9 @@ const TableColumnsInfo = {
     { header: '통과', accessor: 'passThrough', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-
+  VMS_FROMVNIC_PROFILES: [
+    { header: '이름', accessor: 'name', clickable: false },
+  ],
   STORAGE_DOMAINS: [
     { header: '상태', accessor: 'icon', width: '4%' },
     { header: '', accessor: 'hostedEngine', width: '4%' },

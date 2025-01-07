@@ -4,9 +4,9 @@ import DomainTable from '../table/DomainTable';
 import DomainModals from '../Modal/DomainModals';
 
 const DomainDupl = ({ 
-  domains = [], // 기본값 설정
-  columns = [], // 기본값 설정
-  type = 'domain', // 데이터센터, 스토리지 도메인, rutil
+  domains = [],
+  columns = [], 
+  type = 'domain', 
   onFetchDomains, 
   status,
   datacenterId
@@ -25,7 +25,7 @@ const DomainDupl = ({
   selectedDomains.length === 0 || // 선택된 항목이 없거나
   selectedDomains.some((domain) => domain.status !== 'ACTIVE'); // 'ACTIVE' 상태인 도메인이 있을 경우
 
-  // 도메인 생성, 도메인 가져오기, 도메인 관리(편집), 삭제 등 버튼 액션 처리
+  
   return (
     <>
       { type === 'datacenter' ? (
@@ -42,8 +42,10 @@ const DomainDupl = ({
           onImport={() => handleActionClick('imported')}
           onEdit={() => selectedDomains.length === 1 && handleActionClick('edit')}
           onDelete={() => selectedDomains.length > 0 && handleActionClick('delete')}
+          onDestroy={() => selectedDomains.length > 0 && handleActionClick('destroy')}
           disk={type === 'domain' ? true: false}
           isEditDisabled={selectedDomains.length !== 1}
+          isDeleteDisabled={selectedDomains.length === 0} 
           status={selectedDomains[0]?.status}
         />
       )}
