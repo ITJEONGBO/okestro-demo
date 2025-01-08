@@ -1,6 +1,6 @@
 
 /*새로만들기*/
-.network_new_popup {
+.network-new-popup {
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
@@ -12,38 +12,47 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-.network_new_popup.edit-mode {
+.network-new-popup.edit-mode {
     height: 73%;
 }
-.network_new_content{
+.network-new-popup form{
+    height: 66vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+.network-new-content{
     height: 66vh;
     overflow-y: auto; 
     overflow-x: hidden;
 }
-.network_new_input{
+.network-new-input{
     display: flex;
     justify-content: space-between;
     width: 100%;
     align-items: center; 
 }
-.network_checkbox{
+.network-checkbox{
     display: flex;
     align-items: center; 
 }
-.network_checkbox_only{
+.network-checkbox-only{
     display: flex;
     width: 100%;
     justify-content: left;
     align-items: center; 
 }
-.network_new_radio_btn{
+.network-new-radio-btn{
     width: 100%;
     display: flex;
     justify-content: right;
     align-items: center;
 }
-.network_form_group,
-.network_checkbox_type1,
+.network-new-radio-btn>div{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.network-form-group,
 .network_radio_group,
 .network_checkbox_type3
 {
@@ -51,9 +60,8 @@
     justify-content: space-between;
     padding: 1.2% 2%;
 }
-.network_form_group input,
-.network_form_group select,
-.network_checkbox_type1>input[type="text"],
+.network-form-group input,
+.network-form-group select,
 .network_checkbox_type3 input
 {
     width: 47%;
@@ -66,34 +74,21 @@
     border: 1px solid  rgb(206, 206, 206);
 }
 
-.network_new_popup form{
-    height: 66vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-
-.network_new_cluster_table{ 
+.network-new-cluster-table{ 
     border-collapse: collapse;
     width: 100%;
     text-align: left;
 }
-.network_new_cluster_table thead{
+.network-new-cluster-table thead{
     background-color: #d1e2eb;
     border-top: none;
 }
 
-.network_new_cluster_table th,.network_new_cluster_table td{
+.network-new-cluster-table th,.network-new-cluster-table td{
     border: 1px solid rgb(209, 209, 209);
     padding: 0.05rem;
 }
-/* .network_new_radio_btn>div{
-    width: 30%;
-} */
-.network_new_radio_btn>div{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
+
 .network_new_radio>div{
     display: flex;
 }
@@ -125,16 +120,16 @@
     color: rgb(10, 55, 107);
     font-weight: 600;
 }
-#network_new_cluster_form{
+.network-new-cluster-form{
     padding: 0.2rem 0.4rem;
     margin-bottom: 1rem;
- 
+    font-size: 0.32rem;
 }
-#network_new_cluster_form>span,#network_new_vnic_form>span{
+.network-new-cluster-form>span,#network_new_vnic_form>span{
     font-size: 0.35rem;
     font-weight: 600;
 }
-#network_new_cluster_form>div{
+.network-new-cluster-form>div{
     border: 1px solid rgb(209, 209, 209);
     height: 37vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
@@ -164,7 +159,7 @@
   
 }
 /**/
-.network_popup_table{
+/* .network_popup_table{
     font-size: 0.3rem;
     
 }
@@ -186,8 +181,8 @@
 }
 .network_popup_table>.vnic_new_checkbox{
    text-align: center;
-}
-
+} */
+/*호스트 네트워크 설정 */
 .host_network_separation{
     display:flex;
     justify-content: space-between;
@@ -220,7 +215,7 @@
     padding: 10px;
     background-color: white;
 }
-.container:hover,.unconfigured_network>div:nth-child(n+2):nth-child(-n+5):hover{
+.container:hover{
     background: #d1d1d1;
 }
 .left-section {
@@ -236,12 +231,28 @@
     display: flex;
     gap: 5px;
 }
-
+.vnic_new_content_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 67%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.vnic_new_checkbox{
+    display:flex;
+}
+/**/
+/* 
 .unconfigured_network{
     display: flex;
-    flex-direction: column; /* 세로 방향 정렬 */
-    justify-content: space-between; /* 위, 아래 끝에 요소들을 배치하고 나머지 공간을 균등하게 배분 */
-    align-items: center; /* 가로축에서 중앙 정렬 */
+    flex-direction: column; 
+    justify-content: space-between; 
+    align-items: center;
     height:33vh;
     margin-bottom:0.2rem
 }
@@ -272,7 +283,7 @@
     font-size: 14px;
     color: black;
     font-weight: normal;
-  }
+  } */
 #network_detail_edit_form{
   height: 69vh;
   overflow-y: auto;
@@ -320,7 +331,6 @@
     cursor:pointer;
 }
 .backup_edit_content{
-    padding:0.2rem 0;
     font-size: 0.33rem;
     width: 86%;
 }
@@ -362,7 +372,7 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-.network_bring_outer .network_form_group{
+.network_bring_outer .network-form-group{
     font-size: 0.34rem;
     padding: 0.4rem;
 }
@@ -394,25 +404,3 @@
     text-align: left;
     border-collapse: collapse;
 }
-/*호스트 네트워크설정*/
-.vnic_new_content_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 67%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-/* 
-.network_radio_group input[type="radio"] {
-  transform: scale(0.5); 
-  margin-right: 0.1rem; 
-} */
-
-/* .network_radio_group label {
-  font-size: 13px;
-} */

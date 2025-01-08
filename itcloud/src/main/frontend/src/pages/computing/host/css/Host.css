@@ -80,8 +80,6 @@
     padding: 0.7rem 0.4rem;
 }
 
-
-
 .host_policy{
     padding: 0.7rem 0.4rem;
     display: flex;
@@ -152,4 +150,12 @@
   background-color: #007bff;
   color: white;
   font-weight: bold;
+}
+/*호스트 네트워크 */
+.h_network_change_table{
+    /* background:yellow; */
+    padding:0.1rem 0.4rem;
+}
+.h-icon-btn{
+    padding:0.1rem;
 }

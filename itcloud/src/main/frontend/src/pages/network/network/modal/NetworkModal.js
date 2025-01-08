@@ -12,7 +12,7 @@ import {
 } from '../../../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
-  <div className="network_form_group">
+  <div className="network-form-group">
     <label style={{ 'font-size': "0.32rem" }}>{label}</label>
     {children}
   </div>
@@ -195,14 +195,14 @@ const NetworkModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className={`network_new_popup ${editMode ? 'edit-mode' : ''}`}>
+      <div className={`network-new-popup ${editMode ? 'edit-mode' : ''}`}>
         <div className="popup_header">
           <h1>{editMode ? '논리 네트워크 수정' : '새 논리 네트워크'}</h1>
             <button onClick={onRequestClose}>
               <FontAwesomeIcon icon={faTimes} fixedWidth />
             </button>
         </div>
-        <div className='network_new_content'>
+        <div className='network-new-content'>
           {/* <div className="flex"> */}
           <div className="network_first_contents">
 
@@ -259,8 +259,8 @@ const NetworkModal = ({
             <hr/>
 
             <FormGroup >
-              <div className='network_new_input'>
-                <div className='network_checkbox'>
+              <div className='network-new-input'>
+                <div className='network-checkbox'>
                   <input
                     type="checkbox"
                     id="vlan"
@@ -293,7 +293,7 @@ const NetworkModal = ({
             </FormGroup>
             
             <FormGroup label="">
-              <div className='network_checkbox_only'>
+              <div className='network-checkbox-only'>
                 <input
                   type="checkbox"
                   id="usageVm"
@@ -313,7 +313,7 @@ const NetworkModal = ({
             </FormGroup>
             
             <FormGroup>
-              <div className='network_checkbox_only'>
+              <div className='network-checkbox-only'>
                 <input
                   type="checkbox"
                   id="portIsolation"
@@ -329,7 +329,7 @@ const NetworkModal = ({
             <FormGroup label="MTU">
               <div className="network_new_radio">
 
-                <div className='network_new_radio_btn'>
+                <div className='network-new-radio-btn'>
                   <div>
                     <input
                       type="radio"
@@ -385,11 +385,11 @@ const NetworkModal = ({
             </FormGroup> */}
             
             {!editMode &&
-              <div id="network_new_cluster_form">
+              <div className="network-new-cluster-form">
               <hr/>
                 <span>클러스터에서 네트워크를 연결/분리</span>
                 <div>
-                  <table className="network_new_cluster_table">
+                  <table className="network-new-cluster-table">
                     <thead>
                       <tr>
                         <th>이름</th>

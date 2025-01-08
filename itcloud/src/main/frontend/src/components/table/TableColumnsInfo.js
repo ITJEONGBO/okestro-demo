@@ -80,7 +80,6 @@ const TableColumnsInfo = {
     { header: '업타임', accessor: 'upTime', clickable: false, width: '20%' },
   ],
   NETWORK_INTERFACE_FROM_HOST:[
-    { header: '', accessor: 'icon', width: '5%' }, // 아이콘
     { header: '이름', accessor: 'name' }, // 인터페이스 이름
     { header: 'MAC', accessor: 'macAddress' }, // MAC 주소
     { header: 'Rx 속도 (Mbps)', accessor: 'rxSpeed' }, // Rx 속도
@@ -92,11 +91,21 @@ const TableColumnsInfo = {
   ],
   NETWORK_FROM_HOST:[
     // { header: '', accessor: 'icon', width: '5%' }, // 아이콘
-    { header: '관리되지 않음', accessor: 'bridged' }, // 브리지 상태
-    { header: 'VLAN', accessor: 'vlan' }, // VLAN 정보
-    { header: '네트워크 이름', accessor: 'networkName', clickable: true }, // 네트워크 이름
-    { header: 'IPv4 주소', accessor: 'ipv4' }, // IPv4 주소
-    { header: 'IPv6 주소', accessor: 'ipv6' } // IPv6 주소
+    { header: '관리되지 않음', accessor: 'bridged' }, 
+    { header: 'VLAN', accessor: 'vlan' },
+    { header: '네트워크 이름', accessor: 'networkName', clickable: true }, 
+    { header: 'IPv4 주소', accessor: 'ipv4' }, 
+    { header: 'IPv6 주소', accessor: 'ipv6' } 
+  ],
+  NETWORK_FROM_HOST_SLAVE:[
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: 'MAC', accessor: 'macAddress' }, // MAC 주소
+    { header: '속도', accessor: 'speed' },
+    { header: 'Rx 속도 (Mbps)', accessor: 'rxSpeed' }, // Rx 속도
+    { header: 'Tx 속도 (Mbps)', accessor: 'txSpeed' }, // Tx 속도
+    { header: '총 Rx (바이트)', accessor: 'rxTotalSpeed' },
+    { header: '총 Tx (바이트)', accessor: 'txTotalSpeed' }, 
+    { header: '중단', accessor: 'txTotalError' }, 
   ],
   DEVICE_FROM_HOST: [
     { header: '이름', accessor: 'name', clickable: false },

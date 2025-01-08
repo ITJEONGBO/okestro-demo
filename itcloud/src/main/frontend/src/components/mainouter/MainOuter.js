@@ -745,18 +745,18 @@ const MainOuter = ({ children }) => {
                 <div id="nav">
                     {/*대시보드버튼 */}
                     <Link to='/' className="link-no-underline">
-        <div
-            id="aside_popup_dashboard_btn"
-            className={getClassNames('dashboard')}
-            onClick={() => {
-                handleClick('dashboard'); // 선택 상태 업데이트
-                setAsidePopupVisible(true); // 대시보드 클릭 시 열림
-            }}
-            style={{ backgroundColor: asidePopupBackgroundColor.dashboard }}
-        >
-            <FontAwesomeIcon icon={faThLarge} fixedWidth />
-        </div>
-    </Link>
+                        <div
+                            id="aside_popup_dashboard_btn"
+                            className={getClassNames('dashboard')}
+                            onClick={() => {
+                                handleClick('dashboard'); // 선택 상태 업데이트
+                                setAsidePopupVisible(true); // 대시보드 클릭 시 열림
+                            }}
+                            style={{ backgroundColor: asidePopupBackgroundColor.dashboard }}
+                        >
+                            <FontAwesomeIcon icon={faThLarge} fixedWidth />
+                        </div>
+                    </Link>
                     {/*가상머신 버튼 */}
                     <Link to='/computing/vms' className="link-no-underline">
                         <div

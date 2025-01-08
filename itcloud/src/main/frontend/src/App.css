@@ -691,8 +691,6 @@ textarea{
     display:flex;
     justify-content: space-between;
 }
-
-
 .disk_type{
     display:flex;
     font-size: 0.35rem;
@@ -813,10 +811,10 @@ textarea{
 .link-no-underline {
     text-decoration: none;
     color: inherit; /* 필요에 따라 색상을 설정하세요 */
-  }
+}
 
 /* 스토리지 우클릭 메뉴박스*/
-#storage_context_menu {
+/* #storage_context_menu {
     position: absolute;
     display: none;
     background-color: white;
@@ -857,7 +855,7 @@ textarea{
 
 #out_btn_popup>div:hover{
     background-color: #e9f4fc;
-}
+} */
 
 /*가상머신 팝업*/
 /*템플릿 생성*/
@@ -1006,7 +1004,7 @@ textarea{
     border: 1px solid gray;
 } */
 
-#warning{
+/* #warning{
     display: flex;
     padding: 20px;
     justify-content: space-between;
@@ -1018,7 +1016,7 @@ textarea{
     width: 87.5%;
     height: 5vh;
     border-radius: 3px;
-}
+} */
 
 /*hostdetail.js*/
 .host_detail_outer{
@@ -1212,6 +1210,7 @@ textarea{
     border: 1px solid black;
     height: 50%;
 }
+
 .table_outer tbody span{
     display: block;
     width: 100%;
