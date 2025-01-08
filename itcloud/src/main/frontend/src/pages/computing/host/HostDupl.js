@@ -1,13 +1,10 @@
 import React, { Suspense, useState } from 'react';
 import HostActionButtons from './button/HostActionButtons'
 import HostTable from './HostTable';
-import HostModal from './modal/HostModal';
-import HostActionModal from './modal/HostActionModal';
-import DeleteModal from '../../../components/DeleteModal';
 
-// const HostModal = React.lazy(() => import('../Modal/HostModal'));
-// const DeleteModal = React.lazy(() => import('../Modal/DeleteModal'));
-// const HostActionModal = React.lazy(() => import('../Modal/HostActionModal'));
+const HostModal = React.lazy(() => import('./modal/HostModal'));
+const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
+const HostActionModal = React.lazy(() => import('./modal/HostActionModal'));
 
 const HostDupl = ({ 
   hosts, 
@@ -19,12 +16,45 @@ const HostDupl = ({
 
   const selectedIds = selectedHosts.map((host) => host.id).join(', ');
   
-  // const openModal = (action) => setActiveModal(action);
   const openModal = (action) => {
     console.log('Opening modal:', action); // Debug log
     setActiveModal(action);
   };
   const closeModal = () => setActiveModal(null);
+
+  const renderModals = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'create' && (
+        <HostModal
+          clusterId={clusterId}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'edit' && (
+        <HostModal
+          editMode
+          hId={selectedHosts[0]?.id || null}
+          clusterId={clusterId}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'delete' && (
+        <DeleteModal
+          type="Host"
+          contentLabel="호스트 삭제"
+          data={selectedHosts}
+          onRequestClose={closeModal}
+        />
+      )}
+      {['deactivate', 'activate', 'restart', 'reInstall', 'register', 'haOn', 'haOff'].includes(activeModal) && (
+        <HostActionModal
+          action={activeModal} // `type` 전달
+          host={selectedHosts?.[0]}
+          onRequestClose={closeModal}
+        />
+      )}
+    </Suspense>
+  );
 
   return (
     <>
@@ -45,38 +75,8 @@ const HostDupl = ({
         setSelectedHosts={(selected) => Array.isArray(selected) && setSelectedHosts(selected)}
       />
 
-      
-      {/* <Suspense fallback={<div>Loading...</div>}> */}
-        {activeModal === 'create' && (
-          <HostModal
-            clusterId={clusterId}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'edit' && (
-          <HostModal
-            editMode
-            hId={selectedHosts[0]?.id || null}
-            clusterId={clusterId}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'delete' && (
-          <DeleteModal
-            type="Host"
-            contentLabel="호스트 삭제"
-            data={selectedHosts}
-            onRequestClose={closeModal}
-          />
-        )}
-        {activeModal === 'manageAction' && (
-          <HostActionModal
-            action={activeModal}
-            data={selectedHosts?.[0]}
-            onRequestClose={closeModal}
-          />
-        )}
-      {/* </Suspense> */}
+      {/* 호스트 모달창 */}
+      {renderModals()}
     </>
   );
 };

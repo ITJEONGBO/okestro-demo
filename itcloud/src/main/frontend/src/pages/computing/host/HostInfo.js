@@ -4,9 +4,9 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../../components/navigation/NavButton';
 import HeaderButton from '../../../components/button/HeaderButton';
 import Footer from '../../../components/footer/Footer';
+import Path from '../../../components/Header/Path';
 import './css/Host.css';
 import { useHost } from '../../../api/RQHook';
-import Path from '../../../components/Header/Path';
 import HostGeneral from './HostGeneral';
 import HostVms from './HostVms'
 import HostNics from './HostNics'
@@ -16,43 +16,24 @@ import { renderHostStatus } from '../../../utils/format';
 
 const HostModal = React.lazy(() => import('./modal/HostModal'))
 const HostActionModal = React.lazy(() => import('./modal/HostActionModal'))
-const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
+const HostDeleteModal = React.lazy(() => import('./modal/HostDeleteModal'));
 
 const HostInfo = () => {
+  const navigate = useNavigate();
   const { id: hostId, section } = useParams();
-  const {
-    data: host,
-    isError: isHostError,
-    error: hostError,
-    isLoading: isHostLoading,
+  const { 
+    data: host, isError, error, isLoading 
   } = useHost(hostId);
 
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('general');
+  const isUp = host?.status === 'UP';
+  const isMaintenance = host?.status === 'MAINTENANCE';
 
-  // useEffect(() => {
-  //   if (!isHostError) {
-  //     console.error('Host fetch error:', isHostError); // 디버깅 로그
-  //     navigate('/error', { state: { message: '잘못된 Host ID입니다.' } });
-  //   }
-  // }, [isHostError, navigate]);
-  
-  const [modals, setModals] = useState({
-    edit: false,
-    delete: false,
-  });
-  
-  const [modals2, setModals2] = useState({
-    deactivate: false,
-    activate: false,
-    restart: false,
-    stop: false,
-    reinstall: false,
-    register: false,
-    haon: false,
-    haoff: false,
-  }); 
-  
+  const [activeTab, setActiveTab] = useState('general');
+  const [activeModal, setActiveModal] = useState(null);
+
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
+
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'vms', label: '가상머신' },
@@ -62,11 +43,7 @@ const HostInfo = () => {
   ];
 
   useEffect(() => {
-    if (!section) {
-      setActiveTab('general');
-    } else {
-      setActiveTab(section);
-    }
+    setActiveTab(section || 'general');
   }, [section]);
 
   const handleTabClick = (tab) => {
@@ -77,6 +54,7 @@ const HostInfo = () => {
 
   const pathData = [host?.name, sections.find((section) => section.id === activeTab)?.label];
 
+  // 탭 메뉴 관리
   const renderSectionContent = () => {
     const SectionComponent = {
       general: HostGeneral,
@@ -88,68 +66,49 @@ const HostInfo = () => {
     return SectionComponent ? <SectionComponent hostId={hostId} /> : null;
   };
 
-  const toggleModal = (type, isOpen) => {
-    setModals((prev) => {
-      if (prev[type] === isOpen) return prev;
-      return { ...prev, [type]: isOpen };
-    });
-  };
-
-  const toggleModal2 = (type, isOpen) => {
-    setModals2((prev) => ({ ...prev, [type]: isOpen }));
-  };
-
+  // 편집, 삭제 버튼들
   const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '호스트 편집', onClick: () => toggleModal('edit', true),},
-    { id: 'delete_btn', label: '삭제', onClick: () => toggleModal('delete', true)},
-  ]
+    { type: 'edit', label: '편집', disabled: !isUp, onClick: () => openModal("edit")},
+    { type: 'delete', label: '삭제', disabled: !isMaintenance, onClick: () => openModal("delete") },
+  ];
 
   const popupItems = [
-    { id: 'deactivate_btn', label: '유지보수', onClick: () => toggleModal2('deactivate', true) },
-    { id: 'activate_btn', label: '활성', onClick: () => toggleModal2('activate', true) },
-    { id: 'restart_btn', label: '재시작', onClick: () => toggleModal2('restart', true) },
-    { id: 'stop_btn', label: '중지', onClick: () => toggleModal2('stop', true) },
-    { id: 'reinstall_btn', label: '다시 설치', onClick: () => toggleModal2('reinstall', true) },
-    { id: 'register_btn', label: '인증서 등록', onClick: () => toggleModal2('register', true) },
-    { id: 'haon_btn', label: '글로벌 HA 유지 활성화', onClick: () => toggleModal2('haon', true) },
-    { id: 'haoff_btn', label: '글로벌 HA 유지 비활성화', onClick: () => toggleModal2('haoff', true) },
+    { type: 'deactivate', label: '유지보수', disabled: !isUp, onClick: () => openModal('deactivate') },
+    { type: 'activate', label: '활성화', disabled: !isMaintenance, onClick: () => openModal('activate') },
+    { type: 'restart', label: '재시작', disabled: !isUp, onClick: () => openModal('restart') },
+    { type: 'reInstall', label: '다시 설치', disabled: isUp, onClick: () => openModal('reInstall') },
+    { type: 'register', label: '인증서 등록', disabled: isUp, onClick: () => openModal('register') },
+    { type: 'haOn', label: '글로벌 HA 유지 관리를 활성화', disabled: !isUp, onClick: () => openModal('haOn') },
+    { type: 'haOff', label: '글로벌 HA 유지 관리를 비활성화', disabled: !isUp, onClick: () => openModal('haOff') },
   ];
 
   const renderModals = () => (
     <>
-      {modals.edit && (
-        <HostModal
-          isOpen={modals.edit}
-          onRequestClose={() => toggleModal('edit', false)}
-          editMode={modals.edit}
-          hId={hostId}
-        />
-      )}
-      {modals.delete && (
-        <DeleteModal
-          isOpen={modals.delete}
-          type="Host"
-          onRequestClose={() => toggleModal('delete', false)}
-          contentLabel="호스트"
-          data={host}
-        />
-      )}
-
-      {Object.keys(modals2).map((key) => {
-        const label = popupItems.find((item) => item.id === `${key}_btn`)?.label || key; // `label` 매칭
-          return (
-            modals2[key] && (
-              <HostActionModal
-                key={key}
-                isOpen={modals2[key]}
-                action={key}
-                onRequestClose={() => toggleModal2(key, false)}
-                contentLabel={label} // label 값 사용
-                data={host}
-              />
-            )
-          );
-      })}
+      <Suspense fallback={<div>Loading...</div>}>
+        {activeModal === 'edit' && (
+          <HostModal
+            editMode
+            hId={host?.id || null}
+            onClose={closeModal}
+          />
+        )}
+        {activeModal === 'delete' && (
+          <HostDeleteModal
+            type="Host"
+            contentLabel="호스트 삭제"
+            data={host}
+            onRequestClose={closeModal}
+          />
+        )}
+        {popupItems.some((item) => item.type === activeModal) && (
+          <HostActionModal
+            action={activeModal} // 선택된 type을 전달
+            data={host}
+            contentLabel={activeModal}
+            onRequestClose={closeModal}
+          />
+        )}
+        </Suspense>
     </>
   );
 
@@ -173,8 +132,9 @@ const HostInfo = () => {
           {renderSectionContent()}
         </div>
       </div>
-
-      <Suspense fallback={<div>Loading...</div>}>{renderModals()}</Suspense>
+      
+      {/* 호스트 모달창 */}
+      { renderModals() }
       <Footer/>
     </div>
   );

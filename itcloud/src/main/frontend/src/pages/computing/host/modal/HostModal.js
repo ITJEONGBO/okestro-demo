@@ -11,7 +11,6 @@ import {
 } from '../../../../api/RQHook';
 
 const HostModal = ({ 
-  // isOpen, 
   editMode = false, 
   hId,
   clusterId,

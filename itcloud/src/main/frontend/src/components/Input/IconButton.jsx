@@ -4,14 +4,14 @@ import { } from '@fortawesome/free-solid-svg-icons';
 
 const IconButton = ({
   id, 
-  // key, 
+  key, 
   label, 
   icon, 
-  onClick
+  onClick,
+  disabled
 }) => {
-  return (
-    // <button id={id} key={key} onClick={onClick} className="icon-button-container">
-    <button id={id} onClick={onClick} className="icon-button-container">
+  return (  
+    <button id={id} key={key} onClick={onClick} disabled={disabled} className="icon-button-container">
       {icon && ( // icon이 존재할 경우에만 span과 FontAwesomeIcon 렌더링
         <span className="icon-button-container">
           <FontAwesomeIcon icon={icon} className="input-icon" fixedWidth />

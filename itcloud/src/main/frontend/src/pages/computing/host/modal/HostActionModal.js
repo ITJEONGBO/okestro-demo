@@ -8,12 +8,10 @@ import {
   useRestartHost
 } from '../../../../api/RQHook';
 
-const HostActionModal = ({ 
-    isOpen, 
+const HostActionModal = ({
     action,
     onRequestClose, 
-    contentLabel,
-    data
+    host
 }) => {
   const { mutate: deactivateHost } = useDeactivateHost();
   const { mutate: activateHost } = useActivateHost();
@@ -23,17 +21,17 @@ const HostActionModal = ({
   const [name, setName] = useState('');
   
   useEffect(() => {
-    if (data) {
-      setId(data.id || '');
-      setName(data.name || '');
-      console.log('**' + data.id);
+    if (host) {
+      setId(host.id || '');
+      setName(host.name || '');
+      console.log('**' + host.id);
     }
-  }, [data]);
+  }, [host]);
 
-  const getContentLabel = (contentLabel) => {
-    switch (contentLabel) {
+  const getContentLabel = (action) => {
+    switch (action) {
       case 'deactivate': return '유지보수';
-      case 'activate': return '활성';
+      case 'activate': return '활성화';
       case 'restart': return '재시작';
       case 'reinstall': return '다시 설치';
       case 'register': return '인증서 등록';
@@ -93,7 +91,7 @@ const HostActionModal = ({
         // }        
       },
       onError: (error) => {
-        console.error(`${contentLabel} ${name} 액션 오류:`, error);
+        console.error(`${action} ${name} 액션 오류:`, error);
       },
     });
   };
@@ -103,14 +101,14 @@ const HostActionModal = ({
     <Modal
       isOpen={true}
       onRequestClose={onRequestClose}
-      contentLabel={`${contentLabel}`}
+      contentLabel={getContentLabel(action)}
       className="Modal"
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_delete_popup">
         <div className="popup_header">
-          <h1>호스트 {contentLabel}</h1>
+          <h1>호스트 {getContentLabel(action)}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
@@ -119,7 +117,7 @@ const HostActionModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data.name} 를(을) {getContentLabel}하시겠습니까? </span>
+            <span> {host?.name} 를(을) {getContentLabel(action)} 하시겠습니까? </span>
           </div>
         </div>
 

@@ -66,6 +66,7 @@ const HeaderButton = ({
               label={button.label}
               icon={button.icon}
               onClick={button.onClick}
+              disabled={button.disabled}
             />
           ))}
           {popupItems && popupItems.length > 0 && (
@@ -76,13 +77,14 @@ const HeaderButton = ({
                 style={{ display: isPopupBoxVisible ? 'block' : 'none' }}
               >
                 {popupItems.map((item, index) => (
-                  <div
+                  <div                  
                     key={index}
                     className="popup_item"
                     onClick={(e) => {
                       e.stopPropagation();
                       handlePopupBoxItemClick(item);
                     }}
+                    disabled={item.disabled}
                   >
                     {item.label}
                   </div>

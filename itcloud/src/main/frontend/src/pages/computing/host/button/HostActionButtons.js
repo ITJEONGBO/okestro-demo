@@ -3,12 +3,7 @@ import '../css/HostAction.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-const HostActionButtons = ({
-  openModal,
-  isEditDisabled,
-  status,
-  selectedHosts,
-}) => {
+const HostActionButtons = ({ openModal, isEditDisabled, status, selectedHosts }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
 
@@ -47,7 +42,11 @@ const HostActionButtons = ({
   return (
     <div className="header_right_btns">
       {basicActions.map(({ type, label, disabled }) => (
-        <button key={type} onClick={() => openModal(type)} disabled={disabled}>
+        <button 
+          key={type} 
+          onClick={() => openModal(type)} 
+          disabled={disabled}
+        >
           {label}
         </button>
       ))}
@@ -62,7 +61,7 @@ const HostActionButtons = ({
             {manageActions.map(({ type, label, disabled }) => (
               <button
                 key={type}
-                onClick={() => openModal('manageAction', { actionType: type })}
+                onClick={() => openModal(type)}
                 disabled={disabled}
                 className="dropdown-item"
               >
