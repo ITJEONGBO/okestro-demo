@@ -93,11 +93,11 @@ const BarChart = ({ names, percentages }) => {
   });
 
   // 반응형
-  const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.2); 
+  const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.15); 
   const [chartHeight, setChartHeight] = useState(window.innerHeight * 0.2); 
   useEffect(() => {
     const handleResize = () => {
-      setChartWidth(window.innerWidth * 0.2); // 창 너비의 50%
+      setChartWidth(window.innerWidth * 0.15); // 창 너비의 50%
       setChartHeight(window.innerHeight * 0.2); // 창 높이의 30%
     };
 

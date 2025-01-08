@@ -33,7 +33,7 @@ const AreaChart = ({ series, datetimes }) => {
   });
 
   //반응형
-  const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.26);  // 초기 너비를 화면의 70%로 설정
+  const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.24);  // 초기 너비를 화면의 70%로 설정
   const [chartHeight, setChartHeight] = useState(window.innerHeight * 0.18); // 초기 높이를 화면의 30%로 설정
 
   useEffect(() => {
