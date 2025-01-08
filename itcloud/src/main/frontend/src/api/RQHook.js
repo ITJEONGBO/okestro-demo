@@ -2108,25 +2108,7 @@ export const useAllTemplatesFromNetwork = (networkId, mapPredicate) => useQuery(
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
 })
-/**
- * @name useAllPermissionsFromNetwork
- * @description 네트워크 내 권한 목록조회 useQuery훅
- * 
- * @param {string} networkId 네트워크ID
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.findAllPermissionsFromNetwork
- */
-export const useAllPermissionsFromNetwork = (networkId, mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['permissionFromNetwork', networkId], 
-  queryFn: async () => {
-    console.log(`useAllPermissionFromNetwork ... ${networkId}`);
-    const res = await ApiManager.findAllPermissionsFromNetwork(networkId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
-})
+
 /**
  * @name useAllVnicProfilesFromNetwork
  * @description 네트워크 내 VNIC 프로필 목록조회 useQuery훅
@@ -2212,7 +2194,7 @@ export const useDeleteNetwork = () => {
 };
 
 
-//region: VnicProfiles -----------------vnic프로파일일---------------------
+//region: VnicProfiles -----------------vnic프로파일---------------------
 /**
  * @name useAllVnicProfiles
  * @description 모든 VNIC 프로파일 목록조회 useQuery훅
@@ -2254,7 +2236,7 @@ export const useVnicProfile = (vnicId) => useQuery({
  * @name useAllVmsFromVnicProfiles
  * @description  VNIC 내 가상머신  목록조회 useQuery훅
  * 
- * @param {string} vnicProfileId 네트워크ID
+ * @param {string} vnicProfileId vnic아이디
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
@@ -2270,6 +2252,29 @@ export const useAllVmsFromVnicProfiles = (vnicProfileId, mapPredicate) => useQue
   },
   enabled: !!vnicProfileId, 
 });
+
+/**
+ * @name useAllNicsFromTemplate
+ * @description vnic내 템플릿 목록조회 useQuery훅
+ * 
+ * @param {string} vnicProfileId vnic아이디
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllTemplatesFromVnicProfiles
+ */
+export const useAllTemplatesFromVnicProfiles = (vnicProfileId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllTemplatesFromVnicProfiles', vnicProfileId], 
+  queryFn: async () => {
+    console.log(`useAllTemplatesFromVnicProfiles ... ${vnicProfileId}`);
+    const res = await ApiManager.findAllTemplatesFromVnicProfiles(vnicProfileId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  },
+  enabled: !!vnicProfileId,
+  staleTime: 0,
+  cacheTime: 0,
+})
 
 
 /**

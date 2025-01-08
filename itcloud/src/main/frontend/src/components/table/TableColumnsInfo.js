@@ -224,8 +224,12 @@ const TableColumnsInfo = {
     { header: '통과', accessor: 'passThrough', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-  VMS_FROMVNIC_PROFILES: [
+  VMS_FROM_VNIC_PROFILES: [
     { header: '이름', accessor: 'name', clickable: false },
+  ],
+  TEMPLATE_FROM_VNIC_PROFILES: [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '버전', accessor: 'versionNum', clickable: false },
   ],
   STORAGE_DOMAINS: [
     { header: '상태', accessor: 'icon', width: '4%' },

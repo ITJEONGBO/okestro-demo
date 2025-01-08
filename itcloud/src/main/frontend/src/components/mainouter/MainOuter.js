@@ -45,6 +45,8 @@ const MainOuter = ({ children }) => {
             handleClick('computing');  // /computing이 들어가 있을 때
         } else if (path.includes('/networks')) {
             handleClick('network');    // /networks가 들어가 있을 때
+        } else if (path.includes('/vnicProfiles')) {
+            handleClick('network');    // /networks가 들어가 있을 때
         } else if (path.includes('/storages')) {
             handleClick('storage');    // /storages가 들어가 있을 때
         } else if (path.includes('/events')) {

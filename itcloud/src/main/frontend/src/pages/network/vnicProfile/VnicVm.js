@@ -4,12 +4,12 @@ import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 
 
 const VnicVm = ({ vnicProfileId  }) => {
-  const { data: nic } = useAllVmsFromVnicProfiles(vnicProfileId);
-  console.log("VM FROM NIC Data: ", nic);
-  console.log("Fetched NICOID: ", vnicProfileId);
+  const { data: nic } = useAllVmsFromVnicProfiles(vnicProfileId, (e) => ({...e,}));
+  console.log("vm nic data: ", nic);
+  console.log("받아온 nic아이디: ", vnicProfileId);
   return (
     <TablesOuter
-      columns={TableColumnsInfo.VMS_FROMVNIC_PROFILES}
+      columns={TableColumnsInfo.VMS_FROM_VNIC_PROFILES}
       data={nic || []}
   />
   );

@@ -50,7 +50,7 @@ const selectedIds = Array.isArray(selectedVnicProfiles)
         onRequestClose={() => setIsModalOpen(false)}
         selectedVnicProfile={selectedVnicProfiles.length > 0 ? selectedVnicProfiles[0] : null} // 선택된 첫 번째 vNIC 프로파일 전달
         selectedVnicProfiles={selectedVnicProfiles}
-        networkId={networkId}
+        // networkId={networkId}
         // nicId={selectedIds}
       />
     </div>

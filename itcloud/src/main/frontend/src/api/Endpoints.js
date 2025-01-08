@@ -184,6 +184,7 @@ const ENDPOINTS = {
   FIND_ALL_VNIC_PROFILES: () =>  `/api/v1/vnicProfiles`,
   FIND_VNIC_PROFILE: ( vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
   FIND_VMS_VNIC_PROFILE: ( vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}/vms`,
+  FIND_TEMPLATE_VNIC_PROFILE: ( vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}/templates`,
   //endregion: VnicProfile
 
   //region: StorageDomain

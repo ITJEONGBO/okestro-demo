@@ -1725,7 +1725,6 @@ migrateHostsFromVM: async (vmId) => {
   findAllVnicProfilesFromNetwork: async (networkId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VNIC_PROFILES_FROM_NETWORK(networkId),
-    // defaultValues: DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK
   }),
   /**
    * @name ApiManager.findAllClustersFromNetwork
@@ -1926,7 +1925,7 @@ migrateHostsFromVM: async (vmId) => {
 
  /**
    * @name ApiManager.findAllHostsFromNetwork
-   * @description vnic profile내 가상머신신 목록
+   * @description vnic profile내 가상머신 목록
    *
    * @param {string} vnicProfileId
    * @returns 
@@ -1936,6 +1935,21 @@ migrateHostsFromVM: async (vmId) => {
   findAllVmsFromVnicProfiles : async (vnicProfileId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_VMS_VNIC_PROFILE(vnicProfileId),
+  }),
+
+  /**
+   * @name ApiManager.findNicsFromTemplate
+   * @description vnic profile내 템플릿 목록
+   *
+   * @param {string} vnicProfileId
+   * @returns 
+   * 
+   * @see
+   */
+  findAllTemplatesFromVnicProfiles : async (vnicProfileId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_TEMPLATE_VNIC_PROFILE(vnicProfileId), 
+    // defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_TEMPLATE
   }),
 
   /**

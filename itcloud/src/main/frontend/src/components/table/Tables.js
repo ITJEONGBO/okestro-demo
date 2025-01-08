@@ -177,7 +177,7 @@ const Tables = ({
           <tbody>
             {sortedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} style={{ textAlign: 'center' }}>
+                <td colSpan={columns.length} style={{ textAlign: 'center',height:'10vh' }}>
                   내용이 없습니다
                 </td>
               </tr>
