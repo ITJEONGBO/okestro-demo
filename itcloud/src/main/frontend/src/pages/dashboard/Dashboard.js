@@ -1,7 +1,7 @@
 import React, { useEffect, memo } from 'react';
 import { adjustFontSize } from '../../UIEvent';
 import { debounce } from 'lodash'; // 리스너의 호출 빈도를 줄이기 위해 디바운싱을 사용
-import './css/Dashboard.css'
+import './css/dashboard.css'
 import { faCloud, faEarthAmericas, faLayerGroup, faListUl, faMicrochip, faUser } from '@fortawesome/free-solid-svg-icons';
 import {
   useDashboard,
@@ -172,7 +172,7 @@ const Dashboard = () => {
   return (
     <>
       {/* 대시보드 section */}
-      <div className="dash_board">
+      <div id="section">
 
         <DashboardBoxGroup 
           boxItems={[

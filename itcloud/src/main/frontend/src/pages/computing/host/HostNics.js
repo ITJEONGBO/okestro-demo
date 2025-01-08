@@ -1,19 +1,11 @@
-<<<<<<< HEAD:itcloud/src/main/frontend/src/pages/computing/host/HostNics.js
-import React, { useState,useEffect } from 'react';
-import TablesOuter from '../../../components/table/TablesOuter';
-import { useNetworkInterfaceFromHost } from '../../../api/RQHook';
-import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
-import NetworkHostModal from '../../network/network/modal/NetworkHostModal';
-import { formatNumberWithCommas, renderUpDownStatusIcon } from '../../../utils/format';
-=======
 import React, { useState, useEffect } from "react";
-import TablesOuter from "../../table/TablesOuter";
-import { useNetworkInterfaceFromHost } from "../../../api/RQHook";
-import TableColumnsInfo from "../../table/TableColumnsInfo";
-import NetworkHostModal from "../../Modal/NetworkHostModal";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrown, faTimes,faArrowCircleUp, faArrowCircleDown } from "@fortawesome/free-solid-svg-icons";
->>>>>>> 3e47b24e ([fix]호스트네트워크수정, css):itcloud/src/main/frontend/src/components/Computing/hostjs/HostNics.js
+import { useNetworkInterfaceFromHost } from "../../../api/RQHook";
+import TablesOuter from "../../../components/table/TablesOuter";
+import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
+import NetworkHostModal from "../../network/network/modal/NetworkHostModal";
 
 const HostNics = ({ hostId }) => {
   const { data: nics = [] } = useNetworkInterfaceFromHost(hostId, (e) => ({
