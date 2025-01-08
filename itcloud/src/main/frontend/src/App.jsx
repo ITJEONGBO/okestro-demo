@@ -1,41 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { HashRouter  as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import STOMP from './Socket'
+import React, { useEffect, useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
+import { Route, HashRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
+import STOMP from './Socket';
+
 import Header from './components/Header/Header';
-import MainOuter from './components/MainOuter';
+import MainOuter from './components/mainouter/MainOuter';
 
-import Login from './page/Login';
-import Dashboard from './components/Dashboard';
-import Setting from './components/Setting/Setting';
-import Event from './components/Event';
-import Error from './components/Error';
-
-import AllVm from './components/Computing/AllVm';
-import AllTemplates from './components/Computing/templatejs/AllTemplates';
-import AllNetwork from './components/Network/AllNetwork';
-import AllDomain from './components/Storage/AllDomain';
-import AllDisk from './components/Storage/AllDisk';
-
-import RutilManager from './components/Computing/RutilManager';
-import DataCenterInfo from './components/Computing/datacenterjs/DataCenterInfo';
-import ClusterInfo from './components/Computing/clusterjs/ClusterInfo';
-import HostInfo from './components/Computing/hostjs/HostInfo';
-import VmDetail from './components/Computing/VmDetail';
-import TemplateInfo from './components/Computing/templatejs/TemplateInfo';
-import NetworkInfo from './components/Network/networkjs/NetworkInfo';
-import DomainInfo from './components/Storage/domainjs/DomainInfo';
-import DiskInfo from './components/Storage/diskjs/DiskInfo';
-import SettingInfo from './components/Setting/SettingInfo';
-import { IconGallery } from '@storybook/blocks';
-import AllVnic from './components/vnicjs/AllVnic';
-import VnicInfo from './components/vnicjs/VnicInfo';
-
-// import NetworkDetail from './components/Network/NetworkDetail';
-// import TemplateDetail from './components/Computing/TemplateDetail';
-// import Templates from './components/Computing/Rutil/Templates';
+import Dashboard from './pages/dashboard/Dashboard';
+import RutilManager from './pages/Rutil/RutilManager';
+import DataCenterInfo from './pages/computing/datacenter/DataCenterInfo';
+import ClusterInfo from './pages/computing/cluster/ClusterInfo';
+import HostInfo from './pages/computing/host/HostInfo';
+import AllVm from './pages/computing/vm/AllVm';
+import VmDetail from './pages/computing/vm/VmDetail';
+import AllTemplates from './pages/computing/template/AllTemplates';
+import TemplateInfo from './pages/computing/template/TemplateInfo';
+import AllNetwork from './pages/network/network/AllNetwork';
+import NetworkInfo from './pages/network/network/NetworkInfo';
+import AllVnic from './pages/network/vnicProfile/AllVnic';
+import VnicInfo from './pages/network/vnicProfile/VnicInfo';
+import AllDomain from './pages/storage/domain/AllDomain';
+import DomainInfo from './pages/storage/domain/DomainInfo';
+import AllDisk from './pages/storage/disk/AllDisk';
+import DiskInfo from './pages/storage/disk/DiskInfo';
+import Event from './pages/event/Event';
+import SettingInfo from './pages/setting/SettingInfo';
+import Login from './pages/login/Login';
+import Error from './pages/Error';
 
 
 const App = () => {

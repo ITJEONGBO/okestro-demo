@@ -6,8 +6,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { adjustFontSize } from '../../UIEvent';
 import './Header.css';
-import logo from '../../img/logo.png'
-import rutil_logo from '../../img/rutil_logo.png'
+import rutil_logo from '../../assets/images/rutil_logo.png'
 
 const Header = ({ setAuthenticated }) => {
     const navigate = useNavigate();
