@@ -1529,6 +1529,20 @@ textarea{
 .bgcolor-primary { background: #8ec452 }
 .bgcolor-primary:hover { background: #76a314 }
 
+
+.header_right_btns>button {
+    margin-right: 0.2rem;
+    padding: 0.1rem 0.1rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    border-radius: 2px;
+    height: 3.3vh;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: left;
+    align-items: center; /* 수직 가운데 정렬 */
+    border: 1px solid gray;
+}
+
 /*반응형*/
 @media (max-width:1390px) {
 

@@ -26,24 +26,30 @@ const HeaderButton = ({
   // 팝업 외부 클릭 시 닫히도록 처리
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const popupBox = document.getElementById('popup_box');
-      const popupBtn = document.getElementById('popup_btn');
-      if (popupBox && !popupBox.contains(event.target) && popupBtn && !popupBtn.contains(event.target)) {
+      const popupBox = document.querySelector('.popup-box');
+      const popupBtn = document.querySelector('.popup-btn');
+      if (
+        popupBox &&
+        !popupBox.contains(event.target) &&
+        popupBtn &&
+        !popupBtn.contains(event.target)
+      ) {
         setIsPopupBoxVisible(false);
       }
     };
-
+  
     document.addEventListener('mousedown', handleClickOutside);
-
+  
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+  
 
   return (
-    <div className="section_header">
-      <div className="section_header_left">
-        <div className="section_header_title">
+    <div className="section-header">
+      <div className="section-header-left">
+        <div className="section-header-title">
           {titleIcon && (
             <FontAwesomeIcon 
               icon={titleIcon} 
@@ -54,8 +60,8 @@ const HeaderButton = ({
           <div>{title}</div>
         </div>
       </div>
-      <div className="section_header_right">
-        <div className="article_nav">
+      <div className="section-header-right">
+        <div className="article-nav">
           <div className="subStatus">
             <p>{status}</p>
           </div>
@@ -70,10 +76,10 @@ const HeaderButton = ({
             />
           ))}
           {popupItems && popupItems.length > 0 && (
-            <button id="popup_btn" onClick={togglePopupBox}>
+            <button className="popup-btn" onClick={togglePopupBox}>
               <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
               <div
-                id="popup_box"
+                className="popup-box"
                 style={{ display: isPopupBoxVisible ? 'block' : 'none' }}
               >
                 {popupItems.map((item, index) => (

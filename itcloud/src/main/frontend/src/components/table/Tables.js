@@ -151,7 +151,7 @@ const Tables = ({
 
   return (
     <>
-      <div className='custom_outer'>
+      <div className='custom-outer'>
         <table className="custom-table" ref={tableRef} style={{ tableLayout: 'fixed', width: '100%' }}>
           <thead>
             <tr>
@@ -328,7 +328,7 @@ const Tables = ({
       {/* 우클릭 메뉴 박스 */}
       {contextMenu && (
         <div ref={menuRef}
-          className='my_context_menu'
+          className='my-context-menu'
           style={{
             position: 'absolute',
             top: `${contextMenu.mouseY}px`,

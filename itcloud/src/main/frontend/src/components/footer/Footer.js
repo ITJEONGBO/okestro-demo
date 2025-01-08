@@ -13,7 +13,7 @@ const Footer = () => {
   const handleFooterTabClick = (tab) => setSelectedFooterTab(tab);
 
   return (
-    <div className="footer_outer">
+    <div className="footer-outer">
       <div className="footer">
         <button onClick={toggleFooterContent}>
           <FontAwesomeIcon icon={faChevronDown} fixedWidth/>
@@ -40,8 +40,8 @@ const Footer = () => {
         </div>
       </div>
       {isFooterContentVisible && (
-        <div className="footer_content" style={{ display: 'block' }}>
-          <div className="footer_nav">
+        <div className="footer-content" style={{ display: 'block' }}>
+          <div className="footer-nav">
             {[...Array(8)].map((_, index) => (
               <div key={index} style={index === 7 ? { borderRight: 'none' } : {}}>
                 <div>작업이름</div>
@@ -49,7 +49,7 @@ const Footer = () => {
               </div>
             ))}
           </div>
-          <div className="footer_img">
+          <div className="footer-img">
             <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
             <span>항목을 찾지 못했습니다</span>
           </div>

@@ -18,7 +18,7 @@ const DashboardBox = ({
   
   return (
     <div className="box" onClick={() => navigatePath && navigate(navigatePath)}>
-       <span className='box_icon_title'>
+       <span className='box-icon-title'>
         {icon && <FontAwesomeIcon icon={icon} fixedWidth />}
         <p>{title}</p>
       </span>
@@ -36,7 +36,7 @@ const DashboardBox = ({
 
 const DashboardBoxGroup = ({ boxItems }) => {
   return (
-    <div className="dash_boxs">
+    <div className="dash-boxs">
       {boxItems && boxItems.map((e, i) => (
         <DashboardBox  
           key={i}

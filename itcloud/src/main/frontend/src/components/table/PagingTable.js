@@ -64,7 +64,7 @@ const PagingTable = ({
   return (
     <>
       {showSearchBox && (
-        <div className="search_box">
+        <div className="search-box">
           <input 
             type="text"
             placeholder="Search..."
@@ -76,11 +76,11 @@ const PagingTable = ({
       )}
 
       <div className="pagination">
-        <div className="paging_btns">
-          <div className="paging_arrows">
+        <div className="paging-btns">
+          <div className="paging-arrows">
             <div className="flex">
               <button
-                className="paging_arrow"
+                className="paging-arrow"
                 onClick={() => handlePageChange('prev')}
                 disabled={currentPage === 1}
               >
@@ -88,7 +88,7 @@ const PagingTable = ({
               </button>
               <span>{`${indexOfFirstItem + 1} - ${Math.min(indexOfLastItem, validData.length)}`}</span>
               <button
-                className="paging_arrow"
+                className="paging-arrow"
                 onClick={() => handlePageChange('next')}
                 disabled={currentPage === totalPages}
               >

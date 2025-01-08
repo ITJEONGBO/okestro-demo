@@ -34,8 +34,8 @@ const Header = ({ setAuthenticated }) => {
 
     const handleOutsideClick = (event) => {
         if (
-            !event.target.closest('.user_btn') && 
-            !event.target.closest('.user_loginbox') && 
+            !event.target.closest('.user-btn') && 
+            !event.target.closest('.user-loginbox') && 
             !event.target.closest('.fa-bell-wrapper') && 
             !event.target.closest('.bell_box')
         ) {
@@ -67,12 +67,12 @@ const Header = ({ setAuthenticated }) => {
 
     return (
         <div className="header">
-            <div className="header_right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
+            <div className="header-right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
                 {/* <img className='logo' src={logo} alt="logo Image" /> */}
-                <img className='rutil_logo' src={rutil_logo} alt="logo Image" />
+                <img className='rutil-logo' src={rutil_logo} alt="logo Image" />
             </div>
 
-            <div className="header_left">
+            <div className="header-left">
                 <div onClick={() => window.location.reload()} style={{ cursor: 'pointer' }}>
                   <FontAwesomeIcon icon={faRotate} fixedWidth />
                 </div>
@@ -86,13 +86,13 @@ const Header = ({ setAuthenticated }) => {
                   }}
                 >
                     <FontAwesomeIcon icon={faBell} fixedWidth/>
-                    <div className='bell_box' style={{ display: isBellActive ? 'block' : 'none' }} onClick={stopPropagation}>
+                    <div className='bell-box' style={{ display: isBellActive ? 'block' : 'none' }} onClick={stopPropagation}>
                         <div>알림</div>
                     </div>
                 </div>
 
                 {/*user */}
-                <div className='user_btn' 
+                <div className='user-btn' 
                   onClick={toggleLoginBox}
                   style={{ 
                       backgroundColor: isLoginBoxVisible ? '#ebececd8' : 'transparent',
@@ -100,7 +100,7 @@ const Header = ({ setAuthenticated }) => {
                   }}
                 >
                   <FontAwesomeIcon icon={faUser} fixedWidth/>&nbsp;<span>{username}</span>
-                  <div className='user_loginbox' 
+                  <div className='user-loginbox' 
                       style={{ display: isLoginBoxVisible ? 'block' : 'none' }} 
                       onClick={stopPropagation}
                     >

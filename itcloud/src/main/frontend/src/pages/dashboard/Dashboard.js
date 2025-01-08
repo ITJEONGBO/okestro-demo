@@ -185,8 +185,8 @@ const Dashboard = () => {
           ]}
         />
 
-        <div className="dash_section">
-          <div className="dash_section_contents">
+        <div className="dash-section">
+          <div className="dash-section-contents">
             <h1>CPU</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
@@ -199,13 +199,13 @@ const Dashboard = () => {
             
             <span>USED { Math.floor((cpuMemory?.usedCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % /  Total { (cpuMemory?.totalCpuCore) } Core</span> 
             {/*COMMIT { Math.floor((cpuMemory?.commitCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % <br/> */}
-            <div className="wave_graph">
+            <div className="wave-graph">
               <h2>Per CPU</h2>
               <div><SuperAreaChart vmPer={vmCpuPer} /></div>
             </div>
           </div>
 
-          <div className="dash_section_contents">
+          <div className="dash-section-contents">
             <h1>MEMORY</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
@@ -216,13 +216,13 @@ const Dashboard = () => {
               </div>
             </div>
             <span>USED { (cpuMemory?.usedMemoryGB)?.toFixed(1) } GB / Total { (cpuMemory?.totalMemoryGB)?.toFixed(1) } GB</span>
-            <div className="wave_graph">
+            <div className="wave-graph">
               <h2>Per MEMORY</h2>
               <div><SuperAreaChart vmPer={vmMemoryPer} /></div>
             </div>
           </div>
 
-          <div className="dash_section_contents" style={{ borderRight: 'none' }}>
+          <div className="dash-section-contents" style={{ borderRight: 'none' }}>
             <h1>STORAGE</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
@@ -233,7 +233,7 @@ const Dashboard = () => {
               </div>
             </div>
             <span>USED {storage?.usedGB} GB / Total {storage?.freeGB} GB</span>
-            <div className="wave_graph">
+            <div className="wave-graph">
               <h2>Per Network</h2>
               <div><SuperAreaChart vmPer={vmNetworkPer} /></div>
             </div>
@@ -243,15 +243,15 @@ const Dashboard = () => {
         <div className="bar">
           <div>
             <span>CPU</span>
-            <div className='grid_outer'><Grid type={'cpu'} data={vmMetric}/></div>
+            <div className='grid-outer'><Grid type={'cpu'} data={vmMetric}/></div>
           </div>
           <div>
             <span>MEMORY</span>
-            <div className='grid_outer'><Grid type={'memory'} data={vmMetric}/></div>
+            <div className='grid-outer'><Grid type={'memory'} data={vmMetric}/></div>
           </div>
           <div>
             <span>StorageDomain</span>
-            <div className='grid_outer'><Grid type={'domain'} data={storageMetric}/></div>
+            <div className='grid-outer'><Grid type={'domain'} data={storageMetric}/></div>
           </div>
         </div>
       </div> {/* 대시보드 section끝 */}

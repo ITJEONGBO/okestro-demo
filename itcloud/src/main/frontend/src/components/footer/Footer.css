@@ -1,5 +1,5 @@
 
-.footer_outer {
+.footer-outer {
     font-size: 0.34rem;
     width: 100%;
     left: 0;
@@ -47,19 +47,19 @@
 .footer>div>div:nth-child(2){
     color: #4F4F4F;
 }
-.footer_content{
+.footer-content{
     height: 100%;
     display: none;
     background: white;
 }
-.footer_nav{
+.footer-nav{
     display: flex;
     width: 100%;
     padding: 5px 3px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
     margin-bottom: 18px;
 }
-.footer_nav>div{
+.footer-nav>div{
     display: flex;
     width: 15%;
     justify-content: space-between;
@@ -67,16 +67,16 @@
     padding: 2px 5px;
     color: #4F4F4F;
 }
-.footer_img{
+.footer-img{
 
     width: 11%;
     margin: 0 auto;
 }
-.footer_img>img{
+.footer-img>img{
     margin: 0 auto;
     display: block;
 }
-.footer_img>span{
+.footer-img>span{
     text-align: center;
     display: block;
     font-size: 0.33rem;

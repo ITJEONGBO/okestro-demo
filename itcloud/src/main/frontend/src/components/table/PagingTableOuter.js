@@ -12,7 +12,7 @@ const PagingTableOuter = ({
   showSearchBox = true 
 }) => {
   return (
-    <div className="section_table_outer">
+    <div className="section-table-outer">
       <PagingTable 
         columns={columns} 
         data={data}

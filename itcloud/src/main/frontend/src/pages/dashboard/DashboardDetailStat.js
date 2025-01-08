@@ -3,7 +3,7 @@ import './DashboardDetailStat.css'
 
 const DashboardDetailStat = ({title, totalPercentage}) => {
   return (
-    <div className="dash_section_contents">
+    <div className="dash-section-contents">
       <h1>{title}</h1>
       <div className="graphs">
         <div className="graph-wrap active-on-visible" 
@@ -16,7 +16,7 @@ const DashboardDetailStat = ({title, totalPercentage}) => {
         </div>
       </div>
       <span>USED 64 Core / Total 192 Core</span>
-      <div className="wave_graph">
+      <div className="wave-graph">
         <h2>Per CPU</h2>
         <div>
           <SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}

@@ -14,9 +14,9 @@ const TablesOuter = ({
   onClickableColumnClick
 }) => {
   return (
-    <div className="section_table_outer">
+    <div className="section-table-outer">
       {showSearchBox && ( 
-        <div className="search_box">
+        <div className="search-box">
           <input type="text" />
           <button><FontAwesomeIcon icon={faSearch} fixedWidth /></button>
           <button><FontAwesomeIcon icon={faRefresh} fixedWidth /></button>

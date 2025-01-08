@@ -11,48 +11,48 @@
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
 }
 
-.header_right {
+.header-right {
     font-size: 0.4rem;
     display: flex;
     align-items: center; /* 세로 중앙 정렬 추가 */
 }
 
-.header_right > span {
+.header-right > span {
     color: rgb(0, 0, 0);
     font-weight: 600;
     cursor: pointer;
 }
-.header_right > span:hover{
+.header-right > span:hover{
     color: #5dcbf7;
 }
-.header_left {
+.header-left {
     display: flex;
     justify-content: space-between;
     font-size: 0.5em;
     min-width:6%;
     align-items: center; /* 세로 중앙 정렬 추가 */
 }
-.header_left span{
+.header-left span{
     font-size: 0.4rem;
 }
-.header_left > div{
+.header-left > div{
     padding: 0 0.15rem;
     cursor: pointer;
     color: rgb(0, 0, 0);
 }
-.header_left > div > i {
+.header-left > div > i {
     font-size: 1.2em;
     cursor: pointer;
 }
-.header_left > div:hover{
+.header-left > div:hover{
     border-radius: 50%;
     background-color: #ebececd8;
 }
 /* Header 아이콘들 */
-.user_btn,
+.user-btn,
 .fa-bell-wrapper { position: relative; }
 
-.user_loginbox{
+.user-loginbox{
     position: absolute;
     background-color: #ffffff;
     z-index: 4;
@@ -63,13 +63,13 @@
     top: 113%;
     border-radius: 3px;
 }
-.user_loginbox>div{
+.user-loginbox>div{
     padding: 0.09rem 0.12rem ;
 }
-.user_loginbox>div:hover{
+.user-loginbox>div:hover{
     background-color: #ebececd8;
 }
-.bell_box{
+.bell-box{
     position: absolute;
     background-color: #ffffff;
     z-index: 3;
@@ -102,6 +102,6 @@
     height:4vh;
     margin-right:0.25rem;
 }
-.rutil_logo{
+.rutil-logo{
     width:22%;
 }

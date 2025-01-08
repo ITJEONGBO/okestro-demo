@@ -24,8 +24,8 @@ const NavButton = React.memo(({ sections, handleSectionClick }) => {
   }, [handleSectionClick]);
 
   return (
-    <div className="content_header">
-      <div className="content_header_left">
+    <div className="content-header">
+      <div className="content-header-left">
         {sections.map((section) => (
           <div
             key={section.id}
