@@ -4,36 +4,33 @@ import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../../components/navigation/NavButton';
 import HeaderButton from '../../../components/button/HeaderButton';
 import Footer from '../../../components/footer/Footer';
-import '../datacenter/css/DataCenter.css';
-
-import { useDataCenter } from '../../../api/RQHook';
 import Path from '../../../components/Header/Path';
+import '../datacenter/css/DataCenter.css';
+import { useDataCenter } from '../../../api/RQHook';
 import DataCenterClusters from './DataCenterClusters';
 import DataCenterHosts from './DataCenterHosts';
 import DataCenterVms from './DataCenterVms';
 import DataCenterDomains from './DataCenterDomains';
 import DataCenterNetworks from './DataCenterNetworks';
 import DataCenterEvents from './DataCenterEvents';
+import DataCenterDeleteModal from './modal/DataCenterDeleteModal';
 
 const DataCenterModal = React.lazy(() => import('./modal/DataCenterModal'));
 const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
 
 const DataCenterInfo = () => {
-  const { id: dataCenterId, section } = useParams();
-  const {
-    data: dataCenter,
-    status: dataCenterStatus,
-    isRefetching: isDataCenterRefetching,
-    refetch: dataCenterRefetch,
-    isError: isDataCenterError,
-    error: dataCenterError,
-    isLoading: isDataCenterLoading,
-  } = useDataCenter(dataCenterId, (e) => ({...e,}));
-
   const navigate = useNavigate();
   const location = useLocation();
+  const { id: dataCenterId, section } = useParams();
+  const {
+    data: dataCenter, status, isRefetching, refetch, isError, error, isLoading
+  } = useDataCenter(dataCenterId, (e) => ({...e,}));
+
   const [activeTab, setActiveTab] = useState('clusters');
-  const [modals, setModals] = useState({ edit: false, delete: false }); 
+  const [activeModal, setActiveModal] = useState(null);
+
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
 
   const sections = [
     { id: 'clusters', label: '클러스터' },
@@ -45,11 +42,7 @@ const DataCenterInfo = () => {
   ];
 
   useEffect(() => {
-    if (!section) {
-      setActiveTab('clusters');
-    } else {
-      setActiveTab(section);
-    }
+    setActiveTab(section || 'clusters');
   }, [section]);
 
   const handleTabClick = (tab) => {
@@ -68,39 +61,42 @@ const DataCenterInfo = () => {
 
   const pathData = [dataCenter?.name, sections.find((section) => section.id === activeTab)?.label];
 
-  const sectionComponents = {
-    clusters: DataCenterClusters,
-    hosts: DataCenterHosts,
-    vms: DataCenterVms,
-    storageDomains: DataCenterDomains,
-    networks: DataCenterNetworks,
-    events: DataCenterEvents
-  };
-
   const renderSectionContent = () => {
-    const SectionComponent = sectionComponents[activeTab];
+    const SectionComponent = {
+      clusters: DataCenterClusters,
+      hosts: DataCenterHosts,
+      vms: DataCenterVms,
+      storageDomains: DataCenterDomains,
+      networks: DataCenterNetworks,
+      events: DataCenterEvents
+    }[activeTab];
     return SectionComponent ? <SectionComponent datacenterId={dataCenterId} /> : null;
   };
 
-  const toggleModal = (type, isOpen) => {
-    setModals((prev) => {
-      if (prev[type] === isOpen) return prev;
-      return { ...prev, [type]: isOpen };
-    });
-  };
-
   const sectionHeaderButtons = [
-    {
-      id: 'edit_btn',
-      label: '편집',
-      onClick: () => toggleModal('edit', true),
-    },
-    {
-      id: 'delete_btn',
-      label: '삭제',
-      onClick: () => toggleModal('delete', true),
-    },
-  ]
+    { type: 'edit', label: '편집', onClick: () => openModal("edit")},
+    { type: 'delete', label: '삭제', onClick: () => openModal("delete") },
+  ];
+
+  const renderModals = () => (
+    <>
+      <Suspense fallback={<div>Loading...</div>}>
+        {activeModal === 'edit' && (
+          <DataCenterModal
+            editMode
+            dcId={dataCenterId}
+            onClose={closeModal}
+          />
+        )}
+        {activeModal === 'delete' && (
+          <DataCenterDeleteModal
+            data={dataCenter}
+            onClose={closeModal}
+          />
+        )}
+      </Suspense>
+    </>
+  );
 
   return (
     <div id="section">
@@ -121,29 +117,8 @@ const DataCenterInfo = () => {
         </div>
       </div>
 
-      {modals.edit && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <DataCenterModal
-            isOpen={modals.edit}
-            onRequestClose={() => toggleModal('edit', false)}
-            editMode={modals.edit}
-            dcId={dataCenterId}
-          />
-        </Suspense>
-      )}
-
-      {modals.delete && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <DeleteModal
-            isOpen={modals.delete}
-            type='DataCenter'
-            onRequestClose={() => toggleModal('delete', false)}
-            contentLabel={'데이터센터'}
-            data={dataCenter}
-          />
-        </Suspense>
-      )}
-
+      {/* 데이터센터 모달창 */}
+      { renderModals() }
       <Footer/>
     </div>
   );

@@ -10,10 +10,9 @@ import {
 } from '../../../../api/RQHook'
 
 const DataCenterModal = ({ 
-  isOpen,
-  onRequestClose,
   editMode = false,  // 기본이 생성모드
-  dcId
+  dcId,
+  onClose,
 }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -82,7 +81,7 @@ const DataCenterModal = ({
       }, {
         onSuccess: () => {
           alert("데이터센터 편집 완료(alert기능구현)")
-          onRequestClose();  // 성공 시 모달 닫기
+          onClose();  // 성공 시 모달 닫기
         },
         onError: (error) => {
           console.error('Error editing data center:', error);
@@ -92,7 +91,7 @@ const DataCenterModal = ({
       addDataCenter(dataToSubmit, {
         onSuccess: () => {
           alert("데이터센터 생성 완료(alert기능구현)")
-          onRequestClose();
+          onClose();
         },
         onError: (error) => {
           console.error('Error adding data center:', error);
@@ -103,8 +102,8 @@ const DataCenterModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel={editMode ? '데이터 센터 편집' : '새로 만들기'}
       className="Modal"
       overlayClassName="Overlay"
@@ -113,7 +112,7 @@ const DataCenterModal = ({
       <div className="datacenter_new_popup">
         <div className="popup_header">
           <h1>{editMode ? '데이터 센터 편집' : '새 데이터 센터'}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -187,7 +186,7 @@ const DataCenterModal = ({
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

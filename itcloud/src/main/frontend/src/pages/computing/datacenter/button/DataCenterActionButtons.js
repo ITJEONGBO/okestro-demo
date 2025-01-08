@@ -1,17 +1,19 @@
 import React from 'react';
 
-const DataCenterActionButtons = ({ onCreate, onEdit, onDelete, isEditDisabled }) => {
+const DataCenterActionButtons = ({ openModal, status }) => {
+  const basicActions = [
+    { type: 'create', label: '생성' },
+    { type: 'edit', label: '편집' },
+    { type: 'delete', label: '삭제' },
+  ];
+
   return (
     <div className="header_right_btns">
-      {onCreate && 
-        <button onClick={onCreate}>새로 만들기</button>
-      }
-      {onEdit && (
-        <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
-      )}
-      {onDelete && (
-        <button onClick={onDelete} disabled={isEditDisabled}>제거</button>
-      )}
+      {basicActions.map(({ type, label }) => (
+        <button key={type} onClick={() => openModal(type)} >
+          {label}
+        </button>
+      ))}
     </div>
   );
 };
