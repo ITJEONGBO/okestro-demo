@@ -80,20 +80,10 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
           icon: renderHostStatusIcon(host.status),
           hostedEngine:
             host?.hostedEngine && host?.hostedEngineVM ? (
-              <FontAwesomeIcon 
-                  icon={faPencil} 
-                  fixedWidth 
-                  style={{ color: 'gold', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
-              />
+              <FontAwesomeIcon icon={faPencil} fixedWidth style={{ color: 'gold', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />
             ) : host?.hostedEngine ? (
-              <FontAwesomeIcon 
-                  icon={faPencil} 
-                  fixedWidth 
-                  style={{ color: 'grey', fontSize: '0.3rem', transform: 'rotate(90deg)' }} 
-              />
-            ) : (
-              ''
-            ),
+              <FontAwesomeIcon icon={faPencil} fixedWidth style={{ color: 'grey', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />
+            ) : (''),
           status: host?.status,
           spmStatus: host?.spmStatus === 'NONE' ? '보통' : host?.spmStatus,
           vmCnt: host?.vmSizeVo.allCnt,

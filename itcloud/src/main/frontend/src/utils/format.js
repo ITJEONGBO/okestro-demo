@@ -155,6 +155,17 @@ export function renderVmStatus (status) {
   return status;
 };
 
+export function renderStatusClusterIcon (connect, status) {
+  if (connect && status === 'OPERATIONAL') {
+    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+  } else if(connect && status === 'NON_OPERATIONAL'){
+    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+  } else if(!connect){
+    return ''
+  }
+  return status;
+};
+
 export const renderUpDownStatusIcon = (status) => {
   if (status === 'UP') {
     return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'green', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
