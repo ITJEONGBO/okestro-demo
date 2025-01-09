@@ -14,13 +14,13 @@ const AllDomain = () => {
 
 
   return(
-    <div id="storage_section">
+    <div id="section">
       <div>
         <HeaderButton
           titleIcon={faDatabase}
           title="스토리지 도메인"
         />
-        <div className="host_btn_outer">
+        <div className="host-btn-outer">
           <DomainDupl
             columns={TableColumnsInfo.STORAGE_DOMAINS}
             domains={storageDomains || []}            

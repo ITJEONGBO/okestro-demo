@@ -55,11 +55,11 @@ const NetworkHosts = ({ networkId }) => {
 
   return (
     <>
-      <div className="header_right_btns">
+      <div className="header-right-btns">
         <button onClick={() => setIsModalOpen(true)}>호스트 네트워크 설정</button>
       </div>
 
-      <div className="host_filter_btns">
+      <div className="host-filter-btns">
         <button className={buttonClass("connected")} onClick={() => setActiveFilter("connected")}>
           연결됨
         </button>

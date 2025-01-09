@@ -78,7 +78,7 @@ const VmNetwork = ({vm}) => {
     
     return (
       <>
-              <div className="header_right_btns">
+              <div className="header-right-btns">
                 <button onClick={() => toggleModal('create', true)}>새로 만들기</button>
                 <button onClick={() => selectedNics?.id && toggleModal('edit', true)} disabled={!selectedNics?.id}>편집</button>
                 <button onClick={() => selectedNics?.id && toggleModal('delete', true)} disabled={!selectedNics?.id}>제거</button>

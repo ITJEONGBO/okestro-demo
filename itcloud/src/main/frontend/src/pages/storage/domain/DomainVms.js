@@ -84,7 +84,7 @@ const DomainVms = ({ domainId }) => {
 
   return (
     <div className="host_empty_outer">
-      <div className="section_table_outer">
+      <div className="section-table-outer">
         <table>
           <thead>
             <tr>

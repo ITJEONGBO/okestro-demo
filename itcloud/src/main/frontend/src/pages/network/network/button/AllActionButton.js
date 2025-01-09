@@ -5,7 +5,7 @@ import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 const AllActionButton = ({
   buttons, // 일반 버튼 배열
   dropdowns, // 드롭다운 메뉴 배열
-  className = 'header_right_btns', // 기본 CSS 클래스
+  className = 'header-right-btns', // 기본 CSS 클래스
 }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRef = useRef(null);

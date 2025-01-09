@@ -60,7 +60,7 @@ const NetworkVms = ({ networkId }) => {
 
   return (
     <>
-      <div className="header_right_btns">
+      <div className="header-right-btns">
         <button 
           onClick={() => toggleDeleteModal(true)} 
           disabled={isDeleteButtonDisabled} // 선택된 VM이 없을 때 비활성화
@@ -69,7 +69,7 @@ const NetworkVms = ({ networkId }) => {
         </button>
       </div>
       
-      <div className="host_filter_btns">
+      <div className="host-filter-btns">
         <button className={buttonClass("running")} onClick={() => setActiveFilter("running")}>
           실행중
         </button>

@@ -93,22 +93,20 @@ const VnicInfo = () => {
 
     return (
         <div id="section">
-            <div>
-                <HeaderButton
-                    titleIcon={faLaptop}
-                    title={vnic?.name}
-                    buttons={sectionHeaderButtons}
+            <HeaderButton
+                titleIcon={faLaptop}
+                title={vnic?.name}
+                buttons={sectionHeaderButtons}
+            />
+            <div className="content-outer">
+                <NavButton 
+                    sections={sections} 
+                    activeSection={activeTab} 
+                    handleSectionClick={handleTabClick} 
                 />
-                <div className="content_outer">
-                    <NavButton 
-                        sections={sections} 
-                        activeSection={activeTab} 
-                        handleSectionClick={handleTabClick} 
-                    />
-                    <div className="host_btn_outer">
-                        <Path pathElements={pathData} />
-                        {renderSectionContent()}
-                    </div>
+                <div className="host-btn-outer">
+                    <Path pathElements={pathData} />
+                    {renderSectionContent()}
                 </div>
             </div>
         <Suspense fallback={<div>Loading...</div>}>{renderModals()}</Suspense>

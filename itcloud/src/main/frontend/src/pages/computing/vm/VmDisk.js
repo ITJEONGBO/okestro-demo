@@ -73,7 +73,7 @@ const VmDisk = ({ vm }) => {
           </button>
         </div>
 
-        <div className="header_right_btns">
+        <div className="header-right-btns">
           <button onClick={() => handleActionClick('create')}>새로 만들기</button>
           <button
             onClick={() => handleActionClick('edit')}

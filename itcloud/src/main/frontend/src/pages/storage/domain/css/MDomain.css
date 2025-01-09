@@ -358,3 +358,21 @@
   justify-content: center; /* 수평 가운데 정렬 */
   align-items: center; /* 수직 가운데 정렬 */
 }
+/*유지보수 팝업*/
+.maintenance_popup{
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background: #fff;
+  top: 50%;
+  font-size: 0.34rem;
+  height: 49%;
+  width: 34%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+  z-index: 1000;
+}
+.hosted_storage{
+  padding: 0.3rem;
+}

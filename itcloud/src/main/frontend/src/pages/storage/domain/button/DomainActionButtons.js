@@ -46,7 +46,7 @@ const DomainActionButtons = ({
   // ];
 
   return (
-    <div className="header_right_btns">
+    <div className="header-right-btns">
       {onCreate && 
         <button onClick={onCreate}>생성</button>
       }

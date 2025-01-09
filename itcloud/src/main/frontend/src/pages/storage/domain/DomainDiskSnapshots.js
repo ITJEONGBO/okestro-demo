@@ -25,7 +25,7 @@ const DomainDiskSnapshots = ({ domainId }) => {
 
   return (
     <>
-      <div className="header_right_btns">
+      <div className="header-right-btns">
         <button onClick={() => setIsModalOpen(true)}>제거</button>
       </div>
 

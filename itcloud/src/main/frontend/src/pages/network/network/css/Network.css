@@ -1,4 +1,4 @@
-/**/
+/* 
 .edit_footer{
     border-top: 1px solid gray;
 }
@@ -36,9 +36,9 @@
         margin-right: 0.3rem;
     }
     .plug_radio_btn span{
-        display: flex; /* Flexbox 설정 추가 */
-        justify-content: center; /* 수평 가운데 정렬 */
-        align-items: center; /* 수직 가운데 정렬 */
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
     }
     .network_parameter_outer{
         padding: 1% 2%;
@@ -69,15 +69,7 @@
        font-weight: 600;
        cursor: pointer;
     }
-    /**/
   
-
-
-
-#network_new_cluster_form{
-    padding: 0.3rem;
-}
-
 
 .network_new_cluster_table th,.network_new_cluster_table td{
     border: 1px solid rgb(209, 209, 209);
@@ -102,8 +94,8 @@
 #console_outer
 {
     height: 63.4vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
+    overflow-y: auto; 
+    overflow-x: hidden; 
 }
 #system_outer,#host_outer,#ha_mode_outer,#res_alloc_outer{
     display: none;
@@ -146,7 +138,7 @@
 #console_outer>.res_alloc_checkbox input{
     margin-right: 0.1rem;
 }
-/*리소스할당*/
+
 .res_second_content{
     padding: 2%;
 }
@@ -235,5 +227,5 @@
     width: 39%;
     left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+} */

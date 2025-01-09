@@ -105,13 +105,13 @@ const DiskInfo = () => {
         title={disk?.alias}
         buttons={sectionHeaderButtons}
       />
-      <div className="content_outer">
+      <div className="content-outer">
         <NavButton 
           sections={sections} 
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
-        <div className="host_btn_outer">
+        <div className="host-btn-outer">
           <Path pathElements={pathData} />
           {renderSectionContent()}
         </div>

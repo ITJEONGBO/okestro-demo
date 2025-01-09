@@ -6,6 +6,7 @@ import { useHost, useNetworkFromCluster } from '../../../../api/RQHook';
 import HostPlusModal from './NetworkHostPlusModal';
 import NetworkHostPlusModal from './NetworkHostPlusModal';
 import NewBondingModal from './NewBondingModal';
+import '../css/MNetwork.css';
 
 const NetworkHostModal = ({ isOpen, onRequestClose, nicData,hostId }) => {
     // State for managing the second modal

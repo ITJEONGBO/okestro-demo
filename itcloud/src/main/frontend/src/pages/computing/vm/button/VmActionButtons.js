@@ -70,7 +70,7 @@ const VmActionButtons = ({
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target) &&
         !event.target.closest('.dropdown-item') &&
-        !event.target.closest('.section_table_outer') &&
+        !event.target.closest('.section-table-outer') &&
         !event.target.closest('.Modal')
       ) {
         setIsDropDownOpen(false);
@@ -85,7 +85,7 @@ const VmActionButtons = ({
   }, []);
 
   return (
-    <div className="header_right_btns">
+    <div className="header-right-btns">
       {onCreate && <button onClick={onCreate}>새로 만들기</button>}
       {onEdit && <button onClick={onEdit} disabled={isEditDisabled}>편집</button>}
       

@@ -26,7 +26,7 @@ const AllVm = () => {
         title="가상머신"
       />
 
-      <div className="host_btn_outer">
+      <div className="host-btn-outer">
         <VmDupl
           vms={vms || []}
           columns={TableColumnsInfo.VMS}

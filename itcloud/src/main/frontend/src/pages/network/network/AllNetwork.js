@@ -20,14 +20,14 @@ const AllNetwork = () => {
   }, []);
 
   return (
-    <div id="network_section">
+    <div id="section">
       <div>
         <HeaderButton
           titleIcon={faServer}
           title="네트워크"
         />
       </div>
-      <div className="host_btn_outer">
+      <div className="host-btn-outer">
         <NetworkDupl
           columns={TableColumnsInfo.NETWORKS}
           networks={networks || []}

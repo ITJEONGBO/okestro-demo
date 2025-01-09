@@ -40,7 +40,7 @@ const Tables = ({
             tableRef.current &&
             !tableRef.current.contains(event.target) &&
             (!menuRef.current || !menuRef.current.contains(event.target)) &&
-            !event.target.closest('.header_right_btns button') &&
+            !event.target.closest('.header-right-btns button') &&
             !event.target.closest('.Overlay')
         ) {
             setSelectedRowIndex(null); 

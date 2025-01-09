@@ -20,7 +20,7 @@
 }
 /*-----중복 */
 
-.content_outer,
+.content-outer,
 /* .sto_content_outer,
 #disk_outer,#storage_domain_outer,
 #content_outer,
@@ -119,14 +119,82 @@ button[disabled],select[disabled],input[disabled]{
   }
 
 #section,
-#storage_section,
-#network_section,
 #setting_section,
 #detail_section{
     background-color: #ffffff;
     border-radius: 5px;
     width: 96.7%;
     position: relative;
+}
+.header-right-btns {
+    display:flex;
+    margin-bottom: 0.5rem;
+    justify-content: right;
+  }
+  .header-right-btns>button:last-child{
+    margin-right: 0 !important;
+  }
+  .dropdown-container {
+    position: relative;
+    display: inline-block;
+  }
+  .dropdown-container>button{
+    font-size: 0.3rem;
+    height: 3.3vh;
+    font-weight: 600;
+    margin-right: 0.2rem;
+    padding: 0.1rem 0.1rem;
+    border: 1px solid gray;
+    border-radius: 2px;
+  }
+  .manage-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 103%;
+    width: 12vw;
+    right: 12%;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    font-size: 0.3rem;
+  }
+  
+  .dropdown-item{
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 0.08rem;
+  font-size: 0.3rem;
+  
+  }
+  
+  .dropdown-item:hover{
+    background-color: rgb(218, 236, 245);
+  }
+  
+.header-right-btns>button {
+    margin-right: 0.2rem;
+    padding: 0.1rem 0.1rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    border-radius: 2px;
+    height: 3.3vh;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: left;
+    align-items: center; /* 수직 가운데 정렬 */
+    border: 1px solid gray;
 }
 
 .empty_nav_outer{
@@ -375,7 +443,6 @@ width: 100%;
     align-items: center;
   }
 
-/*새로만들기 팝업*/
 .host_new_outer {
     position: absolute;
     top: 0;
@@ -398,7 +465,7 @@ width: 100%;
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 
-.host_btn_outer{
+.host-btn-outer{
     width: 100%;
     padding: 0.5rem 0.3rem;
 }
@@ -436,24 +503,24 @@ width: 100%;
     color: #757575;
 }
 
-.host_filter_btns{
+.host-filter-btns{
     display: flex;
     font-size: 0.34rem;
     margin-bottom: 0.3rem;
     height: 3.3vh;
 }
-.host_filter_btns>span{
+.host-filter-btns>span{
     margin-right: 0.2rem;
     display: flex; /* Flexbox 설정 추가 */
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
 }
-.host_filter_btns>div{
+.host-filter-btns>div{
 
     display: flex;
     justify-content: space-between;
 }
-.host_filter_btns button {
+.host-filter-btns button {
     padding: 0 0.13rem;
     cursor: pointer;
     border: 1px solid #14417c;
@@ -461,10 +528,10 @@ width: 100%;
     color: rgb(10, 55, 107);
     font-weight: 600;
 }
-.host_filter_btns button:hover{
+.host-filter-btns button:hover{
     background-color: #eceaea;
 }
-.host_filter_btns button.active {
+.host-filter-btns button.active {
     background-color: #dbdbdb;
 }
 /*가상머신 편집팝업*/
@@ -1490,18 +1557,6 @@ textarea{
 .bgcolor-primary:hover { background: #76a314 }
 
 
-.header_right_btns>button {
-    margin-right: 0.2rem;
-    padding: 0.1rem 0.1rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    border-radius: 2px;
-    height: 3.3vh;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: left;
-    align-items: center; /* 수직 가운데 정렬 */
-    border: 1px solid gray;
-}
 
 /*반응형*/
 @media (max-width:1390px) {

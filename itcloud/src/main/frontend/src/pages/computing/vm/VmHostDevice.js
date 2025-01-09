@@ -39,7 +39,7 @@ const VmHostDevice = ({vm}) => {
   }
     return (
       <>
-        <div className="header_right_btns">
+        <div className="header-right-btns">
             <button onClick={() => setIsModalOpen(true)}>장치 추가</button>
             <button className='disabled'>장치 삭제</button>
             <button className='disabled'>vGPU 관리</button>

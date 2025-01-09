@@ -7,7 +7,7 @@ const TemplateActionButtons = ({
   isDeleteDisabled
 }) => {
   return (
-    <div className="header_right_btns">
+    <div className="header-right-btns">
       {onEdit && (
         <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
       )}

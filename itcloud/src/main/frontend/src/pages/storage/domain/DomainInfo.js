@@ -4,7 +4,6 @@ import { faDatabase } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../../components/navigation/NavButton';
 import HeaderButton from '../../../components/button/HeaderButton';
 import Footer from '../../../components/footer/Footer';
-import './css/StorageDomainDetail.css';
 import { useDomainById } from '../../../api/RQHook';
 import Path from '../../../components/Header/Path';
 import DomainGeneral from './DomainGeneral';
@@ -158,13 +157,13 @@ const DomainInfo = () => {
         buttons={sectionHeaderButtons}
         popupItems={popupItems}
       />
-      <div className="content_outer">
+      <div className="content-outer">
         <NavButton 
           sections={sections} 
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
-        <div className="host_btn_outer">
+        <div className="host-btn-outer">
           <Path pathElements={pathData} />
           {renderSectionContent()}
         </div>

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import '../css/HostAction.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
@@ -41,7 +40,7 @@ const HostActionButtons = ({ openModal, isEditDisabled, status, selectedHosts })
   ];
 
   return (
-    <div className="header_right_btns">
+    <div className="header-right-btns">
       {basicActions.map(({ type, label, disabled }) => (
         <button 
           key={type} 

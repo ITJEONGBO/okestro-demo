@@ -14,7 +14,7 @@ const NetworkTemplates = ({ networkId }) => {
 
   return (
     <>
-      <div className="header_right_btns">
+      <div className="header-right-btns">
       </div>
       <TablesOuter
         columns={TableColumnsInfo.TEMPLATES_FROM_NETWORK}

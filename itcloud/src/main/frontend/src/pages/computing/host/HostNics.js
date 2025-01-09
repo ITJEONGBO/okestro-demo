@@ -6,6 +6,7 @@ import TablesOuter from "../../../components/table/TablesOuter";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import NetworkHostModal from "../../network/network/modal/NetworkHostModal";
 
+
 const HostNics = ({ hostId }) => {
   const { data: nics = [] } = useNetworkInterfaceFromHost(hostId, (e) => ({
     ...e,
@@ -96,7 +97,7 @@ const HostNics = ({ hostId }) => {
 
   return (
     <>
-      <div className="header_right_btns">
+      <div className="header-right-btns">
         <button>VF 보기</button>
         <button onClick={toggleAllBoxes}>
           {visibleBoxes.length === nics.length ? "모두 숨기기" : "모두 확장"}
@@ -116,7 +117,7 @@ const HostNics = ({ hostId }) => {
             className="host_network_firstbox"
             onClick={() => toggleHiddenBox(index)}
           >
-            <div className="section_table_outer">
+            <div className="section-table-outer">
               <TablesOuter
                 columns={[
                   { header: "", accessor: "icon", width: "5%" }, // 아이콘 컬럼

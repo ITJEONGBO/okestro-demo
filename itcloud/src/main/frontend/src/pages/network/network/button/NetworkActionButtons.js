@@ -11,7 +11,7 @@ const NetworkActionButtons = ({ openModal, isEditDisabled, status, selectedNetwo
   ];
 
   return (
-    <div className="header_right_btns">
+    <div className="header-right-btns">
       {basicActions.map(({ type, label, disabled }) => (
         <button 
           key={type} 

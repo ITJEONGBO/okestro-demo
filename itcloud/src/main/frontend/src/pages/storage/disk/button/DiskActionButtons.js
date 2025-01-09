@@ -14,7 +14,7 @@ const DiskActionButtons = ({
   const isOk = status === "OK"
 
   return (
-    <div className="header_right_btns">
+    <div className="header-right-btns">
       {onCreate && 
         <button onClick={onCreate}>새로 만들기</button>
       }

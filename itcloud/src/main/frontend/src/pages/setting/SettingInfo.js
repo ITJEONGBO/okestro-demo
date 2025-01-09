@@ -80,13 +80,13 @@ const SettingInfo = () => {
         // subtitle=" > 사용자 세션"
         additionalText="목록이름"
       />
-      <div className="content_outer">
+      <div className="content-outer">
         <NavButton
           sections={sections}
           activeSection={activeTab}
           handleSectionClick={handleTabClick}
         />
-        <div className="host_btn_outer">
+        <div className="host-btn-outer">
           <Path pathElements={pathData} />
           {renderSectionContent()}
         </div>

@@ -24,7 +24,7 @@ const AllVnic = () => {
         title="VNIC 프로파일"
       />
 
-      <div className="host_btn_outer">
+      <div className="host-btn-outer">
         <VnicProfileDupl
             columns={TableColumnsInfo.VNIC_PROFILES}
             vnicProfiles={vnicProfiles || []}

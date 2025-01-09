@@ -72,7 +72,7 @@ const VmSnapshot = ({vm}) => {
   }, [disks]);
   return (
     <>
-      <div className="header_right_btns">
+      <div className="header-right-btns">
         <button className="snap_create_btn" onClick={() => openPopup('new')}>
           생성
         </button>

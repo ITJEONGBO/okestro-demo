@@ -8,7 +8,7 @@ const VnicProfileActionButtons = ({ openModal, isEditDisabled, status, selectedH
   ];
   
   return (
-    <div className="header_right_btns">
+    <div className="header-right-btns">
       {basicActions.map(({ type, label, disabled }) => (
         <button 
           key={type} 

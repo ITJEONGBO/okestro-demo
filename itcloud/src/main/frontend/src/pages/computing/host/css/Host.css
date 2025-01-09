@@ -159,3 +159,194 @@
 .h-icon-btn{
     padding:0.1rem;
 }
+
+#manage_hidden_box{
+    right: 5.5rem;
+    top: 3.7rem;
+}
+/* ellipsis 버튼 스타일 */
+.ellipsis_container {
+    position: relative;
+    width: 0.64rem;
+  }
+#ellipsis_hidden_box{
+    display:block;
+    right: 0rem;
+    top: 0.7rem;
+    min-width: 15vw;
+}
+/*관리(유지보수)*/
+.host_maintenance_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 54.4vh;
+    width: 30%;
+    left: 50%;
+    font-size:0.33rem;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.maintenance_content{
+    padding:0.2rem;
+}
+.maintenance_content>div{
+    padding: 0.25rem 0;
+}
+.host_new_add .edit_first_content>div:first-child{
+    margin-bottom:0;
+}
+
+
+.host_content_outer{
+    width: 100%;
+    padding: 0.2rem 0 ;
+
+    height: 100%;
+    overflow-y: auto; /* 세로 스크롤바를 필요할 때 표시합니다 */
+}
+.host_tables{
+    width: 100%;
+    justify-content: space-between;
+    display: flex;
+}
+.host_table{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.3rem;
+    margin-top:1.3rem;
+}
+
+.host_table th{
+    text-align: left ;
+    width: 60%;
+    padding: 0.06rem 0 ;
+}
+.host_table tr{
+    width: 100%;
+}
+
+.host_network_boxs:hover{
+   background:#e6eefa;
+}
+.host_network_firstbox{
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.37rem;
+    padding: 0 0.2rem;
+    text-align: center;
+    cursor: pointer;
+}
+.host_network_firstbox i{
+    margin-right: 0.3rem;
+    font-size: 0.55rem;
+}
+.host_network_boxs{
+
+    margin-bottom:0.2rem;
+}
+.host_network_firstbox>div{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.2rem 0 ;
+    width:100%;
+ 
+}
+.firstbox_flex{
+    display: flex;
+    justify-content: space-between;
+}
+.firstbox_flex>div>div{
+    font-weight: 600;
+}
+.host_network_hiddenbox{
+    background-color: white;
+    padding: 0.2rem;
+}
+.hostdetial_only_outer{
+    width: 88%;
+
+}   
+.reboot_check_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    width: 35%;
+    left: 50%;
+    height: 40%;             
+    font-size:0.33rem;                                    
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+
+  
+#manage_btn {
+    position: relative;
+
+  }
+  .dropdown-menu {
+    position: absolute;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    list-style: none;
+    z-index: 1;
+    width: 200px;
+    background: white;
+  }
+  
+  .dropdown-menu li {
+    padding: 0.18rem 0.1rem;
+    cursor: pointer;
+    text-align: left;
+    color: black;
+    font-size: 0.3rem;
+    font-weight:400
+  }
+  .dropdown-menu li:hover {
+    background-color: #f1f1f1;
+  }
+  #manage_box{
+    right: -0.1rem;
+    top: 0.8rem;
+  }
+  .manage_maintenance_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    width: 35%;
+    height: 35%;             
+    font-size:0.33rem; 
+                               
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+  }
+#cluster_first_content{
+    border-bottom:1px solid #DDDDDD;
+    padding-bottom: 0.8rem;
+}
+#cluster_first_content .datacenter_span{
+    right: 4.4rem;
+    top: 16%;
+}
+.host_select_set{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0.4rem;
+}
+.host_select_set select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    border: 1px solid #a7a6a6;
+}

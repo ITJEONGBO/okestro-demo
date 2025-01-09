@@ -220,13 +220,13 @@ const VmDetail = () => {
         popupItems={popupItems}
       />
 
-      <div className="content_outer">
+      <div className="content-outer">
         <NavButton 
           sections={sections} 
           activeSection={activeNavTab} 
           handleSectionClick={handleNavTabClick}  
           />
-        <div className="host_btn_outer">
+        <div className="host-btn-outer">
           {activeNavTab !== 'general' && <Path pathElements={pathData} />}
           {renderSectionContent()}
         </div>

@@ -21,7 +21,7 @@ const AllDisk = () => {
           buttons={[]} 
           popupItems={[]}
         />
-        <div className="host_btn_outer">
+        <div className="host-btn-outer">
           <DiskDupl 
             columns={TableColumnsInfo.DISKS}
             disks={disks || []}          
