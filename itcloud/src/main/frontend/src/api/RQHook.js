@@ -2304,7 +2304,7 @@ export const useAddVnicProfile = () => {
 export const useEditVnicProfile = () => {
   const queryClient = useQueryClient();  
   return useMutation({
-    mutationFn: async ({ networkId, vnicId, vnicData }) => await ApiManager.editVnicProfiles(networkId, vnicId, vnicData),
+    mutationFn: async ({vnicId, vnicData }) => await ApiManager.editVnicProfiles(vnicId, vnicData),
     onSuccess: () => {
       queryClient.invalidateQueries('vnicProfilesFromNetwork');
     },
@@ -2323,12 +2323,9 @@ export const useEditVnicProfile = () => {
 export const useDeleteVnicProfile = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async ({ networkId, vnicProfileId }) => {
-      // ID들이 제대로 전달되는지 확인하기 위해 로그 추가
-      console.log('Deleting VnicProfile with networkId:', networkId);
+    mutationFn: async (vnicProfileId ) => {
       console.log('Deleting VnicProfile with vnicProfileId:', vnicProfileId);
-      
-      return await ApiManager.deleteVnicProfiles(networkId, vnicProfileId);
+      return await ApiManager.deleteVnicProfiles(vnicProfileId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries('vnicProfilesFromNetwork');

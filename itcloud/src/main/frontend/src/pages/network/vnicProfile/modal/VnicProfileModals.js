@@ -22,7 +22,7 @@ const VnicProfileModals = ({
             onRequestClose={onRequestClose}
             editMode={action === 'edit'}
             vnicProfileId={selectedVnicProfile?.id || null}
-            networkId={networkId}
+          
           />
         ) : (
           <DeleteModal
@@ -31,7 +31,6 @@ const VnicProfileModals = ({
             onRequestClose={onRequestClose}
             contentLabel="vNIC 프로파일"
             data={selectedVnicProfiles}
-            networkId={networkId}
           />
         )}
       </Suspense>

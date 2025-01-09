@@ -175,8 +175,8 @@ const ENDPOINTS = {
   
   FIND_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
   ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
-  EDIT_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
-  DELETE_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
+  EDIT_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
+  DELETE_VNIC_PROFILE_FROM_NETWORK: (vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
 
   //endregion: Network
 

@@ -100,7 +100,14 @@
 .edit_footer{
     border-top: 1px solid gray;
 }
-
+.vm_plus_btn_outer{
+    width:100%
+}
+.vm_plus_btn{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom:0.2rem;
+}
 .edit_first_content select{
     width: 47%;
     height: 3.3vh;

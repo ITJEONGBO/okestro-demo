@@ -1974,10 +1974,10 @@ migrateHostsFromVM: async (vmId) => {
    * @param {Object} vnicData 
    * @returns {Promise<Object>} API 응답 결과
    */
-    editVnicProfiles: async (networkId, vnicId, vnicData) => {
+    editVnicProfiles: async (vnicId, vnicData) => {
       return makeAPICall({
         method: "PUT",
-        url: ENDPOINTS.EDIT_VNIC_PROFILE_FROM_NETWORK(networkId, vnicId),
+        url: ENDPOINTS.EDIT_VNIC_PROFILE_FROM_NETWORK( vnicId),
         data: vnicData, 
       });
     },
@@ -1988,10 +1988,10 @@ migrateHostsFromVM: async (vmId) => {
    * @param {String} nicId - 삭제할 호스트 ID
    * @returns {Promise<Object>} API 응답 결과
    */
-  deleteVnicProfiles: async (networkId, vnicProfileId) => {
+  deleteVnicProfiles: async (vnicProfileId) => {
     return makeAPICall({
       method: "DELETE",
-      url: ENDPOINTS.DELETE_VNIC_PROFILE_FROM_NETWORK(networkId, vnicProfileId),
+      url: ENDPOINTS.DELETE_VNIC_PROFILE_FROM_NETWORK(vnicProfileId),
       data: vnicProfileId,
     });
   },

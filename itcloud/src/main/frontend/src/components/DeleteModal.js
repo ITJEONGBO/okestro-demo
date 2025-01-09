@@ -97,11 +97,9 @@ const DeleteModal = ({
       onRequestClose();
     }else if (type === 'vnicProfile') {
       console.log('Deleting vnicProfile');
-      id.forEach((vnicId, index) => {
+      id.forEach((vnicProfileId, index) => {
         handleDelete(
-          () => deleteVnicProfile({ networkId, vnicProfileId: vnicId }),
-          name[index]
-        );
+          () => deleteVnicProfile(vnicProfileId), name[index]);
       });
       onRequestClose();
     } else if (type === 'NetworkInterface') {
