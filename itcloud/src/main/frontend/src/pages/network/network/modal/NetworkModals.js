@@ -9,7 +9,7 @@ const NetworkModals = ({
     selectedNetworks
 }) => {
   const NetworkModal = React.lazy(() => import('./NetworkModal'));
-  const NetworkActionModal = React.lazy(() => import('./NetworkActionModal'));
+  const NetworkActionModal = React.lazy(() => import('./NetworkImportModal'));
   const DeleteModal = React.lazy(() => import('../../../../components/DeleteModal'));
 
   if (!isModalOpen || !action) return null;

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowCircleDown, faArrowCircleUp, faArrowsAltH, faBan, faCheck, faCircle, faCrown, faDesktop, faExclamationTriangle, faFan, faNetworkWired, faPencilAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { useHost, useLogicalFromCluster } from '../../../../api/RQHook';
+import { useHost, useNetworkFromCluster } from '../../../../api/RQHook';
 import HostPlusModal from './NetworkHostPlusModal';
 import NetworkHostPlusModal from './NetworkHostPlusModal';
 import NewBondingModal from './NewBondingModal';
@@ -20,7 +20,7 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData,hostId }) => {
     // 클러스터id로 네트워크정보조회
     const { 
       data: network, 
-    } = useLogicalFromCluster(host?.clusterVo?.id, (network) => {
+    } = useNetworkFromCluster(host?.clusterVo?.id, (network) => {
     return {
         id: network?.id ?? '', 
         name: network?.name ?? 'Unknown',            

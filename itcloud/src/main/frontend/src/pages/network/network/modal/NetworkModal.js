@@ -19,12 +19,7 @@ const FormGroup = ({ label, children }) => (
 );
 
 
-const NetworkModal = ({ 
-  isOpen, 
-  onRequestClose, 
-  editMode = false,
-  networkId // 네트워크 ID를 받아서 편집 모드에서 사용
-}) => {
+const NetworkModal = ({ editMode = false, networkId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     name: '',
@@ -165,7 +160,7 @@ const NetworkModal = ({
         {
           onSuccess: () => {
             alert('네트워크 편집 완료');
-            onRequestClose();
+            onClose();
           },
           onError: (error) => {
             console.error('Error editing network:', error);
@@ -176,7 +171,7 @@ const NetworkModal = ({
       addNetwork(dataToSubmit, {
         onSuccess: () => {
           alert('네트워크 생성 완료');
-          onRequestClose();
+          onClose();
         },
         onError: (error) => {
           console.error('Error adding network:', error);
@@ -188,8 +183,8 @@ const NetworkModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel={editMode ? '논리 네트워크 수정' : '새로 만들기'}
       className="Modal"
       overlayClassName="Overlay"
@@ -198,7 +193,7 @@ const NetworkModal = ({
       <div className={`network-new-popup ${editMode ? 'edit-mode' : ''}`}>
         <div className="popup_header">
           <h1>{editMode ? '논리 네트워크 수정' : '새 논리 네트워크'}</h1>
-            <button onClick={onRequestClose}>
+            <button onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} fixedWidth />
             </button>
         </div>
@@ -496,7 +491,7 @@ const NetworkModal = ({
 
         <div className="edit_footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

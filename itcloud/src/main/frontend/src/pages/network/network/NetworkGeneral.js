@@ -1,14 +1,7 @@
 import { useNetworkById } from "../../../api/RQHook";
 
 const NetworkGeneral = ({ networkId }) => {
-  const {
-    data: network,
-    refetch: networkRefetch,
-    error: networkError,
-    isLoading: isNetworkLoading,
-  } = useNetworkById(networkId, (e) => ({
-    ...e,
-  }));
+  const { data: network} = useNetworkById(networkId);
 
   return (
     <table className="table">

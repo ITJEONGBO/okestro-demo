@@ -31,10 +31,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './css/HostDetail.css';
 import TableOuter from '../table/TableOuter';
-import { useEventFromHost, useHost, useHostdeviceFromHost, usePermissionFromHost, useVmFromHost } from '../../../api/RQHook.js';
+import { useEventFromHost, useHost, useHostdeviceFromHost, usePermissionFromHost, useVmFromHost } from '../../api/RQHook.js';
 import PagingTableOuter from '../../table/PagingTableOuter.js';
 import Path from '../../Header/Path.js';
-import VmDu from '../vm/VmDu.js';
+import VmDu from '../../pages/computing/vm/VmDu.js';
 import EventDu from '../duplication/EventDu.js';
 import HostGeneral from './hostjs/HostGenerals.js';
 import HostVm from './hostjs/HostVm.js';

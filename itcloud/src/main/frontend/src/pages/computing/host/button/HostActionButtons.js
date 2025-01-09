@@ -7,6 +7,7 @@ const HostActionButtons = ({ openModal, isEditDisabled, status, selectedHosts })
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
 
+  // 관리버튼 이벤트
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

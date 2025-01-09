@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ClusterActionButtons = ({ openModal, status }) => {
+const ClusterActionButtons = ({ openModal, isEditDisabled, status }) => {
   const basicActions = [
     { type: 'create', label: '생성', disabled: false }, 
     { type: 'edit', label: '편집', disabled: status !== 'single' },

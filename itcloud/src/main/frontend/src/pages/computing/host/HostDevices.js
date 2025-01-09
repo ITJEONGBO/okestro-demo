@@ -1,22 +1,21 @@
 import React from 'react';
 import {useHostdeviceFromHost} from "../../../api/RQHook";
-import PagingTableOuter from '../../../components/table/PagingTableOuter';
 import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
+import PagingTable from '../../../components/table/PagingTable';
 
 const HostDevices = ({ hostId }) => {
   const { 
-    data: hostDevices,     
-    status: hostDevicesStatus,  
-    isLoading: isHostDevicesLoading,  
-    isError: isHostDevicesError       
+    data: hostDevices = [], isLoading: isHostDevicesLoading
   } = useHostdeviceFromHost(hostId, (e) => ({ ...e }));
 
   return (
     <>
-      <PagingTableOuter
-        columns={TableColumnsInfo.DEVICE_FROM_HOST} 
-        data={hostDevices} 
-      />
+      <div className="section-table-outer">
+        <PagingTable
+          columns={TableColumnsInfo.DEVICE_FROM_HOST} 
+          data={hostDevices}
+        />
+      </div>
     </>
   );
 };

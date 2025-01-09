@@ -19,13 +19,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const VnicProfileModal = ({ 
-  isOpen, 
-  onRequestClose,
-  editMode = false,
-  vnicProfileId,
-
-}) => {
+const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     name: '',
@@ -154,7 +148,7 @@ const VnicProfileModal = ({
         {
           onSuccess: () => {
             alert('vNIC 프로파일이 성공적으로 편집되었습니다.');
-            onRequestClose();
+            onClose();
           },
           onError: (error) => {
             console.error('vNIC 프로파일 편집 중 오류 발생:', error);
@@ -164,7 +158,7 @@ const VnicProfileModal = ({
       addVnicProfile(dataToSubmit,{
           onSuccess: () => {
             alert('vNIC 프로파일이 성공적으로 추가되었습니다.');
-            onRequestClose();
+            onClose();
         },
           onError: (error) => {
             console.error('vNIC 프로파일 추가 중 오류 발생:', error);
@@ -175,8 +169,8 @@ const VnicProfileModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel={editMode ? 'vNIC 프로파일 편집' : '새로 만들기'}
       className="Modal"
       overlayClassName="Overlay"
@@ -185,7 +179,7 @@ const VnicProfileModal = ({
       <div className="vnic_new_content_popup">
         <div className="popup_header">
           <h1>{editMode ? '가상 머신 인터페이스 프로파일 편집' : '가상 머신 인터페이스 프로파일'}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -319,7 +313,7 @@ const VnicProfileModal = ({
         </div>
 
         <div className="edit_footer">
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
           <button onClick={handleFormSubmit}>OK</button>
         </div>
       </div>

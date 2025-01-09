@@ -10,12 +10,7 @@ import {
   useAllClusters,
 } from '../../../../api/RQHook';
 
-const HostModal = ({ 
-  editMode = false, 
-  hId,
-  clusterId,
-  onClose,
-}) => {
+const HostModal = ({ editMode = false, hId, clusterId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     name: '',

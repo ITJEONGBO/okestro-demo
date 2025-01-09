@@ -7,7 +7,7 @@ import { renderDataCenterStatus, renderDatacenterStatusIcon } from '../../../uti
 const DataCenterModal = React.lazy(() => import('./modal/DataCenterModal'));
 const DataCenterDeleteModal = React.lazy(() => import('./modal/DataCenterDeleteModal'));
 
-const DataCenterDupl = ({ datacenters = [], columns }) => {
+const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
   const navigate = useNavigate();
   
   const [activeModal, setActiveModal] = useState(null);
@@ -60,6 +60,9 @@ const DataCenterDupl = ({ datacenters = [], columns }) => {
         columns={columns}
         data={datacenters.map((dc) => ({
           ...dc,
+          // name: <TableRowClick type="datacenter" id={dc?.id}>
+          //   {dc?.name}
+          // </TableRowClick>,
           icon: renderDatacenterStatusIcon(dc?.status),
           status: renderDataCenterStatus(dc?.status),
           storageType: dc?.storageType ? '로컬' : '공유됨'

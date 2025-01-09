@@ -1,74 +1,96 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import NetworkActionButtons from './NetworkActionButtons';
-import NetworkTable from './NetworkTable';
-import NetworkModals from './modal/NetworkModals';
-import AllActionButton from './button/AllActionButton';
+import NetworkActionButtons from './button/NetworkActionButtons';
+import TablesOuter from '../../../components/table/TablesOuter';
+import TableRowClick from '../../../components/table/TableRowClick';
 
-const NetworkDupl = ({ 
-  networks = [], 
-  columns = [], 
-  onFetchNetworks, 
-  status 
-}) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [action, setAction] = useState(null);
-  const [selectedNetworks, setSelectedNetworks] = useState([]); // 다중 선택된 네트워크
+const NetworkModal = React.lazy(() => import('./modal/NetworkModal'));
+const NetworkImportModal = React.lazy(() => import('./modal/NetworkImportModal'));
+const NetworkDeleteModal = React.lazy(() => import('./modal/NetworkDeleteModal'));
+  
+const NetworkDupl = ({ networks = [], columns = [] }) => {
   const navigate = useNavigate();
-  
-  const handleActionClick = (actionType) => {
-    if (actionType === 'vnic') {
-      navigate('/vnicProfiles');
-    } else {
-      setAction(actionType);
-      setIsModalOpen(true);
-    }
-  };
+  const [activeModal, setActiveModal] = useState(null);
+  const [selectedNetworks, setSelectedNetworks] = useState([]);
+  const selectedIds = (Array.isArray(selectedNetworks) ? selectedNetworks : []).map(network => network.id).join(', ');
 
-  const selectedIds = (Array.isArray(selectedNetworks) ? selectedNetworks : []).map((network) => network.id).join(', ');
-
-  // 데이터 유효성 검사
-  if (!Array.isArray(networks) || !Array.isArray(columns)) {
-    return <p>유효하지 않은 데이터입니다.</p>;
-  }
+  const handleNameClick = (id) => navigate(`/networks/${id}`);
   
-  const buttons = [
-    { label: '새로 만들기', onClick: () => handleActionClick('create') },
-    { label: '편집', onClick: () => selectedNetworks.length === 1 && handleActionClick('edit'), disabled: selectedNetworks.length !== 1 },
-    { label: '삭제', onClick: () => selectedNetworks.length > 0 && handleActionClick('delete'), disabled: selectedNetworks.length === 0 },
-    { label: '가져오기', onClick: () => handleActionClick('import') },
-    { label: 'VNIC 프로파일', onClick: () => handleActionClick('vnic') },
-  ];
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
+
+  const renderModals = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'create' && (
+        <NetworkModal
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'edit' && (
+        <NetworkModal
+          editMode
+          networkId={selectedNetworks[0]?.id}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'import' && (
+        <NetworkImportModal
+          networkId={selectedNetworks[0]?.id}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'delete' && (
+        <NetworkDeleteModal
+          data={selectedNetworks}
+          onClose={closeModal}
+        />
+      )}
+      
+    </Suspense>
+  );
+
   return (
-    <div onClick={(e) => e.stopPropagation()}> {/* 테이블 외부 클릭 방지 */}
-     <AllActionButton buttons={buttons} dropdowns={[]} />
-      {/* <NetworkActionButtons
-        onCreate={() => handleActionClick('create')}
-        onEdit={() => selectedNetworks.length === 1 && handleActionClick('edit')}
-        onDelete={() => selectedNetworks.length > 0 && handleActionClick('delete')}
-        onImport={() => handleActionClick('import')}
-        isEditDisabled={!Array.isArray(selectedNetworks) || selectedNetworks.length !== 1} // 방어 코드 추가
-        isDeleteDisabled={selectedNetworks.length === 0} // 삭제 버튼 조건
-        status={selectedNetworks[0]?.status}
-      /> */}
-      <span>선택된 네트워크 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
+    <>
+      <NetworkActionButtons
+        openModal={openModal}
+        isEditDisabled={selectedNetworks.length !== 1}
+      />
+      <span>ID: {selectedIds}</span>
 
-      <NetworkTable
+      <TablesOuter
+        columns={columns}
+        data={networks.map((network) => ({
+          ...network,
+          // name: 
+          //   <TableRowClick type="network" id={network?.id}>
+          //     {network?.name}
+          //   </TableRowClick>,
+          vlan: network?.vlan === 0 ? '-' : network?.vlan,
+          mtu: network?.mtu === 0 ? '기본값(1500)' : network?.mtu,
+          datacenter: (
+            <TableRowClick type="datacenter" id={network?.datacenterVo.id}>
+              {network?.datacenterVo.name}
+            </TableRowClick>
+          ),
+        }))}
+        shouldHighlight1stCol={true}
+        onRowClick={(selectedRows) => setSelectedNetworks(selectedRows)}
+        clickableColumnIndex={[0]}
+        onClickableColumnClick={(row) => handleNameClick(row.id)}
+        multiSelect={true} // 다중 선택 활성화
+      />
+
+      {/* <NetworkTable
         columns={columns}
         networks={networks}
         setSelectedNetworks={(selected) => {
           if (Array.isArray(selected)) setSelectedNetworks(selected); // 유효한 선택만 반영
         }}
-      />
+      /> */}
 
-      <NetworkModals
-        isModalOpen={isModalOpen}
-        action={action}
-        onRequestClose={() => setIsModalOpen(false)}
-        selectedNetwork={selectedNetworks.length > 0 ? selectedNetworks[0] : null} // 선택된 첫 번째 네트워크 전달
-        selectedNetworks={selectedNetworks}
-      />
-    </div>
+      {/* 네트워크 모달창 */}
+      { renderModals() }
+    </>
   );
 };
 

@@ -4,12 +4,9 @@ import EventTable from '../../../pages/event/EventTable';
 
 const HostEvents = ({ hostId }) => {
   const { 
-    data: events, 
-    status: eventsStatus, 
-    isLoading: isEventsLoading, 
-    isError: isEventsError 
+    data: events = [], isLoading: isEventsLoading,
   } = useEventFromHost(hostId, (e) => ({ ...e }));
-  console.log('HostEvents:', events);
+  
   return (
     <>
       <EventTable events={events}/>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSearch, faChevronDown, faEllipsisV, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import TableColumnsInfo from '../zNotuse/TableColumnsInfo';
-import TablesOuter from '../../../components/table/TablesOuter';
+import TablesOuter from '../table/TablesOuter';
 import './css/HostDu.css';
 import Modal from 'react-modal';
 

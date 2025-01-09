@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { useCluster } from '../../../api/RQHook';
 
-const ClusterGenerals = ({ clusterId  }) => {
+const ClusterGeneral = ({ clusterId  }) => {
   const { data: cluster } = useCluster(clusterId);
 
   const renderBiosType = (biosType) => {
@@ -101,4 +101,4 @@ const ClusterGenerals = ({ clusterId  }) => {
   );
 };
 
-export default ClusterGenerals;
+export default ClusterGeneral;

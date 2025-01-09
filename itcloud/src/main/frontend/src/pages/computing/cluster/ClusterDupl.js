@@ -53,6 +53,7 @@ const ClusterDupl = ({ clusters = [], columns, datacenterId }) => {
     <>
       <ClusterActionButtons
         openModal={openModal}
+        isEditDisabled={selectedClusters.length !== 1}
         status={status}
       />
       <span>ID: {selectedIds}</span>
@@ -61,6 +62,10 @@ const ClusterDupl = ({ clusters = [], columns, datacenterId }) => {
         columns={columns}
         data={clusters.map((cluster) => ({
           ...cluster,
+          // name:
+          //   <TableRowClick type="datacenter" id={cluster?.id}>
+          //     {cluster?.name}
+          //   </TableRowClick>,
           hostCnt: cluster?.hostSize?.allCnt,
           vmCnt: cluster?.vmSize.allCnt,
           dataCenter: (

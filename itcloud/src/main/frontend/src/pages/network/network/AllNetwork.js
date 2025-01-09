@@ -10,11 +10,8 @@ import {faServer} from '@fortawesome/free-solid-svg-icons'
 
 const AllNetwork = () => {
   const { 
-    data: networks,
-    refetch: refetchNetworks, 
-    error: networksError, 
-    isLoading: isNetworksLoading,
-  } = useAllNetworks((e) => ({...e,}));
+    data: networks, isLoading: isNetworksLoading,
+  } = useAllNetworks((e) => ({...e}));
 
   useEffect(() => {
     window.addEventListener('resize', adjustFontSize);

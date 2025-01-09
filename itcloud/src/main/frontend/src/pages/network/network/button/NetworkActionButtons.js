@@ -1,29 +1,29 @@
-// import React from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// const NetworkActionButtons = ({ 
-//   onCreate, 
-//   onEdit, 
-//   onDelete, 
-//   onImport, 
-//   isEditDisabled,
-//   isDeleteDisabled
-// }) => {
-//   return (
-//     <div className="header_right_btns">
-//       {onCreate && 
-//         <button onClick={onCreate}>새로 만들기</button>
-//       }
-//       {onEdit && (
-//         <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
-//       )}
-//       {onDelete && (
-//         <button onClick={onDelete} disabled={isDeleteDisabled}>제거</button>
-//       )}
-//       {onImport && (
-//         <button onClick={onImport}>가져오기</button>
-//       )}
-//     </div>
-//   );
-// };
+const NetworkActionButtons = ({ openModal, isEditDisabled, status, selectedNetworks }) => {
+  const navigate = useNavigate();
+  const basicActions = [
+    { type: 'create', label: '생성', disabled: false },
+    { type: 'edit', label: '편집', disabled: isEditDisabled },
+    { type: 'delete', label: '삭제' },
+    { type: 'import', label: '가져오기' },
+  ];
 
-// export default NetworkActionButtons;
+  return (
+    <div className="header_right_btns">
+      {basicActions.map(({ type, label, disabled }) => (
+        <button 
+          key={type} 
+          onClick={() => openModal(type)} 
+          disabled={disabled}
+        >
+          {label}
+        </button>
+      ))}
+      <button onClick={() => navigate('/vnicProfiles')} >vnicProfile</button>
+    </div>
+  );
+};
+
+export default NetworkActionButtons;

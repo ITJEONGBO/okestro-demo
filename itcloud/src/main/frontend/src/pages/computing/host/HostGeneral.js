@@ -1,24 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useHost } from "../../../api/RQHook";
 import './css/Host.css';
 import { formatBytesToMB } from '../../../utils/format';
 
 const HostGeneral = ({ hostId }) => {
-  const {
-    data: host,
-    isError: isHostError,
-    error: hostError,
-    isLoading: isHostLoading,
-  } = useHost(hostId);
-
-  const navigate = useNavigate();
+  const { data: host } = useHost(hostId);
   const [activeTab, setActiveTab] = useState("general");
-
-  
   return (
     <div className="host_content_outer">
-      <p>{host?.hostError}</p>
       {/* Tab Buttons */}
       <div className="host_tabs">
         <button onClick={() => setActiveTab("general")} className={`tab_button ${activeTab === "general" ? "active" : ""}`}>

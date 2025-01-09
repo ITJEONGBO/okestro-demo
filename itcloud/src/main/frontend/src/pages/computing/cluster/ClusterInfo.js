@@ -7,7 +7,7 @@ import Footer from '../../../components/footer/Footer';
 import Path from '../../../components/Header/Path';
 import './css/Cluster.css';
 import { useCluster } from '../../../api/RQHook';
-import ClusterGenerals from './ClusterGenerals';
+import ClusterGeneral from './ClusterGeneral';
 import ClusterHosts from './ClusterHosts';
 import ClusterVms from './ClusterVms';
 import ClusterNetworks from './ClusterNetworks';
@@ -57,7 +57,7 @@ const ClusterInfo = () => {
 
   const renderSectionContent = () => {
     const SectionComponent = {
-      general: ClusterGenerals,
+      general: ClusterGeneral,
       hosts: ClusterHosts,
       vms: ClusterVms,
       networks: ClusterNetworks,

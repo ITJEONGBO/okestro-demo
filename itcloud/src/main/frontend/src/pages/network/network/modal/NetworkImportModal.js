@@ -5,16 +5,16 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import Tables from '../../../../components/table/Tables';
 import '../css/MNetwork.css';
 
-const NetworkActionModal = ({ 
+const NetworkImportModal = ({ 
     isOpen, 
-    onRequestClose, 
+    onClose, 
     onSubmit 
 }) => {
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel="가져오기"
       className="Modal"
       overlayClassName="Overlay"
@@ -23,7 +23,7 @@ const NetworkActionModal = ({
       <div className="network_bring_popup">
         <div className="popup_header">
           <h1>네트워크 가져오기</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -72,11 +72,11 @@ const NetworkActionModal = ({
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={onSubmit}>가져오기</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>
   );
 };
 
-export default NetworkActionModal;
+export default NetworkImportModal;

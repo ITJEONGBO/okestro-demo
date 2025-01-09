@@ -3,13 +3,13 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import { useDeleteHost } from '../../../../api/RQHook';
+import { useDeleteNetwork } from '../../../../api/RQHook';
 
-const HostDeleteModal = ({ onClose, data }) => {
+const NetworkDeleteModal = ({ onClose, data }) => {
   const navigate = useNavigate();
   const [ids, setIds] = useState([]);
   const [names, setNames] = useState([]);
-  const { mutate: deleteHost } = useDeleteHost();
+  const { mutate: deleteNetwork } = useDeleteNetwork();
 
   useEffect(() => {
     if (Array.isArray(data)) {
@@ -25,20 +25,20 @@ const HostDeleteModal = ({ onClose, data }) => {
 
   const handleFormSubmit = () => {
     if (!ids.length) {
-      console.error('삭제할 데이터센터 ID가 없습니다.');
+      console.error('삭제할 네트워크 ID가 없습니다.');
       return;
     }
   
-    ids.forEach((hostId, index) => {
-      deleteHost(hostId, {
+    ids.forEach((networkId, index) => {
+      deleteNetwork(networkId, {
         onSuccess: () => {
-          if (ids.length === 1 || index === ids.length - 1) { // 마지막 호스트 삭제 후 이동
+          if (ids.length === 1 || index === ids.length - 1) { // 마지막 네트워크 삭제 후 이동
             onClose(); // Modal 닫기
-            navigate('/computing/rutil-manager/hosts');
+            navigate('/networks');
           }
         },
         onError: (error) => {
-          console.error(`호스트 삭제 오류:`, error);
+          console.error(`네트워크 삭제 오류:`, error);
         },
       });
     });
@@ -54,7 +54,7 @@ const HostDeleteModal = ({ onClose, data }) => {
     >
       <div className="storage_delete_popup">
         <div className="popup_header">
-          <h1>호스트 삭제</h1>
+          <h1>네트워크 삭제</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
@@ -77,5 +77,5 @@ const HostDeleteModal = ({ onClose, data }) => {
   );
 };
 
-export default HostDeleteModal;
+export default NetworkDeleteModal;
 

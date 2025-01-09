@@ -5,7 +5,7 @@ import HeaderButton from '../../button/HeaderButton';
 import Table from '../../table/Table';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
 import Footer from '../../footer/Footer';
-import { useAllHosts } from '../../../api/RQHook';
+import { useAllHosts } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faRefresh, faTimes, faInfoCircle,

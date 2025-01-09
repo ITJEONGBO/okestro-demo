@@ -4,8 +4,8 @@ import { faServer } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../../components/navigation/NavButton';
 import HeaderButton from '../../../components/button/HeaderButton';
 import Footer from '../../../components/footer/Footer';
-import { useNetworkById } from '../../../api/RQHook';
 import Path from '../../../components/Header/Path';
+import { useNetworkById } from '../../../api/RQHook';
 import NetworkGeneral from './NetworkGeneral.js';
 import NetworkVnicProfiles from './NetworkVnicProfiles.js';
 import NetworkHosts from './NetworkHosts.js';
@@ -14,20 +14,26 @@ import NetworkTemplates from './NetworkTemplates.js'
 import NetworkClusters from './NetworkClusters.js';
 
 const NetworkModal = React.lazy(() => import('./modal/NetworkModal'))
-const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
+const NetworkDeleteModal = React.lazy(() => import('./modal/NetworkDeleteModal'));
 
 const NetworkInfo = () => {
+  const navigate = useNavigate();
   const { id: networkId, section } = useParams();
   const {
-    data: network,
-    refetch: networkRefetch,
-    error: networkError,
-    isLoading: isnetworkLoading,
-  } = useNetworkById(networkId, (e) => ({...e,}));
+    data: network, isError, isLoading
+  } = useNetworkById(networkId);
 
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
-  const [modals, setModals] = useState({ edit: false, delete: false });
+  const [activeModal, setActiveModal] = useState(null);
+
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
+
+  useEffect(() => {
+    if (isError || (!isLoading && !network)) {
+      navigate('/networks');
+    }
+  }, [isError, isLoading, network, navigate]);
   
   const sections = [
     { id: 'general', label: '일반' },
@@ -39,11 +45,7 @@ const NetworkInfo = () => {
   ];
 
   useEffect(() => {
-    if (!section) {
-      setActiveTab('general');
-    } else {
-      setActiveTab(section);
-    }
+    setActiveTab(section || 'general');
   }, [section]);
 
   const handleTabClick = (tab) => {
@@ -66,38 +68,27 @@ const NetworkInfo = () => {
     return SectionComponent ? <SectionComponent networkId={networkId} /> : null;
   };
 
-  const toggleModal = (type, isOpen) => {
-    setModals((prev) => {
-      if (prev[type] === isOpen) return prev;
-      return { ...prev, [type]: isOpen };
-    });
-  };
-
   const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '편집', onClick: () => toggleModal('edit', true),},
-    { id: 'delete_btn', label: '삭제', onClick: () => toggleModal('delete', true), },
+    { type: 'edit', label: '편집', onClick: () => openModal("edit")},
+    { type: 'delete', label: '삭제', onClick: () => openModal("delete") },
   ]
 
   const renderModals = () => (
-    <>
-      {modals.edit && (
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'edit' && (
         <NetworkModal
-          isOpen={modals.edit}
-          onRequestClose={() => toggleModal('edit', false)}
-          editMode={true}
-          networkId={networkId}
+          editMode
+          networkId={network?.id}
+          onClose={closeModal}
         />
       )}
-      {modals.delete && (
-        <DeleteModal
-          isOpen={modals.delete}
-          type="Network"
-          onRequestClose={() => toggleModal('delete', false)}
-          contentLabel="네트워크"
+      {activeModal === 'delete' && (
+        <NetworkDeleteModal
           data={network}
+          onClose={closeModal}
         />
       )}
-    </>
+    </Suspense>
   );
 
   return (
@@ -118,7 +109,9 @@ const NetworkInfo = () => {
           {renderSectionContent()}
         </div>
       </div>
-      <Suspense fallback={<div>Loading...</div>}>{renderModals()}</Suspense>
+
+      {/* 네트워크 모달창 */}
+      { renderModals() }
       <Footer/>
     </div>
   );

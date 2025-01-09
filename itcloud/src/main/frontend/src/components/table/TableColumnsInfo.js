@@ -159,7 +159,7 @@ const TableColumnsInfo = {
   ],
   VNIC_PROFILES_FROM_NETWORK: [
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '네트워크', accessor: 'networkVo', clickable: false },
+    { header: '네트워크', accessor: 'network', clickable: false },
     { header: '데이터 센터', accessor: 'dataCenter', clickable: true },
     { header: '네트워크 필터', accessor: 'networkFilter', clickable: false },
     { header: '포트 미러링', accessor: 'portMirroring', clickable: false },

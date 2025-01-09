@@ -34,6 +34,12 @@ const HostInfo = () => {
   const openModal = (action) => setActiveModal(action);
   const closeModal = () => setActiveModal(null);
 
+  useEffect(() => {
+    if (isError || (!isLoading && !host)) {
+      navigate('/computing/rutil-manager/hosts');
+    }
+  }, [isError, isLoading, host, navigate]);
+
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'vms', label: '가상머신' },
@@ -83,33 +89,29 @@ const HostInfo = () => {
   ];
 
   const renderModals = () => (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        {activeModal === 'edit' && (
-          <HostModal
-            editMode
-            hId={host?.id || null}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'delete' && (
-          <HostDeleteModal
-            type="Host"
-            contentLabel="호스트 삭제"
-            data={host}
-            onRequestClose={closeModal}
-          />
-        )}
-        {popupItems.some((item) => item.type === activeModal) && (
-          <HostActionModal
-            action={activeModal} // 선택된 type을 전달
-            data={host}
-            contentLabel={activeModal}
-            onRequestClose={closeModal}
-          />
-        )}
-        </Suspense>
-    </>
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'edit' && (
+        <HostModal
+          editMode
+          hId={host?.id || null}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'delete' && (
+        <HostDeleteModal
+          data={host}
+          onRequestClose={closeModal}
+        />
+      )}
+      {popupItems.some((item) => item.type === activeModal) && (
+        <HostActionModal
+          action={activeModal} // 선택된 type을 전달
+          data={host}
+          contentLabel={activeModal}
+          onRequestClose={closeModal}
+        />
+      )}
+      </Suspense>
   );
 
   return (
