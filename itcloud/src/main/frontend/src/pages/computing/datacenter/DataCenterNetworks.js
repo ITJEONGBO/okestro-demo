@@ -6,19 +6,14 @@ import NetworkDupl from '../../network/network/NetworkDupl';
 
 const DataCenterNetworks = ({datacenterId}) => {
   const {
-    data: networks,
-    status: networksStatus,
-    isLoading: isNetworksLoading,
-    isError: isNetworksError,
-  } = useNetworksFromDataCenter(datacenterId, (e) => ({ 
-    ...e 
-  }));
+    data: networks = [], isLoading: isNetworksLoading,
+  } = useNetworksFromDataCenter(datacenterId, (e) => ({ ...e }));
 
   return (
     <>
       <NetworkDupl
+        networks={networks}
         columns={TableColumnsInfo.NETWORK_FROM_DATACENTER}
-        networks={networks || []}
       />
     </>
   );

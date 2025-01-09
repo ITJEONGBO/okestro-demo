@@ -1,51 +1,92 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ClusterActionButtons from './button/ClusterActionButtons';
-import ClusterTable from './ClusterTable';
-import ClusterModals from './modal/ClusterModals';
+import TablesOuter from '../../../components/table/TablesOuter';
+import TableRowClick from '../../../components/table/TableRowClick';
 
-const ClusterDupl = ({
-  clusters,
-  columns,
-  datacenterId
-}) => {
-  const [isModalOpen, setIsModalOpen] = useState(false); 
-  const [action, setAction] = useState(null);
+const ClusterModal = React.lazy(() => import('./modal/ClusterModal'));
+const ClusterDeleteModal = React.lazy(() => import('./modal/ClusterDeleteModal'));
+
+const ClusterDupl = ({ clusters = [], columns, datacenterId }) => {
+  const navigate = useNavigate();
+
+  const [activeModal, setActiveModal] = useState(null);
   const [selectedClusters, setSelectedClusters] = useState([]);
-
-  const handleActionClick = (actionType) => {
-    setAction(actionType); 
-    setIsModalOpen(true); 
-  };
   const selectedIds = (Array.isArray(selectedClusters) ? selectedClusters : []).map(cluster => cluster.id).join(', ');
 
+  const handleNameClick = (id) => navigate(`/computing/clusters/${id}`);
+
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
+
+  const status = selectedClusters.length === 0 ? 'none': selectedClusters.length === 1 ? 'single': 'multiple';
+
+  const renderModals = () => (
+    <>
+      <Suspense fallback={<div>Loading...</div>}>
+        {activeModal === 'create' && (
+          <ClusterModal            
+            cId={Array.isArray(selectedClusters) && selectedClusters.length === 1 ? selectedClusters[0].id : null}
+            dcId={datacenterId}
+            onClose={closeModal}
+          />
+        )}
+        {activeModal === 'edit' && (
+          <ClusterModal
+            editMode
+            cId={Array.isArray(selectedClusters) && selectedClusters.length === 1 ? selectedClusters[0].id : null}
+            dcId={datacenterId}
+            onClose={closeModal}
+          />
+        )}
+        {activeModal === 'delete' && (
+          <ClusterDeleteModal
+            data={selectedClusters}
+            onClose={closeModal}
+          />
+        )}
+      </Suspense>
+    </>
+  );
+  
   return (
-  <>
-    <ClusterActionButtons
-      onCreate={() => handleActionClick('create')}
-      onEdit={() => selectedClusters.length === 1 && handleActionClick('edit')}
-      onDelete={() => selectedClusters.length === 1 && handleActionClick('delete')}
-      isEditDisabled={selectedClusters.length !== 1}
-    />
-    <span>선택된 클러스터 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
+    <>
+      <ClusterActionButtons
+        openModal={openModal}
+        status={status}
+      />
+      <span>ID: {selectedIds}</span>
 
-    <ClusterTable
-      columns={columns}
-      clusters={clusters}
-      selectedClusters={selectedClusters}
-      setSelectedClusters={(selected) => {
-        if (Array.isArray(selected)) setSelectedClusters(selected);
-      }}
-    />
+      <TablesOuter
+        columns={columns}
+        data={clusters.map((cluster) => ({
+          ...cluster,
+          hostCnt: cluster?.hostSize?.allCnt,
+          vmCnt: cluster?.vmSize.allCnt,
+          dataCenter: (
+            <TableRowClick type="datacenter" id={cluster.dataCenterVo.id}>
+              {cluster.dataCenterVo.name}
+            </TableRowClick>
+          ),
+        }))}
+        shouldHighlight1stCol={true}
+        onRowClick={(selectedRows) => setSelectedClusters(selectedRows)}
+        clickableColumnIndex={[0]}
+        onClickableColumnClick={(row) => handleNameClick(row.id)}
+        multiSelect={true} // 다중 선택 활성화
+      />
+ 
+      {/* <ClusterTable
+        columns={columns}
+        clusters={clusters}
+        setSelectedClusters={(selected) => {
+          if (Array.isArray(selected)) setSelectedClusters(selected);
+        }}
+      /> */}
 
-    <ClusterModals
-      isModalOpen={isModalOpen}
-      action={action}
-      onRequestClose={() => setIsModalOpen(false)}
-      selectedCluster={selectedClusters.length > 0 ? selectedClusters[0] : null}
-      selectedClusters={selectedClusters}
-      datacenterId={datacenterId}
-    />
-  </>
+      {/* 클러스터 모달창 */}
+      { renderModals() }
+    </>
   );
 };
 

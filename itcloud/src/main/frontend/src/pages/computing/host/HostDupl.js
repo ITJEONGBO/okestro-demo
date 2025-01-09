@@ -7,7 +7,7 @@ const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
 const HostActionModal = React.lazy(() => import('./modal/HostActionModal'));
 
 const HostDupl = ({ 
-  hosts, 
+  hosts = [], 
   columns, 
   clusterId
 }) => {

@@ -5,16 +5,13 @@ import HostDupl from '../../computing/host/HostDupl';
 
 const ClusterHosts = ({ clusterId }) => {
   const { 
-    data: hosts, 
-    status: hostsStatus, 
-    isLoading: isHostsLoading, 
-    isError: isHostsError 
+    data: hosts = [], isLoading: isHostsLoading
   } = useHostFromCluster(clusterId, (e) => ({ ...e }));
 
   return (
     <>
       <HostDupl
-        hosts={hosts || []}
+        hosts={hosts}
         columns={TableColumnsInfo.HOSTS}
         clusterId={clusterId}
       />

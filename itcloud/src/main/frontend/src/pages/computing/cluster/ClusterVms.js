@@ -5,18 +5,13 @@ import VmDupl from '../../computing/vm/VmDupl';
 
 const ClusterVms = ({ clusterId }) => {
   const { 
-    data: vms, 
-    status: vmsStatus, 
-    isLoading: isVmsLoading, 
-    isError: isVmsError 
-  } = useVMFromCluster(clusterId, (e) => ({ 
-    ...e,
-  }));
+    data: vms = [], isLoading: isVmsLoading
+  } = useVMFromCluster(clusterId, (e) => ({ ...e }));
 
   return (
     <>
       <VmDupl
-        vms={vms || []}
+        vms={vms}
         columns={TableColumnsInfo.VMS}
       />
     </>

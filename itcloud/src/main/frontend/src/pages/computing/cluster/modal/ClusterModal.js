@@ -11,6 +11,7 @@ import {
   useDataCenter,
   useNetworksFromDataCenter
 } from '../../../../api/RQHook';
+import { CheckKorenName, CheckName } from '../../../../utils/CheckName';
 
 const FormGroup = ({ label, children }) => (
   <div className="network_form_group">
@@ -19,13 +20,10 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const ClusterModal = ({ 
-  isOpen, 
-  onRequestClose, 
-  editMode = false, 
-  cId, 
-  datacenterId
-}) => {
+const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
+  const { mutate: addCluster } = useAddCluster();
+  const { mutate: editCluster } = useEditCluster();
+
   const [formState, setFormState] = useState({
     id: '',
     name: '',
@@ -36,12 +34,28 @@ const ClusterModal = ({
     biosType: 'CLUSTER_DEFAULT',
     errorHandling: 'migrate',
   });
-  const [dataCenterVoId, setDataCenterVoId] = useState(datacenterId || '');
+  const [dataCenterVoId, setDataCenterVoId] = useState(dcId || '');
   const [networkVoId, setNetworkVoId] = useState('');
   const [cpuOptions, setCpuOptions] = useState([]);
 
-  
-   // 클러스터 데이터 가져오기
+  const resetForm = () => {
+    setFormState({
+      id: '',
+      name: '',
+      description: '',
+      comment: '',
+      cpuArc: 'UNDEFINED',
+      cpuType: '',
+      biosType: 'CLUSTER_DEFAULT',
+      errorHandling: 'migrate',
+    });
+    setCpuOptions([]);
+    setDataCenterVoId('');
+    setNetworkVoId('');
+  };
+
+
+  // 클러스터 데이터 가져오기
    const {
     data: cluster,
     refetch: refetchCluster,
@@ -60,20 +74,14 @@ const ClusterModal = ({
     data: dataCenter,
     refetch: refetchDataCenter,
     isLoading: isDataCenterLoading,
-  } = useDataCenter(datacenterId);
+  } = useDataCenter(dcId);
 
   // 네트워크 가져오기
   const {
     data: networks = [],
     refetch: refetchNetworks,
     isLoading: isNetworksLoading,
-  } = useNetworksFromDataCenter(
-    dataCenterVoId ? dataCenterVoId : undefined, 
-    (e) => ({...e,})
-  );
-
-  const { mutate: addCluster } = useAddCluster();
-  const { mutate: editCluster } = useEditCluster();
+  } = useNetworksFromDataCenter(dataCenterVoId ? dataCenterVoId : undefined, (e) => ({...e,}));
 
   
   const cpuArcs = [
@@ -176,41 +184,41 @@ const ClusterModal = ({
   useEffect(() => {
     if (editMode && cluster) {
       setFormState({
-        id: cluster.id || '',
-        name: cluster.name || '',
-        description: cluster.description || '',
-        comment: cluster.comment || '',
-        cpuArc: cluster.cpuArc || '',
-        cpuType: cluster.cpuType || '',
-        biosType: cluster.biosType || '',
-        errorHandling: cluster.errorHandling || 'migrate',
+        id: cluster.id,
+        name: cluster.name,
+        description: cluster.description,
+        comment: cluster.comment,
+        cpuArc: cluster.cpuArc,
+        cpuType: cluster.cpuType,
+        biosType: cluster.biosType,
+        errorHandling: cluster.errorHandling,
       });
-      setDataCenterVoId(cluster?.dataCenterVo?.id || '');
-      setNetworkVoId(cluster?.networkVo?.id || '');
+      setDataCenterVoId(cluster?.dataCenterVo?.id);
+      setNetworkVoId(cluster?.networkVo?.id);
     } else if (!editMode && !isDatacentersLoading) {
       resetForm();
     }
-  }, [editMode, cluster, datacenterId]);
+  }, [editMode, cluster, isDataCenterLoading, isDatacentersLoading]);
 
 
   useEffect(() => {
     if (!editMode && datacenters && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
     }
-  }, [datacenters, editMode]);
+  }, [editMode, datacenters]);
   
   useEffect(() => {
-    if (!editMode && datacenterId) {
-      setDataCenterVoId(datacenterId); // 초기값 설정
+    if (!editMode && dcId) {
+      setDataCenterVoId(dcId); // 초기값 설정
     }
-  }, [datacenterId, editMode]);
+  }, [editMode, dcId]);
   
   
   useEffect(() => {
     if (!editMode && networks && networks.length > 0) {
       setNetworkVoId(networks[0].id);
     }
-  }, [networks, editMode]);
+  }, [editMode, networks]);
 
   useEffect(() => {
     const options = cpuArcOptions(formState.cpuArc);
@@ -229,36 +237,30 @@ const ClusterModal = ({
     }
   }, [formState.cpuArc, editMode]);
   
-  const resetForm = () => {
-    setFormState({
-      id: '',
-      name: '',
-      description: '',
-      comment: '',
-      cpuArc: 'UNDEFINED',
-      cpuType: '',
-      biosType: 'CLUSTER_DEFAULT',
-      errorHandling: 'migrate',
-    });
-    setCpuOptions([]);
-    setDataCenterVoId('');
-    setNetworkVoId('');
-  };
-
+  
   const validateForm = () => {
-    if (!formState.name) return '이름을 입력해주세요.';
-    if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
-    if (!networkVoId) return '네트워크를 선택해주세요.';
-    return null;
+    if (!CheckKorenName(formState.name) || !CheckName(formState.name)) {
+      alert('이름이 유효하지 않습니다.');
+      return false;
+    }
+    if (!CheckKorenName(formState.description)) {
+      alert('설명이 유효하지 않습니다.');
+      return false;
+    }
+    if (!CheckName(dataCenterVoId)) {
+      alert('데이터센터를 선택해주세요.');
+      return false;
+    }
+    if (!CheckName(networkVoId)) {
+      alert('네트워크를 선택해주세요.');
+      return false;
+    }
+    return true;
   };
 
 
   const handleFormSubmit = () => {
-    const error = validateForm();
-    if (error) {
-      alert(error);
-      return;
-    }
+    if (!validateForm()) return;
 
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedNetwork = networks.find((n) => n.id === networkVoId);
@@ -272,21 +274,28 @@ const ClusterModal = ({
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
 
     if (editMode) {
-      editCluster(
-        { clusterId: formState.id, clusterData: dataToSubmit },
-        {
-          onSuccess: () => {
-            alert('클러스터 편집 완료');
-            onRequestClose();
-          },
+      dataToSubmit.id = formState.id;
+      editCluster({ 
+        clusterId: formState.id, 
+        clusterData: dataToSubmit 
+      }, {
+        onSuccess: () => {
+          alert('클러스터 편집 완료');
+          onClose();
+        },
+        onError: (error) => {
+          console.error('Error editing cluster:', error);
         }
-      );
+      });
     } else {
       addCluster(dataToSubmit, {
         onSuccess: () => {
           alert('클러스터 생성 완료');
-          onRequestClose();
+          onClose();
         },
+        onError: (error) => {
+          console.error('Error editing cluster:', error);
+        }
       });
     }
   };
@@ -294,8 +303,8 @@ const ClusterModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel={editMode ? '클러스터 편집' : '생성'}
       className="Modal"
       overlayClassName="Overlay"
@@ -304,7 +313,7 @@ const ClusterModal = ({
       <div className="cluster_new_popup">
         <div className="popup_header">
           <h1>{editMode ? '클러스터 편집' : '새 클러스터'}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -434,7 +443,7 @@ const ClusterModal = ({
 
         <div className="edit_footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

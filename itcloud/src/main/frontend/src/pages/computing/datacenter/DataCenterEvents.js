@@ -3,19 +3,14 @@ import '../datacenter/css/DataCenter.css';
 import { useEventsFromDataCenter } from '../../../api/RQHook';
 import EventTable from '../../event/EventTable';
 
-const DataCenterEvents = ({datacenterId}) => {
+const DataCenterEvents = ({ datacenterId }) => {
   const {
-    data: events,
-    status: eventsStatus,
-    isLoading: isEventsLoading,
-    isError: isEventsError,
+    data: events = [], isLoading: isEventsLoading,
   } = useEventsFromDataCenter(datacenterId, (e) => ({ ...e }));
-  console.log('DataCenterEvents:', events);
+  
   return (
     <>
-      <EventTable 
-        events={events}
-      />
+      <EventTable events={events}/>
     </>
   );
 };

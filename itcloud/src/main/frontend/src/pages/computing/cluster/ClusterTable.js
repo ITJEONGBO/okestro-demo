@@ -3,11 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TablesOuter from '../../../components/table/TablesOuter';
 import TableRowClick from '../../../components/table/TableRowClick';
 
-const ClusterTable = ({
-  columns,
-  clusters,
-  setSelectedClusters,
-}) => {
+const ClusterTable = ({ columns, clusters, setSelectedClusters }) => {
   const navigate = useNavigate();
 
   const handleNameClick = (id) => {

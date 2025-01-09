@@ -121,6 +121,13 @@ export function icon(status) {
 // const formatSize = (size) => (sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`);
 
 
+export function renderDataCenterStatus (status) {
+  if (status === 'UNINITIALIZED') {
+    return '초기화되지 않음';
+  }
+  return status;
+};
+
 export function renderHostStatus (status) {
   if (status === 'UP') {
     return '실행중';

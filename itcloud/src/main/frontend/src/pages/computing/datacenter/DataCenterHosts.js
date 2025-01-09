@@ -5,17 +5,14 @@ import { useHostsFromDataCenter } from '../../../api/RQHook';
 import HostDupl from '../../computing/host/HostDupl';
 
 const DataCenterHosts = ({datacenterId}) => {
-  const {
-    data: hosts,
-    status: hostsStatus,
-    isLoading: isHostsLoading,
-    isError: isHostsError,
+  const { 
+    data: hosts = [], isLoading: isHostsLoading,
   } = useHostsFromDataCenter(datacenterId, (e) => ({ ...e }));
   
   return (
     <>
       <HostDupl
-        hosts={hosts || []}
+        hosts={hosts}
         columns={TableColumnsInfo.HOSTS}
       />
     </>

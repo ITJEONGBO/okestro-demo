@@ -21,6 +21,10 @@ const NetworkTable = ({
       columns={columns}
       data={networks.map((network) => ({
         ...network,
+        name: 
+          <TableRowClick type="network" id={network.id}>
+            {network.name}
+          </TableRowClick>,
         vlan: network.vlan === 0 ? '-' : network.vlan,
         mtu: network.mtu === 0 ? '기본값(1500)' : network.mtu,
         datacenter: (
@@ -31,7 +35,7 @@ const NetworkTable = ({
       }))}
       shouldHighlight1stCol={true}
       onRowClick={handleRowSelection} // 다중 선택된 행 데이터를 업데이트
-      clickableColumnIndex={[0]}
+      // clickableColumnIndex={[0]}
       onClickableColumnClick={(row) => handleNameClick(row.id)}
       
     />

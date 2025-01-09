@@ -4,12 +4,9 @@ import EventTable from '../../event/EventTable';
 
 const ClusterEvents = ({ clusterId }) => {
   const { 
-    data: events, 
-    status: eventsStatus, 
-    isLoading: isEventsLoading, 
-    isError: isEventsError 
+    data: events = [], isLoading: isEventsLoading,
   } = useEventFromCluster(clusterId, (e) => ({ ...e }));
-  console.log('ClusterEvents:', events);
+  
   return (
     <>
       <EventTable events={events}/>

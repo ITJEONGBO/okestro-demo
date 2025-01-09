@@ -53,8 +53,7 @@ const DomainModal = ({
   const [storageTypes, setStorageTypes] = useState([]);
 
   // nfs
-  const [storagePath, setStoragePath] = useState('');
-  const [storageAddress, setStorageAddress] = useState('');
+  const [nfsAddress, setNfsAddress] = useState('');
 
   // iscsi, fibre
   const [lunId, setLunId] = useState('');
@@ -69,11 +68,6 @@ const DomainModal = ({
   // const [chapName, setChapName] = useState('');
   // const [chapPassword, setChapPassword] = useState('');
   // const [useChap, setUseChap] = useState(false);
-
-
-
-  const editMode = (action === 'edit');
-  const importMode = (action === 'imported');
 
   const { mutate: addDomain } = useAddDomain();
   const { mutate: editDomain } = useEditDomain();
@@ -154,7 +148,9 @@ const DomainModal = ({
       serial: unit.serial
     };
   }));
-  
+
+  const editMode = (action === 'edit');
+  const importMode = (action === 'imported');
 
   const isNfs = formState.storageType === 'nfs' || domain?.storageType === 'nfs';
   const isIscsi = formState.storageType === 'iscsi' || domain?.storageType === 'iscsi';
@@ -198,8 +194,7 @@ const DomainModal = ({
       setHostVoName(domain?.hostVo?.name || '');
       
       if (updatedState.storageType === 'nfs') {
-        setStoragePath(domain?.storagePath || '');
-        setStorageAddress(domain?.storageAddress || '');
+        setNfsAddress(domain?.storageAddress || '');
       } else if (updatedState.storageType === 'iscsi' || updatedState.storageType === 'fcp') {
         setLunId(domain?.hostStorageVo?.logicalUnits[0]?.id || '');
       }
@@ -238,8 +233,7 @@ const DomainModal = ({
 
   useEffect(() => {
     // 스토리지 유형 변경 시 초기화할 상태 설정
-    setStorageAddress('');
-    setStoragePath('');
+    setNfsAddress('');
     setLunId('');
     setIscsiSearchResults([]); // iSCSI 검색 결과 초기화
     setFcpSearchResults([]);   // FCP 검색 결과 초기화
@@ -263,8 +257,7 @@ const DomainModal = ({
     // setStorageTypes(['nfs', 'iscsi', 'fcp']); // 기본 도메인 유형에 따른 스토리지 유형
     setIscsiSearchResults([]); // iSCSI 검색 결과 초기화
     setFcpSearchResults([]);   // FCP 검색 결과 초기화
-    setStorageAddress('');
-    setStoragePath('');
+    setNfsAddress('');
     setLunId('');
     setAddress('');
     setPort(3260);
@@ -282,7 +275,7 @@ const DomainModal = ({
     if (!formState.name) return '이름을 입력해주세요.';
     if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
     if ((action === 'create' || importMode) && !hostVoName) return '호스트를 선택해주세요.';
-    if (formState.storageType === 'NFS' && !storagePath) return '경로를 입력해주세요.';
+    if (formState.storageType === 'NFS' && !nfsAddress) return '경로를 입력해주세요.';
     if ((action === 'create' || importMode) && formState.storageType !== 'nfs' && lunId) {
       const selectedLogicalUnit =
         formState.storageType === 'iscsi'
@@ -296,7 +289,6 @@ const DomainModal = ({
   const [iscsiSearchResults, setIscsiSearchResults] = useState([]);
   const [fcpSearchResults, setFcpSearchResults] = useState([]);
 
-  
 
   const handleSearchIscsi = () => {
     if (!hostVoId) {
@@ -364,7 +356,6 @@ const DomainModal = ({
   };
 
   
-
   const handleFormSubmit = () => {
     const error = validateForm();
     if (error) {
@@ -374,15 +365,18 @@ const DomainModal = ({
   
     let dataToSubmit;
   
-    if (editMode) {
+    // 편집
+    if (editMode) { 
       // 'edit' 액션에서는 formState 데이터만 제출
       dataToSubmit = {
         ...formState,
       };
-    // }else if(importMode){
+    // 가져오기
+    // }else if(importMode){  
     //   dataToSubmit = {
     //     ...formState,
     //   }
+    // 생성
     } else {
       const selectedDataCenter = dataCenters.find((dc) => dc.id === dataCenterVoId);
       const selectedHost = hosts.find((h) => h.name === hostVoName);
@@ -391,6 +385,8 @@ const DomainModal = ({
         formState.storageType === 'iscsi' ? iscsis.find((iLun) => iLun.id === lunId)
           : formState.storageType === 'fcp'? fibres.find((fLun) => fLun.id === lunId)
           : null;
+
+      const [storageAddress, storagePath] = nfsAddress.split(':');
 
       dataToSubmit = {
         ...formState,
@@ -560,43 +556,34 @@ const DomainModal = ({
       </div>
     </div>
 
-    <div className="storage_specific_content">
-      
+   
       {/* NFS 의 경우 */}
       {isNfs && (
         <div className="storage_popup_iSCSI">
-          <div className="domain_new_group">
-            <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
-            {editMode ? (
-              <input
-                type="text"
-                placeholder="예: myserver.mydomain.com"
-                value={storageAddress}
-                onChange={(e) => setStorageAddress(e.target.value)}
-                disabled={editMode}
-              />
-            ) : (
-              <>
-              <div>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="예: myserver.mydomain.com"
-                    value={storageAddress}
-                    onChange={(e) => setStorageAddress(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="예: /my/local/path"
-                    value={storagePath}
-                    onChange={(e) => setStoragePath(e.target.value)}
-                  />
-                </div>
-              </div>
-              </>
-            )}
+          <div className="tab_content">
+            <div className='domain_num_box'>
+              <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
+              {editMode ? (
+                <input
+                  type="text"
+                  placeholder="예: myserver.mydomain.com"
+                  value={nfsAddress}
+                  disabled={editMode}
+                />
+              ) : (
+                <>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="예: myserver.mydomain.com:/my/local/path"
+                      value={nfsAddress}
+                      onChange={(e) => setNfsAddress(e.target.value)}
+                      style={{width: '310px', height: '22px'}}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -810,7 +797,7 @@ const DomainModal = ({
         <button onClick={handleFormSubmit}>{editMode ? '편집' : '완료'}</button>
         <button onClick={onRequestClose}>취소</button>
       </div>
-    </div>
+    {/* </div> */}
     </Modal>
   );
 };

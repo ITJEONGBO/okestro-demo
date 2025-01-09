@@ -1,5 +1,4 @@
 import React from 'react';
-// import '../css/Computing.css';
 import { useAllClusters } from '../../api/RQHook';
 import TableColumnsInfo from '../../components/table/TableColumnsInfo';
 import ClusterDupl from '../../pages/computing/cluster/ClusterDupl';

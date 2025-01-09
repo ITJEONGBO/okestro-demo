@@ -13,10 +13,9 @@ import DataCenterVms from './DataCenterVms';
 import DataCenterDomains from './DataCenterDomains';
 import DataCenterNetworks from './DataCenterNetworks';
 import DataCenterEvents from './DataCenterEvents';
-import DataCenterDeleteModal from './modal/DataCenterDeleteModal';
 
 const DataCenterModal = React.lazy(() => import('./modal/DataCenterModal'));
-const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
+const DataCenterDeleteModal = React.lazy(() => import('./modal/DataCenterDeleteModal'));
 
 const DataCenterInfo = () => {
   const navigate = useNavigate();
@@ -31,6 +30,12 @@ const DataCenterInfo = () => {
 
   const openModal = (action) => setActiveModal(action);
   const closeModal = () => setActiveModal(null);
+
+  useEffect(() => {
+    if (isError || (!isLoading && !dataCenter)) {
+      navigate('/computing/rutil-manager/datacenters');
+    }
+  }, [isError, isLoading, dataCenter, navigate]);
 
   const sections = [
     { id: 'clusters', label: '클러스터' },

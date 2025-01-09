@@ -3,13 +3,13 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import { useDeleteDataCenter } from '../../../../api/RQHook';
+import { useDeleteCluster } from '../../../../api/RQHook';
 
-const DataCenterDeleteModal = ({ onClose, data }) => {
+const ClusterDeleteModal = ({ onClose, data }) => {
   const navigate = useNavigate();
   const [ids, setIds] = useState([]);
   const [names, setNames] = useState([]);
-  const { mutate: deleteDataCenter } = useDeleteDataCenter();
+  const { mutate: deleteCluster } = useDeleteCluster();
 
   useEffect(() => {
     if (Array.isArray(data)) {
@@ -25,20 +25,20 @@ const DataCenterDeleteModal = ({ onClose, data }) => {
 
   const handleFormSubmit = () => {
     if (!ids.length) {
-      console.error('삭제할 데이터센터 ID가 없습니다.');
+      console.error('삭제할 클러스터 ID가 없습니다.');
       return;
     }
   
-    ids.forEach((datacenterId, index) => {
-      deleteDataCenter(datacenterId, {
+    ids.forEach((clusterId, index) => {
+      deleteCluster(clusterId, {
         onSuccess: () => {
-          if (ids.length === 1 || index === ids.length - 1) { // 마지막 데이터센터 삭제 후 이동
-            onClose(); // Modal 닫기
-            navigate('/computing/rutil-manager/datacenters');
+          if (ids.length === 1 || index === ids.length - 1) { // 마지막 클러스터 삭제 후 이동
+            onClose();
+            navigate('/computing/rutil-manager/clusters');
           }
         },
         onError: (error) => {
-          console.error(`데이터센터 삭제 오류:`, error);
+          console.error(`클러스터 삭제 오류:`, error);
         },
       });
     });
@@ -54,7 +54,7 @@ const DataCenterDeleteModal = ({ onClose, data }) => {
     >
       <div className="storage_delete_popup">
         <div className="popup_header">
-          <h1>데이터센터 삭제</h1>
+          <h1>클러스터 삭제</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
@@ -77,4 +77,4 @@ const DataCenterDeleteModal = ({ onClose, data }) => {
   );
 };
 
-export default DataCenterDeleteModal;
+export default ClusterDeleteModal;

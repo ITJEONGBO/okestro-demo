@@ -407,20 +407,20 @@ export const useCluster = (clusterId) => useQuery({
   cacheTime: 0,  // 캐시를 유지하지 않고 매번 새로운 데이터를 요청
 });
 /**
- * @name useLogicalFromCluster
+ * @name useNetworkFromCluster
  * @description 클러스터 내 논리네트워크 목록조회 useQuery훅
  * 
  * @param {string} clusterId 클러스터ID
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useLogicalFromCluster
+ * @see ApiManager.useNetworkFromCluster
  */
-export const useLogicalFromCluster = (clusterId, mapPredicate) => useQuery({
+export const useNetworkFromCluster = (clusterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['logicalFromCluster', clusterId], 
+  queryKey: ['networkFromCluster', clusterId], 
   queryFn: async () => {
-    console.log(`useLogicalFromCluster ... ${clusterId}`);
+    console.log(`useNetworkFromCluster ... ${clusterId}`);
     const res = await ApiManager.findNetworksFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
@@ -488,7 +488,7 @@ export const usePermissionFromCluster = (clusterId, mapPredicate) => useQuery({
 })
 
 /**
- * @name useHostFromCluster
+ * @name useCpuProfilesFromCluster
  * @description 클러스터 내 cpuprofile 목록조회 useQuery훅
  * 
  * @param {string} clusterId 클러스터ID

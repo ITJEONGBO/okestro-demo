@@ -8,75 +8,79 @@ import {
   useEditDataCenter,
   useDataCenter
 } from '../../../../api/RQHook'
+import { CheckKorenName, CheckName } from '../../../../utils/CheckName';
 
-const DataCenterModal = ({ 
-  editMode = false,  // 기본이 생성모드
-  dcId,
-  onClose,
-}) => {
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
-  const [comment, setComment] = useState('');
-  const [description, setDescription] = useState('');
-  const [storageType, setStorageType] = useState();
-  const [version, setVersion] = useState('4.7');
-  const [quotaMode, setQuotaMode] = useState();
-
+const DataCenterModal = ({ editMode = false, dcId, onClose }) => {
   const { mutate: addDataCenter } = useAddDataCenter();
   const { mutate: editDataCenter } = useEditDataCenter();
 
-  const {
-    data: datacenter,
-    status: datacenterStatus,
-    isRefetching: isDatacenterRefetching,
-    refetch: refetchDatacenter,
-    isError: isDatacenterError,
-    error: datacenterError,
-    isLoading: isDatacenterLoading
-  } = useDataCenter(dcId);
+  const [formState, setFormState] = useState({
+    id: '',
+    name: '',
+    comment: '',
+    description: '',
+    storageType: false,
+    version: '4.7',
+    quotaMode: 'DISABLED'
+  });
 
+  const resetForm = () => {
+    setFormState({
+      name: '',
+      comment: '',
+      description: '',
+      storageType: false,
+      version: '4.7',
+      quotaMode: 'DISABLED'
+    });
+  };
+
+  const { data: datacenter } = useDataCenter(dcId);
 
   // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
     if (editMode && datacenter) {
-      setId(datacenter.id);
-      setName(datacenter.name);
-      setComment(datacenter.comment);
-      setDescription(datacenter.description);
-      setStorageType(datacenter.storageType);
-      setVersion(datacenter.version);
-      setQuotaMode(datacenter.quotaMode);
-    } else {
+      setFormState({
+        id: datacenter.id,
+        name: datacenter.name,
+        comment: datacenter.comment,
+        description: datacenter.description,
+        storageType: datacenter.storageType,
+        version: datacenter.version,
+        quotaMode: datacenter.quotaMode,
+      });
+    } else if (!editMode) {
       resetForm();
     }
   }, [editMode, datacenter]);
+  
 
-  const resetForm = () => {
-    setName('');
-    setComment('');
-    setDescription('');
-    setStorageType();
-    setVersion('4.7');
-    setQuotaMode();
+  const validateForm = () => {
+    if (!CheckKorenName(formState.name) || !CheckName(formState.name)) {
+      alert('이름이 유효하지 않습니다.');
+      return false;
+    }
+    if (!CheckKorenName(formState.description)) {
+      alert('설명이 유효하지 않습니다.');
+      return false;
+    }
+    return true;
   };
 
   const handleFormSubmit = () => {
+    if (!validateForm()) return;
+
     // 데이터 객체 생성
     const dataToSubmit = {
-      name,
-      comment,
-      description,
-      storageType,
-      version,
-      quotaMode,
+      ...formState
     };
   
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
     
     if (editMode) {
-      dataToSubmit.id = id;  // 수정 모드에서는 id를 추가
+      dataToSubmit.id = formState.id;  // 수정 모드에서는 id를 추가
       editDataCenter({
-        dataCenterId: id,              // 전달된 id
+        dataCenterId: formState.id,              // 전달된 id
         dataCenterData: dataToSubmit   // 수정할 데이터
       }, {
         onSuccess: () => {
@@ -118,25 +122,20 @@ const DataCenterModal = ({
         </div>
 
         <div className="datacenter_new_content">
-          {/* <div >
-            <input type="hidden" id="id" value={id} onChange={() => {}} /> 
-          </div> */}
           <div>
             <label htmlFor="name1">이름</label>
             <input
               type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)} // onChange 핸들러 추가
+              value={formState.name}
+              onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
             />
           </div>
           <div>
             <label htmlFor="comment">코멘트</label>
             <input
               type="text"
-              id="comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)} // onChange 핸들러 추가
+              value={formState.comment}
+              onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
             />
           </div>
           <div>
@@ -144,16 +143,16 @@ const DataCenterModal = ({
             <input
               type="text"
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)} // onChange 핸들러 추가
+              value={formState.description}
+              onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
             />
           </div>
           <div>
             <label htmlFor="storageType">스토리지 타입</label>
             <select
               id="storageType"
-              value={storageType ? "true" : "false"}  // 불리언 값을 문자열로 변환하여 value와 일치하도록 설정
-              onChange={(e) => setStorageType(e.target.value === "true")} // 선택된 값에 따라 boolean으로 변환
+              value={formState.storageType ? "true" : "false"}  // 불리언 값을 문자열로 변환하여 value와 일치하도록 설정
+              onChange={(e) => setFormState((prev) => ({ ...prev, storageType: e.target.value === "true" }))}
             >
               <option value="false">공유됨</option>
               <option value="true">로컬</option>
@@ -163,8 +162,8 @@ const DataCenterModal = ({
             <label htmlFor="version">호환버전</label>
             <select
               id="version"
-              value={version}
-              onChange={(e) => setVersion(e.target.value)} // onChange 핸들러 추가
+              value={formState.version}
+              onChange={(e) => setFormState((prev) => ({ ...prev, version: e.target.value }))}
             >
               <option value="4.7">4.7</option>
             </select>
@@ -173,8 +172,8 @@ const DataCenterModal = ({
           <label htmlFor="quota_mode">쿼터 모드</label>
             <select
               id="quota_mode"
-              value={quotaMode}
-              onChange={(e) => setQuotaMode(e.target.value)} // quotaMode는 그대로 문자열로 다루기
+              value={formState.quotaMode}
+              onChange={(e) => setFormState((prev) => ({ ...prev, quotaMode: e.target.value }))}
             >
               <option value="DISABLED">비활성화됨</option>
               <option value="AUDIT">감사</option>
