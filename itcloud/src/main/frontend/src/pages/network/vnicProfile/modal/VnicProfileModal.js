@@ -9,7 +9,7 @@ import {
   useAllDataCenters, 
   useEditVnicProfile, 
   useNetworksFromDataCenter, 
-  useVnicProfile,
+  useVnicProfile
 } from '../../../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
@@ -24,7 +24,7 @@ const VnicProfileModal = ({
   onRequestClose,
   editMode = false,
   vnicProfileId,
-  networkId,
+
 }) => {
   const [formState, setFormState] = useState({
     id: '',
@@ -42,7 +42,7 @@ const VnicProfileModal = ({
   const { 
     data: vnic,
     isLoading: isVnicLoading
-  } = useVnicProfile(networkId, vnicProfileId);
+  } = useVnicProfile( vnicProfileId);
   
   const {
     data: datacenters = [],
@@ -150,7 +150,7 @@ const VnicProfileModal = ({
 
     if (editMode) {
       editVnicProfile(
-        { networkId: networkVoId, vnicId: formState.id, vnicData: dataToSubmit }, 
+        { vnicId: formState.id, vnicData: dataToSubmit }, 
         {
           onSuccess: () => {
             alert('vNIC 프로파일이 성공적으로 편집되었습니다.');
@@ -162,7 +162,7 @@ const VnicProfileModal = ({
         });
     } else {
       addVnicProfile(
-        { networkId: networkVoId, vnicData: dataToSubmit }, 
+        {  vnicData: dataToSubmit }, 
         {
           onSuccess: () => {
             alert('vNIC 프로파일이 성공적으로 추가되었습니다.');

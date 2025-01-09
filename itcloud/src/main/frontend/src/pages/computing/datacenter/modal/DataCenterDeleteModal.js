@@ -5,45 +5,45 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDeleteDataCenter } from '../../../../api/RQHook';
 
-const DataCenterDeleteModal = ({ 
-    onClose, 
-    data,
-}) => {
-  const [id, setId] = useState([]);
-  const [name, setName] = useState([]);
-
+const DataCenterDeleteModal = ({ onClose, data }) => {
+  const [ids, setIds] = useState([]);
+  const [names, setNames] = useState([]);
   const { mutate: deleteDataCenter } = useDeleteDataCenter();
-
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    setId([data.id]);
-    setName([data.name]);
+    if (Array.isArray(data)) {
+      const ids = data.map((item) => item.id);
+      const names = data.map((item) => item.name || '이름 없음'); // name이 없는 경우 처리
+      setIds(ids);
+      setNames(names);
+    }
   }, [data]);
 
-  useEffect(() => {
-    console.log('DeleteModal:', data, + id);
-  }, [data, id]);
-
   const handleFormSubmit = () => {
-    if (!id) {
-      console.error('ID가 없습니다. 삭제 요청을 취소합니다.');
+    if (!ids.length) {
+      console.error('삭제할 데이터센터 ID가 없습니다.');
       return;
-    } 
-    console.log('Deleting Host');
-    handleDelete(() => deleteDataCenter(id));
-    
+    }
+
+    console.log('Deleting DataCenters:', ids);
+    ids.forEach((datacenterId, index) => {
+      handleDelete(() => deleteDataCenter(datacenterId), names[index]);
+    });
+
     onClose();
   };
 
-  const handleDelete = (deleteFn) => {
-    deleteFn(id, {
+  const handleDelete = (deleteFn, name) => {
+    deleteFn({
       onSuccess: () => {
-        onClose();
+        console.log(`데이터센터 ${name} 삭제 성공`);
         const currentPath = location.pathname;
-        if (currentPath.includes(id)) {
-          const newPath = currentPath.replace(`/${id}`, '');
+
+        // 현재 경로가 삭제된 데이터센터와 관련되면 리다이렉션
+        if (currentPath.includes(name)) {
+          const newPath = currentPath.replace(`/${name}`, '');
           navigate(newPath);
         } else {
           window.location.reload();
@@ -54,11 +54,10 @@ const DataCenterDeleteModal = ({
       },
     });
   };
-  
 
   return (
     <Modal
-      isOpen={true} // isopen
+      isOpen={true}
       onRequestClose={onClose}
       className="Modal"
       overlayClassName="Overlay"
@@ -75,7 +74,7 @@ const DataCenterDeleteModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {name} 를(을) 삭제하시겠습니까? </span>
+            <span> {names.join(', ')} 를(을) 삭제하시겠습니까? </span>
           </div>
         </div>
 
@@ -90,4 +89,3 @@ const DataCenterDeleteModal = ({
 };
 
 export default DataCenterDeleteModal;
-

@@ -2286,9 +2286,9 @@ export const useAllTemplatesFromVnicProfiles = (vnicProfileId, mapPredicate) => 
 export const useAddVnicProfile = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async ({networkId, vnicData}) => await ApiManager.addVnicProfiles(networkId, vnicData),
+    mutationFn: async (vnicData) => await ApiManager.addVnicProfiles(vnicData),
     onSuccess: () => {
-      queryClient.invalidateQueries('vnicProfilesFromNetwork');
+      queryClient.invalidateQueries('allVnicProfiles');
     },
     onError: (error) => {
       console.error('Error adding vnic:', error);
@@ -2306,7 +2306,7 @@ export const useEditVnicProfile = () => {
   return useMutation({
     mutationFn: async ({vnicId, vnicData }) => await ApiManager.editVnicProfiles(vnicId, vnicData),
     onSuccess: () => {
-      queryClient.invalidateQueries('vnicProfilesFromNetwork');
+      queryClient.invalidateQueries('allVnicProfiles');
     },
     onError: (error) => {
       console.error('Error editing vnic:', error);
@@ -2328,7 +2328,7 @@ export const useDeleteVnicProfile = () => {
       return await ApiManager.deleteVnicProfiles(vnicProfileId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries('vnicProfilesFromNetwork');
+      queryClient.invalidateQueries('allVnicProfiles');
     },
     onError: (error) => {
       console.error('Error deleting VnicProfile:', error);

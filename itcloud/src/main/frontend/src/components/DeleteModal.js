@@ -71,7 +71,9 @@ const DeleteModal = ({
 
     if (type === 'DataCenter') {
       console.log('Deleting DataCenter');
-      handleDelete(deleteDataCenter);
+      id.forEach((datacenterId, index) => {
+        handleDelete(() => deleteDataCenter(datacenterId), name[index]); 
+      });
     } else if (type === 'Cluster') {
       console.log('Deleting Cluster');
       id.forEach((clsuterId, index) => {

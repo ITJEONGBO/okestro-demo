@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
+import './NavButton.css';
 
 const NavButton = React.memo(({ sections, handleSectionClick }) => {
   const { pathname } = useLocation(); // 현재 URL 경로 가져오기

@@ -1959,10 +1959,10 @@ migrateHostsFromVM: async (vmId) => {
    * @param {Object} vnicData 
    * @returns {Promise<Object>} API 응답 결과
    */
-  addVnicProfiles: async (networkId, vnicData) => {
+  addVnicProfiles: async (vnicData) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.ADD_VNIC_PROFILE_FROM_NETWORK(networkId),
+      url: ENDPOINTS.ADD_VNIC_PROFILE_FROM_NETWORK(),
       data: vnicData, 
     });
   },

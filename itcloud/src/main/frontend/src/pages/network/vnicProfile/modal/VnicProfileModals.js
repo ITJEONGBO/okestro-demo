@@ -6,7 +6,6 @@ const VnicProfileModals = ({
   onRequestClose, 
   selectedVnicProfile,
   selectedVnicProfiles,
-  networkId
 }) => {
   const VnicProfileModal = React.lazy(() => import('./VnicProfileModal.js'));
   const DeleteModal = React.lazy(() => import('../../../../components/DeleteModal.js'));

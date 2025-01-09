@@ -174,9 +174,7 @@ const ENDPOINTS = {
   IMPORT_NETWORK: () => `/api/v1/networks/import`,
   
   FIND_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
-  ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
-  EDIT_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
-  DELETE_VNIC_PROFILE_FROM_NETWORK: (vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
+
 
   //endregion: Network
 
@@ -185,6 +183,9 @@ const ENDPOINTS = {
   FIND_VNIC_PROFILE: ( vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
   FIND_VMS_VNIC_PROFILE: ( vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}/vms`,
   FIND_TEMPLATE_VNIC_PROFILE: ( vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}/templates`,
+  ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/vnicProfiles`,
+  EDIT_VNIC_PROFILE_FROM_NETWORK: (vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
+  DELETE_VNIC_PROFILE_FROM_NETWORK: (vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
   //endregion: VnicProfile
 
   //region: StorageDomain
