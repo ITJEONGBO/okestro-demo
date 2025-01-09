@@ -205,18 +205,36 @@
     border: 1px solid #a3a3a3;
     display:flex;
     justify-content: space-between;
-    height: 5vh;
+    padding:0.1rem;
+    margin-bottom: 0.16rem;
+}
+.interface{
+    border: 1px solid #a3a3a3;
+    padding:0.1rem;
 }
 .container{
     display: flex;
     align-items: center;
-    border: 1px solid #ddd;
+    border: 1px solid yellow;
     cursor:pointer;
-    padding: 10px;
+    padding: 0.1rem 0.2rem;
+    margin-bottom:0.1rem;
     background-color: white;
 }
 .container:hover{
     background: #d1d1d1;
+}
+.assigned-network-outer{
+    background:pink;
+    display: flex;
+    align-items: center;
+}
+.assigned-network{
+    display: flex;
+    align-items: center;
+    border: 1px solid yellow;
+    padding: 0.1rem 0.2rem;
+    cursor:pointer;
 }
 .left-section {
     display: flex;
@@ -224,7 +242,7 @@
     margin-right: 10px;
 }
 .network_separation_right{
-    width: 43%;
+    width: 37%;
     padding: 0 0.5rem;
 }
 .right-section {
@@ -246,7 +264,23 @@
 .vnic_new_checkbox{
     display:flex;
 }
-/**/
+/*본딩모달*/
+.network-bonding-modal{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 33%;
+    width: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    font-size:0.32rem;
+}
+.bonding-content{
+    padding:0.2rem 0.1rem;
+}
 /* 
 .unconfigured_network{
     display: flex;

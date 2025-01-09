@@ -161,9 +161,7 @@ const VnicProfileModal = ({
           }
         });
     } else {
-      addVnicProfile(
-        {  vnicData: dataToSubmit }, 
-        {
+      addVnicProfile(dataToSubmit,{
           onSuccess: () => {
             alert('vNIC 프로파일이 성공적으로 추가되었습니다.');
             onRequestClose();

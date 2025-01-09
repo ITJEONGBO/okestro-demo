@@ -1,39 +1,37 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowsAltH, faBan, faCaretDown, faCheck, faCircle, faDesktop, faExclamationTriangle, faFan, faNetworkWired, faPencilAlt, faPlay, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faArrowCircleDown, faArrowCircleUp, faArrowsAltH, faBan, faCheck, faCircle, faCrown, faDesktop, faExclamationTriangle, faFan, faNetworkWired, faPencilAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useHost, useLogicalFromCluster } from '../../../../api/RQHook';
+import HostPlusModal from './NetworkHostPlusModal';
+import NetworkHostPlusModal from './NetworkHostPlusModal';
+import NewBondingModal from './NewBondingModal';
 
-const NetworkHostModal = ({ 
-  isOpen, 
-  onRequestClose, 
-  hostId
-}) => {
-
-    // 모달 관련 상태 및 함수
-    const [activePopup, setActivePopup] = useState(null);
+const NetworkHostModal = ({ isOpen, onRequestClose, nicData,hostId }) => {
+    // State for managing the second modal
     const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
-    const openSecondModal = () => {
-        setIsSecondModalOpen(true);
-    };
-    const closeSecondModal = () => {
-        setIsSecondModalOpen(false);
-        setSelectedModalTab('ipv4'); // 모달이 닫힐 때 첫 번째 탭으로 초기화
-    };
-      // 탭 상태 정의 (기본 값: 'ipv4')
-      const [selectedModalTab, setSelectedModalTab] = useState('ipv4');
-        const [isLabelVisible, setIsLabelVisible] = useState(false); // 라벨 표시 상태 관리
-    const [activeButton, setActiveButton] = useState('network');
-      const handleTabModalClick = (tab) => {
-        setSelectedModalTab(tab);
+    const openSecondModal = () => setIsSecondModalOpen(true);
+    const closeSecondModal = () => setIsSecondModalOpen(false);
+
+    // 호스트상세정보 조회로 클러스터id뽑기기
+    const { 
+      data: host
+    } = useHost(hostId);
+    // 클러스터id로 네트워크정보조회
+    const { 
+      data: network, 
+    } = useLogicalFromCluster(host?.clusterVo?.id, (network) => {
+    return {
+        id: network?.id ?? '', 
+        name: network?.name ?? 'Unknown',            
+        status: network?.status ?? '',       
+        role: network?.role ? <FontAwesomeIcon icon={faCrown} fixedWidth/> : '', 
+        description: network?.description ?? 'No description', 
       };
-        const handleButtonClick = (button) => {
-          setActiveButton(button);
-          setIsLabelVisible(button === 'label'); // 'label' 버튼을 클릭하면 라벨을 표시
-        };
+    });
 
-    const dragItem = useRef(); // 드래그할 아이템의 인덱스
-    const dragOverItem = useRef(); // 드롭 위치의 인덱스
-
+    const dragItem = useRef();
+    const dragOverItem = useRef();
     const [items, setItems] = useState([
         { id: '1', name: 'Network 1' },
         { id: '2', name: 'Network 2' },
@@ -47,6 +45,11 @@ const NetworkHostModal = ({
     const dragEnter = (e, position) => {
         dragOverItem.current = position;
     };
+    useEffect(() => {
+      if (network) {
+          console.log("클러스터에대한 네트워크 정보:", network);
+      }
+  }, [network]);
 
     const drop = () => {
         const newItems = [...items];
@@ -57,269 +60,196 @@ const NetworkHostModal = ({
         dragOverItem.current = null;
         setItems(newItems);
     };
-
-	return (
-      <Modal
-        isOpen={isOpen}
-        onRequestClose={onRequestClose}
-        contentLabel="호스트 네트워크 설정"
-        className="Modal"
-        overlayClassName="Overlay"
-        shouldCloseOnOverlayClick={false}
-      >
-        <div className="vnic_new_content_popup">
-          <div className="popup_header">
-            <h1>호스트 네트워크 설정</h1>
-            <button onClick={onRequestClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-          </div>
-          
-          <div className="host_network_outer px-1.5 text-sm">
-          <div className="py-2 font-bold underline">드래그 하여 변경</div>
-
-          <div className="host_network_separation">
-              <div className="network_separation_left">
-                <div>
-                  <div>인터페이스</div>
-                  <div>할당된 논리 네트워크</div>
-                </div>
-
-                <div className="separation_left_content">
-                  <div className="container gap-1">
-                    <FontAwesomeIcon icon={faCircle} style={{ fontSize: '0.1rem', color: '#00FF00' }} />
-                    <FontAwesomeIcon icon={faDesktop} />
-                    <span>ens192</span>
-                  </div>
-                  <div className="flex items-center justify-center">
-                    <FontAwesomeIcon icon={faArrowsAltH} style={{ color: 'grey', width: '5vw', fontSize: '0.6rem' }} />
-                  </div>
-
-                  <div className="container">
-                    <div className="left-section">
-                      <FontAwesomeIcon icon={faCheck} className="icon green-icon" />
-                      <span className="text">ovirtmgmt</span>
-                    </div>
-                    <div className="right-section">
-                      <FontAwesomeIcon icon={faFan} className="icon" />
-                      <FontAwesomeIcon icon={faDesktop} className="icon" />
-                      <FontAwesomeIcon icon={faDesktop} className="icon" />
-                      <FontAwesomeIcon icon={faBan} className="icon" />
-                      <FontAwesomeIcon icon={faExclamationTriangle} className="icon" />
-                      <FontAwesomeIcon icon={faPencilAlt} className="icon" onClick={() => setIsSecondModalOpen(true)} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="network_separation_right">
-                  {items.map((item, idx) => (
-                      <div
-                          key={item.id}
-                          draggable
-                          onDragStart={(e) => dragStart(e, idx)}
-                          onDragEnter={(e) => dragEnter(e, idx)}
-                          onDragEnd={drop}
-                          onDragOver={(e) => e.preventDefault()}
-                          style={{
-                              padding: '15px',
-                              marginBottom: '10px',
-                              backgroundColor: 'lightblue',
-                              border: '1px solid #ddd',
-                              borderRadius: '5px',
-                              textAlign: 'center',
-                              fontSize: '16px',
-                              cursor:'pointer'
-                          }}
-                      >
-                          <FontAwesomeIcon
-                              icon={faNetworkWired}
-                              style={{ color: '#007bff', marginRight: '10px' }}
-                          />
-                          {item.name}
-                      </div>
-                  ))}
-              </div>
-          </div>
-        </div>
-
+    const [isBondingModalOpen, setIsBondingModalOpen] = useState(false);
+    const [bondingMode, setBondingMode] = useState('edit'); // 기본 모드는 'edit'
+    
+    const openBondingModal = (mode = 'edit') => {
+        setBondingMode(mode);
+        setIsBondingModalOpen(true);
+    };
+    
+    const closeBondingModal = () => setIsBondingModalOpen(false);
+    return (
         <Modal
-          isOpen={isSecondModalOpen}
-          onRequestClose={closeSecondModal} // 모달 닫기 핸들러 연결
-          contentLabel="추가"
-          className="Modal"
-          overlayClassName="Overlay newRolePopupOverlay"
-          shouldCloseOnOverlayClick={false}
+            isOpen={isOpen}
+            onRequestClose={onRequestClose}
+            contentLabel="호스트 네트워크 설정"
+            className="Modal"
+            overlayClassName="Overlay"
+            shouldCloseOnOverlayClick={false}
         >
-          <div className="network_backup_edit">
-            <div className="popup_header">
-              <h1>관리 네트워크 인터페이스 수정:ovirtmgmt</h1>
-              <button onClick={closeSecondModal}>
-                <FontAwesomeIcon icon={faTimes} fixedWidth />
-              </button>
-            </div>
+            <div className="vnic_new_content_popup">
+                <div className="popup_header">
+                    <h1>호스트 네트워크 설정</h1>
+                    <button onClick={onRequestClose}>
+                        <FontAwesomeIcon icon={faTimes} fixedWidth />
+                    </button>
+                </div>
 
-            <div className='flex'>
-              <div className="network_backup_edit_nav">
+                <div className="host_network_outer px-1.5 text-sm">
+                    <div className="py-2 font-bold underline">드래그 하여 변경</div>
+
+                    <div className="host_network_separation">
+                        <div className="network_separation_left">
+                            <div>
+                                <div>인터페이스</div>
+                                <div>할당된 논리 네트워크</div>
+                            </div>
+                            {Array.isArray(nicData) ? (
+                                nicData.map((nic, index) => (
+                                    <div key={nic.id || index} className="separation_left_content">
+                                        <div className="interface">
+                                            {nic.bondingVo?.slaves?.length > 0 ? (
+                                                <>
+                                                    <div className="bond-title flex gap-4">
+                                                        Bond {index + 1}
+                                                        <div>
+                                                            <FontAwesomeIcon
+                                                                icon={faPencilAlt}
+                                                                onClick={() => openBondingModal('edit')} // 편집 모드로 모달 열기
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    {nic.bondingVo.slaves.map((slave, idx) => (
+                                                        <div
+                                                            className="container gap-1"
+                                                            key={idx}
+                                                            draggable
+                                                            onDragStart={(e) => dragStart(e, idx)}
+                                                            onDragEnter={(e) => dragEnter(e, idx)}
+                                                            onDragEnd={drop}
+                                                            onDragOver={(e) => e.preventDefault()}
+                                                        >
+                                                            <FontAwesomeIcon
+                                                                icon={faCircle}
+                                                                style={{ fontSize: "0.1rem", color: "#00FF00" }}
+                                                            />
+                                                            <FontAwesomeIcon icon={faDesktop} />
+                                                            <span>{slave.name || "슬레이브 이름 없음"}</span>
+                                                        </div>
+                                                    ))}
+                                                </>
+                                            ) : (
+                                                <div
+                                                    className="container gap-1"
+                                                    draggable
+                                                    onDragStart={(e) => dragStart(e, index)}
+                                                    onDragEnter={(e) => dragEnter(e, index)}
+                                                    onDragEnd={drop}
+                                                    onDragOver={(e) => e.preventDefault()}
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={faCircle}
+                                                        style={{ fontSize: "0.1rem", color: "#00FF00" }}
+                                                    />
+                                                    <FontAwesomeIcon icon={faDesktop} />
+                                                    <span>{nic.name || "NIC 이름 없음"}</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center justify-center">
+                                            <FontAwesomeIcon
+                                                icon={faArrowsAltH}
+                                                style={{ color: "grey", width: "5vw", fontSize: "0.6rem" }}
+                                            />
+                                        </div>
+
+                                        <div className="assigned-network-outer">
+                                            <div className="assigned-network">
+                                                <div className="left-section">
+                                                    {nic.networkVo?.name ? (
+                                                        <>
+                                                            <FontAwesomeIcon icon={faCheck} className="icon green-icon" />
+                                                            <span className="text">{nic.networkVo.name}</span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="text">할당된 네트워크가 없음</span>
+                                                    )}
+                                                </div>
+                                                {nic.networkVo?.name && (
+                                                    <div className="right-section">
+                                                        <FontAwesomeIcon icon={faFan} className="icon" />
+                                                        <FontAwesomeIcon icon={faDesktop} className="icon" />
+                                                        <FontAwesomeIcon icon={faDesktop} className="icon" />
+                                                        <FontAwesomeIcon icon={faBan} className="icon" />
+                                                        <FontAwesomeIcon
+                                                            icon={faExclamationTriangle}
+                                                            className="icon"
+                                                        />
+                                                        <FontAwesomeIcon
+                                                            icon={faPencilAlt}
+                                                            className="icon"
+                                                            onClick={openSecondModal}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div>데이터 없음</div>
+                            )}
+                        </div>
+
+                        <div className="network_separation_right">
+    {network && Array.isArray(network) ? (
+        network
+            .filter(
+                (net) =>
+                    !nicData.some(
+                        (nic) => nic.networkVo?.id === net.id
+                    )
+            )
+            .map((net, idx) => (
                 <div
-                  id="ipv4_tab"
-                  className={selectedModalTab === 'ipv4' ? 'active-tab' : 'inactive-tab'}
-                  onClick={() => setSelectedModalTab('ipv4')}
+                    key={net.id || idx}
+                    draggable
+                    onDragStart={(e) => dragStart(e, idx)}
+                    onDragEnter={(e) => dragEnter(e, idx)}
+                    onDragEnd={drop}
+                    onDragOver={(e) => e.preventDefault()}
+                    style={{
+                        padding: "15px",
+                        marginBottom: "10px",
+                        backgroundColor: "lightblue",
+                        border: "1px solid #ddd",
+                        borderRadius: "5px",
+                        textAlign: "center",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                    }}
                 >
-                  IPv4
+                    <FontAwesomeIcon
+                        icon={faNetworkWired}
+                        style={{ color: "#007bff", marginRight: "10px" }}
+                    />
+                    {net.name || "네트워크 이름 없음"}
                 </div>
-                <div
-                  id="ipv6_tab"
-                  className={selectedModalTab === 'ipv6' ? 'active-tab' : 'inactive-tab'}
-                  onClick={() => setSelectedModalTab('ipv6')}
-                >
-                  IPv6
-                </div>
-                <div
-                  id="dns_tab"
-                  className={selectedModalTab === 'dns' ? 'active-tab' : 'inactive-tab'}
-                  onClick={() => setSelectedModalTab('dns')}
-                >
-                  DNS 설정
-                </div>
-              </div>
+            ))
+    ) : (
+        <div>네트워크 데이터가 없습니다</div>
+    )}
+</div>
 
-              {/* 탭 내용 */}
-              <div className="backup_edit_content">
-                {selectedModalTab === 'ipv4' && 
-                <>
-                  <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
-                      <input type="checkbox" id="allow_all_users" checked />
-                      <label htmlFor="allow_all_users">네트워크 동기화</label>
-                  </div>
 
-                  <div className='backup_edit_radiobox'>
-                    <div className='font-bold'>부트 프로토콜</div>
-                    <div className="radio_option">
-                      <input type="radio" id="default_mtu" name="mtu" value="default" checked />
-                      <label htmlFor="default_mtu">없음</label>
                     </div>
-                    <div className="radio_option">
-                      <input type="radio" id="dhcp_mtu" name="mtu" value="dhcp" />
-                      <label htmlFor="dhcp_mtu">DHCP</label>
-                    </div>
-                    <div className="radio_option">
-                      <input type="radio" id="static_mtu" name="mtu" value="static" />
-                      <label htmlFor="static_mtu">정적</label>
-                    </div>
-
-                  </div>
-
-                  <div>
-                    <div className="vnic_new_box">
-                      <label htmlFor="ip_address">IP</label>
-                      <select id="ip_address" disabled>
-                        <option value="#">#</option>
-                      </select>
-                    </div>
-                    <div className="vnic_new_box">
-                      <label htmlFor="netmask">넷마스크 / 라우팅 접두사</label>
-                      <select id="netmask" disabled>
-                        <option value="#">#</option>
-                      </select>
-                    </div>
-                    <div className="vnic_new_box">
-                      <label htmlFor="gateway">게이트웨이</label>
-                      <select id="gateway" disabled>
-                        <option value="#">#</option>
-                      </select>
-                    </div>
-                  </div>
-                  </>
-                }
-                {selectedModalTab === 'ipv6' && 
-                <>
-                <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
-                    <input type="checkbox" id="allow_all_users" className='disabled' />
-                    <label htmlFor="allow_all_users" className='disabled'>네트워크 동기화</label>
                 </div>
 
-                <div className='backup_edit_radiobox'>
-                  <div className='font-bold mb-0.5'>부트 프로토콜</div>
-                  <div className="radio_option mb-0.5">
-                    <input type="radio" id="default_mtu" name="mtu" value="default" checked />
-                    <label htmlFor="default_mtu">없음</label>
-                  </div>
-                  <div className="radio_option mb-0.5">
-                    <input type="radio" id="dhcp_mtu" name="mtu" value="dhcp" />
-                    <label htmlFor="dhcp_mtu">DHCP</label>
-                  </div>
-                  <div className="radio_option mb-0.5">
-                    <input type="radio" id="slaac_mtu" name="mtu" value="slaac" />
-                    <label htmlFor="slaac_mtu">상태 비저장 주소 자동 설정</label>
-                  </div>
-                  <div className="radio_option mb-0.5">
-                    <input type="radio" id="dhcp_slaac_mtu" name="mtu" value="dhcp_slaac" />
-                    <label htmlFor="dhcp_slaac_mtu">DHCP 및 상태 비저장 주소 자동 설정</label>
-                  </div>
-                  <div className="radio_option mb-0.5">
-                    <input type="radio" id="static_mtu" name="mtu" value="static" />
-                    <label htmlFor="static_mtu">정적</label>
-                  </div>
-                </div>
 
-                <div className='mt-3'>
-                  <div className="vnic_new_box">
-                    <label htmlFor="ip_address" className='disabled'>IP</label>
-                    <select id="ip_address" className='disabled' disabled>
-                      <option value="#">#</option>
-                    </select>
-                  </div>
-                  <div className="vnic_new_box">
-                    <label htmlFor="netmask" className='disabled'>넷마스크 / 라우팅 접두사</label>
-                    <select id="netmask"className='disabled' disabled>
-                      <option value="#">#</option>
-                    </select>
-                  </div>
-                  <div className="vnic_new_box">
-                    <label htmlFor="gateway" className='disabled'>게이트웨이</label>
-                    <select id="gateway"className='disabled' disabled>
-                      <option value="#">#</option>
-                    </select>
-                  </div>
-                </div>
-                </>
-                }
-                {selectedModalTab === 'dns' && 
-                <>
-                <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
-                  <input type="checkbox" id="network_sync" className='disabled' />
-                  <label htmlFor="network_sync" className='disabled'>네트워크 동기화</label>
-                </div>
-                <div className="vnic_new_checkbox">
-                  <input type="checkbox" id="qos_override"/>
-                  <label htmlFor="qos_override">QoS 덮어쓰기</label>
-                </div>
-                <div className='p-1 font-bold'>아웃바운드</div>
-                <div className="network_form_group">
-                  <label htmlFor="weighted_share" className='disabled'>가중 공유</label>
-                  <input type="text" id="weighted_share" disabled />
-                </div>
-                <div className="network_form_group">
-                  <label htmlFor="rate_limit disabled">속도 제한 [Mbps]</label>
-                  <input type="text" id="rate_limit" disabled />
-                </div>
-                <div className="network_form_group">
-                  <label htmlFor="commit_rate disabled">커밋 속도 [Mbps]</label>
-                  <input type="text" id="commit_rate" disabled/>
-                </div>
-
-                </>
-                }
-              </div>
-            </div>
-
-            <div className="edit_footer">
-              <button style={{ display: 'none' }}></button>
-              <button>OK</button>
-              <button onClick={closeSecondModal}>취소</button>
-            </div>
-          </div>
-        </Modal>
-
+        {/*네트워크쪽 연필 추가모달 */}
+        <NetworkHostPlusModal
+          isOpen={isSecondModalOpen}
+          onClose={() => setIsSecondModalOpen(false)}
+          initialSelectedTab="ipv4"
+        />
+        {/*본딩 */}
+        <NewBondingModal
+          isOpen={isBondingModalOpen}
+          onClose={closeBondingModal}
+          mode={bondingMode}
+        />
         <div className="edit_footer">
           <button style={{ display: 'none' }}></button>
           <button>OK</button>
