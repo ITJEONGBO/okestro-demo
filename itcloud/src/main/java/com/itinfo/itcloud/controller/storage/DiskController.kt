@@ -194,28 +194,28 @@ class DiskController: BaseController() {
 		return ResponseEntity.ok(iDisk.remove(diskId))
 	}
 
-	@ApiOperation(
-		httpMethod="DELETE",
-		value="디스크 멀티 삭제",
-		notes="디스크 이미지를 멀티 삭제한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name = "diskId", value = "디스크이미지 ID", dataTypeClass = String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@DeleteMapping()
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun removeMultiple(
-		@RequestBody diskIdList: List<String>? = null,
-	): ResponseEntity<List<Boolean>> {
-		if (diskIdList.isNullOrEmpty())
-			throw ErrorPattern.DISK_IMAGE_ID_NOT_FOUND.toException()
-		log.info("/storages/disks ... 디스크 이미지 삭제")
-		return ResponseEntity.ok(iDisk.removeMultiple(diskIdList))
-	}
+//	@ApiOperation(
+//		httpMethod="DELETE",
+//		value="디스크 멀티 삭제",
+//		notes="디스크 이미지를 멀티 삭제한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name = "diskId", value = "디스크이미지 ID", dataTypeClass = String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@DeleteMapping()
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun removeMultiple(
+//		@RequestBody diskIdList: List<String>? = null,
+//	): ResponseEntity<List<Boolean>> {
+//		if (diskIdList.isNullOrEmpty())
+//			throw ErrorPattern.DISK_IMAGE_ID_NOT_FOUND.toException()
+//		log.info("/storages/disks ... 디스크 이미지 삭제")
+//		return ResponseEntity.ok(iDisk.removeMultiple(diskIdList))
+//	}
 
 
 	@ApiOperation(

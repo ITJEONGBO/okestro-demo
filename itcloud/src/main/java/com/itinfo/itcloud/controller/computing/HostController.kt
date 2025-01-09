@@ -137,28 +137,28 @@ class HostController {
 		return ResponseEntity.ok(iHost.remove(hostId))
 	}
 
-	@ApiOperation(
-		httpMethod="DELETE",
-		value="호스트 멀티 삭제",
-		notes="호스트를 멀티 삭제한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@DeleteMapping
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun removeMultiple(
-		@RequestBody hostIdList: List<String>? = null,
-	): ResponseEntity<List<Boolean>> {
-		if (hostIdList.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts ... 호스트 다중 삭제")
-		return ResponseEntity.ok(iHost.removeMultiple(hostIdList))
-	}
+//	@ApiOperation(
+//		httpMethod="DELETE",
+//		value="호스트 멀티 삭제",
+//		notes="호스트를 멀티 삭제한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="hostIdList", value="호스트 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@DeleteMapping
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun removeMultiple(
+//		@RequestBody hostIdList: List<String>? = null,
+//	): ResponseEntity<List<Boolean>> {
+//		if (hostIdList.isNullOrEmpty())
+//			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+//		log.info("/computing/hosts ... 호스트 다중 삭제")
+//		return ResponseEntity.ok(iHost.removeMultiple(hostIdList))
+//	}
 
 
 	@ApiOperation(
