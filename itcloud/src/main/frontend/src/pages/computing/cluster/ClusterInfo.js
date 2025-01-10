@@ -72,23 +72,21 @@ const ClusterInfo = () => {
   ];
 
   const renderModals = () => (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        {activeModal === 'edit' && (
-          <ClusterModal
-            editMode
-            cId={clusterId}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'delete' && (
-          <ClusterDeleteModal
-            data={cluster}
-            onClose={closeModal}
-          />
-        )}
-      </Suspense>
-    </>
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'edit' && (
+        <ClusterModal
+          editMode
+          cId={clusterId}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'delete' && (
+        <ClusterDeleteModal
+          data={cluster}
+          onClose={closeModal}
+        />
+      )}
+    </Suspense>
   );
 
   return (

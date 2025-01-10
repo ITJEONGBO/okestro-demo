@@ -14,7 +14,7 @@ const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
   const [selectedVnicProfiles, setSelectedVnicProfiles] = useState([]); // 다중 선택된 vNIC 프로파일
   const selectedIds = (Array.isArray(selectedVnicProfiles) ? selectedVnicProfiles : []).map(vnic => vnic.id).join(', ');
 
-  const handleNameClick = (id) => navigate(`/vnicprofiles/${id}`);
+  const handleNameClick = (id) => navigate(`/vnicProfiles/${id}/vms`);
 
   const openModal = (action) => setActiveModal(action);
   const closeModal = () => setActiveModal(null);
@@ -47,8 +47,6 @@ const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
       <VnicProfileActionButtons
         openModal={openModal}
         isEditDisabled={selectedVnicProfiles.length !== 1}
-        isDeleteDisabled={selectedVnicProfiles.length === 0}
-        selectedVnicProfiles={selectedVnicProfiles}
       />
       <span> ID: {selectedIds}</span>
 

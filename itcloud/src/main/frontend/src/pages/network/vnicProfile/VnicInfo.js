@@ -1,118 +1,117 @@
 import React, { Suspense, useEffect, useState} from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import HeaderButton from '../../../components/button/HeaderButton';
 import Footer from '../../../components/footer/Footer';
-import { adjustFontSize } from '../../../UIEvent';
-import { useAllNetworks, useAllVnicProfiles, useVnicProfile } from '../../../api/RQHook';
-import {faLaptop, faServer} from '@fortawesome/free-solid-svg-icons'
-import { useNavigate, useParams } from 'react-router-dom';
-import NavButton from '../../../components/navigation/NavButton';
-import { navigate } from '@storybook/addon-links';
 import Path from '../../../components/Header/Path';
-import VnicVm from './VnicVm';
+import { adjustFontSize } from '../../../UIEvent';
+import { faLaptop, } from '@fortawesome/free-solid-svg-icons'
+import NavButton from '../../../components/navigation/NavButton';
+import VnicVms from './VnicVms';
 import VnicTemplates from './VnicTemplates';
-import DeleteModal from '../../../components/DeleteModal';
-import VnicProfileDupl from './VnicProfileDupl';
-import VnicProfileModal from './modal/VnicProfileModal';
+import { useVnicProfile } from '../../../api/RQHook';
+
+const VnicProfileModal = React.lazy(() => import('./modal/VnicProfileModal'));
+const VnicProfileDeleteModal = React.lazy(() => import('./modal/VnicProfileDeleteModal'));
 
 const VnicInfo = () => {
-    const { id: vnicProfileId, section } = useParams();
-    const [modals, setModals] = useState({ edit: false, delete: false });
+  const navigate = useNavigate();
+  const { id: vnicProfileId, section } = useParams();
+  const {
+    data: vnic, status, isRefetching, refetch, isError, error, isLoading
+  } = useVnicProfile(vnicProfileId, (e) => ({...e,}));
 
-    const {
-        data: vnic,
-    } = useVnicProfile(vnicProfileId, (e) => ({...e,}));
-    console.log("VNIC Data: ", vnic);
+  // const [modals, setModals] = useState({ edit: false, delete: false });
+  
+  const [activeTab, setActiveTab] = useState('vms');
+  const [activeModal, setActiveModal] = useState(null);
 
-    const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('vms');
-    const sections = [  
-        { id: 'vms', label: '가상머신' },
-        { id: 'templates', label: '템플릿' },
-    ];
-    useEffect(() => {
-    if (!section) {
-        setActiveTab('vms');
-    } else {
-        setActiveTab(section);
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
+
+  useEffect(() => {
+    if (isError || (!isLoading && !vnic)) {
+      navigate('/vnicPrfiles');
     }
-    }, [section]);
-    const sectionComponents = {
-        vms: VnicVm,
-        templates: VnicTemplates,
-    };
-    const renderSectionContent = () => {
-        const SectionComponent = sectionComponents[activeTab];
-        return SectionComponent ? <SectionComponent vnicProfileId={vnicProfileId} /> : null;
-    };
+  }, [isError, isLoading, vnic, navigate]);
 
-    const handleTabClick = (tab) => {
-        const path = tab === 'vms' ? `/vnicProfiles/${vnicProfileId}/vms` : `/vnicProfiles/${vnicProfileId}/${tab}`;
-        navigate(path);
-        setActiveTab(tab);
-    };
+  const sections = [  
+    { id: 'vms', label: '가상머신' },
+    { id: 'templates', label: '템플릿' },
+  ];
 
-    const toggleModal = (type, isOpen) => {
-        setModals((prev) => {
-            if (prev[type] === isOpen) return prev;
-            return { ...prev, [type]: isOpen };
-        });
-    };
-    const sectionHeaderButtons = [
-        { id: 'edit_btn', label: '편집', onClick: () => toggleModal('edit', true),},
-        { id: 'delete_btn', label: '삭제', onClick: () => toggleModal('delete', true), },
-    ]
+  useEffect(() => {
+    setActiveTab(section || 'vms');
+  }, [section]);
 
-    const pathData = [vnic?.name, sections.find((section) => section.id === activeTab)?.label];
-    useEffect(() => {
-        window.addEventListener('resize', adjustFontSize);
-        adjustFontSize();
-        return () => { window.removeEventListener('resize', adjustFontSize); };
-    }, []);
+  const handleTabClick = (tab) => {
+    const path = tab === 'vms' ? `/vnicProfiles/${vnicProfileId}/vms` : `/vnicProfiles/${vnicProfileId}/${tab}`;
+    navigate(path);
+    setActiveTab(tab);
+  };
 
-    const renderModals = () => (
-        <>
-          {modals.edit && (
-            <VnicProfileModal
-              isOpen={modals.edit}
-              onRequestClose={() => toggleModal('edit', false)}
-              editMode={true}
-            //   networkId={networkId}
-            />
-          )}
-          {modals.delete && (
-            <DeleteModal
-              isOpen={modals.delete}
-              type="Network"
-              onRequestClose={() => toggleModal('delete', false)}
-              contentLabel="네트워크"
-            //   data={network}
-            />
-          )}
-        </>
-      );
+  const pathData = [vnic?.name, sections.find((section) => section.id === activeTab)?.label];
 
-    return (
-        <div id="section">
-            <HeaderButton
-                titleIcon={faLaptop}
-                title={vnic?.name}
-                buttons={sectionHeaderButtons}
-            />
-            <div className="content-outer">
-                <NavButton 
-                    sections={sections} 
-                    activeSection={activeTab} 
-                    handleSectionClick={handleTabClick} 
-                />
-                <div className="host-btn-outer">
-                    <Path pathElements={pathData} />
-                    {renderSectionContent()}
-                </div>
-            </div>
-        <Suspense fallback={<div>Loading...</div>}>{renderModals()}</Suspense>
-        <Footer/>
+  const renderSectionContent = () => {
+    const SectionComponent = {
+      vms: VnicVms,
+      templates: VnicTemplates
+    }[activeTab];
+    return SectionComponent ? <SectionComponent vnicProfileId={vnicProfileId} /> : null;
+  };
+
+  const sectionHeaderButtons = [
+      { type: 'edit', label: '편집', onClick: () => openModal('edit'),},
+      { type: 'delete', label: '삭제', onClick: () => openModal('delete'), },
+  ]
+
+  useEffect(() => {
+      window.addEventListener('resize', adjustFontSize);
+      adjustFontSize();
+      return () => { window.removeEventListener('resize', adjustFontSize); };
+  }, []);
+
+  const renderModals = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'edit' && (
+        <VnicProfileModal
+          editMode
+          vnicProfileId={vnicProfileId}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'delete' && (
+        <VnicProfileDeleteModal
+          data={vnic}
+          onClose={closeModal}
+        />
+      )}
+    </Suspense>
+  );
+
+  return (
+    <div id="section">
+      <HeaderButton
+        titleIcon={faLaptop}
+        title={vnic?.name}
+        buttons={sectionHeaderButtons}
+      />
+      <div className="content-outer">
+        <NavButton 
+          sections={sections} 
+          activeSection={activeTab} 
+          handleSectionClick={handleTabClick} 
+        />
+        <div className="host-btn-outer">
+          <Path pathElements={pathData} />
+          { renderSectionContent() }
+        </div>
+      </div>
+
+      {/* 클러스터 모달창 */}
+      { renderModals() }
+      <Footer/>
     </div>
-    );
+  );
 };
 
 export default VnicInfo;

@@ -33,8 +33,8 @@ const AllNetwork = () => {
           networks={networks || []}
         />
       </div>
-    <Footer/>
-  </div>
+      <Footer/>
+    </div>
   );
 };
 
