@@ -199,12 +199,9 @@
 .host_new_add .edit_first_content>div:first-child{
     margin-bottom:0;
 }
-
-
 .host_content_outer{
     width: 100%;
-    padding: 0.2rem 0 ;
-
+    padding: 0.2rem 0;
     height: 100%;
     overflow-y: auto; /* 세로 스크롤바를 필요할 때 표시합니다 */
 }
@@ -218,7 +215,6 @@
     justify-content: space-between;
     width: 100%;
     font-size: 0.3rem;
-    margin-top:1.3rem;
 }
 
 .host_table th{

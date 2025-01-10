@@ -63,6 +63,7 @@
 .vm-general-bottom-box{
     width: 33%;
     border: 1px solid #dedede;
+    height: 36vh;
 }
 .vm-add-snapshot-btn{
     display:flex;

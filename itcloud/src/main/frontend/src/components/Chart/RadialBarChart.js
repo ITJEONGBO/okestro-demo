@@ -10,7 +10,6 @@ const RadialBarChart =({ percentage }) => {
     chart: {
       offsetY: -5,
       offsetX: -20,
-
       type: 'radialBar',
     },
     plotOptions: {

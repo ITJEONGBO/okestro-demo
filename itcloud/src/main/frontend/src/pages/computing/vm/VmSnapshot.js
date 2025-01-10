@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Suspense, useEffect, useState } from 'react';
 import TablesOuter from '../../../components/table/TablesOuter';
 import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
-import { useDisksFromVM, useSnapshotFromVM } from '../../../api/RQHook';
+import { useDisksFromVM, useSnapshotDetailFromVM, useSnapshotFromVM } from '../../../api/RQHook';
 import VmSnapshotaddModal from './modal/VmSnapshotaddModal';
 import DeleteModal from '../../../components/DeleteModal';
 
@@ -29,7 +29,6 @@ const VmSnapshot = ({vm}) => {
     const { 
     data: snapshots, 
   } = useSnapshotFromVM(vm?.id, toTableItemPredicateSnapshots);  
-  
   function toTableItemPredicateSnapshots(snapshot) {
     return {
       id: snapshot?.id ?? '', 
@@ -65,11 +64,21 @@ const VmSnapshot = ({vm}) => {
     alias: e?.diskImageVo?.alias,
     description: e?.diskImageVo?.description,
   }));
+
+  // 스냅샷상세정보
+  const { 
+    data: snapshotdetail, 
+  } = useSnapshotDetailFromVM(vm?.id, selectedSnapshot?.id ,  (e) => ({ 
+    ...e,
+     
+  }));
+
   useEffect(() => {
-    if (disks) {
-      console.log('모든 가상머신 데이터:', disks);
+    if (snapshotdetail) {
+      console.log(' 유유스냅샷데이터:', snapshotdetail);
     }
-  }, [disks]);
+  }, [snapshotdetail]);
+
   return (
     <>
       <div className="header-right-btns">
@@ -165,11 +174,11 @@ const VmSnapshot = ({vm}) => {
                     <tbody>
                       <tr>
                         <th>날짜:</th>
-                        <td>현재</td>
+                        <td>{snapshotdetail.date || '정보없음'}</td>
                       </tr>
                       <tr>
                         <th>상태:</th>
-                        <td>{snapshot.status || '알 수 없음'}</td>
+                        <td>{snapshotdetail.status || '정보없음'}</td>
                       </tr>
                       <tr>
                         <th>메모리:</th>
@@ -177,15 +186,15 @@ const VmSnapshot = ({vm}) => {
                       </tr>
                       <tr>
                         <th>설명:</th>
-                        <td>{snapshot.description || '활성 가상 머신'}</td>
+                        <td>{snapshotdetail.description || 'description'}</td>
                       </tr>
                       <tr>
                         <th>설정된 메모리:</th>
-                        <td>{snapshot.memorySize || 'N/A'} </td>
+                        <td>{snapshotdetail?.memoryActual || ''} </td>
                       </tr>
                       <tr>
                         <th>할당할 실제 메모리:</th>
-                        <td>{snapshot.memoryActual || 'N/A'} </td>
+                        <td>{snapshotdetail.actualSize || 'N/A'} </td>
                       </tr>
                       <tr>
                         <th>CPU 코어 수:</th>

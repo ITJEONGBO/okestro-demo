@@ -1064,6 +1064,32 @@ export const useSnapshotFromVM = (vmId, mapPredicate) => useQuery({
 });
 
 /**
+ * @name useSnapshotDetailFromVM
+ * @description 가상머신 내 스냅샷 상세정보 useQuery훅
+ * 
+ * @param {string} vmId 가상머신ID
+ * @param {string} snapshotId 스냅샷샷ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findSnapshotFromVM
+ */
+export const useSnapshotDetailFromVM = (vmId, snapshotId) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['SnapshotDetailFromVM', vmId, snapshotId], // snapshotId 추가
+  queryFn: async () => {
+    if (!vmId || !snapshotId) {
+      console.warn('Missing VM ID or Snapshot ID');
+      return {};
+    }
+    console.log(`Fetching snapshot details for VM ID: ${vmId}, Snapshot ID: ${snapshotId}`);
+    const res = await ApiManager.findSnapshotFromVm(vmId, snapshotId); 
+    return res ?? {}; 
+  },
+});
+
+
+/**
  * @name useAddSnapshotFromVM
  * @description 가상머신 스냅샷 생성 useMutation 훅
  * 

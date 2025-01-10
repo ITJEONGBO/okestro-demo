@@ -996,7 +996,7 @@ const ApiManager = {
   }),
   /**
    * @name ApiManager.findSnapshotFromVm
-   * @description 스냅샷
+   * @description 스냅샷 상세정보
    *
    * @param {string} vmId
    * @param {string} snapshotId
