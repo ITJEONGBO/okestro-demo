@@ -2071,26 +2071,52 @@ export const useAllClustersFromNetwork = (networkId, mapPredicate) => useQuery({
   }
 })
 /**
- * @name useAllHostsFromNetwork
- * @description 네트워크 내 호스트 목록조회 useQuery훅
+ * @name useConnectedHostsFromNetwork
+ * @description 네트워크 내 호스트 연결된 목록조회 useQuery훅
  * 
- * @param {string} networkId 네트워크ID
+ * @param {string} networkId 네트워크 ID
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findAllHostsFromNetwork
+ * @see ApiManager.findConnectedHostsFromNetwork
  */
-export const useAllHostsFromNetwork = (networkId, mapPredicate) => useQuery({
+export const useConnectedHostsFromNetwork = (networkId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['hostsFromNetwork', networkId], 
+  queryKey: ['connectedHostsFromNetwork', networkId], 
   queryFn: async () => {
-    console.log(`useAllHostsFromNetwork ... ${networkId}`);
-    const res = await ApiManager.findAllHostsFromNetwork(networkId); 
+    console.log(`useConnectedHostsFromNetwork ... ${networkId}`);
+    const res = await ApiManager.findConnectedHostsFromNetwork(networkId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
   enabled: !!networkId, 
   staleTime: 0,
   cacheTime: 0,
+  //staleTime: 60000, // 1분 동안 데이터 재요청 방지
+  //cacheTime: 300000, // 5분 동안 데이터 캐싱 유지  
+})
+/**
+ * @name useDisconnectedHostsFromNetwork
+ * @description 네트워크 내 호스트 연결해제 목록조회 useQuery훅
+ * 
+ * @param {string} networkId 네트워크 ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findDisconnectedHostsFromNetwork
+ */
+export const useDisconnectedHostsFromNetwork = (networkId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['disconnectedHostsFromNetwork', networkId], 
+  queryFn: async () => {
+    console.log(`useDisconnectedHostsFromNetwork ... ${networkId}`);
+    const res = await ApiManager.findDisconnectedHostsFromNetwork(networkId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+  enabled: !!networkId, 
+  staleTime: 0,
+  cacheTime: 0,
+  //staleTime: 60000, // 1분 동안 데이터 재요청 방지
+  //cacheTime: 300000, // 5분 동안 데이터 캐싱 유지  
 })
 /**
  * @name useAllVmsFromNetwork

@@ -408,8 +408,8 @@ fun Connection.findAllNicsFromVm(vmId: String, follow: String = ""): Result<List
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findNicsFromVm(vmId: String): List<Nic> =
-	this.srvNicsFromVm(vmId).list().send().nics()
+//fun Connection.findNicsFromVm(vmId: String): List<Nic> =
+//	this.srvNicsFromVm(vmId).list().send().nics()
 
 
 fun Connection.srvNicFromVm(vmId: String, nicId: String): VmNicService =

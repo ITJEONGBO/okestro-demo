@@ -125,14 +125,23 @@ interface ItNetworkService {
 	@Throws(Error::class)
 	fun findAllClustersFromNetwork(networkId: String): List<ClusterVo>
 	/**
-	 * [ItNetworkService.findAllHostsFromNetwork]
-	 * 네트워크 호스트 목록
+	 * [ItNetworkService.findConnectedHostsFromNetwork]
+	 * 네트워크 호스트 목록 - 연결됨
 	 *
 	 * @param networkId [String] 네트워크 아이디
 	 * @return List<[HostVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllHostsFromNetwork(networkId: String): List<HostVo>
+	fun findConnectedHostsFromNetwork(networkId: String): List<HostVo>
+	/**
+	 * [ItNetworkService.findDisconnectedHostsFromNetwork]
+	 * 네트워크 호스트 목록 - 연결해제
+	 *
+	 * @param networkId [String] 네트워크 아이디
+	 * @return List<[HostVo]>
+	 */
+	@Throws(Error::class)
+	fun findDisconnectedHostsFromNetwork(networkId: String): List<HostVo>
 	/**
 	 * [ItNetworkService.findAllVmsFromNetwork]
 	 * 네트워크 가상머신 목록
@@ -293,27 +302,51 @@ class NetworkServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllHostsFromNetwork(networkId: String): List<HostVo> {
-		log.info("findAllHostsFromNetwork ... ")
-		// TODO Attached / Unattahed 구분해야하는건지 보기
+	override fun findConnectedHostsFromNetwork(networkId: String): List<HostVo> {
+		log.info("findConnectedHostsFromNetwork ... ")
 		conn.findNetwork(networkId)
 			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-		val res: List<Host> = conn.findAllHosts(follow = "nics")
+		val res: List<Host> = conn.findAllHosts(follow = "networkattachments")
 			.getOrDefault(listOf())
-			.filter { it.nics().first().networkPresent() && it.nics().first().network().id() == networkId }
+			.filter { it.networkAttachments().any { networkAttachment -> networkAttachment.network().id() == networkId } }
+		return res.toNetworkHostVos(conn) //TODO
+	}
+
+	@Throws(Error::class)
+	override fun findDisconnectedHostsFromNetwork(networkId: String): List<HostVo> {
+		log.info("findDisconnectedHostsFromNetwork ... ")
+		val network = conn.findNetwork(networkId)
+			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+
+		val allHostsInDataCenter = conn.findAllHostsFromDataCenter(network.dataCenter().id())
+			.getOrDefault(listOf())
+
+		val connectedHostIds = conn.findAllHosts(follow = "networkattachments")
+			.getOrDefault(listOf())
+			.filter { host ->
+				host.networkAttachments().any { attachment ->
+					attachment.network().id() == networkId
+				}
+			}
+			.map { it.id() } // 연결된 호스트 ID 추출
+
+		val res = allHostsInDataCenter.filter { it.id() !in connectedHostIds }
 		return res.toNetworkHostVos(conn) //TODO
 	}
 
 	@Throws(Error::class)
 	override fun findAllVmsFromNetwork(networkId: String): List<VmVo> {
-		// 출력은 vmvo로 나오지만 내부 nic를 보여주는 방식으로 해야함
 		log.info("findAllVmsFromNetwork ... networkId: {}", networkId)
-		conn.findNetwork(networkId)
-			.getOrNull()?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		val network: Network = conn.findNetwork(networkId)
+			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		// 따지고보면 nic를 출력하느너
 
+		// VM의 NIC 중 networkId와 매칭되는 NIC이 있는지 확인
 		val res: List<Vm> = conn.findAllVms(follow = "reporteddevices,nics.vnicprofile")
 			.getOrDefault(listOf())
-			.filter { it.nics().any { nic -> nic.vnicProfile().network().id() == networkId } }
+			.filter { vm -> vm.nics().any { nic -> nic.vnicProfile().network().id() == networkId } }
+
+		// 모든 VM에 대해 NIC 정보를 포함하여 VmVo 변환
 		return res.toVmVoFromNetworks(conn)
 	}
 

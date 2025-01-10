@@ -1741,17 +1741,31 @@ migrateHostsFromVM: async (vmId) => {
     // defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS_FROM_NETWORK
   }),
    /**
-   * @name ApiManager.findAllHostsFromNetwork
-   * @description 호스트 목록
+   * @name ApiManager.findConnectedHostsFromNetwork
+   * @description 연결된 호스트 목록
    *
    * @param {string} networkId
    * @returns 
    * 
    * @see
    */
-  findAllHostsFromNetwork : async (networkId) => makeAPICall({
+  findConnectedHostsFromNetwork : async (networkId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_HOSTS_FROM_NETWORK(networkId),
+    url: ENDPOINTS.FIND_CONNECTED_HOSTS_FROM_NETWORK(networkId),
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK
+  }),
+   /**
+   * @name ApiManager.findDisconnectedHostsFromNetwork
+   * @description 연결해제 호스트 목록
+   *
+   * @param {string} networkId
+   * @returns 
+   * 
+   * @see
+   */
+   findDisconnectedHostsFromNetwork : async (networkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_DISCONNECTED_HOSTS_FROM_NETWORK(networkId),
     // defaultValues: DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK
   }),
   /**

@@ -161,7 +161,8 @@ const ENDPOINTS = {
   FIND_NETWORK: (networkId) => `/api/v1/networks/${networkId}`,
 
   FIND_CLUSTERS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/clusters`,
-  FIND_HOSTS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/hosts`,
+  FIND_CONNECTED_HOSTS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/connectedHosts`,
+  FIND_DISCONNECTED_HOSTS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/disconnectedHosts`,
   FIND_VMS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/vms`,
   FIND_TEMPLATES_NETWORK:(networkId) => `/api/v1/networks/${networkId}/templates`,
 

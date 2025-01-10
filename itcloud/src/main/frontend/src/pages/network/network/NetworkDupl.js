@@ -45,7 +45,6 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
           onClose={closeModal}
         />
       )}
-      
     </Suspense>
   );
 

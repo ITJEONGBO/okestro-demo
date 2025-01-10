@@ -4,13 +4,7 @@ import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../Input/IconButton';
 import './css/HeaderButton.css';
 
-const HeaderButton = ({ 
-  title, 
-  status, 
-  buttons = [], 
-  popupItems = [], 
-  titleIcon 
-}) => {
+const HeaderButton = ({ title, status, buttons = [], popupItems = [], titleIcon }) => {
   const [isPopupBoxVisible, setIsPopupBoxVisible] = useState(false);
 
   const togglePopupBox = () => setIsPopupBoxVisible(!isPopupBoxVisible);

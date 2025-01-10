@@ -319,8 +319,7 @@ fun List<Vm>.toVmsIdName(): List<VmVo> =
     this@toVmsIdName.map { it.toVmIdName() }
 
 fun Vm.toVmMenu(conn: Connection): VmVo {
-    val cluster: Cluster? = conn.findCluster(this@toVmMenu.cluster().id())
-            .getOrNull()
+    val cluster: Cluster? = conn.findCluster(this@toVmMenu.cluster().id()).getOrNull()
     val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
 
     return VmVo.builder {
@@ -361,8 +360,7 @@ fun List<Vm>.toVmsMenu(conn: Connection): List<VmVo> =
  * 가상머신 메뉴
  */
 fun Vm.toVmVoInfo(conn: Connection): VmVo {
-    val cluster: Cluster? = conn.findCluster(this@toVmVoInfo.cluster().id())
-        .getOrNull()
+    val cluster: Cluster? = conn.findCluster(this@toVmVoInfo.cluster().id()).getOrNull()
     val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
     val nics: List<Nic> = conn.findAllNicsFromVm(this@toVmVoInfo.id())
         .getOrDefault(listOf())
@@ -432,6 +430,17 @@ fun Vm.toStorageDomainVm(conn: Connection, storageDomainId: String): VmVo {
 fun List<Vm>.toStorageDomainVms(conn: Connection, storageDomainId: String): List<VmVo> =
     this@toStorageDomainVms.map { it.toStorageDomainVm(conn, storageDomainId) }
 
+fun Vm.toNetworkNic(conn: Connection): VmVo {
+    val cluster: Cluster? = conn.findCluster(this@toNetworkNic.cluster().id()).getOrNull()
+
+    return VmVo.builder {
+        id { this@toNetworkNic.id() }
+        name { this@toNetworkNic.name() }
+        description { this@toNetworkNic.description() }
+        status { this@toNetworkNic.status() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+    }
+}
 
 
 // region: Add VmBuilder
@@ -754,11 +763,8 @@ fun Vm.toVmBoot(conn: Connection): VmVo {
 
 
 fun Vm.toVmVoFromNetwork(conn: Connection): VmVo {
-    val cluster: Cluster =
-        conn.findCluster(this@toVmVoFromNetwork.cluster().id())
-            .getOrNull() ?: throw ErrorPattern.VM_ID_NOT_FOUND.toError()
-    val vmNic: List<Nic> =
-        conn.findAllNicsFromVm(this@toVmVoFromNetwork.id()).getOrDefault(listOf())
+    val cluster: Cluster? = conn.findCluster(this@toVmVoFromNetwork.cluster().id()).getOrNull()
+    val vmNic: List<Nic> = conn.findAllNicsFromVm(this@toVmVoFromNetwork.id()).getOrDefault(listOf())
 
     return VmVo.builder {
         id { this@toVmVoFromNetwork.id() }
@@ -766,7 +772,7 @@ fun Vm.toVmVoFromNetwork(conn: Connection): VmVo {
         status { this@toVmVoFromNetwork.status() }
         fqdn { this@toVmVoFromNetwork.fqdn() }
         description { this@toVmVoFromNetwork.description() }
-        clusterVo { cluster.fromClusterToIdentifiedVo() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
         nicVos { vmNic.toNetworkFromVms(conn, this@toVmVoFromNetwork.id()) }
     }
 }

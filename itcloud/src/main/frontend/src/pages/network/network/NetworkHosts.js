@@ -1,57 +1,55 @@
-import { useState } from 'react'; 
-import {useAllHostsFromNetwork} from "../../../api/RQHook";
-import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
+import React, { Suspense, useState } from 'react'; 
 import TablesOuter from "../../../components/table/TablesOuter";
-import NetworkHostModal from './modal/NetworkHostModal';
 import TableRowClick from '../../../components/table/TableRowClick';
+import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import { formatBytesToMB, renderHostStatusIcon, renderUpDownStatusIcon } from '../../../utils/format';
+import { 
+  useConnectedHostsFromNetwork, 
+  useDisconnectedHostsFromNetwork 
+} from "../../../api/RQHook";
 
+const NetworkHostModal = React.lazy(() => import('./modal/NetworkHostModal'));
 
 const NetworkHosts = ({ networkId }) => {
   const { 
-    data: hosts = [], 
-    status: hostsStatus, 
-    isLoading: isHostsLoading, 
-    isError: isHostsError 
-  } = useAllHostsFromNetwork(networkId, (host) => ({
-    ...host,
-    icon: renderHostStatusIcon(host?.status),
-    host: (
-      <TableRowClick type="host" id={host?.id}>
-        {host?.name}
-      </TableRowClick>
-    ),
-    cluster: (
-      <TableRowClick type="cluster" id={host?.clusterVo?.id}>
-        {host?.clusterVo?.name}
-      </TableRowClick>
-    ),
-    dataCenter: (
-      <TableRowClick type="datacenter" id={host?.dataCenterVo?.id}>
-        {host?.dataCenterVo?.name}
-      </TableRowClick>
-    ),
-    networkDeviceStatus: renderUpDownStatusIcon(host?.hostNicVos?.[0]?.status), 
-    networkDevice: host?.hostNicVos?.[0]?.name, 
-    speed: host?.hostNicVos?.[0]?.speed,
-    rx: host?.hostNicVos?.[0]?.rxSpeed ? Math.round(formatBytesToMB(host.hostNicVos[0].rxSpeed)): '',
-    tx: host?.hostNicVos?.[0]?.txSpeed ? Math.round(formatBytesToMB(host.hostNicVos[0].txSpeed)): '',
-    totalRx: host?.hostNicVos?.[0]?.rxTotalSpeed ? host.hostNicVos[0].rxTotalSpeed.toLocaleString() : '',
-    totalTx: host?.hostNicVos?.[0]?.txTotalSpeed ? host.hostNicVos[0].txTotalSpeed.toLocaleString() : '',
-  })); 
+    data: connectedHosts = [], isLoading: isConnectedLoading, 
+  } = useConnectedHostsFromNetwork(networkId, (e) => ({...e})); 
+  const { 
+    data: disconnectedHosts = [], isLoading: isDisconnectedLoading, 
+  } = useDisconnectedHostsFromNetwork(networkId, (e) => ({...e})); 
 
   const [activeFilter, setActiveFilter] = useState("connected");
   const [selectedHost, setSelectedHost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const buttonClass = (filter) =>
-    `filter_button ${activeFilter === filter ? "active" : ""}`;
+  const renderModals = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NetworkHostModal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        // hostId={hosts} // 호스트 데이터 전달
+      />
+    </Suspense>
+  );
 
-  // 필터링된 데이터 계산
-  const filteredHosts =
-    activeFilter === "connected"
-      ? hosts.filter((host) => host.status === "connected")
-      : hosts.filter((host) => host.status === "disconnected");
+  const buttonClass = (filter) => `filter_button ${activeFilter === filter ? "active" : ""}`;
+
+  const transformHostData = (hosts) => {
+    return hosts.map((host) => ({
+      ...host,
+      icon: renderHostStatusIcon(host?.status),
+      host: <TableRowClick type="host" id={host?.id}>{host?.name}</TableRowClick>,
+      cluster: <TableRowClick type="cluster" id={host?.clusterVo?.id}>{host?.clusterVo?.name}</TableRowClick>,
+      dataCenter: <TableRowClick type="datacenter" id={host?.dataCenterVo?.id}>{host?.dataCenterVo?.name}</TableRowClick>,
+      networkDeviceStatus: renderUpDownStatusIcon(host?.hostNicVos?.[0]?.status),
+      networkDevice: host?.hostNicVos?.[0]?.name,
+      speed: host?.hostNicVos?.[0]?.speed,
+      rx: host?.hostNicVos?.[0]?.rxSpeed ? Math.round(formatBytesToMB(host.hostNicVos[0].rxSpeed)): "",
+      tx: host?.hostNicVos?.[0]?.txSpeed ? Math.round(formatBytesToMB(host.hostNicVos[0].txSpeed)): "",
+      totalRx: host?.hostNicVos?.[0]?.rxTotalSpeed ? host.hostNicVos[0].rxTotalSpeed.toLocaleString(): "",
+      totalTx: host?.hostNicVos?.[0]?.txTotalSpeed ? host.hostNicVos[0].txTotalSpeed.toLocaleString(): "",
+    }));
+  };
 
   return (
     <>
@@ -81,16 +79,16 @@ const NetworkHosts = ({ networkId }) => {
             ? TableColumnsInfo.HOSTS_FROM_NETWORK
             : TableColumnsInfo.HOSTS_DISCONNECT_FROM_NETWORK
         }
-        data={filteredHosts}
+        data={
+          activeFilter === "connected"
+            ? transformHostData(connectedHosts)
+            : transformHostData(disconnectedHosts)
+        }
         onRowClick={(row) => setSelectedHost(row)}
       />
-      {/* )} */}
 
-      <NetworkHostModal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        hostId={hosts} // 호스트 데이터 전달
-      />
+      {/* 호스트 네트워크 모달창 */}
+      { renderModals() }
 
     </>
     );

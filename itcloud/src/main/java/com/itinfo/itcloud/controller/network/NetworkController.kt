@@ -277,8 +277,8 @@ class NetworkController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="네트워크 호스트 목록",
-		notes="선택된 네트워크의 호스트 목록을 조회한다"
+		value="네트워크 호스트 연결 목록",
+		notes="선택된 네트워크의 호스트 연결된 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -286,16 +286,39 @@ class NetworkController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/{networkId}/hosts")
+	@GetMapping("/{networkId}/connectedHosts")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun hosts(
+	fun connectedhosts(
 		@PathVariable networkId: String? = null,
 	): ResponseEntity<List<HostVo>> {
-		log.info("/networks/{}/hosts ... 네트워크 호스트 목록", networkId)
+		log.info("/networks/{}/connectedHosts ... 네트워크 호스트 목록(연결된)", networkId)
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		return ResponseEntity.ok(iNetwork.findAllHostsFromNetwork(networkId))
+		return ResponseEntity.ok(iNetwork.findConnectedHostsFromNetwork(networkId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="네트워크 호스트 연결해제 목록",
+		notes="선택된 네트워크의 호스트 연결해제 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{networkId}/disconnectedHosts")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun disconnectedHosts(
+		@PathVariable networkId: String? = null,
+	): ResponseEntity<List<HostVo>> {
+		log.info("/networks/{}/disconnectedHosts ... 네트워크 호스트 목록(연결해제)", networkId)
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		return ResponseEntity.ok(iNetwork.findDisconnectedHostsFromNetwork(networkId))
 	}
 
 	@ApiOperation(

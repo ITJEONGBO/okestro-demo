@@ -5,28 +5,15 @@ import TablesOuter from '../../../../components/table/TablesOuter';
 import TableColumnsInfo from '../../../../components/table/TableColumnsInfo';
 import { faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useAllClustersFromNetwork } from '../../../../api/RQHook';
+import { renderStatusClusterIcon } from '../../../../utils/format';
 
-const NetworkClusterModal = ({ 
-  isOpen, 
-  onRequestClose, 
-  networkId 
-}) => {
-  const renderStatusIcon = (status, connected) => {
-    if (connected && status === 'OPERATIONAL') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-    } else if (connected && status === 'NON_OPERATIONAL') {
-      return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-    } else {
-      return '';
-    }
-  };
-
+const NetworkClusterModal = ({ isOpen, onRequestClose, networkId }) => {
   const { 
-    data: clusters 
+    data: clusters = []
   } = useAllClustersFromNetwork(networkId, (cluster) => ({
     name: cluster?.name,
     connect: cluster?.connected ? <input type="checkbox" checked disabled /> : <input type="checkbox" disabled />,
-    status: renderStatusIcon(cluster?.networkVo?.status, cluster?.connected),
+    status: renderStatusClusterIcon(cluster?.connected, cluster?.networkVo?.status),
     required: cluster?.networkVo?.required ? <input type="checkbox" checked disabled /> : <input type="checkbox" disabled />,
     allAssigned: cluster?.connected ? <input type="checkbox" checked disabled /> : <input type="checkbox" disabled />, // 모두 할당
     allRequired: cluster?.networkVo?.required ? <input type="checkbox" checked disabled /> : <input type="checkbox" disabled />, // 모두 필요

@@ -1,21 +1,31 @@
-import { useState } from 'react'; 
+import React, { Suspense, useState } from 'react'; 
 import { useAllClustersFromNetwork} from "../../../api/RQHook";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TablesOuter from "../../../components/table/TablesOuter";
-import NetworkClusterModal from "./modal/NetworkClusterModal";
-import {renderStatusClusterIcon} from '../../../utils/format';
+import { renderStatusClusterIcon } from '../../../utils/format';
+
+const NetworkClusterModal = React.lazy(() => import('./modal/NetworkClusterModal'));
 
 // 애플리케이션 섹션
 const NetworkClusters = ({ networkId }) => {
+  const { 
+    data: clusters = []
+  } = useAllClustersFromNetwork(networkId, (e) => ({ ...e }));
+
   const [isModalOpen, setIsModalOpen] = useState(false); 
   
-  const { 
-    data: clusters = [], 
-    status: clustersStatus, 
-    isLoading: isClustersLoading, 
-    isError: isClustersError 
-  } = useAllClustersFromNetwork(networkId);
-
+  const renderModals = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      {isModalOpen && (
+        <NetworkClusterModal
+          isOpen={isModalOpen}
+          onRequestClose={() => setIsModalOpen(false)}
+          networkId={networkId}
+        />
+      )}      
+    </Suspense>
+  );
+  
   return (
     <>
       <div className="header-right-btns">
@@ -24,16 +34,26 @@ const NetworkClusters = ({ networkId }) => {
     
       <TablesOuter
         columns={TableColumnsInfo.CLUSTERS_FRON_NETWORK}
-        data={clusters || []}
-        
+        data={clusters.map((cluster) => ({
+          ...cluster,
+          name: cluster?.name,
+          connect: cluster?.connected ? <input type="checkbox" checked disabled/> : <input type="checkbox" disabled/>,
+          status: renderStatusClusterIcon(cluster?.connected, cluster?.networkVo?.status),
+          required: cluster?.networkVo?.required ? <input type="checkbox" checked disabled/> : <input type="checkbox" disabled/>,
+          networkRole: [
+            cluster?.networkVo?.usage?.management ? '관리' : null,
+            cluster?.networkVo?.usage?.display ? '출력' : null,
+            cluster?.networkVo?.usage?.migration ? '마이그레이션' : null,
+            cluster?.networkVo?.usage?.gluster ? '글러스터' : null,
+            cluster?.networkVo?.usage?.defaultRoute ? '기본라우팅' : null,
+          ].filter(Boolean).join('/')
+        }))}
+        shouldHighlight1stCol={true}
+        multiSelect={false}
       />
 
-      <NetworkClusterModal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        clusters={clusters}
-        networkId={networkId}
-      />
+      {/* 네트워크 관리창 */}
+      { renderModals() }
    </>
   );
 };
