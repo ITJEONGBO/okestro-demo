@@ -6,42 +6,51 @@ import HeaderButton from '../../../components/button/HeaderButton';
 import Footer from '../../../components/footer/Footer';
 import { useTemplate } from '../../../api/RQHook';
 import Path from '../../../components/Header/Path';
-import TemplateGeneral from './TemplateGeneral.js';
-import TemplateVm from './TemplateVm.js';
-import TemplateEvents from './TemplateEvents.js';
-import TemplateNics from './TemplateNics.js';
-import TmplateDisks from './TmplateDisks.js';
-import TemplateStorage from './TemplateStorage.js';
+import TemplateGeneral from './TemplateGeneral';
+import TemplateVms from './TemplateVms';
+import TemplateEvents from './TemplateEvents';
+import TemplateNics from './TemplateNics';
+import TmplateDisks from './TmplateDisks';
+import TemplateStorage from './TemplateStorage';
 import TemplateEditModal from './modal/TemplateEditModal'; // Import TemplateEditModal
 
-const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
+const TemplateDeleteModal = React.lazy(() => import('./modal/TemplateDeleteModal'));
 
 const TemplateInfo = () => {
+  const navigate = useNavigate();
   const { id: templateId, section } = useParams();
   const {
-    data: template,
+    data: template, isError, isLoading
   } = useTemplate(templateId);
 
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
-  const [modals, setModals] = useState({ edit: false, delete: false });
+  const [activeModal, setActiveModal] = useState(null);
+  
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
+
+  useEffect(() => {
+    if (isError || (!isLoading && !template)) {
+      navigate('/computing/templates');
+    }
+  }, [isError, isLoading, template, navigate]);
+
+  // const [modals, setModals] = useState({ edit: false, delete: false });
 
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'vms', label: '가상머신' },
     { id: 'nics', label: '네트워크 인터페이스' },
     { id: 'disks', label: '디스크' },
-    { id: 'storageDomain', label: '스토리지' },
+    { id: 'storageDomains', label: '스토리지' },
     { id: 'events', label: '이벤트' },
   ];
 
   useEffect(() => {
-    if (!section) {
-      setActiveTab('general');
-    } else {
-      setActiveTab(section);
-    }
+    setActiveTab(section || 'general');
   }, [section]);
+  
+  const pathData = [template?.name, sections.find((section) => section.id === activeTab)?.label];
 
   const handleTabClick = (tab) => {
     const path = tab === 'general' ? `/computing/templates/${templateId}` : `/computing/templates/${templateId}/${tab}`;
@@ -49,31 +58,41 @@ const TemplateInfo = () => {
     setActiveTab(tab);
   };
 
-  const pathData = [template?.name, sections.find((section) => section.id === activeTab)?.label];
-
-  const sectionComponents = {
-    general: TemplateGeneral,
-    vms: TemplateVm,
-    nics: TemplateNics,
-    disks: TmplateDisks,
-    storageDomain: TemplateStorage,
-    events: TemplateEvents,
-  };
-
   const renderSectionContent = () => {
-    const SectionComponent = sectionComponents[activeTab];
+    const SectionComponent = {
+      general: TemplateGeneral,
+      vms: TemplateVms,
+      nics: TemplateNics,
+      disks: TmplateDisks,
+      storageDomains: TemplateStorage,
+      events: TemplateEvents,
+    }[activeTab];
     return SectionComponent ? <SectionComponent templateId={templateId} /> : null;
   };
 
-  const toggleModal = (type, isOpen) => {
-    setModals((prev) => ({ ...prev, [type]: isOpen }));
-  };
-
   const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '편집', onClick: () => toggleModal('edit', true) },
-    { id: 'delete_btn', label: '삭제', onClick: () => toggleModal('delete', true) },
-    { id: 'addVm_btn', label: '새 가상머신', onClick: () => toggleModal('addVm', true) },
+    { type: 'edit', label: '편집', onClick: () => openModal('edit') },
+    { type: 'delete', label: '삭제', onClick: () => openModal('delete') },
+    { type: 'addVm', label: '새 가상머신', onClick: () => openModal('addVm') },
   ];
+
+  const renderModals = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'edit' && (
+        <TemplateEditModal
+          editMode
+          templateId={templateId}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'delete' && (
+        <TemplateDeleteModal
+          data={template}
+          onClose={closeModal}
+        />
+      )}
+    </Suspense>
+  );
 
   return (
     <div id="section">
@@ -94,28 +113,8 @@ const TemplateInfo = () => {
         </div>
       </div>
 
-      {/* 편집 모달 */}
-      {modals.edit && (
-        <TemplateEditModal
-          isOpen={modals.edit}
-          onRequestClose={() => toggleModal('edit', false)}
-          editMode={true} 
-          templateId={templateId}
-        />
-      )}
-
-      {/* 삭제 모달 */}
-      {modals.delete && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <DeleteModal
-            isOpen={modals.delete}
-            type="Template"
-            onRequestClose={() => toggleModal('delete', false)}
-            contentLabel="템플릿"
-            data={template}
-          />
-        </Suspense>
-      )}
+      {/* vnicprofile 모달창 */}
+      { renderModals() }
       <Footer />
     </div>
   );

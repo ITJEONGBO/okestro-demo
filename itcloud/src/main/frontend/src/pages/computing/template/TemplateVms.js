@@ -3,7 +3,7 @@ import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
 import { useAllVMs, useAllVmsFromTemplate } from '../../../api/RQHook';
 import TablesOuter from '../../../components/table/TablesOuter';
 
-const TemplateVm = ({templateId}) => {
+const TemplateVms = ({templateId}) => {
     
   const {
     data: vms, 
@@ -27,4 +27,4 @@ const TemplateVm = ({templateId}) => {
   );
 };
 
-export default TemplateVm;
+export default TemplateVms;

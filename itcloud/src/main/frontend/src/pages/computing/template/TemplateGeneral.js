@@ -2,7 +2,8 @@ import React from 'react';
 import { useTemplate } from '../../../api/RQHook';
 
 const TemplateGeneral = ({ templateId }) => {
-  const { data: templateData, isLoading, isError } = useTemplate(templateId);
+  const { data: templateData } = useTemplate(templateId);
+
   return (
     <div className="cluster_general">
       <div className="table_container_center">
@@ -10,23 +11,23 @@ const TemplateGeneral = ({ templateId }) => {
           <tbody>
             <tr>
               <th>이름:</th>
-              <td>{templateData?.name || "N/A"}</td>
+              <td>{templateData?.name}</td>
             </tr>
             <tr>
               <th>설명:</th>
-              <td>{templateData?.description || "N/A"}</td>
+              <td>{templateData?.description}</td>
             </tr>
             <tr>
               <th>호스트 클러스터:</th>
-              <td>{templateData?.clusterVo?.name || "N/A"}</td>
+              <td>{templateData?.clusterVo?.name}</td>
             </tr>
             <tr>
               <th>운영 시스템:</th>
-              <td>{templateData?.osSystem || "N/A"}</td>
+              <td>{templateData?.osSystem}</td>
             </tr>
             <tr>
               <th>칩셋/펌웨어 유형:</th>
-              <td>{templateData?.chipsetFirmwareType || "N/A"}</td>
+              <td>{templateData?.chipsetFirmwareType}</td>
             </tr>
             <tr>
               <th>그래픽 프로토콜:</th>
@@ -38,7 +39,7 @@ const TemplateGeneral = ({ templateId }) => {
             </tr>
             <tr>
               <th>최적화 옵션:</th>
-              <td>{templateData?.optimizeOption || "N/A"}</td>
+              <td>{templateData?.optimizeOption}</td>
             </tr>
           </tbody>
         </table>
@@ -52,11 +53,11 @@ const TemplateGeneral = ({ templateId }) => {
             </tr>
             <tr>
               <th>CPU 코어 수:</th>
-              <td>{templateData?.cpuTopologyCore || "N/A"}</td>
+              <td>{templateData?.cpuTopologyCore}</td>
             </tr>
             <tr>
               <th>모니터 수:</th>
-              <td>{templateData?.monitor || "N/A"}</td>
+              <td>{templateData?.monitor}</td>
             </tr>
             <tr>
               <th>고가용성:</th>
@@ -64,7 +65,7 @@ const TemplateGeneral = ({ templateId }) => {
             </tr>
             <tr>
               <th>우선 순위:</th>
-              <td>{templateData?.priority || "N/A"}</td>
+              <td>{templateData?.priority}</td>
             </tr>
             <tr>
               <th>USB:</th>
@@ -80,7 +81,7 @@ const TemplateGeneral = ({ templateId }) => {
             </tr>
             <tr>
               <th>템플릿 ID:</th>
-              <td>{templateData?.id || "N/A"}</td>
+              <td>{templateData?.id}</td>
             </tr>
           </tbody>
         </table>

@@ -78,7 +78,7 @@ const NetworkInfo = () => {
       {activeModal === 'edit' && (
         <NetworkModal
           editMode
-          networkId={network?.id}
+          networkId={networkId}
           onClose={closeModal}
         />
       )}
