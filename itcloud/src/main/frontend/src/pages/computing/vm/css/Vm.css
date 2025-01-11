@@ -366,6 +366,10 @@
     height: 100%;
     text-align: left;
     color:gray;
+    margin-bottom: 1rem;
+  }
+  .snap_table:last-child{
+    margin-bottom: 0;
   }
 /*스냅샷 생성팝업*/
 .snap_create_outer{

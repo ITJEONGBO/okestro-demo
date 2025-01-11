@@ -39,16 +39,16 @@ const VmSnapshot = ({vm}) => {
       created: snapshot?.creationDate ?? 'N/A', 
       vmStatus: snapshot?.vm?.status ?? 'N/A', 
       memorySize: snapshot?.memorySize ?? 'N/A', 
-      diskSize: snapshot?.diskSize ?? 'N/A', 
-      actualSize: snapshot?.snapshotDiskVos?.[0]?.actualSize
-      ? `${(snapshot.snapshotDiskVos[0].actualSize / (1024 ** 3)).toFixed(2)} GB`
+      memorySize: snapshot?.vmVo?.memorySize ?? 'N/A', 
+      memoryActual: snapshot?.vmVo?.actualSize
+      ? `${(snapshot.vmVo?.actualSize / (1024 ** 3)).toFixed(2)} GB`
       : 'N/A', // 크기
-    creationDate: snapshot?.date ?? 'N/A', // 생성 일자
-    snapshotCreationDate: snapshot?.snapshotDiskVos?.[0]?.createDate ?? 'N/A', // 스냅샷 생성일
-    alias: snapshot?.snapshotDiskVos?.[0]?.alias || '없음', // 디스크 별칭
-    description: snapshot?.snapshotDiskVos?.[0]?.description || '없음', // 스냅샷 설명
-    target: snapshot?.vmVo?.name || '없음', // 연결 대상
-    diskSnapshotId: snapshot?.snapshotDiskVos?.[0]?.id || '', // 디스크 스냅샷 ID
+      creationDate: snapshot?.date ?? 'N/A', // 생성 일자
+      snapshotCreationDate: snapshot?.snapshotDiskVos?.[0]?.createDate ?? 'N/A', // 스냅샷 생성일
+      alias: snapshot?.snapshotDiskVos?.[0]?.alias || '없음', // 디스크 별칭
+      description: snapshot?.snapshotDiskVos?.[0]?.description || '없음', // 스냅샷 설명
+      target: snapshot?.vmVo?.name || '없음', // 연결 대상
+      diskSnapshotId: snapshot?.snapshotDiskVos?.[0]?.id || '', // 디스크 스냅샷 ID
     };
   }
 
@@ -65,13 +65,32 @@ const VmSnapshot = ({vm}) => {
     description: e?.diskImageVo?.description,
   }));
 
-  // 스냅샷상세정보
-  const { 
-    data: snapshotdetail, 
-  } = useSnapshotDetailFromVM(vm?.id, selectedSnapshot?.id ,  (e) => ({ 
-    ...e,
-     
-  }));
+const { 
+  data: snapshotdetail, 
+} = useSnapshotDetailFromVM(vm?.id, selectedSnapshot?.id, (e) => ({
+  ...e,
+  id: e?.id ?? '', 
+  description: e?.description || 'N/A',
+  status: e?.status || 'N/A',
+  date: e?.date || 'N/A',
+  vmName: e?.vmVo?.name || 'N/A',
+  memoryActual: e?.memoryActual || 'N/A',
+  snapshotDisks: e?.snapshotDiskVos?.map((disk) => ({
+    id: disk?.id || 'N/A',
+    alias: disk?.alias || 'N/A',
+    description: disk?.description || 'N/A',
+    provisionedSize: disk?.provisionedSize
+      ? `${(disk.provisionedSize / (1024 ** 3)).toFixed(2)} GB`
+      : 'N/A',
+    actualSize: disk?.actualSize
+      ? `${(disk.actualSize / (1024 ** 3)).toFixed(2)} GB`
+      : 'N/A',
+    sparse: disk?.sparse ? 'Yes' : 'No',
+    format: disk?.format || 'N/A',
+    status: disk?.status || 'N/A',
+  })) || [],
+}));
+
 
   useEffect(() => {
     if (snapshotdetail) {
@@ -174,11 +193,11 @@ const VmSnapshot = ({vm}) => {
                     <tbody>
                       <tr>
                         <th>날짜:</th>
-                        <td>{snapshotdetail.date || '정보없음'}</td>
+                        <td>{snapshotdetail?.date || '정보없음'}</td>
                       </tr>
                       <tr>
                         <th>상태:</th>
-                        <td>{snapshotdetail.status || '정보없음'}</td>
+                        <td>{snapshotdetail?.status || '정보없음'}</td>
                       </tr>
                       <tr>
                         <th>메모리:</th>
@@ -186,15 +205,15 @@ const VmSnapshot = ({vm}) => {
                       </tr>
                       <tr>
                         <th>설명:</th>
-                        <td>{snapshotdetail.description || 'description'}</td>
+                        <td>{snapshotdetail?.description || 'description'}</td>
                       </tr>
                       <tr>
                         <th>설정된 메모리:</th>
-                        <td>{snapshotdetail?.memoryActual || ''} </td>
+                        <td>{snapshotdetail?.vmVo?.memorySize || ''} </td>
                       </tr>
                       <tr>
                         <th>할당할 실제 메모리:</th>
-                        <td>{snapshotdetail.actualSize || 'N/A'} </td>
+                        <td>{snapshotdetail?.vmVo?.memoryActual || 'N/A'} </td>
                       </tr>
                       <tr>
                         <th>CPU 코어 수:</th>
@@ -209,9 +228,9 @@ const VmSnapshot = ({vm}) => {
               {activeSection === 'disk' && selectedSnapshot?.id === snapshot.id && (
                 <div className="snap_hidden_content active">
                   <TablesOuter
-                    columns={TableColumnsInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
-                    data={snapshots}
-                    onRowClick={() => console.log('Row clicked')}
+                    columns={TableColumnsInfo.SNAPSHOT_DISK_FROM_VM}
+                    data={Array.isArray(snapshotdetail?.snapshotDiskVos) ? snapshotdetail.snapshotDiskVos : []}
+                    onRowClick={(row) => console.log('Row clicked:', row)}
                   />
                 </div>
               )}
@@ -219,44 +238,51 @@ const VmSnapshot = ({vm}) => {
               {/* Network Section */}
               {activeSection === 'network' && selectedSnapshot?.id === snapshot.id && (
                 <div className="snap_hidden_content active">
-                  <table className="snap_table">
-                    <tbody>
-                      <tr>
-                        <th>이름:</th>
-                        <td>{vm?.nicVos?.[0]?.name || 'nic1'}</td>
-                      </tr>
-                      <tr>
-                        <th>네트워크 이름:</th>
-                        <td>{vm?.nicVos?.[0]?.networkVo?.name || 'ovirtmgmt'}</td>
-                      </tr>
-                      <tr>
-                        <th>프로파일 이름:</th>
-                        <td>{vm?.nicVos?.[0]?.profileVo?.name || 'ovirtmgmt'}</td>
-                      </tr>
-                      <tr>
-                        <th>유형:</th>
-                        <td>{vm?.nicVos?.[0]?.type || 'VirtIO'}</td>
-                      </tr>
-                      <tr>
-                        <th>MAC:</th>
-                        <td>{vm?.nicVos?.[0]?.macAddress || '56:6f:7e:02:00:06'}</td>
-                      </tr>
-                      <tr>
-                        <th>Rx 속도 (Mbps):</th>
-                        <td>{vm?.nicVos?.[0]?.rxRate || '< 1'}</td>
-                      </tr>
-                      <tr>
-                        <th>Tx 속도 (Mbps):</th>
-                        <td>{vm?.nicVos?.[0]?.txRate || '< 1'}</td>
-                      </tr>
-                      <tr>
-                        <th>중단 (Pkts):</th>
-                        <td>{vm?.nicVos?.[0]?.dropRate || '0'}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {Array.isArray(snapshotdetail?.nicVos) && snapshotdetail.nicVos.length > 0 ? (
+                    snapshotdetail.nicVos.map((nic, index) => (
+                      <table key={index} className="snap_table">
+                        <tbody>
+                          <tr>
+                            <th>이름:</th>
+                            <td>{nic?.name || '정보없음'}</td>
+                          </tr>
+                          <tr>
+                            <th>네트워크 이름:</th>
+                            <td>{nic?.networkVo?.name || '정보없음'}</td>
+                          </tr>
+                          <tr>
+                            <th>프로파일 이름:</th>
+                            <td>{nic?.vnicProfileVo?.name || '정보없음'}</td>
+                          </tr>
+                          <tr>
+                            <th>유형:</th>
+                            <td>{nic?.interface_ || '정보없음'}</td>
+                          </tr>
+                          <tr>
+                            <th>MAC:</th>
+                            <td>{nic?.macAddress || '정보없음'}</td>
+                          </tr>
+                          <tr>
+                            <th>Rx 속도 (Mbps):</th>
+                            <td>{nic?.rxSpeed || '정보없음'}</td>
+                          </tr>
+                          <tr>
+                            <th>Tx 속도 (Mbps):</th>
+                            <td>{nic?.txSpeed || '정보없음'}</td>
+                          </tr>
+                          <tr>
+                            <th>중단 (Pkts):</th>
+                            <td>{nic?.rxTotalError || 0}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    ))
+                  ) : (
+                    <p>네트워크 데이터가 없습니다.</p>
+                  )}
                 </div>
               )}
+
 
               {/* Applications Section */}
               {activeSection === 'applications' && selectedSnapshot?.id === snapshot.id && (

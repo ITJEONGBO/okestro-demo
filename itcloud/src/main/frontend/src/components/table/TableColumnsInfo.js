@@ -338,6 +338,18 @@ const TableColumnsInfo = {
     { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
   ],
   
+  SNAPSHOT_DISK_FROM_VM: [
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '별칭', accessor: 'alias', clickable: false },
+    { header: '생성 일자', accessor: 'date', clickable: false },
+    { header: '가상 크기', accessor: 'provisionedSize', clickable: false },
+    { header: '실제 크기', accessor: 'actualSize', clickable: false },
+    { header: '할당 정책', accessor: 'sparse', clickable: false },
+    { header: '인터페이스', accessor: 'interface', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false },
+  ],
+  
   TEMPLATE_VMS:[
     { header: '', accessor: 'icon', clickable: false, width: '10%' },
     { header: '이름', accessor: 'name', clickable: true, width: '20%' },
