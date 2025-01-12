@@ -7,11 +7,7 @@ import {
   useDeleteDomain,
 } from '../../../../api/RQHook';
 
-const DomainDeleteModal = ({ 
-  isOpen, 
-  onRequestClose, 
-  data, // 선택된 도메인들 (단일 객체 또는 배열)
-}) => {
+const DomainDeleteModal = ({ onClose, data }) => {
   const [format, setFormat] = useState(false);
   const [hostName, setHostName] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
@@ -57,7 +53,7 @@ const DomainDeleteModal = ({
           onSuccess: () => {
             console.log(`도메인 삭제 성공: ${selectedNames[index]} (ID: ${id})`);
             if (index === selectedIds.length - 1) {
-              onRequestClose(); // 모든 삭제가 완료되면 모달 닫기
+              onClose(); // 모든 삭제가 완료되면 모달 닫기
             }
           },
           onError: (error) => {
@@ -70,8 +66,8 @@ const DomainDeleteModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel={'스토리지 도메인'}
       className="Modal"
       overlayClassName="Overlay"
@@ -80,7 +76,7 @@ const DomainDeleteModal = ({
       <div className="domain_delete_popup">
         <div className="popup-header">
           <h1>스토리지 도메인 삭제</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -126,7 +122,7 @@ const DomainDeleteModal = ({
         <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

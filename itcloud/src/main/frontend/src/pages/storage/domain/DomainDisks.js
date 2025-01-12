@@ -5,19 +5,14 @@ import DiskDupl from '../disk/DiskDupl';
 
 const DomainDisks = ({ domainId }) => {
   const { 
-    data: disks, 
-    status: disksStatus, 
-    isLoading: isDisksLoading, 
-    isError: isDisksError,
-  } = useAllDiskFromDomain(domainId, (e) => ({
-    ...e,
-  }));
+    data: disks = [], isLoading: isDisksLoading, 
+  } = useAllDiskFromDomain(domainId, (e) => ({ ...e }));
 
   return (
     <>
       <DiskDupl
         columns={TableColumnsInfo.DISKS_FROM_STORAGE_DOMAIN}
-        disks={disks || []}
+        disks={disks}
       />
     </>
   );

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-const HostActionButtons = ({ openModal, isEditDisabled, status, selectedHosts }) => {
+const HostActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status, selectedHosts }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
 
@@ -26,7 +26,7 @@ const HostActionButtons = ({ openModal, isEditDisabled, status, selectedHosts })
   const basicActions = [
     { type: 'create', label: '생성', disabled: false },
     { type: 'edit', label: '편집', disabled: isEditDisabled || !isUp },
-    { type: 'delete', label: '삭제', disabled: !isMaintenance },
+    { type: 'delete', label: '삭제', disabled: isDeleteDisabled || !isMaintenance },
   ];
 
   const manageActions = [
@@ -42,11 +42,7 @@ const HostActionButtons = ({ openModal, isEditDisabled, status, selectedHosts })
   return (
     <div className="header-right-btns">
       {basicActions.map(({ type, label, disabled }) => (
-        <button 
-          key={type} 
-          onClick={() => openModal(type)} 
-          disabled={disabled}
-        >
+        <button key={type} onClick={() => openModal(type)} disabled={disabled}>
           {label}
         </button>
       ))}
@@ -59,12 +55,7 @@ const HostActionButtons = ({ openModal, isEditDisabled, status, selectedHosts })
         {activeDropdown && (
           <div className="dropdown-menu">
             {manageActions.map(({ type, label, disabled }) => (
-              <button
-                key={type}
-                onClick={() => openModal(type)}
-                disabled={disabled}
-                className="dropdown-item"
-              >
+              <button key={type} onClick={() => openModal(type)} disabled={disabled} className="dropdown-item">
                 {label}
               </button>
             ))}

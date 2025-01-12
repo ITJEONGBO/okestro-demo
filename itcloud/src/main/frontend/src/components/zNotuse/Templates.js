@@ -1,8 +1,8 @@
 import React, { useState,  useEffect } from 'react';
 import { useNavigate,useParams,useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
-import { useAllTemplates } from "../../../api/RQHook";
-import VmTemplateChart from '../vm/VmTemplateChart';
+import { useAllTemplates } from "../../api/RQHook";
+import VmTemplateChart from '../../pages/computing/vm/VmTemplateChart';
 import Table from "../../table/Table";
 import TableColumnsInfo from "../../table/TableColumnsInfo";
 import HeaderButton from "../../button/HeaderButton";

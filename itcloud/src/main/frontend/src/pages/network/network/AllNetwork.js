@@ -10,7 +10,7 @@ import {faServer} from '@fortawesome/free-solid-svg-icons'
 
 const AllNetwork = () => {
   const { 
-    data: networks, isLoading: isNetworksLoading,
+    data: networks = [], isLoading: isNetworksLoading,
   } = useAllNetworks((e) => ({...e}));
 
   useEffect(() => {

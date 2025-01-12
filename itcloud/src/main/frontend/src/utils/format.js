@@ -128,6 +128,19 @@ export function renderDataCenterStatus (status) {
   return status;
 };
 
+
+export function renderDataCenterStatusIcon (status) {
+  if (status === 'ACTIVE') {
+    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+  } else if (status === 'DOWN') {
+    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+  } else if (status === 'MAINTENANCE') {
+    return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
+  }
+  return status;
+};
+
+
 export function renderHostStatus (status) {
   if (status === 'UP') {
     return '실행중';
@@ -141,7 +154,6 @@ export function renderHostStatus (status) {
   return status;
 };
 
-
 export function renderVmStatus (status) {
   if (status === 'UP') {
     return '실행중';
@@ -151,6 +163,17 @@ export function renderVmStatus (status) {
     return '유지보수';
   } else if (status === 'REBOOT') {
     return '재부팅중';
+  }
+  return status;
+};
+
+export function renderDomainStatus (status) {
+  if (status === 'ACTIVE') {
+    return '활성화';
+  } else if (status === 'DOWN') {
+    return '중지';
+  } else if (status === 'INACTIVE') {
+    return '비활성화';
   }
   return status;
 };

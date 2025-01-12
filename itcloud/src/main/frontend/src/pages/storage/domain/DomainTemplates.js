@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TablesOuter from "../../../components/table/TablesOuter";
 import {useAllTemplateFromDomain} from "../../../api/RQHook";
-import { formatBytesToGB } from '../../../utils/format';
+import { formatBytesToGB, formatBytesToGBToFixedZero } from '../../../utils/format';
 
 const TemplateRow = ({ template, isExpanded, toggleRow }) => (
   <>
@@ -60,7 +60,11 @@ const DomainTemplates = ({ domainId }) => {
     <>
       <TablesOuter 
         columns={TableColumnsInfo.TEMPLATES_FROM_STORAGE_DOMAIN}
-        data={templates} 
+        data={templates.map((t) => ({
+          ...t,
+          virtualSize: formatBytesToGBToFixedZero(t?.virtualSize) + ' GB',
+          actualSize: formatBytesToGBToFixedZero(t?.actualSize) + ' GB'
+        }))} 
       />
     </>
   );

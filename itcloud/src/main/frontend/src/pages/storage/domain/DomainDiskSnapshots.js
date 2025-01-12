@@ -1,27 +1,17 @@
-import { useState } from 'react'; 
+import React, { Suspense, useState } from 'react'; 
 import { useAllDiskSnapshotFromDomain} from "../../../api/RQHook";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TablesOuter from '../../../components/table/TablesOuter';
-import DeleteModal from '../../../components/DeleteModal';
+import { formatBytesToGBToFixedZero } from '../../../utils/format';
+
+const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
 
 const DomainDiskSnapshots = ({ domainId }) => {
-  const sizeToGB = (data) => (data / Math.pow(1024, 3));
-
-  const formatSize = (size) =>
-    sizeToGB(size) < 1 ? '< 1 GB' : `${sizeToGB(size).toFixed(0)} GB`;
-  
   const { 
-      data: diskSnapshots, 
-      status: diskSnapshotsStatus, 
-      isLoading: isDiskSnapshotsLoading, 
-      isError: isDiskSnapshotsError,
-  } = useAllDiskSnapshotFromDomain(domainId, (e) => ({
-    ...e,
-    actualSize: formatSize(e?.actualSize)
-  }));
+      data: diskSnapshots = [], isLoading: isDiskSnapshotsLoading, 
+  } = useAllDiskSnapshotFromDomain(domainId, (e) => ({...e,}));
   
   const [isModalOpen, setIsModalOpen] = useState(false); 
-
 
   return (
     <>
@@ -31,16 +21,21 @@ const DomainDiskSnapshots = ({ domainId }) => {
 
       <TablesOuter
         columns={TableColumnsInfo.DISK_SNAPSHOT_FROM_STORAGE_DOMAIN}
-        data={diskSnapshots}
+        data={diskSnapshots.map((e) => ({
+          ...e,
+          actualSize: formatBytesToGBToFixedZero(e?.actualSize) + ' GB'
+        }))}
       />
 
-      <DeleteModal
-        isOpen={isModalOpen}
-        type="DiskSnapShot"
-        onRequestClose={() => setIsModalOpen(false)}
-        contentLabel="디스크 스냅샷"
-        // data={selectedDomain}
-      />
+      {/* <Suspense fallback={<div>Loading...</div>}>
+        <DeleteModal
+          isOpen={isModalOpen}
+          type="DiskSnapShot"
+          onRequestClose={() => setIsModalOpen(false)}
+          contentLabel="디스크 스냅샷"
+          // data={selectedDomain}
+        />
+      </Suspense> */}
     </>
   );
 };

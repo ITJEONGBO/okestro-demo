@@ -3,17 +3,12 @@ import EventTable from "../../event/EventTable";
 
 const DomainEvents = ({ domainId }) => {
   const { 
-    data: events, 
-    status: eventsStatus, 
-    isLoading: isEventsLoading, 
-    isError: isEventsError 
+    data: events = [], isLoading: isEventsLoading, 
   } = useAllEventFromDomain(domainId, (e) => ({ ...e}));
-  console.log(events); // 데이터 확인
+  
   return (
     <>
-      <EventTable 
-        events={events} 
-      />
+      <EventTable events={events} />
     </>
   );
 };

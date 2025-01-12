@@ -4,12 +4,9 @@ import EventTable from '../../event/EventTable';
 
 const TemplateEvents = ({ templateId }) => {
   const { 
-    data: events, 
-    status: eventsStatus, 
-    isLoading: isEventsLoading, 
-    isError: isEventsError 
+    data: events = [], isLoading: isEventsLoading
   } = useAllEventFromTemplate(templateId, (e) => ({ ...e }));
-  console.log('ClusterEvents:', events);
+  
   return (
     <>
       <EventTable events={events}/>

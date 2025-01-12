@@ -17,7 +17,6 @@ const AllTemplates = () => {
         <HeaderButton
           titleIcon={faDesktop}
           title={'템플릿'}
-          buttons={[]}
         />
       </div>
       <div className="host-btn-outer">

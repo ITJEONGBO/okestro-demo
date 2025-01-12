@@ -29,14 +29,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const DomainModal = ({
-  isOpen,
-  onRequestClose,
-  action,
-  domainId,
-  datacenterId,  // 데이터센터
-  // hostId,  // 호스트
-}) => {
+const DomainModal = ({ editMode = false, domainId, datacenterId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     domainType: 'data', // 기본값 설정
@@ -148,9 +141,6 @@ const DomainModal = ({
       serial: unit.serial
     };
   }));
-
-  const editMode = (action === 'edit');
-  const importMode = (action === 'imported');
 
   const isNfs = formState.storageType === 'nfs' || domain?.storageType === 'nfs';
   const isIscsi = formState.storageType === 'iscsi' || domain?.storageType === 'iscsi';
@@ -274,9 +264,9 @@ const DomainModal = ({
   const validateForm = () => {
     if (!formState.name) return '이름을 입력해주세요.';
     if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
-    if ((action === 'create' || importMode) && !hostVoName) return '호스트를 선택해주세요.';
+    if (!hostVoName) return '호스트를 선택해주세요.';
     if (formState.storageType === 'NFS' && !nfsAddress) return '경로를 입력해주세요.';
-    if ((action === 'create' || importMode) && formState.storageType !== 'nfs' && lunId) {
+    if (formState.storageType !== 'nfs' && lunId) {
       const selectedLogicalUnit =
         formState.storageType === 'iscsi'
           ? iscsis.find((iLun) => iLun.id === lunId)
@@ -405,22 +395,22 @@ const DomainModal = ({
         {
           onSuccess: () => {
             alert('도메인 편집 완료');
-            onRequestClose();
+            onClose();
           },
         }
       );
-    } else if (importMode) {
-      importDomain(dataToSubmit, {
-        onSuccess: () => {
-          alert('도메인 가져오기 완료');
-          onRequestClose();
-        },
-      });
+    // } else if (importMode) {
+    //   importDomain(dataToSubmit, {
+    //     onSuccess: () => {
+    //       alert('도메인 가져오기 완료');
+    //       onClose();
+    //     },
+    //   });
     } else {
       addDomain(dataToSubmit, {
         onSuccess: () => {
           alert('도메인 생성 완료');
-          onRequestClose();
+          onClose();
         },
       });
     }
@@ -429,8 +419,8 @@ const DomainModal = ({
   
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel="도메인 관리"
       className="Modal"
       overlayClassName="Overlay"
@@ -439,12 +429,13 @@ const DomainModal = ({
       <div className="storage_domain_administer_popup">
         <div className="popup-header">
           <h1>
-          {importMode ? "도메인 가져오기"
-            : editMode ? "도메인 편집"
+          {
+          // importMode ? "도메인 가져오기":
+            editMode ? "도메인 편집"
             : "새로운 도메인 생성"
           }
           </h1>
-          <button onClick={onRequestClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          <button onClick={onClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
 
         <div className="storage_domain_new_first">
@@ -475,7 +466,6 @@ const DomainModal = ({
             )}
             </select>
           </FormGroup>
-
 
           <FormGroup label="도메인 유형">
             <select
@@ -526,36 +516,34 @@ const DomainModal = ({
               )}
             </select>
           </FormGroup>
+        </div>
 
+        <div className="domain_new_right">
+          <FormGroup label="이름">
+            <input
+              type="text"
+              value={formState.name}
+              onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
+            />
+          </FormGroup>
+          
+          <FormGroup label="설명">
+            <input
+              type="text"
+              value={formState.description}
+              onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
+            />
+          </FormGroup>
+
+          <FormGroup label="코멘트">
+            <input
+              type="text"
+              value={formState.comment}
+              onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
+            />
+          </FormGroup>
+        </div>
       </div>
-
-      <div className="domain_new_right">
-        <FormGroup label="이름">
-          <input
-            type="text"
-            value={formState.name}
-            onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
-          />
-        </FormGroup>
-        
-        <FormGroup label="설명">
-          <input
-            type="text"
-            value={formState.description}
-            onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
-          />
-        </FormGroup>
-
-        <FormGroup label="코멘트">
-          <input
-            type="text"
-            value={formState.comment}
-            onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
-          />
-        </FormGroup>
-      </div>
-    </div>
-
    
       {/* NFS 의 경우 */}
       {isNfs && (
@@ -567,8 +555,9 @@ const DomainModal = ({
                 <input
                   type="text"
                   placeholder="예: myserver.mydomain.com"
-                  value={nfsAddress}
-                  disabled={editMode}
+                  value={domain?.storageAddress}
+                  disabled
+                  style={{width: '310px', height: '22px'}}
                 />
               ) : (
                 <>
@@ -588,7 +577,7 @@ const DomainModal = ({
         </div>
       )}
       
-    {/* ISCSI 의 경우 */}
+      {/* ISCSI 의 경우 */}
       {isIscsi && (        
         <div className="storage_popup_iSCSI">
           <div className="tab_content">
@@ -619,71 +608,71 @@ const DomainModal = ({
                     onRowClick={handleRowClick}
                     // shouldHighlight1stCol={true}
                   />
-                ): importMode ? (
-                  <>
-                    <label className='label_font_name'>대상 검색</label>
-                    {iscsiSearchResults?.length == 0 && (
-                      <>
-                    <FormGroup>
-                      <label className='label_font_name'>주소</label>
-                      <input
-                        type="text"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <label className='label_font_name'>포트</label>
-                      <input
-                        type="number"
-                        value={port}
-                        onChange={(e) => setPort(e.target.value)}
-                      />
-                    </FormGroup>
-                    <button className='search_button' onClick={handleSearchIscsi}>검색</button>
-                    </>
-                    )}
-                    {iscsiSearchResults?.length > 0 && (
-                      <>
-                        <button className='search_button' onClick={handleLoginIscsi}>로그인</button>
+                // ): importMode ? (
+                //   <>
+                //     <label className='label_font_name'>대상 검색</label>
+                //     {iscsiSearchResults?.length == 0 && (
+                //       <>
+                //     <FormGroup>
+                //       <label className='label_font_name'>주소</label>
+                //       <input
+                //         type="text"
+                //         value={address}
+                //         onChange={(e) => setAddress(e.target.value)}
+                //       />
+                //     </FormGroup>
+                //     <FormGroup>
+                //       <label className='label_font_name'>포트</label>
+                //       <input
+                //         type="number"
+                //         value={port}
+                //         onChange={(e) => setPort(e.target.value)}
+                //       />
+                //     </FormGroup>
+                //     <button className='search_button' onClick={handleSearchIscsi}>검색</button>
+                //     </>
+                //     )}
+                //     {iscsiSearchResults?.length > 0 && (
+                //       <>
+                //         <button className='search_button' onClick={handleLoginIscsi}>로그인</button>
 
-                        <Tables
-                          columns={TableColumnsInfo.TARGETS_LUNS}
-                          data={iscsiSearchResults}
-                          onRowClick={handleRowClick}
-                          shouldHighlight1stCol={true}
-                        />
-                        <p style={{fontSize: '12px'}}>target: {target}, {address}, {port}</p>
-                      </>
-                    )}
-                    {/* <div className="disk_delete_box">
-                      <input
-                        type="checkbox"
-                        id="format"
-                        checked={useChap}
-                        onChange={(e) => setUseChap(e.target.checked)} // 체크 여부에 따라 true/false 설정
-                      />
-                      <label htmlFor="format">사용자 인증</label>
-                    </div>
-                    <FormGroup>
-                      <label className='label_font_name'>CHAP 사용자 이름</label>
-                      <input
-                        type="text"
-                        value={chapName}
-                        onChange={(e) => setChapName(e.target.value)}
-                        disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <label className='label_font_name'>CHAP 암호</label>
-                      <input
-                        type="password"
-                        value={chapPassword}
-                        onChange={(e) => setChapPassword(e.target.value)}
-                        disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
-                      />
-                    </FormGroup> */}
-                  </>
+                //         <Tables
+                //           columns={TableColumnsInfo.TARGETS_LUNS}
+                //           data={iscsiSearchResults}
+                //           onRowClick={handleRowClick}
+                //           shouldHighlight1stCol={true}
+                //         />
+                //         <p style={{fontSize: '12px'}}>target: {target}, {address}, {port}</p>
+                //       </>
+                //     )}
+                //     {/* <div className="disk_delete_box">
+                //       <input
+                //         type="checkbox"
+                //         id="format"
+                //         checked={useChap}
+                //         onChange={(e) => setUseChap(e.target.checked)} // 체크 여부에 따라 true/false 설정
+                //       />
+                //       <label htmlFor="format">사용자 인증</label>
+                //     </div>
+                //     <FormGroup>
+                //       <label className='label_font_name'>CHAP 사용자 이름</label>
+                //       <input
+                //         type="text"
+                //         value={chapName}
+                //         onChange={(e) => setChapName(e.target.value)}
+                //         disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
+                //       />
+                //     </FormGroup>
+                //     <FormGroup>
+                //       <label className='label_font_name'>CHAP 암호</label>
+                //       <input
+                //         type="password"
+                //         value={chapPassword}
+                //         onChange={(e) => setChapPassword(e.target.value)}
+                //         disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
+                //       />
+                //     </FormGroup> */}
+                //   </>
                 ): (
                   // create
                   <Tables
@@ -732,19 +721,19 @@ const DomainModal = ({
                     onRowClick={handleRowClick}
                     // shouldHighlight1stCol={true}
                   />
-                ): importMode ? (
-                  <>
-                    <button className='search_button' onClick={handleSearchFcp}>검색</button>
+                // ): importMode ? (
+                //   <>
+                //     <button className='search_button' onClick={handleSearchFcp}>검색</button>
 
-                    {fcpSearchResults?.length > 0 && (
-                      <Tables
-                        columns={TableColumnsInfo.FIBRE_IMPORT}
-                        data={fcpSearchResults}
-                        onRowClick={handleRowClick}
-                        // shouldHighlight1stCol={true}
-                      />
-                    )}
-                  </>
+                //     {fcpSearchResults?.length > 0 && (
+                //       <Tables
+                //         columns={TableColumnsInfo.FIBRE_IMPORT}
+                //         data={fcpSearchResults}
+                //         onRowClick={handleRowClick}
+                //         // shouldHighlight1stCol={true}
+                //       />
+                //     )}
+                //   </>
                 ): (
                   <Tables
                     columns={TableColumnsInfo.FIBRE}
@@ -793,12 +782,9 @@ const DomainModal = ({
       <div className="edit-footer">
         <button style={{ display: 'none' }}></button>
         <button onClick={handleFormSubmit}>{editMode ? '편집' : '완료'}</button>
-        <button onClick={onRequestClose}>취소</button>
+        <button onClick={onClose}>취소</button>
       </div>
     </div>
-
-  
-    {/* </div> */}
     </Modal>
   );
 };

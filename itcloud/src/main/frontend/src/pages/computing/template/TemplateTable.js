@@ -25,12 +25,12 @@ const TemplateTable = ({
         ...temp,
         cluster: (
           <TableRowClick type="cluster" id={temp.clusterVo.id}>
-            {temp.clusterVo.name}
+            {temp?.clusterVo?.name}
           </TableRowClick>
         ),
         dataCenter: (
           <TableRowClick type="datacenter" id={temp.dataCenterVo.id}>
-            {temp.dataCenterVo.name}
+            {temp?.dataCenterVo?.name}
           </TableRowClick>
         ),
       }))}

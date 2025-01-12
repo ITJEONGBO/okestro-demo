@@ -299,11 +299,11 @@ const TableColumnsInfo = {
 //---------------------------
     // 템플릿
   NICS_FROM_TEMPLATES: [
-    { header: '', accessor: 'icon', clickable: false, width: '7%' },
+    { header: '', accessor: 'status', clickable: false, width: '7%' },
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '연결됨', accessor: 'checkbox', clickable: true},
-    { header: '네트워크 이름', accessor: 'networkVo', clickable: false },
-    { header: '프로파일 이름', accessor: 'vnicProfileVo', clickable: false },
+    { header: '연결됨', accessor: 'plugged', clickable: true},
+    { header: '네트워크 이름', accessor: 'network', clickable: false },
+    { header: '프로파일 이름', accessor: 'vnicProfile', clickable: false },
     { header: '링크 상태', accessor: 'linked', clickable: false },
     { header: '유형', accessor: 'interface_', clickable: false },
   ],
@@ -328,14 +328,14 @@ const TableColumnsInfo = {
 
   DISK_SNAPSHOT_FROM_STORAGE_DOMAIN: [
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '디스크 별칭', accessor: 'alias', clickable: false },
-    { header: '생성 일자', accessor: 'snapshotCreationDate', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
-    { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
-    { header: '인터페이스', accessor: 'interface', clickable: false },
-    { header: '유형', accessor: 'type', clickable: false },
+    { header: '디스크 별칭', accessor: 'alias', clickable: false },
+    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    // { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
+    { header: '연결 대상', accessor: 'connectVm', clickable: false },
+    // { header: '유형', accessor: 'type', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
-    { header: '디스크 스냅샷 ID', accessor: 'diskSnapshotId', clickable: false },
+    { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false },
   ],
   
   SNAPSHOT_DISK_FROM_VM: [

@@ -10,10 +10,10 @@ import TemplateGeneral from './TemplateGeneral';
 import TemplateVms from './TemplateVms';
 import TemplateEvents from './TemplateEvents';
 import TemplateNics from './TemplateNics';
-import TmplateDisks from './TmplateDisks';
+import TemplateDisks from './TemplateDisks';
 import TemplateStorage from './TemplateStorage';
-import TemplateEditModal from './modal/TemplateEditModal'; // Import TemplateEditModal
 
+const TemplateEditModal = React.lazy(() => import('./modal/TemplateEditModal'));
 const TemplateDeleteModal = React.lazy(() => import('./modal/TemplateDeleteModal'));
 
 const TemplateInfo = () => {
@@ -50,20 +50,20 @@ const TemplateInfo = () => {
     setActiveTab(section || 'general');
   }, [section]);
   
-  const pathData = [template?.name, sections.find((section) => section.id === activeTab)?.label];
-
   const handleTabClick = (tab) => {
     const path = tab === 'general' ? `/computing/templates/${templateId}` : `/computing/templates/${templateId}/${tab}`;
     navigate(path);
     setActiveTab(tab);
   };
 
+  const pathData = [template?.name, sections.find((section) => section.id === activeTab)?.label];
+
   const renderSectionContent = () => {
     const SectionComponent = {
       general: TemplateGeneral,
       vms: TemplateVms,
       nics: TemplateNics,
-      disks: TmplateDisks,
+      disks: TemplateDisks,
       storageDomains: TemplateStorage,
       events: TemplateEvents,
     }[activeTab];
@@ -107,13 +107,13 @@ const TemplateInfo = () => {
           activeSection={activeTab}
           handleSectionClick={handleTabClick}
         />
-        <div className="host_btn_outer">
+        <div className="host-btn-outer">
           <Path pathElements={pathData} />
           {renderSectionContent()}
         </div>
       </div>
 
-      {/* vnicprofile 모달창 */}
+      {/* template 모달창 */}
       { renderModals() }
       <Footer />
     </div>

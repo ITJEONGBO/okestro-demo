@@ -386,12 +386,10 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<SnapshotDiskVo> {
 		log.info("findAllDiskSnapshotsFromStorageDomain ... storageDomainId: {}", storageDomainId)
-
 		val diskSnapshots: List<DiskSnapshot> = conn.findAllDiskSnapshotsFromStorageDomain(storageDomainId)
 			.getOrDefault(listOf())
 
-		val allVms: List<Vm> = conn.findAllVms(follow = "snapshots")
-			.getOrDefault(listOf())
+		val allVms: List<Vm> = conn.findAllVms(follow = "snapshots").getOrDefault(listOf())
 
 		val res = diskSnapshots.filter { diskSnapshot ->
 			allVms.any { vm ->

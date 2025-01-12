@@ -1,15 +1,15 @@
 import React from 'react';
+import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import Footer from '../../../components/footer/Footer';
 import HeaderButton from '../../../components/button/HeaderButton';
 import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
 import { useAllDisks } from '../../../api/RQHook';
 import DiskDupl from './DiskDupl';
-import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 
 const AllDisk = () => {
   const { 
-    data: disks,
-  } = useAllDisks((e) => ({...e,}));
-
+    data: disks = [], isLoading
+} = useAllDisks((e) => ({...e,}));
 
   return (
     <div id="section">
@@ -17,18 +17,16 @@ const AllDisk = () => {
         <HeaderButton
           titleIcon={faDatabase}
           title="디스크"
-          subtitle=""
-          buttons={[]} 
-          popupItems={[]}
         />
+        </div>
         <div className="host-btn-outer">
           <DiskDupl 
             columns={TableColumnsInfo.DISKS}
-            disks={disks || []}          
+            disks={disks}          
           />
         </div>
+        <Footer/>
       </div>
-    </div>
   );
 };
 

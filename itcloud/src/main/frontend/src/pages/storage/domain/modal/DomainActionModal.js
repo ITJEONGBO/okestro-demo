@@ -11,24 +11,15 @@ import {
   useMaintenanceDomain
 } from '../../../../api/RQHook';
 
-const DomainActionModal = ({ 
-    isOpen, 
-    action,
-    onRequestClose, 
-    contentLabel,
-    data,
-    type,
-    datacenterId
-}) => {
-  
+// 도메인에서 실행하는 거지만 데이터센터
+const DomainActionModal = ({ action, data, datacenterId, onClose }) => {
+  // action으로 type 전달
   const { mutate: activateDomain } = useActivateDomain();
   const { mutate: attachDomain } = useAttachDomain();
   const { mutate: detachDomain } = useDetachDomain();
   const { mutate: maintenanceDomain } = useMaintenanceDomain();
   const { mutate: destroyDomain } = useDestroyDomain();
 
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -70,10 +61,10 @@ const DomainActionModal = ({
       { domainId: id, dataCenterId: datacenterId }, 
       {
         onSuccess: () => {
-          onRequestClose(); // 삭제 성공 시 모달 닫기
+          onClose(); // 삭제 성공 시 모달 닫기
         },
         onError: (error) => {
-          console.error(`${contentLabel} ${name} 액션 오류:`, error);
+          console.error(`${action} ${name} 액션 오류:`, error);
         },
       }
     );
@@ -82,17 +73,17 @@ const DomainActionModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      contentLabel={`${contentLabel}`}
+      isOpen={true}
+      onRequestClose={onClose}
+      contentLabel={`${action}`}
       className="Modal"
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_delete_popup">
-        <div className="popup-header">
-          <h1> 스토리지 도메인 {contentLabel}</h1>
-          <button onClick={onRequestClose}>
+        <div className="popup_header">
+          <h1> 스토리지 도메인 {action}</h1>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -100,14 +91,14 @@ const DomainActionModal = ({
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data.name} 를(을) {contentLabel} 하시겠습니까? {datacenterId}</span>
+            <span> {data.name} 를(을) {action} 하시겠습니까? {datacenterId}</span>
           </div>
         </div>
 
         <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

@@ -5,7 +5,6 @@ import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TableRowClick from "../../../components/table/TableRowClick";
 import { formatBytesToMB, renderUpDownStatusIcon, renderVmStatusIcon } from "../../../utils/format";
 
-
 // const 
 
 const NetworkVms = ({ networkId }) => {
@@ -46,7 +45,7 @@ const NetworkVms = ({ networkId }) => {
         </button>
       </div>
 
-      <span>id = {selectedIds || '선택된 항목이 없습니다.'}</span>
+      <span>id = {selectedIds || ''}</span>
 
       <TablesOuter
         columns={

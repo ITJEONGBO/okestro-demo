@@ -8,9 +8,9 @@ const DomainModals = ({
   datacenterId,
   selectedDomains
 }) => {
-  const DomainModal = React.lazy(() => import('./DomainModal'));
-  const DomainDeleteModal = React.lazy(() => import('./DomainDeleteModal'));
-  const DomainActionModal = React.lazy(() => import('./DomainActionModal'));
+  const DomainModal = React.lazy(() => import('../../pages/storage/domain/modal/DomainModal'));
+  const DomainDeleteModal = React.lazy(() => import('../../pages/storage/domain/modal/DomainDeleteModal'));
+  const DomainActionModal = React.lazy(() => import('../../pages/storage/domain/modal/DomainActionModal'));
 
   if (!isModalOpen || !action) return null;
 

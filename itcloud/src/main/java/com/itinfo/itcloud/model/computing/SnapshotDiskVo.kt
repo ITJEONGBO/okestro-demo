@@ -92,7 +92,7 @@ fun List<Disk>.toSnapshotDisksIdName(): List<SnapshotDiskVo> =
     this@toSnapshotDisksIdName.map { it.toSnapshotDiskIdName() }
 
 
-fun Disk.toSnapshotDiskVo(): SnapshotDiskVo {
+fun DiskSnapshot.toSnapshotDiskVo(): SnapshotDiskVo {
     return SnapshotDiskVo.builder {
         id { this@toSnapshotDiskVo.id() }
         name { this@toSnapshotDiskVo.name() }
@@ -112,5 +112,29 @@ fun Disk.toSnapshotDiskVo(): SnapshotDiskVo {
         wipeAfterDelete { this@toSnapshotDiskVo.wipeAfterDelete() }
     }
 }
-fun List<Disk>.toSnapshotDiskVos(): List<SnapshotDiskVo> =
+fun List<DiskSnapshot>.toSnapshotDiskVos(): List<SnapshotDiskVo> =
     this@toSnapshotDiskVos.map { it.toSnapshotDiskVo() }
+
+fun Disk.toSnapshotDiskVoFromVm(): SnapshotDiskVo {
+    val disk = this@toSnapshotDiskVoFromVm
+    return SnapshotDiskVo.builder {
+        id { disk.id() }
+        name { disk.name() }
+        description { disk.description() }
+        alias { disk.alias() }
+        backup { disk.backup() }
+        contentType { disk.contentType() }
+        format { disk.format() }
+        imageId { disk.imageId()}
+        propagateErrors { disk.propagateErrors() }
+        actualSize { disk.actualSize() }
+        provisionedSize { disk.provisionedSize() }
+        shareable { disk.shareable() }
+        sparse { disk.sparse() }
+        status { disk.status() }
+        storageType { disk.storageType() }
+        wipeAfterDelete { disk.wipeAfterDelete() }
+    }
+}
+fun List<Disk>.toSnapshotDiskVoFromVms(): List<SnapshotDiskVo> =
+    this@toSnapshotDiskVoFromVms.map { it.toSnapshotDiskVoFromVm() }

@@ -90,16 +90,8 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
           memoryUsage: host?.usageDto.memoryPercent === null ? '' : host?.usageDto.memoryPercent + '%',
           cpuUsage: host?.usageDto.cpuPercent === null ? '' : host?.usageDto.cpuPercent + '%',
           networkUsage: host?.usageDto.networkPercent === null ? '' : host?.usageDto.networkPercent + '%',
-          cluster: (
-            <TableRowClick type="cluster" id={host.clusterVo.id}>
-              {host?.clusterVo?.name}
-            </TableRowClick>
-          ),
-          dataCenter: (
-            <TableRowClick type="datacenter" id={host.dataCenterVo.id}>
-              {host?.dataCenterVo?.name}
-            </TableRowClick>
-          ),
+          cluster: <TableRowClick type="cluster" id={host.clusterVo.id}>{host?.clusterVo?.name}</TableRowClick>,
+          dataCenter: <TableRowClick type="datacenter" id={host.dataCenterVo.id}>{host?.dataCenterVo?.name}</TableRowClick>,
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(selectedRows) => setSelectedHosts(selectedRows)}
