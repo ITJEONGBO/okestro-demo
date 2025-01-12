@@ -24,27 +24,23 @@ const ClusterDupl = ({ clusters = [], columns, datacenterId }) => {
   const renderModals = () => (
     <>
       <Suspense fallback={<div>Loading...</div>}>
-        {activeModal === 'create' && (
-          <ClusterModal            
-            cId={Array.isArray(selectedClusters) && selectedClusters.length === 1 ? selectedClusters[0].id : null}
-            dcId={datacenterId}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'edit' && (
-          <ClusterModal
-            editMode
-            cId={Array.isArray(selectedClusters) && selectedClusters.length === 1 ? selectedClusters[0].id : null}
-            dcId={datacenterId}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'delete' && (
-          <ClusterDeleteModal
-            data={selectedClusters}
-            onClose={closeModal}
-          />
-        )}
+        <ClusterModal
+          isOpen={activeModal === 'create'}
+          dcId={datacenterId}
+          onClose={closeModal}
+        />
+        <ClusterModal
+          isOpen={activeModal === 'edit'}
+          editMode
+          cId={selectedClusters[0]?.id}
+          dcId={datacenterId}
+          onClose={closeModal}
+        />
+        <ClusterDeleteModal
+          isOpen={activeModal === 'delete'}
+          data={selectedClusters}
+          onClose={closeModal}
+        />
       </Suspense>
     </>
   );

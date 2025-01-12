@@ -23,37 +23,32 @@ const DiskDupl = ({ disks = [], columns = [] }) => {
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'create' && (
-        <DiskModal
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'edit' && (
-        <DiskModal
-          editMode
-          diskId={selectedDisks[0]?.id}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'upload' && (
-        <DiskUploadModal
-          diskId={selectedDisks[0]?.id}
-          onClose={closeModal}
-        />
-      )}
-      {['move', 'copy'].includes(activeModal) && (
-        <DiskActionModal
-          action={activeModal} // `type` 전달
-          disk={selectedDisks?.[0]}
-          onRequestClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <DiskDeleteModal
-          data={selectedDisks}
-          onClose={closeModal}
-        />
-      )}
+      <DiskModal
+        isOpen={activeModal === 'create'}
+        onClose={closeModal}
+      />
+      <DiskModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        diskId={selectedDisks[0]?.id}
+        onClose={closeModal}
+      />
+      <DiskUploadModal
+        isOpen={activeModal === 'upload'}
+        diskId={selectedDisks[0]?.id}
+        onClose={closeModal}
+      />
+      <DiskActionModal
+        isOpen={['move', 'copy'].includes(activeModal)}
+        action={activeModal} // `type` 전달
+        disk={selectedDisks?.[0]}
+        onRequestClose={closeModal}
+      />
+      <DiskDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={selectedDisks}
+        onClose={closeModal}
+      />
     </Suspense>
   );
   

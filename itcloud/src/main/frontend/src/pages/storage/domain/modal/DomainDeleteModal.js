@@ -7,7 +7,7 @@ import {
   useDeleteDomain,
 } from '../../../../api/RQHook';
 
-const DomainDeleteModal = ({ onClose, data }) => {
+const DomainDeleteModal = ({ isOpen, onClose, data }) => {
   const [format, setFormat] = useState(false);
   const [hostName, setHostName] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
@@ -66,7 +66,7 @@ const DomainDeleteModal = ({ onClose, data }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel={'스토리지 도메인'}
       className="Modal"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import Modal from 'react-modal';
 import '../css/MCluster.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,7 +21,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
+const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
   const { mutate: addCluster } = useAddCluster();
   const { mutate: editCluster } = useEditCluster();
 
@@ -50,7 +51,7 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
       errorHandling: 'migrate',
     });
     setCpuOptions([]);
-    setDataCenterVoId('');
+    setDataCenterVoId(dcId ||'');
     setNetworkVoId('');
   };
 
@@ -66,15 +67,15 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
   const {
     data: datacenters = [],
     refetch: refetchDatacenters,
-    isLoading: isDatacentersLoading
+    isLoading: isDataCentersLoading
   } = useAllDataCenters((e) => ({...e,}));
 
   // 데이터센터에서 클러스터 생성시 자신의 데이터센터 아이디 넣기
-  const {
-    data: dataCenter,
-    refetch: refetchDataCenter,
-    isLoading: isDataCenterLoading,
-  } = useDataCenter(dcId);
+  // const {
+  //   data: dataCenter,
+  //   refetch: refetchDataCenter,
+  //   isLoading: isDataCenterLoading,
+  // } = useDataCenter(dcId);
 
   // 네트워크 가져오기
   const {
@@ -195,10 +196,10 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
       });
       setDataCenterVoId(cluster?.dataCenterVo?.id);
       setNetworkVoId(cluster?.networkVo?.id);
-    } else if (!editMode && !isDatacentersLoading) {
+    } else if (!editMode && !isDataCentersLoading) {
       resetForm();
     }
-  }, [editMode, cluster, isDataCenterLoading, isDatacentersLoading]);
+  }, [editMode, cluster, isDataCentersLoading]);
 
 
   useEffect(() => {
@@ -240,19 +241,19 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
   
   const validateForm = () => {
     if (!CheckKorenName(formState.name) || !CheckName(formState.name)) {
-      alert('이름이 유효하지 않습니다.');
+      toast.error('이름이 유효하지 않습니다.');
       return false;
     }
     if (!CheckKorenName(formState.description)) {
-      alert('설명이 유효하지 않습니다.');
+      toast.error('설명이 유효하지 않습니다.');
       return false;
     }
     if (!CheckName(dataCenterVoId)) {
-      alert('데이터센터를 선택해주세요.');
+      toast.error('데이터센터를 선택해주세요.');
       return false;
     }
     if (!CheckName(networkVoId)) {
-      alert('네트워크를 선택해주세요.');
+      toast.error('네트워크를 선택해주세요.');
       return false;
     }
     return true;
@@ -280,21 +281,21 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
         clusterData: dataToSubmit 
       }, {
         onSuccess: () => {
-          alert('클러스터 편집 완료');
+          toast.success('클러스터 편집 완료');
           onClose();
         },
         onError: (error) => {
-          console.error('Error editing cluster:', error);
+          toast.error('Error editing cluster:', error);
         }
       });
     } else {
       addCluster(dataToSubmit, {
         onSuccess: () => {
-          alert('클러스터 생성 완료');
+          toast.success('클러스터 생성 완료');
           onClose();
         },
         onError: (error) => {
-          console.error('Error editing cluster:', error);
+          toast.error('Error editing cluster:', error);
         }
       });
     }
@@ -303,7 +304,7 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel={editMode ? '클러스터 편집' : '생성'}
       className="Modal"
@@ -325,7 +326,7 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
               onChange={(e) => setDataCenterVoId(e.target.value)}
               disabled={editMode}
             >
-              {isDataCenterLoading ? (
+              {isDataCentersLoading ? (
                 <option>로딩중~</option>
               ) : (
                 datacenters.map((dc) => (
@@ -342,6 +343,7 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
             <input
               type="text"
               value={formState.name}
+              autoFocus
               onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
             />
           </FormGroup>

@@ -29,7 +29,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const DomainModal = ({ editMode = false, domainId, datacenterId, onClose }) => {
+const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     domainType: 'data', // 기본값 설정
@@ -419,7 +419,7 @@ const DomainModal = ({ editMode = false, domainId, datacenterId, onClose }) => {
   
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="도메인 관리"
       className="Modal"
@@ -523,6 +523,7 @@ const DomainModal = ({ editMode = false, domainId, datacenterId, onClose }) => {
             <input
               type="text"
               value={formState.name}
+              autoFocus
               onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
             />
           </FormGroup>

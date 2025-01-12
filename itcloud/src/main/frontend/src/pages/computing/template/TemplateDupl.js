@@ -21,7 +21,6 @@ const TemplateDupl = ({
 
   const selectedIds = (Array.isArray(selectedTemplates) ? selectedTemplates : []).map((template) => template.id).join(', ');
 
-
   const renderSection = () => (
     <div id="section">
       <HeaderButton
@@ -57,7 +56,7 @@ const TemplateDupl = ({
       </div>
     </div>
   );
-  console.log('TemplateModals로 전달된 selectedTemplate:', selectedTemplates.length > 0 ? selectedTemplates[0] : null);
+  
   if (type === 'rutil') {
     return renderSection();
   } else {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import { toast } from 'react-hot-toast';
 import '../css/MDatacenter.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +11,7 @@ import {
 } from '../../../../api/RQHook'
 import { CheckKorenName, CheckName } from '../../../../utils/CheckName';
 
-const DataCenterModal = ({ editMode = false, dcId, onClose }) => {
+const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
   const { mutate: addDataCenter } = useAddDataCenter();
   const { mutate: editDataCenter } = useEditDataCenter();
 
@@ -57,11 +58,11 @@ const DataCenterModal = ({ editMode = false, dcId, onClose }) => {
 
   const validateForm = () => {
     if (!CheckKorenName(formState.name) || !CheckName(formState.name)) {
-      alert('이름이 유효하지 않습니다.');
+      toast.error('이름이 유효하지 않습니다.');
       return false;
     }
     if (!CheckKorenName(formState.description)) {
-      alert('설명이 유효하지 않습니다.');
+      toast.error('설명이 유효하지 않습니다.');
       return false;
     }
     return true;
@@ -84,21 +85,21 @@ const DataCenterModal = ({ editMode = false, dcId, onClose }) => {
         dataCenterData: dataToSubmit   // 수정할 데이터
       }, {
         onSuccess: () => {
-          alert("데이터센터 편집 완료(alert기능구현)")
+          toast.success("데이터센터 편집 완료")
           onClose();  // 성공 시 모달 닫기
         },
         onError: (error) => {
-          console.error('Error editing data center:', error);
+          toast.error('Error editing data center:', error);
         }
       });
     } else {
       addDataCenter(dataToSubmit, {
         onSuccess: () => {
-          alert("데이터센터 생성 완료(alert기능구현)")
+          toast.success("데이터센터 생성 완료")
           onClose();
         },
         onError: (error) => {
-          console.error('Error adding data center:', error);
+          toast.error('Error adding data center:', error);
         }
       });
     }
@@ -106,7 +107,7 @@ const DataCenterModal = ({ editMode = false, dcId, onClose }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel={editMode ? '데이터 센터 편집' : '새로 만들기'}
       className="Modal"
@@ -127,6 +128,7 @@ const DataCenterModal = ({ editMode = false, dcId, onClose }) => {
             <input
               type="text"
               value={formState.name}
+              autoFocus
               onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
             />
           </div>

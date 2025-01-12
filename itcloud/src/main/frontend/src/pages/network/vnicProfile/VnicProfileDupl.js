@@ -7,7 +7,7 @@ import TableRowClick from '../../../components/table/TableRowClick.js';
 const VnicProfileModal = React.lazy(() => import('./modal/VnicProfileModal'));
 const VnicProfileDeleteModal = React.lazy(() => import('./modal/VnicProfileDeleteModal'));
 
-const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
+const VnicProfileDupl = ({ isOpen, vnicProfiles = [], columns = [], networkId }) => {
   const navigate = useNavigate();
   
   const [activeModal, setActiveModal] = useState(null);
@@ -21,24 +21,21 @@ const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'create' && (
-        <VnicProfileModal
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'edit' && (
-        <VnicProfileModal
-          editMode
-          vnicProfileId={selectedVnicProfiles[0].id}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <VnicProfileDeleteModal
-          data={selectedVnicProfiles}
-          onClose={closeModal}
-        />
-      )}
+      <VnicProfileModal
+        isOpen={activeModal === 'create'}
+        onClose={closeModal}
+      />
+      <VnicProfileModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        vnicProfileId={selectedVnicProfiles[0].id}
+        onClose={closeModal}
+      />
+      <VnicProfileDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={selectedVnicProfiles}
+        onClose={closeModal}
+      />
     </Suspense>
   );
 

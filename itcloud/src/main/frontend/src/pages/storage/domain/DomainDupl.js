@@ -23,38 +23,32 @@ const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', datacen
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'create' && (
-        <DomainModal
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'edit' && (
-        <DomainModal
-          editMode
-          domainId={selectedDomains[0]?.id || null}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'import' && (
-        <DomainModal
-          editMode
-          domainId={selectedDomains[0]?.id || null}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <DomainDeleteModal
-          data={selectedDomains}
-          onClose={closeModal}
-        />
-      )}
-      {['attach', 'detach', 'activate', 'maintenance'].includes(activeModal) && (
-        <DomainActionModal
-          action={activeModal} // `type` 전달
-          data={selectedDomains}
-          onClose={closeModal}
-        />
-      )}
+      <DomainModal
+        isOpen={activeModal === 'create'}
+        onClose={closeModal}
+      />
+      <DomainModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        domainId={selectedDomains[0]?.id || null}
+        onClose={closeModal}
+      />
+      <DomainModal
+        isOpen={activeModal === 'import'}
+        domainId={selectedDomains[0]?.id || null}
+        onClose={closeModal}
+      />
+      <DomainDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={selectedDomains}
+        onClose={closeModal}
+      />
+      <DomainActionModal
+        isOpen={['attach', 'detach', 'activate', 'maintenance'].includes(activeModal)}
+        action={activeModal} // `type` 전달
+        data={selectedDomains}
+        onClose={closeModal}
+      />
     </Suspense>
   );
   

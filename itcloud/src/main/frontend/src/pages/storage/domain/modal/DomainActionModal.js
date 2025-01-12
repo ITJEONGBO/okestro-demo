@@ -12,7 +12,7 @@ import {
 } from '../../../../api/RQHook';
 
 // 도메인에서 실행하는 거지만 데이터센터
-const DomainActionModal = ({ action, data, datacenterId, onClose }) => {
+const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
   // action으로 type 전달
   const { mutate: activateDomain } = useActivateDomain();
   const { mutate: attachDomain } = useAttachDomain();
@@ -28,7 +28,6 @@ const DomainActionModal = ({ action, data, datacenterId, onClose }) => {
     if (data) {
       setId(data.id || '');
       setName(data.name || '');
-      console.log('**' + data.id);
     }
   }, [data]);
 
@@ -73,7 +72,7 @@ const DomainActionModal = ({ action, data, datacenterId, onClose }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel={`${action}`}
       className="Modal"

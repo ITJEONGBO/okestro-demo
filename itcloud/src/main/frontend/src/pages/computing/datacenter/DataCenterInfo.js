@@ -84,23 +84,19 @@ const DataCenterInfo = () => {
   ];
 
   const renderModals = () => (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        {activeModal === 'edit' && (
-          <DataCenterModal
-            editMode
-            dcId={dataCenterId}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'delete' && (
-          <DataCenterDeleteModal
-            data={dataCenter}
-            onClose={closeModal}
-          />
-        )}
-      </Suspense>
-    </>
+    <Suspense fallback={<div>Loading...</div>}>
+      <DataCenterModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        dcId={dataCenterId}
+        onClose={closeModal}
+      />
+      <DataCenterDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={dataCenter}
+        onClose={closeModal}
+      />
+    </Suspense>
   );
 
   return (

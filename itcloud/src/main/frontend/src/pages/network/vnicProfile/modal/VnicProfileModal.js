@@ -19,7 +19,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose }) => {
+const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     name: '',
@@ -169,7 +169,7 @@ const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose 
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel={editMode ? 'vNIC 프로파일 편집' : '새로 만들기'}
       className="Modal"
@@ -229,6 +229,7 @@ const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose 
               <input
                 type="text"
                 value={formState.name}
+                autoFocus
                 onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
               />
             </FormGroup>

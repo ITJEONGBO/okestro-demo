@@ -5,7 +5,7 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import { useNavigate } from 'react-router-dom';
 import { useDeleteDisk } from '../../../../api/RQHook';
 
-const DiskDeleteModal = ({ onClose, data }) => {
+const DiskDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
   const [ids, setIds] = useState([]);
   const [alias, setAlias] = useState([]);
@@ -46,7 +46,7 @@ const DiskDeleteModal = ({ onClose, data }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       className="Modal"
       overlayClassName="Overlay"

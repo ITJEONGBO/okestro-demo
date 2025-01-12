@@ -21,30 +21,26 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'create' && (
-        <NetworkModal
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'edit' && (
-        <NetworkModal
-          editMode
-          networkId={selectedNetworks[0]?.id}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'import' && (
-        <NetworkImportModal
-          networkId={selectedNetworks[0]?.id}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <NetworkDeleteModal
-          data={selectedNetworks}
-          onClose={closeModal}
-        />
-      )}
+      <NetworkModal
+        isOpen={activeModal === 'create'}
+        onClose={closeModal}
+      />
+      <NetworkModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        networkId={selectedNetworks[0]?.id}
+        onClose={closeModal}
+      />
+      <NetworkImportModal
+        isOpen={activeModal === 'import'}
+        networkId={selectedNetworks[0]?.id}
+        onClose={closeModal}
+      />
+      <NetworkDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={selectedNetworks}
+        onClose={closeModal}
+      />
     </Suspense>
   );
 
@@ -66,11 +62,7 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
           //   </TableRowClick>,
           vlan: network?.vlan === 0 ? '-' : network?.vlan,
           mtu: network?.mtu === 0 ? '기본값(1500)' : network?.mtu,
-          datacenter: (
-            <TableRowClick type="datacenter" id={network?.datacenterVo.id}>
-              {network?.datacenterVo.name}
-            </TableRowClick>
-          ),
+          datacenter: <TableRowClick type="datacenter" id={network?.datacenterVo?.id}>{network?.datacenterVo?.name}</TableRowClick>,
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(selectedRows) => setSelectedNetworks(selectedRows)}
@@ -78,14 +70,6 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
         onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true} // 다중 선택 활성화
       />
-
-      {/* <NetworkTable
-        columns={columns}
-        networks={networks}
-        setSelectedNetworks={(selected) => {
-          if (Array.isArray(selected)) setSelectedNetworks(selected); // 유효한 선택만 반영
-        }}
-      /> */}
 
       {/* 네트워크 모달창 */}
       { renderModals() }

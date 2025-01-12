@@ -8,11 +8,7 @@ import {
   useRestartHost
 } from '../../../../api/RQHook';
 
-const HostActionModal = ({
-    action,
-    onRequestClose, 
-    host
-}) => {
+const HostActionModal = ({ isOpen, action, onRequestClose, host }) => {
   const { mutate: deactivateHost } = useDeactivateHost();
   const { mutate: activateHost } = useActivateHost();
   const { mutate: restartHost } = useRestartHost();
@@ -99,7 +95,7 @@ const HostActionModal = ({
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel={getContentLabel(action)}
       className="Modal"

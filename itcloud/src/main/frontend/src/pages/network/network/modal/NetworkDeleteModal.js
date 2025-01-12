@@ -5,7 +5,7 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import { useNavigate } from 'react-router-dom';
 import { useDeleteNetwork } from '../../../../api/RQHook';
 
-const NetworkDeleteModal = ({ onClose, data }) => {
+const NetworkDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
   const [ids, setIds] = useState([]);
   const [names, setNames] = useState([]);
@@ -46,7 +46,7 @@ const NetworkDeleteModal = ({ onClose, data }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       className="Modal"
       overlayClassName="Overlay"

@@ -25,34 +25,30 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'create' && (
-        <HostModal
-          clusterId={clusterId}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'edit' && (
-        <HostModal
-          editMode
-          hId={selectedHosts[0]?.id || null}
-          clusterId={clusterId}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <HostDeleteModal
+      <HostModal
+        isOpen={activeModal === 'create'}
+        clusterId={clusterId}
+        onClose={closeModal}
+      />
+      <HostModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        hId={selectedHosts[0]?.id || null}
+        clusterId={clusterId}
+        onClose={closeModal}
+      />
+      <HostDeleteModal
+        isOpen={activeModal === 'delete'}
         data={selectedHosts}
         onClose={closeModal}
-        />
-      )}
-      {['deactivate', 'activate', 'restart', 'reInstall', 'register', 'haOn', 'haOff'].includes(activeModal) && (
-        <HostActionModal
-          action={activeModal} // `type` 전달
-          host={selectedHosts?.[0]}
-          onRequestClose={closeModal}
-        />
-      )}
-    </Suspense>
+      />
+      <HostActionModal
+        isOpen={['deactivate', 'activate', 'restart', 'reInstall', 'register', 'haOn', 'haOff'].includes(activeModal)}
+        action={activeModal} // `type` 전달
+        host={selectedHosts?.[0]}
+        onRequestClose={closeModal}
+      />
+  </Suspense>
   );
 
   return (

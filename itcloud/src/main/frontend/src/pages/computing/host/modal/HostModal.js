@@ -10,7 +10,7 @@ import {
   useAllClusters,
 } from '../../../../api/RQHook';
 
-const HostModal = ({ editMode = false, hId, clusterId, onClose }) => {
+const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     name: '',
@@ -146,7 +146,7 @@ const HostModal = ({ editMode = false, hId, clusterId, onClose }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel={editMode ? '호스트 편집' : '새로 만들기'}
       className="Modal"
@@ -188,6 +188,7 @@ const HostModal = ({ editMode = false, hId, clusterId, onClose }) => {
               <input
                 type="text"
                 id="name"
+                autoFocus
                 value={formState.name}
                 onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
               />

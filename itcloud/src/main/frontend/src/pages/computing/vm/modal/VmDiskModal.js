@@ -21,7 +21,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', onClose }) => {
+const VmDiskModal = ({ isOpen, editMode = false, diskId, vmId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     size: '',
@@ -591,4 +591,4 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
   );
 };
 
-export default DiskModal;
+export default VmDiskModal;

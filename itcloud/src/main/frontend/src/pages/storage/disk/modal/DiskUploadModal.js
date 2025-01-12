@@ -25,10 +25,7 @@ const onlyFileName = (fileName) => {
   return lastDotIndex > 0 ? fileName.slice(0, lastDotIndex) : fileName;
 };
 
-const DiskUploadModal = ({
-  isOpen,
-  onRequestClose,
-}) => {
+const DiskUploadModal = ({ isOpen, onRequestClose }) => {
   const [file, setFile] = useState(null);
   const [alias, setAlias] = useState('');
   const [size, setSize] = useState('');

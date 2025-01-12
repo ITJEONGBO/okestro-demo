@@ -5,15 +5,11 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import Tables from '../../../../components/table/Tables';
 import '../css/MNetwork.css';
 
-const NetworkImportModal = ({ 
-    isOpen, 
-    onClose, 
-    onSubmit 
-}) => {
+const NetworkImportModal = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="가져오기"
       className="Modal"

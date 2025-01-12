@@ -1,4 +1,5 @@
 import React, { Suspense, useState } from 'react';
+import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import TablesOuter from '../../../components/table/TablesOuter';
 import DataCenterActionButtons from './button/DataCenterActionButtons';
@@ -6,6 +7,8 @@ import { renderDataCenterStatus, renderDatacenterStatusIcon } from '../../../uti
 
 const DataCenterModal = React.lazy(() => import('./modal/DataCenterModal'));
 const DataCenterDeleteModal = React.lazy(() => import('./modal/DataCenterDeleteModal'));
+
+Modal.setAppElement('#root');
 
 const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
   const navigate = useNavigate();
@@ -24,25 +27,21 @@ const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'create' && (
-        <DataCenterModal            
-          dcId={Array.isArray(selectedDataCenters) && selectedDataCenters.length === 1 ? selectedDataCenters[0].id : null}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'edit' && (
-        <DataCenterModal
-          editMode
-          dcId={Array.isArray(selectedDataCenters) && selectedDataCenters.length === 1 ? selectedDataCenters[0].id : null}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <DataCenterDeleteModal
-          data={selectedDataCenters}
-          onClose={closeModal}
-        />
-      )}
+      <DataCenterModal
+        isOpen={activeModal === 'create'}
+        onClose={closeModal}
+      />
+      <DataCenterModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        dcId={selectedDataCenters[0]?.id}
+        onClose={closeModal}
+      />
+      <DataCenterDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={selectedDataCenters}
+        onClose={closeModal}
+      />
     </Suspense>
   );
 

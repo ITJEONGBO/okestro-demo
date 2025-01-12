@@ -18,7 +18,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const NetworkModal = ({ editMode = false, networkId, onClose }) => {
+const NetworkModal = ({ isOpen, editMode = false, networkId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     name: '',
@@ -60,44 +60,43 @@ const NetworkModal = ({ editMode = false, networkId, onClose }) => {
   
 
   useEffect(() => {
-    console.log("네트워크 데이터:", network);
-  
     if (editMode && network) {
-      setFormState({
-        id: network.id || '',
-        name: network.name || '',
-        description: network.description || '',
-        comment: network.comment || '',
-        portIsolation: false,
-        mtu: network.mtu || '0',
-        vlan: network.vlan || '0',
-        usageVm: network.usage.vm || true,
-      });
-      setDataCenterVoId(network.datacenterVo?.id || '');
-    } else if (!editMode && !isDatacentersLoading) {
-      resetForm();
+      setFormState((prev) => ({
+        ...prev,
+        id: network?.id || '',
+        name: network?.name || '',
+        description: network?.description || '',
+        comment: network?.comment || '',
+        mtu: network?.mtu || '0',
+        vlan: network?.vlan || '0',
+        usageVm: network?.usage?.vm || true,
+      }));
+      setDataCenterVoId((prevId) => prevId || network?.datacenterVo?.id || '');
     }
   }, [editMode, network]);
+  
 
 
   useEffect(() => {
-    if (!editMode && datacenters && datacenters.length > 0) {
+    if (!editMode && datacenters.length > 0 && !dataCenterVoId) {
       setDataCenterVoId(datacenters[0].id);
     }
-  }, [datacenters, editMode]);
+  }, [datacenters, editMode, dataCenterVoId]);
+  
     
 
   useEffect(() => {
-    if (clusters) {
-      setClusterVoList(
-        clusters.map((cluster) => ({
+    if (clusters && clusters.length > 0) {
+      setClusterVoList((prev) => 
+        clusters.map((cluster, index) => ({
           ...cluster,
-          isConnected: true, // 처음엔 모두 연결 상태로 설정
-          isRequired: true, // 처음엔 모두 필수 상태로 설정되지 않음
+          isConnected: prev[index]?.isConnected ?? true,
+          isRequired: prev[index]?.isRequired ?? false,
         }))
       );
     }
   }, [clusters]);
+  
   
   const resetForm = () => {
     setFormState({
@@ -182,7 +181,7 @@ const NetworkModal = ({ editMode = false, networkId, onClose }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel={editMode ? '논리 네트워크 수정' : '새로 만들기'}
       className="Modal"
@@ -223,6 +222,7 @@ const NetworkModal = ({ editMode = false, networkId, onClose }) => {
               <input
                 type="text"
                 value={formState.name}
+                autoFocus
                 onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
               />
               {/* <FontAwesomeIcon

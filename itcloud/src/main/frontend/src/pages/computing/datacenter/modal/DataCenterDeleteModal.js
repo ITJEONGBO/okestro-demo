@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import { toast } from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteDataCenter } from '../../../../api/RQHook';
 
-const DataCenterDeleteModal = ({ onClose, data }) => {
+const DataCenterDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
   const [ids, setIds] = useState([]);
   const [names, setNames] = useState([]);
@@ -33,11 +34,13 @@ const DataCenterDeleteModal = ({ onClose, data }) => {
       deleteDataCenter(datacenterId, {
         onSuccess: () => {
           if (ids.length === 1 || index === ids.length - 1) { // 마지막 데이터센터 삭제 후 이동
+            toast.success("데이터센터 삭제 완료")
             onClose(); // Modal 닫기
             navigate('/computing/rutil-manager/datacenters');
           }
         },
         onError: (error) => {
+          // toast.error("데이터센터 삭제 실패")
           console.error(`데이터센터 삭제 오류:`, error);
         },
       });
@@ -46,14 +49,14 @@ const DataCenterDeleteModal = ({ onClose, data }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       className="Modal"
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_delete_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>데이터센터 삭제</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -67,7 +70,7 @@ const DataCenterDeleteModal = ({ onClose, data }) => {
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
           <button onClick={onClose}>취소</button>

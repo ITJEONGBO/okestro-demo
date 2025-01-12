@@ -5,7 +5,7 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import { useNavigate } from 'react-router-dom';
 import { useDeleteCluster } from '../../../../api/RQHook';
 
-const ClusterDeleteModal = ({ onClose, data }) => {
+const ClusterDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
   const [ids, setIds] = useState([]);
   const [names, setNames] = useState([]);
@@ -46,7 +46,7 @@ const ClusterDeleteModal = ({ onClose, data }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       className="Modal"
       overlayClassName="Overlay"

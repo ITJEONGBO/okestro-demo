@@ -14,15 +14,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const DiskActionModal = ({
-  isOpen,
-  onRequestClose,
-  action,
-  diskId,
-  vmId,
-  type='disk',
-  onDiskCreated
-}) => {
+const DiskActionModal = ({ isOpen, action, diskId, vmId, type='disk', onDiskCreated, onClose }) => {
 
   const handleFormSubmit = () => {
     // const error = validateForm();
@@ -71,7 +63,7 @@ const DiskActionModal = ({
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={onClose}
       contentLabel={action === 'move' ? '디스크 이동' : '디스크 복사'}
       className="Modal"
       overlayClassName="Overlay newRolePopupOverlay"
@@ -80,7 +72,7 @@ const DiskActionModal = ({
       <div className="disk_move_popup">
         <div className="popup-header">
           <h1>{action === 'move' ? '디스크 이동' : '디스크 복사'}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth/>
           </button>
         </div>
@@ -123,7 +115,7 @@ const DiskActionModal = ({
           <button onClick={handleFormSubmit}>
             {action === 'move' ? '이동' : '복사'}
           </button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>
