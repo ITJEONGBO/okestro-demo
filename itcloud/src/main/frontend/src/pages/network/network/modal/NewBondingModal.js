@@ -17,7 +17,7 @@ const NewBondingModal = ({ isOpen, onClose, mode = 'edit' }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="network-bonding-modal">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>{modalTitle}</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -43,7 +43,7 @@ const NewBondingModal = ({ isOpen, onClose, mode = 'edit' }) => {
 
 
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button>OK</button>
           <button onClick={onClose}>취소</button>

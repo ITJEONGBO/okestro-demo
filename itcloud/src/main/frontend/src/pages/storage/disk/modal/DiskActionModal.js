@@ -78,7 +78,7 @@ const DiskActionModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="disk_move_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>{action === 'move' ? '디스크 이동' : '디스크 복사'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth/>
@@ -119,7 +119,7 @@ const DiskActionModal = ({
           </table>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleFormSubmit}>
             {action === 'move' ? '이동' : '복사'}
           </button>

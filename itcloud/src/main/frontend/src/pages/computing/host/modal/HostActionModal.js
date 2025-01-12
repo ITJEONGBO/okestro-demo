@@ -107,7 +107,7 @@ const HostActionModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_delete_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>호스트 {getContentLabel(action)}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -121,7 +121,7 @@ const HostActionModal = ({
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
           <button onClick={onRequestClose}>취소</button>

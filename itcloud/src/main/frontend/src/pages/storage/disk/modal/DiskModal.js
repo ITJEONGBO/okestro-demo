@@ -308,7 +308,7 @@ const DiskModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_disk_new_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>{editMode ? '디스크 편집' : '새 디스크 생성'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth/>
@@ -590,7 +590,7 @@ const DiskModal = ({
             </div>
           </div>
         )}
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

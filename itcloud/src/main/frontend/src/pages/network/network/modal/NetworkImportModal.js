@@ -20,8 +20,8 @@ const NetworkImportModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="network_bring_popup">
-        <div className="popup_header">
+      <div className="network-bring-popup">
+        <div className="popup-header">
           <h1>네트워크 가져오기</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -35,7 +35,7 @@ const NetworkImportModal = ({
           </select>
         </div>
 
-        <div id="network_bring_table_outer">
+        <div className="network-bring-table-outer">
           <span className="font-bold">공급자 네트워크</span>
           <div>
             <Tables
@@ -51,7 +51,7 @@ const NetworkImportModal = ({
           </div>
         </div>
 
-        <div id="network_bring_table_outer">
+        <div className="network-bring-table-outer">
           <span>가져올 네트워크</span>
           <div>
             <Tables
@@ -69,7 +69,7 @@ const NetworkImportModal = ({
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={onSubmit}>가져오기</button>
           <button onClick={onClose}>취소</button>

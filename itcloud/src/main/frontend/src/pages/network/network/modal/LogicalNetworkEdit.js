@@ -130,7 +130,7 @@ const LogicalNetworkEdit = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="network_edit_popup">
-        <div className="popup_header">
+        <div className="popu-header">
           <h1>논리 네트워크 수정</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -274,7 +274,7 @@ const LogicalNetworkEdit = ({
           </div>
         </form>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>편집</button>
           <button onClick={onRequestClose}>취소</button>

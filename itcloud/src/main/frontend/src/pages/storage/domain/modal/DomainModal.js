@@ -437,7 +437,7 @@ const DomainModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_domain_administer_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>
           {importMode ? "도메인 가져오기"
             : editMode ? "도메인 편집"
@@ -792,7 +792,7 @@ const DomainModal = ({
       </div>
     </div>
 
-      <div className="edit_footer">
+      <div className="edit-footer">
         <button style={{ display: 'none' }}></button>
         <button onClick={handleFormSubmit}>{editMode ? '편집' : '완료'}</button>
         <button onClick={onRequestClose}>취소</button>

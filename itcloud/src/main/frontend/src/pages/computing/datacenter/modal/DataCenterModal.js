@@ -113,15 +113,15 @@ const DataCenterModal = ({ editMode = false, dcId, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="datacenter_new_popup">
-        <div className="popup_header">
+      <div className="datacenter-new-popup">
+        <div className="popup-header">
           <h1>{editMode ? '데이터 센터 편집' : '새 데이터 센터'}</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
 
-        <div className="datacenter_new_content">
+        <div className="datacenter-new-content">
           <div>
             <label htmlFor="name1">이름</label>
             <input
@@ -182,7 +182,7 @@ const DataCenterModal = ({ editMode = false, dcId, onClose }) => {
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onClose}>취소</button>

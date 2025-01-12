@@ -79,8 +79,8 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData,hostId }) => {
             overlayClassName="Overlay"
             shouldCloseOnOverlayClick={false}
         >
-            <div className="vnic_new_content_popup">
-                <div className="popup_header">
+            <div className="vnic-new-content-popup">
+                <div className="popup-header">
                     <h1>호스트 네트워크 설정</h1>
                     <button onClick={onRequestClose}>
                         <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -90,15 +90,15 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData,hostId }) => {
                 <div className="host_network_outer px-1.5 text-sm">
                     <div className="py-2 font-bold underline">드래그 하여 변경</div>
 
-                    <div className="host_network_separation">
-                        <div className="network_separation_left">
+                    <div className="host-network-separation">
+                        <div className="network-separation-left">
                             <div>
                                 <div>인터페이스</div>
                                 <div>할당된 논리 네트워크</div>
                             </div>
                             {Array.isArray(nicData) ? (
                                 nicData.map((nic, index) => (
-                                    <div key={nic.id || index} className="separation_left_content">
+                                    <div key={nic.id || index} className="separation-left-content">
                                         <div className="interface">
                                             {nic.bondingVo?.slaves?.length > 0 ? (
                                                 <>
@@ -251,7 +251,7 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData,hostId }) => {
           onClose={closeBondingModal}
           mode={bondingMode}
         />
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button>OK</button>
           <button onClick={onRequestClose}>취소</button>

@@ -41,7 +41,7 @@ const NetworkClusterModal = ({ isOpen, onRequestClose, networkId }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="manage_network_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>네트워크 관리</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -54,7 +54,7 @@ const NetworkClusterModal = ({ isOpen, onRequestClose, networkId }) => {
           onRowClick={() => console.log('Row clicked')} 
         />
         
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button>OK</button>
           <button onClick={onRequestClose}>취소</button>

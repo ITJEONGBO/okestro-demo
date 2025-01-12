@@ -53,7 +53,7 @@ const VnicProfileDeleteModal = ({ onClose, data }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_delete_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>vnicProfile 삭제</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -67,7 +67,7 @@ const VnicProfileDeleteModal = ({ onClose, data }) => {
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
           <button onClick={onClose}>취소</button>

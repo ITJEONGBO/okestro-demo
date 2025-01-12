@@ -115,8 +115,8 @@ const TemplateEditModal = ({
       overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="template_eidt_popup">
-        <div className="popup_header">
+      <div className="template-eidt-popup">
+        <div className="popup-header">
           <h1>{editMode ? '템플릿 수정' : '템플릿 생성'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -125,7 +125,7 @@ const TemplateEditModal = ({
 
         <div className="flex">
           {/* 왼쪽 네비게이션 */}
-          <div className="network_backup_edit_nav">
+          <div className="network-backup-edit-nav">
             <div
               id="general_tab"
               className={selectedModalTab === 'general' ? 'active-tab' : 'inactive-tab'}
@@ -142,8 +142,8 @@ const TemplateEditModal = ({
             </div>
           </div>
 
-          <div className="backup_edit_content">
-            <div className="template_option_box" style={{ borderBottom: '1px solid gray', paddingBottom: '0.3rem' }}>
+          <div className="backup-edit-content">
+            <div className="template-option-box" style={{ borderBottom: '1px solid gray', paddingBottom: '0.3rem' }}>
                 <label htmlFor="optimization">최적화 옵션</label>
                   <select
                     id="optimization"
@@ -160,7 +160,7 @@ const TemplateEditModal = ({
             </div>
             {selectedModalTab === 'general' && (
               <>
-                <div className="template_edit_texts">
+                <div className="template-edit-texts">
                   <div className="host_textbox">
                     <label htmlFor="template_name">이름</label>
                     <input
@@ -191,7 +191,7 @@ const TemplateEditModal = ({
                 </div>
 
                 <div className="flex">
-                  <div className="t_new_checkbox">
+                  <div className="t-new-checkbox">
                     <input
                       type="checkbox"
                       id="stateless"
@@ -200,7 +200,7 @@ const TemplateEditModal = ({
                     />
                     <label htmlFor="stateless">상태 비저장</label>
                   </div>
-                  <div className="t_new_checkbox">
+                  <div className="t-new-checkbox">
                     <input
                       type="checkbox"
                       id="start_in_pause_mode"
@@ -209,7 +209,7 @@ const TemplateEditModal = ({
                     />
                     <label htmlFor="start_in_pause_mode">일시정지 모드에서 시작</label>
                   </div>
-                  <div className="t_new_checkbox">
+                  <div className="t-new-checkbox">
                     <input
                       type="checkbox"
                       id="prevent_deletion"
@@ -237,7 +237,7 @@ const TemplateEditModal = ({
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={() => {handleFormSubmit();}}>OK</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

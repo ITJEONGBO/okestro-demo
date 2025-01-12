@@ -191,7 +191,7 @@ const NetworkModal = ({ editMode = false, networkId, onClose }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className={`network-new-popup ${editMode ? 'edit-mode' : ''}`}>
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>{editMode ? '논리 네트워크 수정' : '새 논리 네트워크'}</h1>
             <button onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -489,7 +489,7 @@ const NetworkModal = ({ editMode = false, networkId, onClose }) => {
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onClose}>취소</button>
         </div>

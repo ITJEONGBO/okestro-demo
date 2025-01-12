@@ -1,4 +1,4 @@
-.datacenter_new_popup{
+.datacenter-new-popup{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
@@ -11,7 +11,7 @@
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
 
-.datacenter_new_content{
+.datacenter-new-content{
     font-size: 0.32rem;
     display: flex;
     flex-direction: column;
@@ -20,15 +20,15 @@
     padding: 0.2rem 0 ;
 }
 
-.datacenter_new_content>div{
+.datacenter-new-content>div{
     display: flex;
     justify-content: space-between;
     padding: 2% 2%;
 
 }
-
-.datacenter_new_content select,
-.datacenter_new_content input{
+ 
+.datacenter-new-content select,
+.datacenter-new-content input{
     width: 47%;
     height: 3.3vh;
     padding: 0 3px;

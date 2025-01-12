@@ -23,7 +23,7 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
       shouldCloseOnOverlayClick={false}
     >
       <div className="network_backup_edit">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>관리 네트워크 인터페이스 수정: ovirtmgmt</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -201,7 +201,7 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button>OK</button>
           <button onClick={onClose}>취소</button>

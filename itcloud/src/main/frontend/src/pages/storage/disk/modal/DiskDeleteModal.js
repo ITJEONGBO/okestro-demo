@@ -14,7 +14,7 @@ const DeleteModal = ({ isOpen, onRequestClose, onConfirm }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage_delete_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>디스크 삭제</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -28,7 +28,7 @@ const DeleteModal = ({ isOpen, onRequestClose, onConfirm }) => {
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={onConfirm}>OK</button>
           <button onClick={onRequestClose}>취소</button>
@@ -39,35 +39,3 @@ const DeleteModal = ({ isOpen, onRequestClose, onConfirm }) => {
 };
 
 export default DeleteModal;
-
-
-    {/*삭제 팝업 */}
-  //   <Modal
-  //   isOpen={activePopup === 'delete'}
-  //   onRequestClose={closePopup}
-  //   contentLabel="디스크 업로드"
-  //   className="Modal"
-  //   overlayClassName="Overlay"
-  //   shouldCloseOnOverlayClick={false}
-  // >
-  //   <div className="storage_delete_popup">
-  //     <div className="popup_header">
-  //       <h1>디스크 삭제</h1>
-  //       <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-  //     </div>
-      
-  //     <div className='disk_delete_box'>
-  //       <div>
-  //         <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
-  //         <span>다음 항목을 삭제하시겠습니까?</span>
-  //       </div>
-  //     </div>
-
-
-  //     <div className="edit_footer">
-  //       <button style={{ display: 'none' }}></button>
-  //       <button>OK</button>
-  //       <button onClick={closePopup}>취소</button>
-  //     </div>
-  //   </div>
-  // </Modal>

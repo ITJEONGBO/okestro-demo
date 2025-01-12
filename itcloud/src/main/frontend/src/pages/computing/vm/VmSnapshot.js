@@ -80,10 +80,10 @@ const {
     alias: disk?.alias || 'N/A',
     description: disk?.description || 'N/A',
     provisionedSize: disk?.provisionedSize
-      ? `${(disk.provisionedSize / (1024 ** 3)).toFixed(2)} GB`
+      ? `${Math.floor(disk.provisionedSize / (1024 ** 3))} GiB`
       : 'N/A',
     actualSize: disk?.actualSize
-      ? `${(disk.actualSize / (1024 ** 3)).toFixed(2)} GB`
+      ? `${Math.floor(disk.actualSize / (1024 ** 3))} GiB`
       : 'N/A',
     sparse: disk?.sparse ? 'Yes' : 'No',
     format: disk?.format || 'N/A',

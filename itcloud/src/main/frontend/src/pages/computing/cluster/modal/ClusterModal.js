@@ -311,7 +311,7 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="cluster_new_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>{editMode ? '클러스터 편집' : '새 클러스터'}</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -441,7 +441,7 @@ const ClusterModal = ({ editMode = false, cId, dcId, onClose }) => {
 
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onClose}>취소</button>
         </div>

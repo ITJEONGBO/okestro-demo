@@ -169,7 +169,7 @@ const DiskUploadModal = ({
       shouldCloseOnOverlayClick={false}
     >
     <div className="storage_disk_upload_popup">
-      <div className="popup_header">
+      <div className="popup-header">
         <h1>이미지 업로드</h1>
         <button onClick={onRequestClose}>
           <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -306,7 +306,7 @@ const DiskUploadModal = ({
             </div>
           </div>
         </div>
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleFormSubmit}>{'생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

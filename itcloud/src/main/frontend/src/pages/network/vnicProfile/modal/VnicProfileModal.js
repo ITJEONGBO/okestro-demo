@@ -13,7 +13,7 @@ import {
 } from '../../../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
-  <div className="vnic_new_box">
+  <div className="vnic-new-box">
     <label>{label}</label>
     {children}
   </div>
@@ -176,16 +176,16 @@ const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose 
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vnic_new_content_popup">
-        <div className="popup_header">
+      <div className="vnic-new-content-popup">
+        <div className="popup-header">
           <h1>{editMode ? '가상 머신 인터페이스 프로파일 편집' : '가상 머신 인터페이스 프로파일'}</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
 
-        <div className="vnic_new_content">
-          <div className="vnic_new_contents" style={{ paddingTop: '0.2rem' }}>
+        <div className="vnic-new-content">
+          <div className="vnic-new-contents" style={{ paddingTop: '0.2rem' }}>
 
           <FormGroup label="데이터 센터">
                 {isDataCentersLoading ? (
@@ -256,7 +256,7 @@ const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose 
             </FormGroup>
 
 {/* 
-            <div className="vnic_new_checkbox">
+            <div className="vnic-new-checkbox">
               <input 
                 type="checkbox" 
                 id="passthrough" 
@@ -266,7 +266,7 @@ const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose 
               <label htmlFor="passthrough">통과</label>
             </div> */}
 
-          <div className="vnic_new_checkbox">
+          <div className="vnic-new-checkbox">
             <input
               type="checkbox"
               id="migration"
@@ -287,7 +287,7 @@ const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose 
             </div> */}
 
 
-            <div className="vnic_new_checkbox">
+            <div className="vnic-new-checkbox">
               <input 
                 type="checkbox" 
                 id="portMirroring" 
@@ -299,7 +299,7 @@ const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose 
 
             {/* 모든 사용자 허용 - 편집 모드가 아닌 경우에만 표시 */}
             {/* {!editMode && (
-              <div className="vnic_new_checkbox">
+              <div className="vnic-new-checkbox">
                 <input 
                   type="checkbox" 
                   id="allow_all_users" 
@@ -312,7 +312,7 @@ const VnicProfileModal = ({ editMode = false, vnicProfileId, networkId, onClose 
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={onClose}>취소</button>
           <button onClick={handleFormSubmit}>OK</button>
         </div>

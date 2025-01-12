@@ -154,7 +154,7 @@ const HostModal = ({ editMode = false, hId, clusterId, onClose }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="host_new_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>{editMode ? '호스트 편집' : '새 호스트'}</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -304,7 +304,7 @@ const HostModal = ({ editMode = false, hId, clusterId, onClose }) => {
           
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onClose}>취소</button>
         </div>
