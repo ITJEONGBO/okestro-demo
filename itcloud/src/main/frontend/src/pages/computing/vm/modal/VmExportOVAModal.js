@@ -52,7 +52,7 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="vm_ova_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>가상 어플라이언스로 가상 머신 내보내기</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -98,7 +98,7 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleExport}>OK</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

@@ -633,8 +633,8 @@ const VmModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vm_edit_popup">
-        <div className="popup_header">
+      <div className="vm-edit-popup">
+        <div className="popup-header">
           <h1>{editMode ? '가상머신 편집' : '가상머신 생성'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -698,7 +698,7 @@ const VmModal = ({
 
           {/* 탭 내용 */}
           <div className="vm_edit_select_tab">
-            <div className="edit_first_content">
+            <div className="edit-first-content">
               <div>
                 <label htmlFor="cluster">클러스터</label>
                 <select
@@ -745,7 +745,7 @@ const VmModal = ({
                 </select>
               </div>
 
-              <div className="network_form_group">
+              <div className="network-form-group">
                 <label htmlFor="os">운영 시스템</label>
                 <select
                   id="os"
@@ -763,7 +763,7 @@ const VmModal = ({
                 </span>
               </div>
 
-              <div className="network_form_group">
+              <div className="network-form-group">
                 <label htmlFor="chipset">칩셋/펌웨어 유형</label>
                 <select 
                   id="chipset" 
@@ -799,7 +799,7 @@ const VmModal = ({
             
             {selectedModalTab === 'common' && 
               <>
-                <div className="edit_second_content mb-1">
+                <div className="edit-second-content mb-1">
                   <div>
                     <label htmlFor="name">이름ddd</label>
                     <input
@@ -830,18 +830,18 @@ const VmModal = ({
                 </div>
                 <div className="px-1 font-bold">인스턴스 이미지</div>
                 <div
-                  className="edit_third_content"
+                  className="edit-third-content"
                   style={{ borderBottom: "1px solid gray", marginBottom: "0.2rem" }}
                 >
                   {editMode ? (
                     // 편집 모드일 때
-                    <div className='vm_plus_btn_outer'>
+                    <div className='vm-plus-btn-outer'>
                       <div>
                         {disks && disks.length > 0 ? (
 
                           // 디스크가 있는 경우
                           disks.map((disk, index) => (
-                            <div  className='vm_plus_btn' key={index} style={{ marginBottom: '10px' }}>
+                            <div  className='vm-plus-btn' key={index} style={{ marginBottom: '10px' }}>
                               <span>
                                 {disk.diskImageVo?.alias || '이름 없음'}: ({disk.diskImageVo?.virtualSize || '0'} GB){" "}
                                 {disk.bootable ? "(부팅)" : "(기본)"}
@@ -872,7 +872,7 @@ const VmModal = ({
                         ) : (
                         // 디스크가 없는 경우
                         <div style={{ marginBottom: '10px' }}>
-                          <div className="vm_plus_btn">
+                          <div className="vm-plus-btn">
                          
                           {vmdisks.length > 0 ? (
                             vmdisks.map((disk) => (
@@ -944,11 +944,11 @@ const VmModal = ({
                     </div>   
                   ) : (
                     // 생성 모드일 때
-                    <div className="vm_plus_btn_outer">
+                    <div className="vm-plus-btn-outer">
                     {/* 디스크가 있는 경우 */}
                     {vmdisks.length > 0 ? (
                       vmdisks.map((disk, index) => (
-                        <div key={disk.id} className="vm_plus_btn">
+                        <div key={disk.id} className="vm-plus-btn">
                           <span>{disk.details?.alias || "알 수 없음"} 연결 중</span>
                           <div className="flex">
                             {/* 편집 버튼 */}
@@ -1029,7 +1029,7 @@ const VmModal = ({
                     {/* 추가 옵션: "+" 버튼을 눌렀을 때만 표시 */}
                     {showAddOptions && (
                       <div className="additional_disk_section">
-                        <div className="vm_plus_btn float-right">
+                        <div className="vm-plus-btn float-right">
                           <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
                           <VmConnectionPlusModal
   isOpen={isConnectionPopupOpen}
@@ -1206,7 +1206,7 @@ const VmModal = ({
             }
             {selectedModalTab === 'system' && 
               <>
-                <div className="edit_second_content">
+                <div className="edit-second-content">
                   <div>
                     <label htmlFor="memory_size">메모리 크기</label>
                     <input
@@ -1411,9 +1411,9 @@ const VmModal = ({
             }
             {selectedModalTab === 'host' && 
               <>
-                <div id="host_second_content">
+                <div className="host-second-content">
                   <div style={{ fontWeight: 600 }}>실행 호스트:</div>
-                  <div className="form_checks">
+                  <div className="form-checks">
                     <div>
                       <input
                         className="form-check-input"
@@ -1458,7 +1458,7 @@ const VmModal = ({
                   </div>
                 </div>
 
-                <div id="host_third_content">
+                <div className="host-third-content">
                   <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
                   {/* 마이그레이션 모드 */}
                   <div>
@@ -1514,7 +1514,7 @@ const VmModal = ({
             }
             {selectedModalTab === 'ha_mode' && 
             <>
-              <div id="ha_mode_second_content">
+              <div className="ha-mode-second-content">
                 <div className="checkbox_group">
                     <input
                       className="check_input"
@@ -1548,7 +1548,7 @@ const VmModal = ({
                   </select>
                 </div>
 
-                <div className="ha_mode_article">
+                <div className="ha-mode-article">
                   <span>실행/마이그레이션 큐에서 우선순위 : </span>
                   <div>
                       <span>우선 순위</span>
@@ -1571,9 +1571,9 @@ const VmModal = ({
             {selectedModalTab === 'boot_outer' && 
             <>  
               <div className='boot_outer_content'>
-                <div className="cpu_res">
+                <div className="cpu-res">
                   <span style={{ fontWeight: 600 }}>부트순서:</span>
-                  <div className='cpu_res_box'>
+                  <div className='cpu-res-box'>
                     <span>첫 번째 장치</span>
                     <select
                       id="first_boot_device"
@@ -1587,7 +1587,7 @@ const VmModal = ({
                       ))}
                     </select>
                   </div>
-                  <div className='cpu_res_box'>
+                  <div className='cpu-res-box'>
                     <span>두 번째 장치</span>
                     <select
                       id="second_boot_device"
@@ -1603,7 +1603,7 @@ const VmModal = ({
                   </div>
                 </div>
 
-                <div id="boot_checkboxs">
+                <div className="boot-checkboxs">
                   <div>
                     <div className="checkbox_group">
                       <input
@@ -1657,7 +1657,7 @@ const VmModal = ({
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

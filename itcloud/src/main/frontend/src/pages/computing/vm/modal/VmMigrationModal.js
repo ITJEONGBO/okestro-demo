@@ -52,7 +52,7 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm = {},selectedVms 
       shouldCloseOnOverlayClick={false}
     >
       <div className="migration_popup_content">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>가상머신 마이그레이션</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -110,7 +110,7 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm = {},selectedVms 
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleSave}>OK</button>
           <button onClick={onRequestClose}>취소</button>

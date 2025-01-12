@@ -47,7 +47,7 @@ const VmonExportModal = ({ isOpen, onRequestClose, selectedVm }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="vm_bring_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>가상머신 가져오기</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -117,7 +117,7 @@ const VmonExportModal = ({ isOpen, onRequestClose, selectedVm }) => {
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button>OK</button>
           <button onClick={onRequestClose}>취소</button>

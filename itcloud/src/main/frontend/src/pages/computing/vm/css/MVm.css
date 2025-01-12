@@ -1,5 +1,5 @@
 /*새로만들기*/
-.vm_edit_popup{
+.vm-edit-popup{
     border: 1px solid #dfdddd;
     position: absolute;
     box-sizing: border-box;
@@ -12,11 +12,13 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
-.cpu_res_box{
+.cpu-res-box{
     display: flex;
     justify-content: space-between;
     padding-bottom: 2%;
 }
+/*
+
 .edit_aside {
     width: 30%;
     height: 95%;
@@ -25,9 +27,6 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     font-weight: 800;
     text-align: center;
-}
-.disk_delete_checkbox{
-    display:flex;
 }
 .edit_aside > div {
     display: flex;
@@ -71,14 +70,7 @@
 .edit_header>button:hover{
     background-color: #DDDDDD;
 }
-.vm_edit_popup form{
-    width: 100%;
-  
-}
-.vm_edit_popup form>div{
-    font-size: 0.32rem;
-}
-#host_outer,
+    #host_outer,
 #ha_mode_outer,
 #res_alloc_outer,
 #common_outer,
@@ -89,10 +81,10 @@
 }
 #common_outer {
     height: 100%;
-    max-height: 69vh; /* 원하는 높이로 설정 */
+    max-height: 69vh;
     overflow-y: auto;
 }
-.edit_body{
+    .edit_body{
     height: 80vh;
     font-size: 0.36rem;
 }
@@ -100,15 +92,16 @@
 .edit_footer{
     border-top: 1px solid gray;
 }
-.vm_plus_btn_outer{
+*/
+.vm-plus-btn-outer{
     width:100%
 }
-.vm_plus_btn{
+.vm-plus-btn{
     display: flex;
     justify-content: space-between;
     margin-bottom:0.2rem;
 }
-.edit_first_content select{
+.edit-first-content select{
     width: 47%;
     height: 3.3vh;
     padding: 0 3px;
@@ -117,25 +110,25 @@
     font-size: 0.29rem;
     border: 1px solid #a7a6a6;
 }
-.edit_first_content>div{
+.edit-first-content>div{
     display: flex;
     justify-content: space-between;
     padding: 0.2rem 0.29rem;
 }
-.edit_first_content>div:first-child{
+.edit-first-content>div:first-child{
 
     padding-top: 0.3rem;
 }
-.edit_first_content{
+.edit-first-content{
     border-bottom: 1px solid #cecece;
     font-size: 0.32rem;
 }
 
-.edit_second_content input,
-#time_offset,
-#host_third_content>div:nth-child(n+2) select,
-.cpu_res_box select,
-.cpu_res input
+.edit-second-content input,
+.edit-second-content select,
+.host-third-content>div:nth-child(n+2) select,
+.cpu-res-box select,
+.cpu-res input
 {
     width: 47%;
     height: 3.3vh;
@@ -144,45 +137,42 @@
     font-size: 0.29rem;
 }
 
-.edit_second_content>div,#host_third_content>div{
+.edit-second-content>div,.host-third-content>div{
     display: flex;
     justify-content: space-between;
     padding: 2.3% 2% 0 2%
 }
 
-#host_third_content>div:nth-child(n+2) select{
+.host-third-content>div:nth-child(n+2) select{
     font-weight: 600;
     font-size: 0.27rem;
 }
 
-.edit_second_content>div>div>i,
-#host_third_content>div>div>i,
-#ha_mode_second_content>div>div>i,
+.edit-second-content>div>div>i,
+.host-third-content>div>div>i,
+.ha-mode-second-content>div>div>i,
 .res_second_content i
 {
     color:#1ba4e4;
     cursor: pointer;
 }
-#host_second_content{
+.host-second-content{
     padding: 2%;
 }
 
-#host_third_content>div{
-    padding: 1% 0;
-}
-#ha_mode_second_content{
+.ha-mode-second-content{
     padding: 2%;
 }
-#ha_mode_second_content>div:first-child{
+.ha-mode-second-content>div:first-child{
     padding-bottom: 2%;
 }
-#ha_mode_second_content>div:nth-child(n+2):nth-child(-n+3),.ha_mode_article>div{
+.ha-mode-second-content>div:nth-child(n+2):nth-child(-n+3),.ha-mode-article>div{
     display: flex;
     justify-content: space-between;
     padding-bottom: 2%;
 }
 
-#ha_mode_second_content>div:nth-child(n+2) select
+.ha-mode-second-content>div:nth-child(n+2) select
 {
     width: 47%;
     height: 3.3vh;
@@ -191,87 +181,63 @@
     font-size: 0.29rem;
 }
 
-.ha_mode_article>span{
+.ha-mode-article>span{
     font-weight: 600;
     margin-bottom: 0.7%;
     display: block;
 }
 
-#threads>div:nth-child(2),#boot_checkboxs>div>div:nth-child(2){
+#threads>div:nth-child(2),.boot-checkboxs>div>div:nth-child(2){
     width: 47%;
 }
-#threads input[type="text"],#boot_checkboxs input[type="text"]  {
+#threads input[type="text"],.boot-checkboxs input[type="text"]  {
     width: 94%;
     height: 3.3vh;
     padding: 0 3px;
     cursor: pointer;
 }
-.edit_third_content{
+.edit-third-content{
     padding: 2.3% 2% 2% 2%;
     margin-bottom: 0.4rem;
     display:flex;
     justify-content: space-between;
 }
-.edit_third_content>div:nth-child(2){
+.edit-third-content>div:nth-child(2){
     display: flex;
     justify-content: right;
 
 }
-.edit_third_content>div:nth-child(2)>button{
+.edit-third-content>div:nth-child(2)>button{
     margin-right:0.2rem;
 }
-.edit_third_content button{
+.edit-third-content button{
     padding: 0.08rem 0.15rem;
     font-size: 0.3rem;
     font-weight: 600;
     cursor: pointer;
 }
-/*선호도*/
 
-.preference_select select{
-    width: 85%;
-    height: 3.3vh;
-    padding: 0 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-}
-.preference_select button{
-    cursor: pointer;
-    padding: 0 1%;
-}
-.pre_selected>div>a{
-    background-color: #1ba4e4;
-    max-width: 20%;
-    height: 3vh;
-    display: block;
-    padding: 0 3px;
-    cursor: pointer;
-    font-weight: 600;
-    color: white;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.form_checks>div{
+.form-checks>div{
     padding: 1.8% 0 0 0;
 }
-.form_checks>div:nth-child(2){
+.form-checks>div:nth-child(2){
     display: flex;
     justify-content: space-between;
     
 }
-.form_checks>div:nth-child(2)>div:nth-child(2){
+.form-checks>div:nth-child(2)>div:nth-child(2){
     width: 47%;
 }
-.form_checks>div:nth-child(2) select{
+.form-checks>div:nth-child(2) select{
     width: 100%;
     height: 3.3vh;
     padding: 0 3px;
     cursor: pointer;
     font-size: 0.29rem;
 }
+
 /*가상머신 ... 버튼 새템플릿 생성*/
-.new_template_popup{
+.new-template-popup{
     border: 1px solid #dfdddd;
     position: absolute;
     box-sizing: border-box;
@@ -285,7 +251,7 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
-.new_template_popup .edit_first_content{
+.new-template-popup .edit-first-content{
     border-bottom:none;
 }
 /*스냅샷 생성*/
@@ -394,6 +360,10 @@
     height: 15vh;
     padding: 0.1rem;
 }
+/*네트워크 인터페이스 */
+.network_content_detail{
+    font-size: 0.3rem;
+}
 /*마이그레이션 팝업*/
 .migration_popup_content{
     position: absolute;
@@ -447,6 +417,9 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
+.disk_delete_checkbox{
+    display:flex;
+}
 /*ova내보내기*/
 .vm_ova_popup{
     border: 1px solid #dfdddd;
@@ -477,7 +450,34 @@
     border: 1px solid #a7a6a6;
 }
 /*삭제예정*/
-/* .context-menu {
+
+/* 
+
+.preference_select select{
+    width: 85%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+.preference_select button{
+    cursor: pointer;
+    padding: 0 1%;
+}
+.pre_selected>div>a{
+    background-color: #1ba4e4;
+    max-width: 20%;
+    height: 3vh;
+    display: block;
+    padding: 0 3px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+.context-menu {
   position: absolute;
   background-color: white;
   border: 1px solid #ccc;

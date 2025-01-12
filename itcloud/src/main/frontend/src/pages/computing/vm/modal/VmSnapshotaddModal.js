@@ -69,7 +69,7 @@ const VmSnapshotaddModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="snapshot_new_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>스냅샷 생성</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -98,7 +98,7 @@ const VmSnapshotaddModal = ({
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
           <button onClick={onRequestClose}>취소</button>

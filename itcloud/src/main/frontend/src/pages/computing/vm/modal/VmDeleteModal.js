@@ -77,7 +77,7 @@ const VmDeleteModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="vm_delete_popup" style={{ height: hasDisks ? '29.4vh' : '22.4vh' }}>
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>가상머신 삭제</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -109,7 +109,7 @@ const VmDeleteModal = ({
           )}
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleDelete}>OK</button>
           <button onClick={onRequestClose}>취소</button>

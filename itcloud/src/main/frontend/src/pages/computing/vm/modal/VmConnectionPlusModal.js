@@ -59,7 +59,7 @@ const VmConnectionPlusModal = ({
       overlayClassName="Overlay newRolePopupOverlay"
     >
       <div className="storage_disk_new_popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>가상 디스크 연결</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -96,7 +96,7 @@ const VmConnectionPlusModal = ({
           />
         )}
         <span>선택된 디스크 ID: {selectedDiskId || "없음"}</span>
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleOkClick}>OK</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

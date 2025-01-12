@@ -227,15 +227,15 @@ const handleFormSubmit = () => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="new_template_popup" style={{ height: isSubtemplate ? '88vh' : '77vh' }}>
-        <div className="popup_header">
+      <div className="new-template-popup" style={{ height: isSubtemplate ? '88vh' : '77vh' }}>
+        <div className="popup-header">
           <h1>새 템플릿</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
 
-        <div className="edit_first_content">
+        <div className="edit-first-content">
           <div className="host_textbox">
             <label htmlFor="user_name">이름</label>
             <input
@@ -470,7 +470,7 @@ const handleFormSubmit = () => {
           <label htmlFor="seal_template_linux_only">템플릿 봉인 (Linux만 해당)</label>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button onClick={handleFormSubmit}>OK</button>
           <button onClick={onRequestClose}>취소</button>
         </div>

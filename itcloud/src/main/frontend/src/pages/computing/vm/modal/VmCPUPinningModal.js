@@ -14,7 +14,7 @@ const VmCPUPinningModal = ({ isOpen, onRequestClose }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="device_view_popup_outer">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>CPU Pinning</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -54,7 +54,7 @@ const VmCPUPinningModal = ({ isOpen, onRequestClose }) => {
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button>OK</button>
           <button onClick={onRequestClose}>취소</button>
