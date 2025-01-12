@@ -129,17 +129,6 @@ export function renderDataCenterStatus (status) {
 };
 
 
-export function renderDataCenterStatusIcon (status) {
-  if (status === 'ACTIVE') {
-    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
-  } else if (status === 'DOWN') {
-    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
-  } else if (status === 'MAINTENANCE') {
-    return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
-  }
-  return status;
-};
-
 
 export function renderHostStatus (status) {
   if (status === 'UP') {
@@ -174,6 +163,17 @@ export function renderDomainStatus (status) {
     return '중지';
   } else if (status === 'INACTIVE') {
     return '비활성화';
+  }
+  return status;
+};
+
+export function renderDataCenterStatusIcon (status) {
+  if (status === 'ACTIVE') {
+    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+  } else if (status === 'DOWN') {
+    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+  } else if (status === 'MAINTENANCE') {
+    return <FontAwesomeIcon icon={faWrench} fixedWidth style={{ color: 'black', fontSize: '0.3rem', }} />;
   }
   return status;
 };

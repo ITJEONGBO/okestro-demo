@@ -5,30 +5,33 @@ import NavButton from '../../../components/navigation/NavButton';
 import HeaderButton from '../../../components/button/HeaderButton';
 import Footer from '../../../components/footer/Footer';
 import Path from '../../../components/Header/Path';
-// import '../css/Disk.css';
 import { useDiskById } from '../../../api/RQHook.js';
 import DiskGeneral from './DiskGeneral.js';
 import DiskVms from './DiskVms.js'
 import DiskDomains from './DiskDomains.js';
 
 const DiskModal = React.lazy(() => import('./modal/DiskModal'))
-const DeleteModal = React.lazy(() => import('../../../components/DeleteModal'));
+const DiskDeleteModal = React.lazy(() => import('./modal/DiskDeleteModal'));
 
 const DiskInfo = () => {
+  const navigate = useNavigate();
   const { id: diskId, section } = useParams();
   const {
-    data: disk,
-  } = useDiskById(diskId, (e) => ({
-    ...e,
-  }));
+    data: disk, isError, isLoading
+  } = useDiskById(diskId);
 
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
-  const [modals, setModals] = useState({
-    edit: false,
-    delete: false,
-  });
-  
+  const [activeModal, setActiveModal] = useState(null);
+
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
+
+  useEffect(() => {
+    if (isError || (!isLoading && !disk)) {
+      navigate('/storages/disks');
+    }
+  }, [isError, isLoading, disk, navigate]);
+
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'vms', label: '가상머신' },
@@ -36,11 +39,7 @@ const DiskInfo = () => {
   ];
 
   useEffect(() => {
-    if (!section) {
-      setActiveTab('general');
-    } else {
-      setActiveTab(section);
-    }
+    setActiveTab(section || 'general');
   }, [section]);
 
   const handleTabClick = (tab) => {
@@ -60,42 +59,30 @@ const DiskInfo = () => {
     return SectionComponent ? <SectionComponent diskId={diskId} /> : null;
   };
 
-  const toggleModal = (type, isOpen) => {
-    setModals((prev) => {
-      if (prev[type] === isOpen) return prev;
-      return { ...prev, [type]: isOpen };
-    });
-  };
-
   const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '편집', onClick: () => toggleModal('edit', true),},
-    { id: 'delete_btn', label: '삭제', onClick: () => toggleModal('delete', true), },
-    { id: 'move_btn', label: '이동', onClick: () => toggleModal('deactivate', true) },
-    { id: 'copy_btn', label: '복사', onClick: () => toggleModal('activate', true) },
-    { id: 'upload_btn', label: '업로드', onClick: () => toggleModal('restart', true) },
-  ]
-
+    { type: 'edit', label: '편집', onClick: () => openModal('edit'),},
+    { type: 'delete', label: '삭제', onClick: () => openModal('delete'), },
+    { type: 'move', label: '이동', onClick: () => openModal('deactivate') },
+    { type: 'copy', label: '복사', onClick: () => openModal('activate') },
+    // { type: 'upload', label: '업로드', onClick: () => openModal('restart') },
+  ];
 
   const renderModals = () => (
-    <>
-      {modals.edit && (
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'edit' && (
         <DiskModal
-          isOpen={modals.edit}
-          onRequestClose={() => toggleModal('edit', false)}
-          editMode={modals.edit}
-          hId={diskId}
+          editMode
+          diskId={diskId}
+          onClose={closeModal}
         />
       )}
-      {modals.delete && (
-        <DeleteModal
-          isOpen={modals.delete}
-          type="Disk"
-          onRequestClose={() => toggleModal('delete', false)}
-          contentLabel="디스크"
+      {activeModal === 'delete' && (
+        <DiskDeleteModal
           data={disk}
+          onClose={closeModal}
         />
       )}
-    </>
+      </Suspense>
   );
 
   return (
@@ -117,7 +104,8 @@ const DiskInfo = () => {
         </div>
       </div>
 
-      <Suspense fallback={<div>Loading...</div>}>{renderModals()}</Suspense>
+      {/* 디스크 모달창 */}
+      { renderModals() }
       <Footer/>
     </div>
   );

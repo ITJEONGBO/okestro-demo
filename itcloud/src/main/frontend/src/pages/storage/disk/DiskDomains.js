@@ -7,7 +7,7 @@ import TablesOuter from '../../../components/table/TablesOuter';
 
 const DiskDomains = ({ diskId }) => {
   const {
-    data: domains,
+    data: domains = [],
   } = useAllStorageDomainFromDisk(diskId, (e) => ({ ...e }));
 
   const sizeCheck = (size) => {
@@ -21,14 +21,12 @@ const DiskDomains = ({ diskId }) => {
     <div onClick={(e) => e.stopPropagation()}>
       <TablesOuter
         columns={TableColumnsInfo.STORAGE_DOMAINS_FROM_DISK}
-        data={(domains || []).map((domain) => ({
+        data={(domains).map((domain) => ({
           ...domain,
           icon: renderDomainStatusIcon(domain.status),
           domainType:
-            domain?.domainType === 'data'
-              ? '데이터'
-              : domain?.domainType === 'iso'
-              ? 'ISO'
+            domain?.domainType === 'data' ? '데이터'
+              : domain?.domainType === 'iso' ? 'ISO'
               : 'EXPORT',
           diskSize: sizeCheck(domain?.diskSize),
           availableSize: sizeCheck(domain?.availableSize),
@@ -36,7 +34,6 @@ const DiskDomains = ({ diskId }) => {
         }))}
         shouldHighlight1stCol={true}  
       />
-
     </div>
   );
 };

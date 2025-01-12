@@ -23,29 +23,27 @@ const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
   const status = selectedDataCenters.length === 0 ? 'none': selectedDataCenters.length === 1 ? 'single': 'multiple';
 
   const renderModals = () => (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        {activeModal === 'create' && (
-          <DataCenterModal            
-            dcId={Array.isArray(selectedDataCenters) && selectedDataCenters.length === 1 ? selectedDataCenters[0].id : null}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'edit' && (
-          <DataCenterModal
-            editMode
-            dcId={Array.isArray(selectedDataCenters) && selectedDataCenters.length === 1 ? selectedDataCenters[0].id : null}
-            onClose={closeModal}
-          />
-        )}
-        {activeModal === 'delete' && (
-          <DataCenterDeleteModal
-            data={selectedDataCenters}
-            onClose={closeModal}
-          />
-        )}
-      </Suspense>
-    </>
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'create' && (
+        <DataCenterModal            
+          dcId={Array.isArray(selectedDataCenters) && selectedDataCenters.length === 1 ? selectedDataCenters[0].id : null}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'edit' && (
+        <DataCenterModal
+          editMode
+          dcId={Array.isArray(selectedDataCenters) && selectedDataCenters.length === 1 ? selectedDataCenters[0].id : null}
+          onClose={closeModal}
+        />
+      )}
+      {activeModal === 'delete' && (
+        <DataCenterDeleteModal
+          data={selectedDataCenters}
+          onClose={closeModal}
+        />
+      )}
+    </Suspense>
   );
 
   return (

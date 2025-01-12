@@ -45,7 +45,7 @@ const mapDiskToRow = (disk) => {
         type={disk?.connectVm?.id ? "vms" : "templates"}
         id={disk?.connectVm?.id || disk?.connectTemplate?.id}
       >
-        {connectVmOrTemplate}
+        {disk?.connectVm?.name || disk?.connectTemplate?.name}
       </TableRowClick>
     ),
     virtualSize: formatSize(disk?.virtualSize),

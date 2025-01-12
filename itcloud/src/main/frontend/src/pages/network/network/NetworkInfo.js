@@ -71,8 +71,8 @@ const NetworkInfo = () => {
   const sectionHeaderButtons = [
     { type: 'edit', label: '편집', onClick: () => openModal("edit")},
     { type: 'delete', label: '삭제', onClick: () => openModal("delete") },
-  ]
-
+  ];
+  
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
       {activeModal === 'edit' && (

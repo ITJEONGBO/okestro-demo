@@ -21,15 +21,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const DiskModal = ({
-  isOpen,
-  onRequestClose,
-  editMode = false,
-  diskId,
-  vmId,
-  type='disk',
-  onDiskCreated
-}) => {
+const DiskModal = ({ editMode = false, diskId, vmId, actionType='disk', onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
     size: '',
@@ -62,9 +54,9 @@ const DiskModal = ({
   } = useDiskById(diskId);
 
   // 가상머신 디스크목록
-  const {
-    data: vmdisk,
-  } = useDisksFromVM(vmId);
+  // const {
+  //   data: vmdisk = [],
+  // } = useDisksFromVM(vmId);
 
   // 전체 데이터센터 가져오기
   const {
@@ -79,7 +71,7 @@ const DiskModal = ({
     refetch: refetchDomains,
     isLoading: isDomainsLoading,
   } = useAllActiveDomainFromDataCenter(
-    dataCenterVoId ? dataCenterVoId : undefined, 
+    dataCenterVoId, 
     (e) => ({...e,})
   );
 
@@ -89,10 +81,9 @@ const DiskModal = ({
     refetch: diskProfilesRefetch,
     isLoading: isDiskProfilesLoading,
   } = useAllDiskProfileFromDomain(
-    domainVoId ? domainVoId : undefined, 
+    domainVoId, 
     (e) => ({...e,})
   );  
-
 
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
@@ -109,15 +100,15 @@ const DiskModal = ({
     if (editMode && disk) {
       console.log('Setting edit mode state with disk:', disk);
       setFormState({
-        id: disk.id || '',
-        size: (disk.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
+        id: disk?.id || '',
+        size: (disk?.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
         appendSize: 0,
-        alias: disk.alias || '',
-        description: disk.description || '',
-        wipeAfterDelete: disk.wipeAfterDelete || false,
-        sharable: disk.sharable || false,
-        backup: disk.backup || false,
-        sparse: disk.sparse || false,
+        alias: disk?.alias || '',
+        description: disk?.description || '',
+        wipeAfterDelete: disk?.wipeAfterDelete || false,
+        sharable: disk?.sharable || false,
+        backup: disk?.backup || false,
+        sparse: disk?.sparse || false,
       });
       setDataCenterVoId(disk?.dataCenterVo?.id || '');
       setDomainVoId(disk?.storageDomainVo?.id || '');
@@ -128,29 +119,29 @@ const DiskModal = ({
     }
   }, [editMode, disk]);
   
-  useEffect(() => {
-    if (editMode && vmdisk) {
-      console.log('Setting edit mode state with disk:', vmdisk);
-      setFormState({
-        id: vmdisk.id || '',
-        size: (vmdisk.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
-        appendSize: 0,
-        alias: vmdisk.alias || '',
-        description: vmdisk.description || '',
-        wipeAfterDelete: vmdisk.wipeAfterDelete || false,
-        sharable: vmdisk.sharable || false,
-        backup: vmdisk.backup || false,
-        sparse: vmdisk.sparse || false,
-        readOnly:vmdisk.readOnly || false
-      });
-      setDataCenterVoId(disk?.dataCenterVo?.id || '');
-      setDomainVoId(disk?.storageDomainVo?.id || '');
-      setDiskProfileVoId(disk?.diskProfileVo?.id || '');
-      // 
-    } else if (!editMode) {
-      resetForm();
-    }
-  }, [editMode, vmdisk]);
+  // useEffect(() => {
+  //   if (editMode && vmdisk) {
+  //     console.log('Setting edit mode state with disk:', vmdisk);
+  //     setFormState({
+  //       id: vmdisk.id || '',
+  //       size: (vmdisk.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
+  //       appendSize: 0,
+  //       alias: vmdisk.alias || '',
+  //       description: vmdisk.description || '',
+  //       wipeAfterDelete: vmdisk.wipeAfterDelete || false,
+  //       sharable: vmdisk.sharable || false,
+  //       backup: vmdisk.backup || false,
+  //       sparse: vmdisk.sparse || false,
+  //       readOnly:vmdisk.readOnly || false
+  //     });
+  //     setDataCenterVoId(disk?.dataCenterVo?.id || '');
+  //     setDomainVoId(disk?.storageDomainVo?.id || '');
+  //     setDiskProfileVoId(disk?.diskProfileVo?.id || '');
+  //     // 
+  //   } else if (!editMode) {
+  //     resetForm();
+  //   }
+  // }, [editMode, vmdisk]);
 
   useEffect(() => {
     if (!editMode && datacenters && datacenters.length > 0) {
@@ -257,7 +248,7 @@ const DiskModal = ({
     console.log("Form Data: ", diskDataToSubmit); // 데이터를 확인하기 위한 로그
     console.log("Form vmDataToSubmit: ", vmDataToSubmit); // 데이터를 확인하기 위한 로그
 
-    // if (type === "vm") {
+    // if (actionType === "vm") {
     //   if (onDiskCreated) {
     //     console.log("DiskModal에서 생성된 디스크 데이터:", dataToSubmit);
     //     onDiskCreated(dataToSubmit);
@@ -272,27 +263,27 @@ const DiskModal = ({
         {
           onSuccess: () => {
             alert("디스크 편집 완료")
-            onRequestClose();  // 성공 시 모달 닫기
+            onClose();  // 성공 시 모달 닫기
           },
         }
       );
-    } else if (type === 'vmDisk'){ // 가상머신 세부페이지 디스크
-      addDiskVm(
-        {vmId:vmId, diskData: vmDataToSubmit },
-        {
-        onSuccess: () => {
-          alert("VM 디스크 생성 완료");
-          onRequestClose(); // 성공 시 모달 닫기
-        },
-        onError: (error) => {
-          console.error('vNIC 프로파일 추가 중 오류 발생:', error);
-        },
-        });
+    // } else if (actionType === 'vmDisk'){ // 가상머신 세부페이지 디스크
+    //   addDiskVm(
+    //     {vmId:vmId, diskData: vmDataToSubmit },
+    //     {
+    //     onSuccess: () => {
+    //       alert("VM 디스크 생성 완료");
+    //       onClose(); // 성공 시 모달 닫기
+    //     },
+    //     onError: (error) => {
+    //       console.error('vNIC 프로파일 추가 중 오류 발생:', error);
+    //     },
+    //     });
     } else {
       addDisk(diskDataToSubmit, {
         onSuccess: () => {
           alert("디스크 생성 완료")
-          onRequestClose();
+          onClose();
         },
       });
     }
@@ -300,8 +291,8 @@ const DiskModal = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      isOpen={true}
+      onRequestClose={onClose}
       contentLabel={editMode ? '디스크 편집' : '새로 만들기'}
       className="Modal"
       overlayClassName="Overlay newRolePopupOverlay"
@@ -310,7 +301,7 @@ const DiskModal = ({
       <div className="storage_disk_new_popup">
         <div className="popup-header">
           <h1>{editMode ? '디스크 편집' : '새 디스크 생성'}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth/>
           </button>
         </div>
@@ -384,7 +375,7 @@ const DiskModal = ({
 
               
 
-              {(type === 'vm' || type === 'vmDisk') && (
+              {(actionType === 'vm' || actionType === 'vmDisk') && (
                 <FormGroup label="인터페이스">
                 <select
                   value={interface_}
@@ -484,7 +475,7 @@ const DiskModal = ({
                 <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
               </div>
 
-              {(type === 'vm' || type === 'vmDisk') && (
+              {(actionType === 'vm' || actionType === 'vmDisk') && (
                 <>
                 <div>
                   <input 
@@ -592,7 +583,7 @@ const DiskModal = ({
         )}
         <div className="edit-footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

@@ -8,9 +8,9 @@ const HostModals = ({
   selectedHosts,
   clusterId
 }) => {
-  const HostModal = React.lazy(() => import('../Modal/HostModal'));
+  const HostModal = React.lazy(() => import('../../pages/computing/host/Modal/HostModal'));
   const DeleteModal = React.lazy(() => import('../../../DeleteModal'));
-  const HostActionModal = React.lazy(() => import('../Modal/HostActionModal'));
+  const HostActionModal = React.lazy(() => import('../../pages/computing/host/Modal/HostActionModal'));
 
   if (!isModalOpen || !action) return null;
 

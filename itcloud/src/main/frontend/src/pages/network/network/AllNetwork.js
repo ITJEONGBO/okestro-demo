@@ -30,7 +30,7 @@ const AllNetwork = () => {
       <div className="host-btn-outer">
         <NetworkDupl
           columns={TableColumnsInfo.NETWORKS}
-          networks={networks || []}
+          networks={networks}
         />
       </div>
       <Footer/>

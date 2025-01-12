@@ -18,7 +18,6 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-
 const NetworkModal = ({ editMode = false, networkId, onClose }) => {
   const [formState, setFormState] = useState({
     id: '',
