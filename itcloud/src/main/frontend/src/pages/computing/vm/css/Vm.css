@@ -1,11 +1,11 @@
 /*일반파트*/
-.vm_detail_general_boxs{
+.vm-detail-general-boxs{
     display:flex;
     justify-content:space-between;
     margin-bottom:0.3rem;
     border:1px solid #dedede;
 }
-.detail_general_box{
+.detail-general-box{
     width: 35%;
     height: 38vh;
 }
@@ -14,7 +14,7 @@
     height: 38vh;
 }
 .detail_general_mini_box>div:first-child,
-.detail_general_box>div:first-child
+.detail-general-box>div:first-child
 {
     font-size:0.4rem;
     font-weight:600;
@@ -46,7 +46,7 @@
 .vm_table_container{
     width:100%;
 }
-.detail_general_boxs_bottom{
+.detail-general-boxs-bottom{
     width:100%;
     display:flex;
     justify-content:space-between;
@@ -79,20 +79,9 @@
     cursor:pointer;
     color:blue;
 }
-/**/
-
-#storage_section>div{
-    height: 98%;
-}
 
 /*스냅샷*/
-#snapshot_content_outer,#network_content_outer{
-    padding: 0.5rem 0.3rem 0 0;
-}
-.pregroup_content i{
-    margin-right: 0.1rem;
-}
-.snapshot_content{
+.snapshot-content{
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -101,16 +90,16 @@
     padding: 1% 0;
     cursor: pointer;
 }
-.snapshot_content:hover{
+.snapshot-content:hover{
     background-color: #ebececd8;
     border-left: 2px solid rgb(161, 161, 161);
 }
-.snapshot_content_left{
+.snapshot-content-left{
     color: #4F4F4F;
     width: 20%;
     display: flex;
 }
-.snapshot_content_left>div{
+.snapshot-content-left>div{
     border-radius: 50%;
     padding: 3%;
     background-color: #dbdbdb;
@@ -119,16 +108,16 @@
     align-items: center; /* 수직 가운데 정렬 */
     margin-right: 10%;
 }
-.snapshot_content_left span{
+.snapshot-content-left span{
     font-weight: 600;
     display: flex; /* Flexbox 설정 추가 */
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
 }
-.snapshot_content_left i{
+.snapshot-content-left i{
   margin-top: 1px;
 }
-.snapshot_content_right{
+.snapshot-content-right{
     color: #4F4F4F;
     display: flex; 
     justify-content: right;
@@ -318,42 +307,12 @@
 }
 
 /*스냅샷*/
-#snapshot_content_outer,#network_content_outer,.pregroup_content{
-    padding: 0.5rem 0.3rem 0 0;
-}
-.pregroup_content i{
-    margin-right: 0.1rem;
-}
-.snapshot_content{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.34rem;
-    border-bottom: 1px solid rgb(226, 226, 226);
-    padding: 1% 0;
-    cursor: pointer;
-}
-.snapshot_content:hover{
-    background-color: #ebececd8;
-    border-left: 2px solid rgb(161, 161, 161);
-}
 
-.snapshot_content_right{
-    color: #4F4F4F;
-    display: flex; 
-    justify-content: right;
-    width: 60%;
-}
-.snapshot_content_right>div{
-    margin-left: 4%;
-    font-size: 0.34rem;
-}
-.snap_hidden_content {
+.snap-hidden-content {
     display: none;
     overflow: hidden;
   }
-  
-  .snap_hidden_content.active {
+.snap-hidden-content.active {
     display: block;
     max-height: 33vh;
     border: 1px solid #b9b9b9;
@@ -361,160 +320,15 @@
     color:gray;
     padding: 0.3rem;
     font-size: 0.34rem;
-  }
-  .snap_table{
+}
+.snap-table{
     height: 100%;
     text-align: left;
     color:gray;
     margin-bottom: 1rem;
-  }
-  .snap_table:last-child{
+}
+.snap-table:last-child{
     margin-bottom: 0;
-  }
-/*스냅샷 생성팝업*/
-.snap_create_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-.snap_create{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 74%;
-    width: 32%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.snap_create_inputbox{
-    padding: 2%;
-    display: flex;
-    justify-content: space-between;
-    
-}
-.snap_create_inputbox>span{
-    font-size: 0.34rem;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.snap_create_inputbox>input{
-    width: 55%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-}
-
-/*선호도 그룹 팝업(새로만들기)*/
-.pregroup_create_outer{
-    position: fixed; /* 변경 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000; /* 추가 */
-}
-.pregroup_create{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 69%;
-    width: 43%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1001; /* 추가 */
-}
-#pregroup_create_content{
-    padding: 0 0.2rem;
-}
-.snap_create_inputbox{
-    display: flex;
-    font-size: 0.34rem;
-}
-.snap_create_inputbox>div{
-    position: relative;
-}
-#pregroup_create_content i{
-    color:#1ba4e4;
-    cursor: pointer;
-    font-size: 0.4rem;
-    position: absolute;
-    top: 0.079rem;
-    right: -0.45rem;
-}
-.pregroup_create_select{
-    display: flex;
-    justify-content: space-between;
-    width: 55%;
-}
-.pregroup_create_select>div:first-child{
-    width: 50%;
-}
-.pregroup_create_select select{
-    width: 100%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-} 
-.pregroup_create_buttons{
-    padding: 3.4%;
-    display: flex;
-    justify-content: space-between;
-}
-.pregroup_buttons_content{
-    width: 45%;
-}
-.pregroup_buttons_content label{
-    font-size: 0.34rem;
-}
-.pregroup_buttons_select{
-    padding-top: 0.2rem;
-    display: flex;
-    justify-content: space-between;
-}
-.pregroup_buttons_select>div:first-child{
-    width: 70%;
-    font-size: 0.34rem;
-}
-.pregroup_buttons_select>div:nth-child(2){
-    width: 20%;
-    display: flex;
-   
-}
-
-.pregroup_buttons_select select{
-    width: 100%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-}
-.pregroup_buttons_select button{
-    width: 50%;
-    height: 100%;
-    font-size: 0.44rem;
-    font-weight: 800;
-    cursor: pointer;
 }
 
 /* 새로만들기(수정해야됨) */

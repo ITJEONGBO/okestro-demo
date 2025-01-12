@@ -17,7 +17,7 @@ const VmDeviceAddModal = ({ isOpen, onRequestClose, hostDevices }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="device_add_popup_outer">
+      <div className="device-add-popup-outer">
         <div className="popup-header">
           <h1>호스트 장치 추가</h1>
           <button onClick={onRequestClose}>
@@ -46,7 +46,7 @@ const VmDeviceAddModal = ({ isOpen, onRequestClose, hostDevices }) => {
 
         <div className="p-1">
           <span className="font-bold">사용 가능한 호스트 장치</span>
-          <div className="able_host_device_table">
+          <div className="able-host-device-table">
             <TablesOuter
               columns={TableColumnsInfo.ALL_DISK}
               data={hostDevices}
@@ -57,7 +57,7 @@ const VmDeviceAddModal = ({ isOpen, onRequestClose, hostDevices }) => {
 
         <div className="p-1">
           <span className="font-bold">연결 호스트 장치</span>
-          <div className="able_host_device_table">
+          <div className="able-host-device-table">
             <TablesOuter
               columns={TableColumnsInfo.ALL_DISK}
               data={hostDevices}

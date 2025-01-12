@@ -46,7 +46,7 @@ const VmonExportModal = ({ isOpen, onRequestClose, selectedVm }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vm_bring_popup">
+      <div className="vm-bring-popup">
         <div className="popup-header">
           <h1>가상머신 가져오기</h1>
           <button onClick={onRequestClose}>
@@ -95,10 +95,10 @@ const VmonExportModal = ({ isOpen, onRequestClose, selectedVm }) => {
         </div>
 
         <div className="px-1.5">
-          <div className="load_btn">로드</div>
+          <div className="load-btn">로드</div>
         </div>
 
-        <div className="vm_bring_table">
+        <div className="vm-bring-table">
           <div>
             <div className="font-bold">소스 상의 가상 머신</div>
             <TablesOuter

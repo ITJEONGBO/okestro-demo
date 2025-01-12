@@ -8,8 +8,8 @@ const VmGeneral = ({ vm }) => {
     
   return (
     <>
-        <div className='vm_detail_general_boxs'>
-            <div className='detail_general_box'>
+        <div className='vm-detail-general-boxs'>
+            <div className='detail-general-box'>
                 <table className="table">
                     <tbody>
                         <tr>
@@ -80,7 +80,7 @@ const VmGeneral = ({ vm }) => {
                 </table>
             </div>
                 
-            <div className='detail_general_box mr-8'>
+            <div className='detail-general-box mr-8'>
                 <div>VM 하드웨어</div>
                 <table className="table">
                     <tbody>
@@ -173,8 +173,7 @@ const VmGeneral = ({ vm }) => {
             </div> */}
         </div>
 
-        <div className='detail_general_boxs_bottom'>
-
+        <div className='detail-general-boxs-bottom'>
             <div className="vm-general-bottom-box">     
                 <div className="vm_table_container">
                     <table className="table">

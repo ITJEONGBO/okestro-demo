@@ -51,19 +51,19 @@ const VmMigrationModal = ({ isOpen, onRequestClose, selectedVm = {},selectedVms 
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="migration_popup_content">
+      <div className="migration-popup-content">
         <div className="popup-header">
           <h1>가상머신 마이그레이션</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
-        <div className="migration_article_outer">
+        <div className="migration-article-outer">
           <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
 
-          <div id="migration_article">
+          <div className="migration-article">
             <div>
-              <div className="migration_dropdown">
+              <div className="migration-dropdown">
                 <label htmlFor="host">
                   대상 호스트 <FontAwesomeIcon icon={faInfoCircle} fixedWidth />
                 </label>

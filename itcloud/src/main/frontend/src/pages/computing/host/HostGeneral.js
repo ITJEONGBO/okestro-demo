@@ -7,23 +7,23 @@ const HostGeneral = ({ hostId }) => {
   const { data: host } = useHost(hostId);
   const [activeTab, setActiveTab] = useState("general");
   return (
-    <div className="host_content_outer">
+    <div className="host-content-outer">
       {/* Tab Buttons */}
-      <div className="host_tabs">
-        <button onClick={() => setActiveTab("general")} className={`tab_button ${activeTab === "general" ? "active" : ""}`}>
+      <div className="host-tabs">
+        <button onClick={() => setActiveTab("general")} className={`tab-button ${activeTab === "general" ? "active" : ""}`}>
           일반
         </button>
-        <button onClick={() => setActiveTab("hardware")} className={`tab_button ${activeTab === "hardware" ? "active" : ""}`}>
+        <button onClick={() => setActiveTab("hardware")} className={`tab-button ${activeTab === "hardware" ? "active" : ""}`}>
           하드웨어
         </button>
-        <button onClick={() => setActiveTab("software")} className={`tab_button ${activeTab === "software" ? "active" : ""}`}>
+        <button onClick={() => setActiveTab("software")} className={`tab-button ${activeTab === "software" ? "active" : ""}`}>
           소프트웨어
         </button>
       </div>
       
-      <div className='host_table_outer'>
+      <div className='host-table-outer'>
         {activeTab === "general" && (
-          <table className="host_table">
+          <table className="host-table">
             <tbody>
               <tr>
                 <th>호스트이름/IP:</th>
@@ -110,7 +110,7 @@ const HostGeneral = ({ hostId }) => {
         )}
 
         {activeTab === "hardware" && (
-          <table className="host_table">
+          <table className="host-table">
             <tbody>
               <tr>
                 <th>제조사:</th>
@@ -165,7 +165,7 @@ const HostGeneral = ({ hostId }) => {
         )}
 
         {activeTab === "software" && (
-          <table className="host_table">
+          <table className="host-table">
             <tbody>
               <tr>
                 <th>OS 버전:</th>

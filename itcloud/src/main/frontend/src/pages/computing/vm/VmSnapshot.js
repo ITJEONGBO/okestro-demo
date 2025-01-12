@@ -117,20 +117,20 @@ const {
             <div>
             <div 
               key={snapshot.id}
-              className="snapshot_content"
+              className="snapshot-content"
               onClick={() => setSelectedSnapshot(snapshot)} // snapshot_content 클릭 시 선택되도록 추가
               style={{
               border: selectedSnapshot?.id === snapshot.id ? '1px solid #b9b9b9' : 'none', // 선택된 항목 강조 효과
               }}
             >
 
-                <div className="snapshot_content_left">
+                <div className="snapshot-content-left">
                   <div><FontAwesomeIcon icon={faCamera} fixedWidth /></div>
                   <span>{snapshot.name || 'Unnamed Snapshot'}</span>
                 </div>
 
               
-                <div className="snapshot_content_right">
+                <div className="snapshot-content-right">
                   {/* 일반 섹션 */}
                   <div
                     onClick={() => {
@@ -188,8 +188,8 @@ const {
               
               {/* General Section */}
               {activeSection === 'general' && selectedSnapshot?.id === snapshot.id && (
-                <div className="snap_hidden_content active">
-                  <table className="snap_table">
+                <div className="snap-hidden-content active">
+                  <table className="snap-table">
                     <tbody>
                       <tr>
                         <th>날짜:</th>
@@ -226,7 +226,7 @@ const {
 
               {/* Disk Section */}
               {activeSection === 'disk' && selectedSnapshot?.id === snapshot.id && (
-                <div className="snap_hidden_content active">
+                <div className="snap-hidden-content active">
                   <TablesOuter
                     columns={TableColumnsInfo.SNAPSHOT_DISK_FROM_VM}
                     data={Array.isArray(snapshotdetail?.snapshotDiskVos) ? snapshotdetail.snapshotDiskVos : []}
@@ -237,10 +237,10 @@ const {
 
               {/* Network Section */}
               {activeSection === 'network' && selectedSnapshot?.id === snapshot.id && (
-                <div className="snap_hidden_content active">
+                <div className="snap-hidden-content active">
                   {Array.isArray(snapshotdetail?.nicVos) && snapshotdetail.nicVos.length > 0 ? (
                     snapshotdetail.nicVos.map((nic, index) => (
-                      <table key={index} className="snap_table">
+                      <table key={index} className="snap-table">
                         <tbody>
                           <tr>
                             <th>이름:</th>
@@ -286,7 +286,7 @@ const {
 
               {/* Applications Section */}
               {activeSection === 'applications' && selectedSnapshot?.id === snapshot.id && (
-                <div className="snap_hidden_content active">
+                <div className="snap-hidden-content active">
                   설치된 애플리케이션 섹션 내용
                 </div>
               )}

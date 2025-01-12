@@ -255,7 +255,7 @@
     border-bottom:none;
 }
 /*스냅샷 생성*/
-.snapshot_new_popup{
+.snapshot-new-popup{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
@@ -269,13 +269,13 @@
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
     z-index: 1000;
 }
-.snapshot_new_table{
+.snapshot-new-table{
     max-height: 21vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 /*..버튼 가져오기 팝업*/
-.vm_bring_popup{
+.vm-bring-popup{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
@@ -289,7 +289,7 @@
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
 }
-.load_btn{
+.load-btn{
     width:4%;
     padding:0.1rem;
     border:1px solid gray;
@@ -297,16 +297,16 @@
     align-items: center;
     cursor:pointer;
 }
-.vm_bring_table{
+.vm-bring-table{
     display:flex;
     justify-content:space-between;
     padding: 0.3rem;
  }
- .vm_bring_table>div{
+ .vm-bring-table>div{
      width:44%;
  }
  /*호스트 장치(장치추가 팝업)*/
-.device_add_popup_outer{
+.device-add-popup-outer{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
@@ -321,13 +321,13 @@
     z-index: 1000;
 }
 
-.able_host_device_table{
+.able-host-device-table{
     height: 26vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 /*호스트 장치(View CPU Pinning 팝업)*/
-.device_view_popup_outer{
+.device-view-popup-outer{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
@@ -341,19 +341,19 @@
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
     z-index: 1000;
 }
-.device_view_popup{
+.device-view-popup{
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
     padding:0.5rem;
     height: 79vh;
 }
-.device_view_boxs{
+.device-view-boxs{
     padding: 0.3rem 1.2rem
 }
-.device_view_boxs>span{
+.device-view-boxs>span{
     display:block;
 }
-.device_view_box{
+.device-view-box{
     box-shadow: 0 6px 7px rgba(0, 0, 0, 0.3);
     width: 35%;
     border-raius:3px;
@@ -365,7 +365,7 @@
     font-size: 0.3rem;
 }
 /*마이그레이션 팝업*/
-.migration_popup_content{
+.migration-popup-content{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
@@ -379,24 +379,24 @@
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
 }
-.migration_article_outer{
+.migration-article-outer{
     padding:0.4rem;
 }
-.migration_dropdown{
+.migration-dropdown{
     margin-bottom: 0.2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-#migration_article>div:last-child{
+.migration-article>div:last-child{
     width: 100%;
     display: flex;
     justify-content: space-between;
 }
-#migration_article>div:last-child>div{
+.migration-article>div:last-child>div{
     padding: 10px 0;
 }
-#migration_article>div:last-child>div:last-child{
+.migration-article>div:last-child>div:last-child{
     width: 87.5%;
     font-size: 0.36rem;
     height: 5vh;
@@ -404,7 +404,7 @@
     border-radius: 3px;
 }
 /*삭제모달창*/
-.vm_delete_popup{
+.vm-delete-popup{
     border: 1px solid #dfdddd;
     position: absolute;
     box-sizing: border-box;
@@ -417,11 +417,11 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-.disk_delete_checkbox{
+.disk-delete-checkbox{
     display:flex;
 }
 /*ova내보내기*/
-.vm_ova_popup{
+.vm-ova-popup{
     border: 1px solid #dfdddd;
     position: absolute;
     box-sizing: border-box;
@@ -435,12 +435,12 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
-.ova_new_box{
+.ova-new-box{
     display: flex;
     justify-content: space-between;
     padding: 0.2rem;
 }
-.ova_new_box select,.ova_new_box input{
+.ova-new-box select,.ova-new-box input{
     width: 47%;
     height: 3.3vh;
     padding: 0 3px;
@@ -449,85 +449,3 @@
     font-size: 0.29rem;
     border: 1px solid #a7a6a6;
 }
-/*삭제예정*/
-
-/* 
-
-.preference_select select{
-    width: 85%;
-    height: 3.3vh;
-    padding: 0 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-}
-.preference_select button{
-    cursor: pointer;
-    padding: 0 1%;
-}
-.pre_selected>div>a{
-    background-color: #1ba4e4;
-    max-width: 20%;
-    height: 3vh;
-    display: block;
-    padding: 0 3px;
-    cursor: pointer;
-    font-weight: 600;
-    color: white;
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-}
-.context-menu {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  list-style: none;
-  padding: 10px;
-  z-index: 1000;
-}
-
-.context-menu li {
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-.context-menu li:hover {
-  background-color: #eee;
-} */
-/* .res_second_content{
-    padding: 2%;
-}
-
-#cpu_sharing{
-    display: flex;
-    width: 47%;
-    justify-content: space-between;
-}
-
-#cpu_sharing>input{
-    width: 23%;
-} */
- /* .edit_check_boxs{
-    display: flex;
-    padding: 0.2rem 0.4rem;
-}
-.host_checkboxs>span{
-    font-weight: 600;
-}
-.host_checkbox{
-    padding: 0.2rem 0;
-}
-.host_checkbox i{
-    color: #1ba4e4;
-    cursor: pointer;
-}
-.edit_check_boxs>div{
-    margin-right: 0.5rem;
-}
- */
-/*중간*/
-
-/* #system_outer,#host_outer,#ha_mode_outer,#res_alloc_outer{
-    display: none;
-} */

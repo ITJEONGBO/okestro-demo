@@ -51,7 +51,7 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vm_ova_popup">
+      <div className="vm-ova-popup">
         <div className="popup-header">
           <h1>가상 어플라이언스로 가상 머신 내보내기</h1>
           <button onClick={onRequestClose}>
@@ -60,7 +60,7 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
         </div>
 
         <div className="py-1">
-          <div className="ova_new_box">
+          <div className="ova-new-box">
             <label htmlFor="host_select">호스트</label>
             <select
               id="host_select"
@@ -75,7 +75,7 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
               ))}
             </select>
           </div>
-          <div className="ova_new_box">
+          <div className="ova-new-box">
             <label htmlFor="directory">디렉토리</label>
             <input
               type="text"
@@ -85,7 +85,7 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
               placeholder="디렉토리를 입력하세요"
             />
           </div>
-          <div className="ova_new_box">
+          <div className="ova-new-box">
             <label htmlFor="name">이름</label>
             <input
               type="text"

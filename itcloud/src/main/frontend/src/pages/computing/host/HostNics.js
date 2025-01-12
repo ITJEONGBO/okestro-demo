@@ -111,7 +111,7 @@ const HostNics = ({ hostId }) => {
 
       {nics.map((data, index) => (
         <div
-          className="host_network_boxs"
+          className="host-network-boxs"
           key={index}
           style={{ marginBottom: "0.2rem" }}
         >
@@ -132,7 +132,7 @@ const HostNics = ({ hostId }) => {
           </div>
           {visibleBoxes.includes(index) && (
             <div className="host_network_hiddenbox flex">
-              <div className="h_network_change_table">
+              <div className="h-network-change-table">
                 <button
                   onClick={() => switchTable(index, "NETWORK_FROM_HOST")}
                   className={`h-icon-btn ${

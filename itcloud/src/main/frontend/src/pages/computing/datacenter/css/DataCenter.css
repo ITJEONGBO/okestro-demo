@@ -2,9 +2,6 @@
     width: 100%;
 }
 
-.content_header_right>button:last-child{
-    margin-right: 0;
-}
 .vGPU_radiobox{
     padding:0.2rem;
 }

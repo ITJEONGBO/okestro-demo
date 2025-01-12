@@ -68,7 +68,7 @@ const VmSnapshotaddModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="snapshot_new_popup">
+      <div className="snapshot-new-popup">
         <div className="popup-header">
           <h1>스냅샷 생성</h1>
           <button onClick={onRequestClose}>
@@ -88,7 +88,7 @@ const VmSnapshotaddModal = ({
           </div>
           <div>
             <div className="font-bold">포함할 디스크 :</div>
-            <div className="snapshot_new_table">
+            <div className="snapshot-new-table">
               <TablesOuter
                 columns={TableColumnsInfo.SNAPSHOT_NEW}
                 data={disks} // 디스크 데이터 삽입

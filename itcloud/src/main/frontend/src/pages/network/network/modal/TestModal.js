@@ -21,28 +21,42 @@ const HostNetworkModal = ({ isOpen, onRequestClose }) => {
     { id: "3", name: "Network C" },
   ]);
 
-  const dragStart = (e, index, list) => {
-    dragItem.current = { index, list };
+  const dragStart = (e, index, list, item) => {
+    dragItem.current = { index, list, item };
   };
 
   const drop = (interfaceId) => {
     if (dragItem.current) {
-      const { index, list } = dragItem.current;
+      const { index, list, item } = dragItem.current;
 
       if (list === "unassigned") {
-        const draggedItem = unassignedNetworks[index];
-
-        // 인터페이스의 assignedNetworks에 추가
+        // 드래그된 네트워크를 인터페이스에 추가
         setLefContent((prev) =>
-          prev.map((item) =>
-            item.id === interfaceId
-              ? { ...item, assignedNetworks: [...item.assignedNetworks, draggedItem] }
-              : item
+          prev.map((iface) =>
+            iface.id === interfaceId
+              ? { ...iface, assignedNetworks: [...iface.assignedNetworks, item] }
+              : iface
           )
         );
-
-        // 오른쪽 네트워크 목록에서 제거
         setUnassignedNetworks((prev) => prev.filter((_, idx) => idx !== index));
+      } else if (list === "interface") {
+        // 인터페이스 간 이동
+        setLefContent((prev) =>
+          prev.map((iface) => {
+            if (iface.id === interfaceId) {
+              return { ...iface, assignedNetworks: [...iface.assignedNetworks, item] };
+            }
+            if (iface.id === dragItem.current.sourceId) {
+              return {
+                ...iface,
+                assignedNetworks: iface.assignedNetworks.filter(
+                  (network) => network.id !== item.id
+                ),
+              };
+            }
+            return iface;
+          })
+        );
       }
 
       dragItem.current = null;
@@ -58,7 +72,7 @@ const HostNetworkModal = ({ isOpen, onRequestClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vnic_new_content_popup">
+      <div className="vnic-new-content-popup">
         <div className="popup-header">
           <h1>호스트 네트워크 설정</h1>
           <button onClick={onRequestClose}>
@@ -69,15 +83,15 @@ const HostNetworkModal = ({ isOpen, onRequestClose }) => {
         <div className="host_network_outer px-1.5 text-sm">
           <div className="py-2 font-bold underline">드래그 하여 변경</div>
 
-          <div className="host_network_separation">
+          <div className="host-network-separation">
             {/* 왼쪽 인터페이스 */}
-            <div className="network_separation_left">
+            <div className="network-separation-left">
               <div>인터페이스</div>
 
               {lefContent.map((interfaceItem) => (
                 <div
                   key={interfaceItem.id}
-                  className="separation_left_content"
+                  className="separation-left-content"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={() => drop(interfaceItem.id)}
                   style={{
@@ -92,7 +106,12 @@ const HostNetworkModal = ({ isOpen, onRequestClose }) => {
                     <div
                       className="container"
                       draggable
-                      onDragStart={(e) => dragStart(e, interfaceItem.id, "interface")}
+                      onDragStart={(e) =>
+                        dragStart(e, null, "interface", {
+                          ...interfaceItem,
+                          sourceId: interfaceItem.id,
+                        })
+                      }
                       style={{
                         backgroundColor: "olive",
                         borderRadius: "5px",
@@ -104,7 +123,6 @@ const HostNetworkModal = ({ isOpen, onRequestClose }) => {
                       <FontAwesomeIcon icon={faDesktop} style={{ color: "#28a745", marginRight: "10px" }} />
                       {interfaceItem.name}
                     </div>
-                    
                   </div>
 
                   <div className="flex items-center justify-center">
@@ -117,7 +135,17 @@ const HostNetworkModal = ({ isOpen, onRequestClose }) => {
                   {interfaceItem.assignedNetworks.length > 0 && (
                     <div className="assigned-network-outer">
                       {interfaceItem.assignedNetworks.map((network) => (
-                        <div key={network.id} className="assigned-network">
+                        <div
+                          key={network.id}
+                          className="assigned-network"
+                          draggable
+                          onDragStart={(e) =>
+                            dragStart(e, null, "interface", {
+                              ...network,
+                              sourceId: interfaceItem.id,
+                            })
+                          }
+                        >
                           <div className="left-section">
                             <FontAwesomeIcon icon={faCheck} className="icon green-icon" />
                             <span className="text">{network.name}</span>
@@ -137,7 +165,7 @@ const HostNetworkModal = ({ isOpen, onRequestClose }) => {
                 <div
                   key={network.id}
                   draggable
-                  onDragStart={(e) => dragStart(e, index, "unassigned")}
+                  onDragStart={(e) => dragStart(e, index, "unassigned", network)}
                   onDragOver={(e) => e.preventDefault()}
                   style={{
                     padding: "15px",

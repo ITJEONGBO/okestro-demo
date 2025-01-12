@@ -76,7 +76,7 @@ const VmDeleteModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vm_delete_popup" style={{ height: hasDisks ? '29.4vh' : '22.4vh' }}>
+      <div className="vm-delete-popup" style={{ height: hasDisks ? '29.4vh' : '22.4vh' }}>
         <div className="popup-header">
           <h1>가상머신 삭제</h1>
           <button onClick={onRequestClose}>
@@ -96,7 +96,7 @@ const VmDeleteModal = ({
 
           {hasDisks && (
             <>
-            <div className='disk_delete_checkbox'>
+            <div className='disk-delete-checkbox'>
               <input
                 type="checkbox"
                 id="diskDelete"

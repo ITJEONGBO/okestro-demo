@@ -790,13 +790,14 @@ const DomainModal = ({
           </FormGroup>
         </div>
       </div>
-    </div>
-
       <div className="edit-footer">
         <button style={{ display: 'none' }}></button>
         <button onClick={handleFormSubmit}>{editMode ? '편집' : '완료'}</button>
         <button onClick={onRequestClose}>취소</button>
       </div>
+    </div>
+
+  
     {/* </div> */}
     </Modal>
   );
