@@ -28,7 +28,7 @@ const VnicProfileDupl = ({ isOpen, vnicProfiles = [], columns = [], networkId })
       <VnicProfileModal
         editMode
         isOpen={activeModal === 'edit'}
-        vnicProfileId={selectedVnicProfiles[0].id}
+        vnicProfileId={selectedVnicProfiles[0]?.id}
         onClose={closeModal}
       />
       <VnicProfileDeleteModal
