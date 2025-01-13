@@ -198,7 +198,7 @@
 .host-network-separation{
     display:flex;
     justify-content: space-between;
-    height:40vh;
+    font-size: 0.33rem;
 }
 .network-separation-left{
     width:65%

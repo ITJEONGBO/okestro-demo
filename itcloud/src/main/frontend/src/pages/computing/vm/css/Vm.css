@@ -79,7 +79,9 @@
     cursor:pointer;
     color:blue;
 }
-
+.disk-bar{
+    height:90%;
+}
 /*스냅샷*/
 .snapshot-content{
     width: 100%;
