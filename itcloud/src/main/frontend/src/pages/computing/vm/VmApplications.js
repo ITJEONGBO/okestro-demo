@@ -3,7 +3,7 @@ import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TablesOuter from "../../../components/table/TablesOuter";
 
 // 애플리케이션 섹션
-const VmApplication = ({vm}) => {
+const VmApplications = ({vm}) => {
 
   const { 
     data: applications = [], 
@@ -30,4 +30,4 @@ const VmApplication = ({vm}) => {
   );
 };
   
-export default VmApplication;
+export default VmApplications;

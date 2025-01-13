@@ -9,21 +9,21 @@ import DeleteModal from '../../../components/DeleteModal';
 
 
 // 네트워크 인터페이스
-const VmNetwork = ({vm}) => {
+const VmNics = ({vmId}) => {
 
     const [modals, setModals] = useState({ create: false, edit: false, delete: false });
     const [selectedNics, setSelectedNics] = useState(null);
     const toggleModal = (type, isOpen) => {
         setModals((prev) => ({ ...prev, [type]: isOpen }));
     };
-    console.log('VM ID:', vm?.id);
+    console.log('VM ID:', vmId);
 
     const { 
         data: nics, 
         status: disksStatus, 
         isLoading: isDisksLoading, 
         isError: isDisksError,
-    } = useNetworkInterfaceFromVM(vm?.id, toTableItemPredicateDisks);
+    } = useNetworkInterfaceFromVM(vmId, toTableItemPredicateDisks);
 
     // API 응답 데이터 확인
     useEffect(() => {
@@ -39,7 +39,7 @@ const VmNetwork = ({vm}) => {
             ipv6: nic?.ipv6 ?? '',
             macAddress: nic?.macAddress ?? '',
             networkVo: nic?.networkVo?.name ?? '',
-            vnicProfileVo: nic?.vnicProfileVo?.name ?? '',
+            vnicProfile: nic?.vnicProfileVo?.name ?? '',
             interfaceType: nic?.interface_ ?? 'VIRTIO',
             linked: nic?.linked ?? false,
             rxSpeed: nic?.rxSpeed ?? '',
@@ -209,7 +209,7 @@ const VmNetwork = ({vm}) => {
                         onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
                         editMode={modals.edit}
                         nicData={selectedNics}
-                        vmId={vm?.id || null}
+                        vmId={vmId || null}
                         nicId={selectedNics?.id}
                 
                 />
@@ -221,7 +221,7 @@ const VmNetwork = ({vm}) => {
                         onRequestClose={() => toggleModal('delete', false)}
                         contentLabel={'네트워크 인터페이스'}
                         data={ selectedNics}
-                        vmId={vm?.id}
+                        vmId={vmId}
                     />
                 )}
             </Suspense>
@@ -229,5 +229,5 @@ const VmNetwork = ({vm}) => {
 
     );
   };
-  export default VmNetwork;
+  export default VmNics;
   

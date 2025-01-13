@@ -9,7 +9,7 @@ import { useHost, useHostdeviceFromHost, useHostdevicesFromVM } from '../../../a
 import VmDeviceAddModal from './modal/VmDeviceAddModal';
 import VmCPUPinningModal from './modal/VmCPUPinningModal';
 // 이벤트 섹션
-const VmHostDevice = ({vm}) => {
+const VmHostDevices = ({vmId}) => {
   const [activePopup, setActivePopup] = useState(null);
   const openPopup = (popupType) => setActivePopup(popupType);
   const closePopup = () => setActivePopup(null);
@@ -18,11 +18,11 @@ const VmHostDevice = ({vm}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { 
-    data: hostDevices,     
+    data: hostDevices = [],     
     status: hostDevicesStatus,  
     isLoading: isHostDevicesLoading,  
     isError: isHostDevicesError       
-  } = useHostdevicesFromVM(vm?.id, toTableItemPredicateHostDevices);  
+  } = useHostdevicesFromVM(vmId, toTableItemPredicateHostDevices);  
   
   function toTableItemPredicateHostDevices(hostDevice) {
     return {
@@ -189,5 +189,5 @@ const VmHostDevice = ({vm}) => {
     );
   };
   
-  export default VmHostDevice;
+  export default VmHostDevices;
   

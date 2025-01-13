@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate, useLocation } from 'react-router-dom';
 import {
   useActivateDomain, 
   useAttachDomain,
@@ -19,7 +18,6 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
   const { mutate: detachDomain } = useDetachDomain();
   const { mutate: maintenanceDomain } = useMaintenanceDomain();
   const { mutate: destroyDomain } = useDestroyDomain();
-
 
   const [id, setId] = useState('');
   const [name, setName] = useState('');

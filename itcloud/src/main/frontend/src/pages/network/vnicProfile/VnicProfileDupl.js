@@ -7,7 +7,7 @@ import TableRowClick from '../../../components/table/TableRowClick.js';
 const VnicProfileModal = React.lazy(() => import('./modal/VnicProfileModal'));
 const VnicProfileDeleteModal = React.lazy(() => import('./modal/VnicProfileDeleteModal'));
 
-const VnicProfileDupl = ({ isOpen, vnicProfiles = [], columns = [], networkId }) => {
+const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
   const navigate = useNavigate();
   
   const [activeModal, setActiveModal] = useState(null);

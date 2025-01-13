@@ -29,6 +29,7 @@ import Event from './pages/event/Event';
 import SettingInfo from './pages/setting/SettingInfo';
 import Login from './pages/login/Login';
 import Error from './pages/Error';
+import VmInfo from './pages/computing/vm/VmInfo';
 
 
 const App = () => {
@@ -111,10 +112,14 @@ const App = () => {
               <Route path="/computing/hosts/:id/:section" element={<HostInfo />}/>
 
               <Route path="/computing/vms" element={<AllVm />} />
-              <Route path="/computing/vms/:id" element={<VmDetail />} />
-              <Route path="/computing/vms/:id/:section" element={<VmDetail />} />
+              <Route path="/computing/vms/:id" element={<VmInfo />} />
+              <Route path="/computing/vms/:id/:section" element={<VmInfo />} />
+
+              {/* <Route path="/computing/vms/:id" element={<VmDetail />} /> */}
+              {/* <Route path="/computing/vms/:id/:section" element={<VmDetail />} /> */}
               
               <Route path="/computing/vms/templates" element={<AllTemplates />} />
+              <Route path="/computing/templates" element={<AllTemplates />} />
               <Route path="/computing/templates/:id" element={<TemplateInfo />} />
               <Route path="/computing/templates/:id/:section" element={<TemplateInfo />} />
                             

@@ -73,19 +73,17 @@ const ClusterInfo = () => {
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'edit' && (
-        <ClusterModal
-          editMode
-          cId={clusterId}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <ClusterDeleteModal
-          data={cluster}
-          onClose={closeModal}
-        />
-      )}
+      <ClusterModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        cId={clusterId}
+        onClose={closeModal}
+      />
+      <ClusterDeleteModal
+        isOpen={activeModal === 'delete' }
+        data={cluster}
+        onClose={closeModal}
+      />
     </Suspense>
   );
 

@@ -7,96 +7,88 @@ import {
   useActivateHost, 
   useRestartHost
 } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
-const HostActionModal = ({ isOpen, action, onRequestClose, host }) => {
+const HostActionModal = ({ isOpen, action, onClose, data }) => {
   const { mutate: deactivateHost } = useDeactivateHost();
   const { mutate: activateHost } = useActivateHost();
   const { mutate: restartHost } = useRestartHost();
+  // const { mutate: stopHost } = useStopHost();
 
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
+  const [ids, setIds] = useState([]);
+  const [names, setNames] = useState([]);
   
   useEffect(() => {
-    if (host) {
-      setId(host.id || '');
-      setName(host.name || '');
-      console.log('**' + host.id);
+    if (Array.isArray(data)) {
+      const ids = data.map((item) => item.id);
+      const names = data.map((item) => item.name);
+      setIds(ids);
+      setNames(names);
+    } else if (data) {
+      setIds([data.id]);
+      setNames([data.name]);
     }
-  }, [host]);
+  }, [data]);
 
-  const getContentLabel = (action) => {
-    switch (action) {
-      case 'deactivate': return '유지보수';
-      case 'activate': return '활성화';
-      case 'restart': return '재시작';
-      case 'reinstall': return '다시 설치';
-      case 'register': return '인증서 등록';
-      case 'haon': return 'HA 활성화';
-      case 'haoff': return 'HA 비활성화';
-      default: return '';
-    }
+  const getContentLabel = () => {
+    const labels = {
+      deactivate: '유지보수',
+      activate: '활성화',
+      restart: '재시작',
+      // stop: '중지',
+      // reinstall: '다시 설치',
+      // register: '인증서 등록',
+      // haon: 'HA 활성화',
+      // haoff: 'HA 비활성화',
+    };
+    return labels[action] || '';
+  };
+
+  const handleAction = (actionFn) => {
+    ids.forEach((hostId, index) => {
+      actionFn(hostId, {
+        onSuccess: () => {
+          if (ids.length === 1 || index === ids.length - 1) {
+            toast.success(`호스트 ${getContentLabel(action)} 완료`);
+            onClose();
+          }
+        },
+        onError: (error) => {
+          console.error(`${getContentLabel(action)} 오류:`, error);
+        },
+      });
+    });
   };
 
   const handleFormSubmit = () => {
-    if (!id) {
+    if (!ids.length) {
       console.error('ID가 없습니다.');
       return;
     }
 
-    if (action === 'deactivate') {
-      console.log('deactivate ' + id)
-      handleAction(deactivateHost)
-    } else if (action === 'activate') {
-      console.log('activate ' + {id})
-      handleAction(activateHost)
-    } 
-    else if (action === 'restart') {
-      console.log('restart Host');
-      handleAction(restartHost);
-    }
-    // } else if (action === 'stop') {
-    //   console.log('stop Host');
-    //   handleAction(stopHost);
-    // } 
-    // else if (action === 'reinstall') {
-    //   console.log('reinstall Host');
-    //   handleAction(reinstallHost);
-    // } else if (action === 'register') {
-    //   console.log('register Host');
-    //   handleAction(registerHost);
-    // } else if (action === 'haon') {
-    //   console.log('haon Host');
-    //   handleAction(haonHost);
-    // } else if (action === 'haoff') {
-    //   console.log('haoff Host');
-    //   handleAction(haoffHost);
-    // }
-  };
+    const actionMap = {
+      deactivate: deactivateHost,
+      activate: activateHost,
+      restart: restartHost,
+      // stop: stopHost,
+      // reinstall: rein,
+      // register: rebootVM,
+      // haon: resetVM,
+      // haoff: resetVM,
+    };
 
-  const handleAction = (actionFn) => {
-    actionFn(id, {
-      onSuccess: () => {
-        onRequestClose(); // 삭제 성공 시 모달 닫기
-        
-        // const currentPath = location.pathname;
-        // if (currentPath.includes(id)) {
-        //   const newPath = currentPath.replace(`/${id}`, '');
-        //   navigate(newPath);
-        // } else {
-        //   window.location.reload();
-        // }        
-      },
-      onError: (error) => {
-        console.error(`${action} ${name} 액션 오류:`, error);
-      },
-    });
+    const actionFn = actionMap[action];
+    if (actionFn) {
+      handleAction(actionFn);
+    } else {
+      console.error(`알 수 없는 액션: ${action}`);
+    }
   };
-  
 
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={onClose}
       contentLabel={getContentLabel(action)}
       className="Modal"
       overlayClassName="Overlay"
@@ -105,7 +97,7 @@ const HostActionModal = ({ isOpen, action, onRequestClose, host }) => {
       <div className="storage_delete_popup">
         <div className="popup-header">
           <h1>호스트 {getContentLabel(action)}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -113,14 +105,14 @@ const HostActionModal = ({ isOpen, action, onRequestClose, host }) => {
         <div className="disk_delete_box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {host?.name} 를(을) {getContentLabel(action)} 하시겠습니까? </span>
+            <span> {data?.name} 를(을) {getContentLabel(action)} 하시겠습니까? </span>
           </div>
         </div>
 
         <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

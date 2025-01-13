@@ -7,7 +7,7 @@ import { useDisksFromVM, useSnapshotDetailFromVM, useSnapshotFromVM } from '../.
 import VmSnapshotaddModal from './modal/VmSnapshotaddModal';
 import DeleteModal from '../../../components/DeleteModal';
 
-const VmSnapshot = ({vm}) => {
+const VmSnapshots = ({vmId}) => {
   const [activePopup, setActivePopup] = useState(null);
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
@@ -28,16 +28,16 @@ const VmSnapshot = ({vm}) => {
   };
     const { 
     data: snapshots, 
-  } = useSnapshotFromVM(vm?.id, toTableItemPredicateSnapshots);  
+  } = useSnapshotFromVM(vmId, toTableItemPredicateSnapshots);  
   function toTableItemPredicateSnapshots(snapshot) {
     return {
       id: snapshot?.id ?? '', 
-      vmId: snapshot?.vm?.id ?? '',  
+      vmId: snapshot?.vmVo?.id ?? '',  
       name: snapshot?.description ?? '', 
       status: snapshot?.status ?? '',  
       fqdn: snapshot?.fqdn ?? '',  
       created: snapshot?.creationDate ?? 'N/A', 
-      vmStatus: snapshot?.vm?.status ?? 'N/A', 
+      vmStatus: snapshot?.vmVo?.status ?? 'N/A', 
       memorySize: snapshot?.memorySize ?? 'N/A', 
       memorySize: snapshot?.vmVo?.memorySize ?? 'N/A', 
       memoryActual: snapshot?.vmVo?.actualSize
@@ -52,7 +52,7 @@ const VmSnapshot = ({vm}) => {
     };
   }
 
-  const { data: disks } = useDisksFromVM(vm?.id, (e) => ({
+  const { data: disks } = useDisksFromVM(vmId, (e) => ({
     ...e,
     snapshot_check: (
       <input
@@ -67,7 +67,7 @@ const VmSnapshot = ({vm}) => {
 
 const { 
   data: snapshotdetail, 
-} = useSnapshotDetailFromVM(vm?.id, selectedSnapshot?.id, (e) => ({
+} = useSnapshotDetailFromVM(vmId, selectedSnapshot?.id, (e) => ({
   ...e,
   id: e?.id ?? '', 
   description: e?.description || 'N/A',
@@ -301,7 +301,7 @@ const {
       <VmSnapshotaddModal
         isOpen={activePopup === 'new'}
         onRequestClose={closePopup}
-        vmId={vm?.id}
+        vmId={vmId}
         diskData={disks}
       />
     
@@ -312,7 +312,7 @@ const {
           onRequestClose={() => toggleModal('delete', false)}
           contentLabel={'스냅샷'}
           data={ selectedSnapshot}
-          vmId={vm?.id}
+          vmId={vmId}
       
         />
       )}
@@ -322,4 +322,4 @@ const {
   );
 };
 
-  export default VmSnapshot;
+  export default VmSnapshots;

@@ -90,25 +90,24 @@ const HostInfo = () => {
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'edit' && (
-        <HostModal
-          editMode
-          hId={host?.id || null}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <HostDeleteModal
-          data={host}
-          onRequestClose={closeModal}
-        />
-      )}
+      <HostModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        hId={host?.id || null}
+        onClose={closeModal}
+      />
+      <HostDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={host}
+        onClose={closeModal}
+      />
       {popupItems.some((item) => item.type === activeModal) && (
         <HostActionModal
           action={activeModal} // 선택된 type을 전달
+          isOpen={activeModal}
           data={host}
           contentLabel={activeModal}
-          onRequestClose={closeModal}
+          onClose={closeModal}
         />
       )}
       </Suspense>

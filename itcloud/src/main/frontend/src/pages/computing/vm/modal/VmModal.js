@@ -23,15 +23,7 @@ import VmConnectionPlusModal from './VmConnectionPlusModal';
 import DiskModal from '../../../storage/disk/modal/DiskModal';
 
 
-const VmModal = ({ 
-  isOpen, 
-  onRequestClose, 
-  editMode = false,
-  vmdata,
-  vmId,
-  selectedVm,
-  onDiskSelection
-}) => {
+const VmModal = ({ isOpen, onClose, editMode = false, vmdata, vmId, selectedVm, onDiskSelection }) => {
 
   // 일반
   const [id, setId] = useState('');
@@ -585,7 +577,7 @@ const VmModal = ({
     }, {
       onSuccess: () => {
         alert('가상머신 편집 완료');
-        onRequestClose();
+        onClose();
       },
       onError: (error) => {
         console.error('Error editing vm:', error);
@@ -595,7 +587,7 @@ const VmModal = ({
       addVM(dataToSubmit, {
         onSuccess: () => {
           alert('가상머신 생성 완료');
-          onRequestClose();
+          onClose();
         },
         onError: (error) => {
           console.error('Error adding vm:', error);
@@ -627,7 +619,7 @@ const VmModal = ({
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={onClose}
       contentLabel="가상머신 생성"
       className="Modal"
       overlayClassName="Overlay"
@@ -636,7 +628,7 @@ const VmModal = ({
       <div className="vm-edit-popup">
         <div className="popup-header">
           <h1>{editMode ? '가상머신 편집' : '가상머신 생성'}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -1659,7 +1651,7 @@ const VmModal = ({
 
         <div className="edit-footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>  

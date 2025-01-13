@@ -15,12 +15,12 @@ import NavButton from '../../../components/navigation/NavButton';
 import Path from '../../../components/Header/Path';
 import { useVmById } from '../../../api/RQHook';
 import VmGeneral from './VmGeneral';
-import VmHostDevice from './VmHostDevice';
+import VmHostDevice from './VmHostDevices';
 import VmEvent from './VmEvent';
-import VmApplication from './VmApplication';
-import VmSnapshot from './VmSnapshot';
-import VmNetwork from './VmNetwork';
-import VmDisk from './VmDisk';
+import VmApplication from './VmApplications';
+import VmSnapshot from './VmSnapshots';
+import VmNetwork from './VmNics';
+import VmDisk from './VmDisks';
 import VmModals from './modal/VmModals';
 import VmActionModal from './modal/VmActionModal';
 
