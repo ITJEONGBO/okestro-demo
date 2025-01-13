@@ -23,7 +23,7 @@ const AllVm = () => {
       <div className="host-btn-outer">
         <VmDupl
           columns={TableColumnsInfo.VMS}
-          vms={vms || []}
+          vms={vms}
         />    
       </div>
       <Footer/>

@@ -4,12 +4,12 @@ import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { useAllEventFromVM } from '../../../api/RQHook';
 import EventTable from '../../event/EventTable';
 
-const VmEvent = ({ vm }) => {
+const VmEvent = ({ vmId }) => {
   const {
     data: events = [], // 기본값 설정
     isLoading: isEventsLoading,
     isError: isEventsError,
-  } = useAllEventFromVM(vm?.id, toTableItemPredicateEvents);
+  } = useAllEventFromVM(vmId, toTableItemPredicateEvents);
 
   function toTableItemPredicateEvents(event) {
     const severity = event?.severity ?? '';

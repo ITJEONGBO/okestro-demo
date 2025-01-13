@@ -7,7 +7,7 @@ import TableRowClick from '../../../components/table/TableRowClick';
 const ClusterModal = React.lazy(() => import('./modal/ClusterModal'));
 const ClusterDeleteModal = React.lazy(() => import('./modal/ClusterDeleteModal'));
 
-const ClusterDupl = ({ clusters = [], columns, datacenterId }) => {
+const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
   const navigate = useNavigate();
 
   const [activeModal, setActiveModal] = useState(null);
@@ -63,12 +63,8 @@ const ClusterDupl = ({ clusters = [], columns, datacenterId }) => {
           //     {cluster?.name}
           //   </TableRowClick>,
           hostCnt: cluster?.hostSize?.allCnt,
-          vmCnt: cluster?.vmSize.allCnt,
-          dataCenter: (
-            <TableRowClick type="datacenter" id={cluster.dataCenterVo.id}>
-              {cluster.dataCenterVo.name}
-            </TableRowClick>
-          ),
+          vmCnt: cluster?.vmSize?.allCnt,
+          dataCenter: <TableRowClick type="datacenter" id={cluster?.dataCenterVo?.id}>{cluster?.dataCenterVo?.name}</TableRowClick>,
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(selectedRows) => setSelectedClusters(selectedRows)}
