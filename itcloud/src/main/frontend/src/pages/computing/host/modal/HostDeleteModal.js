@@ -60,7 +60,7 @@ const HostDeleteModal = ({ isOpen, onClose, data }) => {
           </button>
         </div>
 
-        <div className="disk_delete_box">
+        <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
             <span> {names.join(', ')} 를(을) 삭제하시겠습니까? </span>

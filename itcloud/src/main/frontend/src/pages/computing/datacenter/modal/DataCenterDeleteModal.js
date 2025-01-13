@@ -55,7 +55,7 @@ const DataCenterDeleteModal = ({ isOpen, onClose, data }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_delete_popup">
+      <div className="storage-delete-popup">
         <div className="popup-header">
           <h1>데이터센터 삭제</h1>
           <button onClick={onClose}>
@@ -63,7 +63,7 @@ const DataCenterDeleteModal = ({ isOpen, onClose, data }) => {
           </button>
         </div>
 
-        <div className="disk_delete_box">
+        <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
             <span> {names.join(', ')} 를(을) 삭제하시겠습니까? </span>

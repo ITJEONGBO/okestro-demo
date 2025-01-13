@@ -1,4 +1,4 @@
-.host_new_popup{
+.host-new-popup{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
@@ -11,7 +11,7 @@
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 
-.host_new_content{
+.host-new-content{
     font-size: 0.32rem;
     display: flex;
     flex-direction: column;
@@ -20,14 +20,14 @@
     padding: 0.2rem 0 ;
 }
 
-.host_new_content>div{
+.host-new-content>div{
     display: flex;
     justify-content: space-between;
     padding: 0.2rem;
 }
 
-.host_new_content select,
-.host_new_content input[type="text"]{
+.host-new-content select,
+.host-new-content input[type="text"]{
     width: 47%;
     height: 3.3vh;
     padding: 0 3px;

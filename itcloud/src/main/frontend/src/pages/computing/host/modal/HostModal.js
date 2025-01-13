@@ -153,7 +153,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="host_new_popup">
+      <div className="host-new-popup">
         <div className="popup-header">
           <h1>{editMode ? '호스트 편집' : '새 호스트'}</h1>
           <button onClick={onClose}>
@@ -161,7 +161,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
           </button>
         </div>
 
-        <div className="host_new_content">
+        <div className="host-new-content">
           <div>
             <label htmlFor="cluster">호스트 클러스터</label>
             <select

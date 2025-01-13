@@ -323,15 +323,7 @@
   font-size: 0.29rem; 
   outline: none;
 }
-/*디스크 삭제모달*/
-.disk_delete_box{
-  padding:0.2rem;
-  font-size:0.4rem;
-}
-.disk_delete_box>div{
-  padding: 0.4rem;
-  color: #3737ba;
-}
+
 /*스토리지 팝업창들*/
 .disk_option{
   background-color: #e6e6e6;

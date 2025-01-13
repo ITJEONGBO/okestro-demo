@@ -170,7 +170,7 @@ const DeleteModal = ({
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_delete_popup">
+      <div className="storage-delete-popup">
         <div className="popup_header">
           <h1>{contentLabel} 삭제</h1>
           <button onClick={onRequestClose}>
@@ -178,7 +178,7 @@ const DeleteModal = ({
           </button>
         </div>
 
-        <div className="disk_delete_box">
+        <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
             <span> {name} 를(을) 삭제하시겠습니까? </span>

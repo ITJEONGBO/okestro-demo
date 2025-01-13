@@ -81,7 +81,7 @@ const DomainDeleteModal = ({ isOpen, onClose, data }) => {
           </button>
         </div>
 
-        <div className="disk_delete_box">
+        <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
             <span>
@@ -92,7 +92,7 @@ const DomainDeleteModal = ({ isOpen, onClose, data }) => {
           </div>
         </div>
 
-        <div className="disk_delete_box" style={{display : 'flex'}}>
+        <div className="disk-delete-box" style={{display : 'flex'}}>
           <div className='flex'>
             <input
               type="checkbox"

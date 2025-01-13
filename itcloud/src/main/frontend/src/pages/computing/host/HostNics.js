@@ -129,7 +129,7 @@ const HostNics = ({ hostId }) => {
             </div>
           </div>
           {visibleBoxes.includes(index) && (
-            <div className="host_network_hiddenbox flex">
+            <div className="host-network-hiddenbox flex">
               <div className="h-network-change-table">
                 <button
                   onClick={() => switchTable(index, "NETWORK_FROM_HOST")}
