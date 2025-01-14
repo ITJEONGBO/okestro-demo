@@ -307,7 +307,7 @@
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 33%;
+    height: 30%;
     width: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -315,7 +315,15 @@
     font-size:0.32rem;
 }
 .bonding-content{
-    padding:0.2rem 0.1rem;
+    padding:0.2rem;
+}
+/*연필추가모달*/
+.backup-edit-content{
+    width: 100%;
+}
+.host-plus-checkbox{
+    padding: 0.2rem;
+    display: flex;
 }
 /* 
 .unconfigured_network{

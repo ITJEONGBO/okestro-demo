@@ -244,17 +244,17 @@ button[disabled],select[disabled],input[disabled]{
 }
 
 .storage_volume_snap_popup{
-border: 1px solid #dfdddd;
-position: absolute;
-box-sizing: border-box;
-border-radius: 4px;
-background: #fff;
-top: 50%;
-height: 65%;
-width: 51%;
-left: 50%;
-transform: translate(-50%, -50%);
-box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 65%;
+    width: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 .volume_snap_first_content{
 font-size: 0.33rem;
@@ -368,7 +368,26 @@ width: 100%;
     font-weight: 600;
     border-bottom: 2px solid rgb(35, 132, 243);
 }
-
+.select-box-outer{
+    width: 100%;
+    padding: 1% 0.3rem;
+}
+.select-box{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.2rem;
+}
+.select-box select,
+.select-box input
+{
+    width: 55%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+}
 .img_input_box input, .img_select_box select{
     width: 55%;
     height: 3.5vh;
@@ -665,10 +684,16 @@ textarea{
 .disk-delete-box{
     padding:0.2rem;
     font-size:0.4rem;
+
+    
 }
 .disk-delete-box>div{
     padding: 0.4rem;
     color: #3737ba;
+}
+.disk_delete_checkbox{
+    display: flex;
+
 }
 /**/
 .popup-header{
@@ -849,8 +874,9 @@ textarea{
     background: #fff;
     top: 50%;
     height: 57.4vh;
-    width: 50%;
+    width: 48%;
     left: 50%;
+    font-size: 0.32rem;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
    

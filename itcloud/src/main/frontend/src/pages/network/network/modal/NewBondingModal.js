@@ -25,17 +25,17 @@ const NewBondingModal = ({ isOpen, onClose, mode = 'edit' }) => {
         </div>
 
         <div className='bonding-content'>
-            <div className="vnic_new_box">
+            <div className="select-box">
                 <label htmlFor="ip_address">본딩이름</label>
                 <input type='text'/>
             </div>
-            <div className="vnic_new_box">
+            <div className="select-box">
                 <label htmlFor="ip_address">본딩모드</label>
                 <select id="ip_address" disabled>
                     <option value="#">#</option>
                 </select>
             </div>
-            <div className="vnic_new_box">
+            <div className="select-box">
                 <label htmlFor="ip_address">사용자 정의 모드</label>
                 <input type='text'/>
             </div>

@@ -31,7 +31,7 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
         </div>
 
         <div className="flex">
-          <div className="network_backup_edit_nav">
+          <div className="network-backup-edit-nav">
             <div
               id="ipv4_tab"
               className={selectedModalTab === 'ipv4' ? 'active-tab' : 'inactive-tab'}
@@ -56,14 +56,13 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
           </div>
 
           {/* 탭 내용 */}
-          <div className="backup_edit_content">
+          <div className="backup-edit-content">
+            <div className="host-plus-checkbox" style={{ borderBottom: '1px solid gray' }}>
+              <input type="checkbox" id="allow_all_users" checked />
+              <label htmlFor="allow_all_users">네트워크 동기화</label>
+            </div>
             {selectedModalTab === 'ipv4' && (
               <>
-                <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
-                  <input type="checkbox" id="allow_all_users" checked />
-                  <label htmlFor="allow_all_users">네트워크 동기화</label>
-                </div>
-
                 <div className="backup_edit_radiobox">
                   <div className="font-bold">부트 프로토콜</div>
                   <div className="radio_option">
@@ -80,20 +79,20 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
                   </div>
                 </div>
 
-                <div>
-                  <div className="vnic_new_box">
+                <div className='select-box-outer'>
+                  <div className="select-box">
                     <label htmlFor="ip_address">IP</label>
                     <select id="ip_address" disabled>
                       <option value="#">#</option>
                     </select>
                   </div>
-                  <div className="vnic_new_box">
+                  <div className="select-box">
                     <label htmlFor="netmask">넷마스크 / 라우팅 접두사</label>
                     <select id="netmask" disabled>
                       <option value="#">#</option>
                     </select>
                   </div>
-                  <div className="vnic_new_box">
+                  <div className="select-box">
                     <label htmlFor="gateway">게이트웨이</label>
                     <select id="gateway" disabled>
                       <option value="#">#</option>
@@ -105,12 +104,7 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
 
             {selectedModalTab === 'ipv6' && (
               <>
-                <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
-                  <input type="checkbox" id="allow_all_users" className="disabled" />
-                  <label htmlFor="allow_all_users" className="disabled">
-                    네트워크 동기화
-                  </label>
-                </div>
+                
 
                 <div className="backup_edit_radiobox">
                   <div className="font-bold mb-0.5">부트 프로토콜</div>
@@ -136,8 +130,8 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
                   </div>
                 </div>
 
-                <div className="mt-3">
-                  <div className="vnic_new_box">
+                <div className="select-box-outer mt-3">
+                  <div className="select-box">
                     <label htmlFor="ip_address" className="disabled">
                       IP
                     </label>
@@ -145,7 +139,7 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
                       <option value="#">#</option>
                     </select>
                   </div>
-                  <div className="vnic_new_box">
+                  <div className="select-box">
                     <label htmlFor="netmask" className="disabled">
                       넷마스크 / 라우팅 접두사
                     </label>
@@ -153,7 +147,7 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
                       <option value="#">#</option>
                     </select>
                   </div>
-                  <div className="vnic_new_box">
+                  <div className="select-box">
                     <label htmlFor="gateway" className="disabled">
                       게이트웨이
                     </label>
@@ -167,34 +161,31 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
 
             {selectedModalTab === 'dns' && (
               <>
-                <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
-                  <input type="checkbox" id="network_sync" className="disabled" />
-                  <label htmlFor="network_sync" className="disabled">
-                    네트워크 동기화
-                  </label>
-                </div>
-                <div className="vnic_new_checkbox">
+         
+                <div className="host-plus-checkbox">
                   <input type="checkbox" id="qos_override" />
                   <label htmlFor="qos_override">QoS 덮어쓰기</label>
                 </div>
                 <div className="p-1 font-bold">아웃바운드</div>
-                <div className="network_form_group">
-                  <label htmlFor="weighted_share" className="disabled">
-                    가중 공유
-                  </label>
-                  <input type="text" id="weighted_share" disabled />
-                </div>
-                <div className="network_form_group">
-                  <label htmlFor="rate_limit" className="disabled">
-                    속도 제한 [Mbps]
-                  </label>
-                  <input type="text" id="rate_limit" disabled />
-                </div>
-                <div className="network_form_group">
-                  <label htmlFor="commit_rate" className="disabled">
-                    커밋 속도 [Mbps]
-                  </label>
-                  <input type="text" id="commit_rate" disabled />
+                <div className="select-box-outer">
+                  <div className="select-box">
+                    <label htmlFor="weighted_share" className="disabled">
+                      가중 공유
+                    </label>
+                    <input type="text" id="weighted_share" disabled />
+                  </div>
+                  <div className="select-box">
+                    <label htmlFor="rate_limit" className="disabled">
+                      속도 제한 [Mbps]
+                    </label>
+                    <input type="text" id="rate_limit" disabled />
+                  </div>
+                  <div className="select-box">
+                    <label htmlFor="commit_rate" className="disabled">
+                      커밋 속도 [Mbps]
+                    </label>
+                    <input type="text" id="commit_rate" disabled />
+                  </div>
                 </div>
               </>
             )}

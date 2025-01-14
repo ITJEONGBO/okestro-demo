@@ -87,8 +87,8 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
 
           {/* <div className='disk-delete-checkbox'> */}
             {ids.map((vmId, index) => (
-              <div key={vmId}>
-                <strong>{names[index]}</strong>
+              <div key={vmId} className='disk_delete_checkbox'>
+                <strong className='mr-2'>{names[index]}</strong>
                 <input
                   type="checkbox"
                   id={`diskDelete-${vmId}`}

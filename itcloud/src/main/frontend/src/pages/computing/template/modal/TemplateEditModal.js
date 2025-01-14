@@ -161,7 +161,7 @@ const TemplateEditModal = ({
             {selectedModalTab === 'general' && (
               <>
                 <div className="template-edit-texts">
-                  <div className="host_textbox">
+                  <div className="host-textbox">
                     <label htmlFor="template_name">이름</label>
                     <input
                       type="text"
@@ -170,7 +170,7 @@ const TemplateEditModal = ({
                       onChange={(e) => setName(e.target.value)}
                     />
                   </div>
-                  <div className="host_textbox">
+                  <div className="host-textbox">
                     <label htmlFor="description">설명</label>
                     <input
                         type="text"
@@ -179,7 +179,7 @@ const TemplateEditModal = ({
                         onChange={(e) => setDescription(e.target.value)} 
                       />
                   </div>
-                  <div className="host_textbox">
+                  <div className="host-textbox">
                     <label htmlFor="comment">코멘트</label>
                     <input
                         type="text"
