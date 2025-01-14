@@ -26,14 +26,13 @@ const DomainDatacenters = ({ domainId }) => {
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {['attach', 'detach', 'activate', 'maintenance'].includes(activeModal) && (
-        <DomainActionModal
-          action={activeModal} // `type` 전달
-          data={domain}
-          datacenterId={selectedDataCenters[0]?.id}
-          onClose={closeModal}
-        />
-      )}
+      <DomainActionModal
+        isOpen={['attach', 'detach', 'activate', 'maintenance'].includes(activeModal)}
+        action={activeModal} // `type` 전달
+        data={domain}
+        datacenterId={selectedDataCenters[0]?.id}
+        onClose={closeModal}
+      />
     </Suspense>
   );
 

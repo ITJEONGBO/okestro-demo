@@ -248,8 +248,6 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
 
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
 
-    const mutation = editMode ? editCluster : addCluster
-
     if (editMode) {
       dataToSubmit.id = formState.id;
       editCluster({ 

@@ -4,7 +4,7 @@ import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
 import { useDomainsFromDataCenter } from '../../../api/RQHook';
 import DomainDupl from '../../storage/domain/DomainDupl';
 
-const DataCenterDomains = ({datacenterId}) => {
+const DataCenterDomains = ({ datacenterId }) => {
   const {
     data: storageDomains = [], isLoading: isStorageDomainsLoading
   } = useDomainsFromDataCenter(datacenterId, (e) => ({...e,}));
@@ -14,7 +14,7 @@ const DataCenterDomains = ({datacenterId}) => {
       <DomainDupl
         domains={storageDomains}
         columns={TableColumnsInfo.STORAGE_DOMAINS}
-        type={'datacenter'}
+        actionType={'datacenter'}
         datacenterId={datacenterId}
       />
     </>

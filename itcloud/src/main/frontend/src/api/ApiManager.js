@@ -2314,9 +2314,9 @@ migrateHostsFromVM: async (vmId) => {
    */
   destroyDomain: async (domainId) => {
     return makeAPICall({
-      method: "POST",
+      method: "DELETE",
       url: ENDPOINTS.DESTORY_STORAGE_DOMAIN(domainId), 
-      data: {domainId}
+      data: domainId
     });
   },
 

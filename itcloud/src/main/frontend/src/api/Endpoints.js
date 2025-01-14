@@ -223,7 +223,7 @@ const ENDPOINTS = {
     return url;
   },  
 
-  DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destory`, 
+  DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destroy`, 
 
   //endregion: StorageDomain
 

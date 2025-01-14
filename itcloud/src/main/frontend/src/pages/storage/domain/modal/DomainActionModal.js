@@ -5,20 +5,19 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import {
   useActivateDomain, 
   useAttachDomain,
-  useDestroyDomain,
   useDetachDomain,
   useMaintenanceDomain
 } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 // 도메인에서 실행하는 거지만 데이터센터
 const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
   // action으로 type 전달
-  const { mutate: activateDomain } = useActivateDomain();
   const { mutate: attachDomain } = useAttachDomain();
   const { mutate: detachDomain } = useDetachDomain();
+  const { mutate: activateDomain } = useActivateDomain();
   const { mutate: maintenanceDomain } = useMaintenanceDomain();
-  const { mutate: destroyDomain } = useDestroyDomain();
-
+  
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   
@@ -29,28 +28,31 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
     }
   }, [data]);
 
+  const getContentLabel = () => {
+    const labels = {
+      attach: '연결',
+      detach: '분리',
+      activate: '활성',
+      maintenance: '유지보수'
+    };
+    return labels[action] || '';
+  };
+
+
   const handleFormSubmit = () => {
     if (!id) {
       console.error('ID가 없습니다.');
       return;
     }
 
-    if (action === 'activate') {
-      console.log(`activate ${id}, dc: ${datacenterId}` )
-      handleAction(activateDomain)
-    } else if (action === 'attach') {
-      console.log(`attach ${id}, dc: ${datacenterId}` )
-      handleAction(attachDomain)
-    } else if (action === 'detach') {
-      console.log(`detach ${id}, dc: ${datacenterId}` )
-      handleAction(detachDomain)
-    } else if (action === 'maintenance') {
-      console.log(`maintenance ${id}, dc: ${datacenterId}` )
-      handleAction(maintenanceDomain)
-    } else if (action === 'destroy') { 
-      console.log(`destroy ${id}` )
-      handleAction(destroyDomain)
-    }
+    const actionMap = {
+      attach: attachDomain,
+      detach: detachDomain,
+      activate: activateDomain,
+      maintenance: maintenanceDomain
+    };
+    const actionFn = actionMap[action];
+    handleAction(actionFn);
   }
 
   const handleAction = (actionFn) => {
@@ -58,6 +60,7 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
       { domainId: id, dataCenterId: datacenterId }, 
       {
         onSuccess: () => {
+          toast.success(`${data?.name} ${action} 성공`);
           onClose(); // 삭제 성공 시 모달 닫기
         },
         onError: (error) => {
@@ -77,18 +80,18 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_delete_popup">
-        <div className="popup_header">
-          <h1> 스토리지 도메인 {action}</h1>
+      <div className="storage-delete-popup">
+        <div className="popup-header">
+          <h1> 스토리지 도메인 {getContentLabel(action)}</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
 
-        <div className="disk_delete_box">
+        <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data.name} 를(을) {action} 하시겠습니까? {datacenterId}</span>
+            <span> {data?.name} 를(을) {getContentLabel(action)} 하시겠습니까?</span>
           </div>
         </div>
 

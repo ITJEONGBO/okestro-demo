@@ -165,7 +165,7 @@ class StorageController: BaseController() {
 	}
 	
 	@ApiOperation(
-		httpMethod="POST",
+		httpMethod="DELETE",
 		value="스토리지 도메인 파괴",
 		notes="선택된 스토리지 도메인을 파괴한다"
 	)
@@ -175,7 +175,7 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@PostMapping("/{storageDomainId}/destroy")
+	@DeleteMapping("/{storageDomainId}/destroy")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun destroyStorageDomain(

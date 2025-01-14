@@ -75,19 +75,17 @@ const NetworkInfo = () => {
   
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'edit' && (
-        <NetworkModal
-          editMode
-          networkId={networkId}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <NetworkDeleteModal
-          data={network}
-          onClose={closeModal}
-        />
-      )}
+      <NetworkModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        networkId={networkId}
+        onClose={closeModal}
+      />
+      <NetworkDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={networkId}
+        onClose={closeModal}
+      />
     </Suspense>
   );
 

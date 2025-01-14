@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
-// import '../css/MDomain.css'
+import '../css/MDomain.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import Tables from '../../../../components/table/Tables';
@@ -29,7 +29,14 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose }) => {
+const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose }) => {
+  const { mutate: addDomain } = useAddDomain();
+  const { mutate: editDomain } = useEditDomain();
+  const { mutate: importDomain } = useImportDomain();
+  const { mutate: importIscsiFromHost } = useImportIscsiFromHost(); // 가져오기 iscsi
+  const { mutate: importFcpFromHost } = useImportFcpFromHost();   // 가져오기 fcp
+  const { mutate: loginIscsiFromHost } = useLoginIscsiFromHost();  // 가져오기 iscsi 로그인
+
   const [formState, setFormState] = useState({
     id: '',
     domainType: 'data', // 기본값 설정
@@ -44,6 +51,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
   const [hostVoName, setHostVoName] = useState('');
   const [hostVoId, setHostVoId] = useState('');
   const [storageTypes, setStorageTypes] = useState([]);
+  
 
   // nfs
   const [nfsAddress, setNfsAddress] = useState('');
@@ -62,12 +70,26 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
   // const [chapPassword, setChapPassword] = useState('');
   // const [useChap, setUseChap] = useState(false);
 
-  const { mutate: addDomain } = useAddDomain();
-  const { mutate: editDomain } = useEditDomain();
-  const { mutate: importDomain } = useImportDomain();
-  const { mutate: importIscsiFromHost } = useImportIscsiFromHost(); // 가져오기 iscsi
-  const { mutate: importFcpFromHost } = useImportFcpFromHost();   // 가져오기 fcp
-  const { mutate: loginIscsiFromHost } = useLoginIscsiFromHost();  // 가져오기 iscsi 로그인
+  
+  const resetForm = () => {
+    setFormState({
+      id: '',
+      domainType: 'data', // 도메인 유형 기본값 설정
+      storageType: 'nfs', // 스토리지 유형 기본값 설정
+      name: '',
+      comment: '',
+      description: '',
+      warning: '10',
+      spaceBlocker: '5',
+    });
+    // setStorageTypes(['nfs', 'iscsi', 'fcp']); // 기본 도메인 유형에 따른 스토리지 유형
+    setIscsiSearchResults([]); // iSCSI 검색 결과 초기화
+    setFcpSearchResults([]);   // FCP 검색 결과 초기화
+    setNfsAddress('');
+    setLunId('');
+    setAddress('');
+    setPort(3260);
+  };
 
 
   // 도메인 데이터 가져오기
@@ -95,10 +117,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
     data: hosts = [],
     refetch: refetchHosts,
     isLoading: isHostsLoading,
-  } = useHostsFromDataCenter(
-    dataCenterVoId ? dataCenterVoId : null, 
-    (e) => ({...e,})
-  );
+  } = useHostsFromDataCenter(dataCenterVoId ? dataCenterVoId : null, (e) => ({...e,}));
 
   // iscsi 목록 가져오기
   const {
@@ -110,16 +129,16 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
     const unit = e?.logicalUnits[0];
       return {
         ...e,
-        abled: unit?.storageDomainId === "" ? 'OK' : 'NO',
-        target: unit?.target,
-        address: unit?.address,
-        port: unit?.port,
-        status: unit?.status,
-        size: (unit?.size ? unit?.size / (1024 ** 3): unit?.size),
-        paths: unit?.paths,   
-        productId: unit?.productId,   
-        vendorId: unit?.vendorId,
-        serial: unit?.serial,
+        abled: unit.storageDomainId === "" ? 'OK' : 'NO',
+        target: unit.target,
+        address: unit.address,
+        port: unit.port,
+        status: unit.status,
+        size: (unit.size ? unit.size / (1024 ** 3): unit.size),
+        paths: unit.paths,   
+        productId: unit.productId,   
+        vendorId: unit.vendorId,
+        serial: unit.serial,
     };
   }));
 
@@ -133,12 +152,12 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
     const unit = e?.logicalUnits[0];
     return {
       ...e,
-      status: unit?.status,
-      size: (unit?.size ? unit.size / (1024 ** 3): unit?.size),
-      paths: unit?.paths,   
-      productId: unit?.productId,   
-      vendorId: unit?.vendorId,   
-      serial: unit?.serial
+      status: unit.status,
+      size: (unit.size ? unit.size / (1024 ** 3): unit.size),
+      paths: unit.paths,   
+      productId: unit.productId,   
+      vendorId: unit.vendorId,   
+      serial: unit.serial
     };
   }));
 
@@ -233,26 +252,6 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
   }, [formState.storageType]); // formState.storageType 변경 시 실행
     
   
-  const resetForm = () => {
-    setFormState({
-      id: '',
-      domainType: 'data', // 도메인 유형 기본값 설정
-      storageType: 'nfs', // 스토리지 유형 기본값 설정
-      name: '',
-      comment: '',
-      description: '',
-      warning: '10',
-      spaceBlocker: '5',
-    });
-    // setStorageTypes(['nfs', 'iscsi', 'fcp']); // 기본 도메인 유형에 따른 스토리지 유형
-    setIscsiSearchResults([]); // iSCSI 검색 결과 초기화
-    setFcpSearchResults([]);   // FCP 검색 결과 초기화
-    setNfsAddress('');
-    setLunId('');
-    setAddress('');
-    setPort(3260);
-  };
-
   const handleRowClick = (row) => {
     console.log('선택한 행 데이터:', row);
     setLunId(row.id); // 선택된 LUN ID를 설정
@@ -264,7 +263,6 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
   const validateForm = () => {
     if (!formState.name) return '이름을 입력해주세요.';
     if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
-    if (!hostVoName) return '호스트를 선택해주세요.';
     if (formState.storageType === 'NFS' && !nfsAddress) return '경로를 입력해주세요.';
     if (formState.storageType !== 'nfs' && lunId) {
       const selectedLogicalUnit =
@@ -790,4 +788,4 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
   );
 };
 
-export default DomainModal;
+export default DomainImportModal;

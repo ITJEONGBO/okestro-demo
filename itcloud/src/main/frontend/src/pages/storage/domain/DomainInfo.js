@@ -69,37 +69,28 @@ const DomainInfo = () => {
   const sectionHeaderButtons = [
     { type: 'edit', label: '도메인 편집', onClick: () => openModal("edit")},
     { type: 'delete', label: '삭제', onClick: () => openModal("delete")},
+    { type: 'destroy', label: '파괴', onClick: () => openModal("destroy")},
   ]
-
-  const popupItems = [
-    { type: 'deactivate', label: '유지보수', onClick: () => openModal("deactivate")},
-    { type: 'activate', label: '활성', onClick: () => openModal("activate")},
-    { type: 'restart', label: '재시작', onClick: () => openModal("restart")},
-  ];
 
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'edit' && (
-        <DomainModal
-          editMode
-          domainId={domainId}
-          onClose={closeModal}
+      <DomainModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        domainId={domainId}
+        onClose={closeModal}
+      />
+      <DomainDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={domain}
+        onClose={closeModal}
         />
-      )}
-      {activeModal === 'delete' && (
-        <DomainDeleteModal
-          data={domain}
-          onClose={closeModal}
-        />
-      )}
-      {popupItems.some((item) => item.type === activeModal) && (
-        <DomainActionModal
-          action={activeModal}
-          data={domain}
-          contentLabel={activeModal}
-          onClose={closeModal}
-        />
-      )}
+      <DomainDeleteModal
+        isOpen={activeModal === 'destroy'}
+        data={domain}
+        deleteMode={false}
+        onClose={closeModal}
+      />
     </Suspense>
   );
 
@@ -109,7 +100,7 @@ const DomainInfo = () => {
         titleIcon={faDatabase}
         title={domain?.name}
         buttons={sectionHeaderButtons}
-        popupItems={popupItems}
+        // popupItems={popupItems}
       />
       <div className="content-outer">
         <NavButton 

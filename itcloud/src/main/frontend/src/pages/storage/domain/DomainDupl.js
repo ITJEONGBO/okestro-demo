@@ -10,7 +10,7 @@ const DomainModal = React.lazy(() => import('./modal/DomainModal'));
 const DomainActionModal = React.lazy(() => import('./modal/DomainActionModal'));
 const DomainDeleteModal = React.lazy(() => import('./modal/DomainDeleteModal'));
 
-const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', type, datacenterId }) => {
+const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', datacenterId }) => {
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
   const [selectedDomains, setSelectedDomains] = useState([]); 
@@ -42,11 +42,18 @@ const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', type, d
         isOpen={activeModal === 'delete'}
         data={selectedDomains}
         onClose={closeModal}
+        />
+      <DomainDeleteModal
+        isOpen={activeModal === 'destroy'}
+        data={selectedDomains}
+        deleteMode={false}
+        onClose={closeModal}
       />
       <DomainActionModal
         isOpen={['attach', 'detach', 'activate', 'maintenance'].includes(activeModal)}
         action={activeModal} // `type` 전달
-        data={selectedDomains}
+        data={selectedDomains[0]}
+        datacenterId={datacenterId}
         onClose={closeModal}
       />
     </Suspense>
@@ -60,7 +67,6 @@ const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', type, d
         isDeleteDisabled={selectedDomains.length === 0} 
         status={selectedDomains[0]?.status}
         actionType={actionType} // 도메인인지, 데이터센터인지
-        // type={type}
       />
       <span>ID: {selectedIds || ''}</span>
 
