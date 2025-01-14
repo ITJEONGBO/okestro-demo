@@ -101,7 +101,7 @@ const TemplateInfo = () => {
         title={template?.name}
         buttons={sectionHeaderButtons}
       />
-      <div className="content_outer">
+      <div className="content-outer">
         <NavButton
           sections={sections}
           activeSection={activeTab}

@@ -24,7 +24,7 @@ const NetworkImportModal = ({ isOpen, onClose, onSubmit }) => {
           </button>
         </div>
 
-        <div className="network_form_group">
+        <div className="network-form-group">
           <label htmlFor="cluster" style={{ fontSize: '0.33rem', fontWeight: '600' }}>네트워크 공급자</label>
           <select id="cluster">
             <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>

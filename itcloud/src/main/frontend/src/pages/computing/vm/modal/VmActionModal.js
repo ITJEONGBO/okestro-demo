@@ -101,7 +101,7 @@ const VmActionModal = ({ isOpen, action, data, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_delete_popup">
+      <div className="storage-delete-popup">
         <div className="popup-header">
           <h1>가상머신 {getContentLabel(action)}</h1>
           <button onClick={onClose}>
@@ -109,7 +109,7 @@ const VmActionModal = ({ isOpen, action, data, onClose }) => {
           </button>
         </div>
 
-        <div className="disk_delete_box">
+        <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
             <span> {names.join(', ')} 를(을) {getContentLabel(action)}하시겠습니까? </span>

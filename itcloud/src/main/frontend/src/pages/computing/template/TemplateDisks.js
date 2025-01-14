@@ -43,10 +43,10 @@ const TemplateDisks = ({ templateId }) => {
 
   return (
     <div className="host_empty_outer">
-      <div className="header_right_btns">
+      <div className="header-right-btns">
         <button>복제</button>
       </div>
-      <div className="section_table_outer">
+      <div className="section-table-outer">
         <table>
           <thead>
             <tr>
