@@ -5,17 +5,18 @@ import {
   useDashboardStorage,
 } from '../../api/RQHook';
 
-const Info = ({  }) => {
-  const { data: dashboard } = useDashboard();
-  const { data: cpuMemory } = useDashboardCpuMemory();
-  const { data: storage } = useDashboardStorage();
+const Info = () => {
+  const { data: dashboard = [] } = useDashboard();
+  const { data: cpuMemory = [] } = useDashboardCpuMemory();
+  const { data: storage = [] } = useDashboardStorage();
   
   return (
     <div className="rutil_general">
       <div className="rutil_general_first_contents">
         <div>
           <img className="logo_general" src={logo} alt="logo" />
-          <span>버전: {dashboard?.version}<br />
+          <span>
+            버전: {dashboard?.version}<br />
             빌드날짜: {dashboard?.releaseDate}
           </span>
         </div>

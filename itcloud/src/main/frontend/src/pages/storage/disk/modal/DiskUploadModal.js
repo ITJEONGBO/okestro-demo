@@ -25,7 +25,7 @@ const onlyFileName = (fileName) => {
   return lastDotIndex > 0 ? fileName.slice(0, lastDotIndex) : fileName;
 };
 
-const DiskUploadModal = ({ isOpen, onRequestClose }) => {
+const DiskUploadModal = ({ isOpen, onClose }) => {
   const [file, setFile] = useState(null);
   const [alias, setAlias] = useState('');
   const [size, setSize] = useState('');
@@ -147,7 +147,7 @@ const DiskUploadModal = ({ isOpen, onRequestClose }) => {
       {
         onSuccess: () => {
           alert("디스크 업로드 완료")
-          onRequestClose();  // 성공 시 모달 닫기
+          onClose();  // 성공 시 모달 닫기
         },
         onError: (error) => {
           console.error('Error editing Host:', error);
@@ -159,7 +159,7 @@ const DiskUploadModal = ({ isOpen, onRequestClose }) => {
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={onClose}
       contentLabel="디스크 업로드"
       className="Modal"
       overlayClassName="Overlay"
@@ -168,7 +168,7 @@ const DiskUploadModal = ({ isOpen, onRequestClose }) => {
     <div className="storage_disk_upload_popup">
       <div className="popup-header">
         <h1>이미지 업로드</h1>
-        <button onClick={onRequestClose}>
+        <button onClick={onClose}>
           <FontAwesomeIcon icon={faTimes} fixedWidth />
         </button>
       </div>
@@ -305,7 +305,7 @@ const DiskUploadModal = ({ isOpen, onRequestClose }) => {
         </div>
         <div className="edit-footer">
           <button onClick={handleFormSubmit}>{'생성'}</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

@@ -22,27 +22,25 @@ const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
   const status = selectedClusters.length === 0 ? 'none': selectedClusters.length === 1 ? 'single': 'multiple';
 
   const renderModals = () => (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <ClusterModal
-          isOpen={activeModal === 'create'}
-          dcId={datacenterId}
-          onClose={closeModal}
-        />
-        <ClusterModal
-          isOpen={activeModal === 'edit'}
-          editMode
-          cId={selectedClusters[0]?.id}
-          dcId={datacenterId}
-          onClose={closeModal}
-        />
-        <ClusterDeleteModal
-          isOpen={activeModal === 'delete'}
-          data={selectedClusters}
-          onClose={closeModal}
-        />
-      </Suspense>
-    </>
+    <Suspense fallback={<div>Loading...</div>}>
+      <ClusterModal
+        isOpen={activeModal === 'create'}
+        dcId={datacenterId}
+        onClose={closeModal}
+      />
+      <ClusterModal
+        isOpen={activeModal === 'edit'}
+        editMode
+        cId={selectedClusters[0]?.id}
+        dcId={datacenterId}
+        onClose={closeModal}
+      />
+      <ClusterDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={selectedClusters}
+        onClose={closeModal}
+      />
+    </Suspense>
   );
   
   return (
@@ -72,14 +70,6 @@ const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
         onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true} // 다중 선택 활성화
       />
- 
-      {/* <ClusterTable
-        columns={columns}
-        clusters={clusters}
-        setSelectedClusters={(selected) => {
-          if (Array.isArray(selected)) setSelectedClusters(selected);
-        }}
-      /> */}
 
       {/* 클러스터 모달창 */}
       { renderModals() }

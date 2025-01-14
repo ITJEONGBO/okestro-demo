@@ -264,7 +264,7 @@ class HostServiceImpl(
 		log.info("findAllHostDevicesFromHost ... hostId: {}", hostId)
 		val res: List<HostDevice> = conn.findAllHostDeviceFromHost(hostId)
 			.getOrDefault(listOf())
-		return res.toHostDeviceVos(conn)
+		return res.toHostDeviceVos()
 	}
 
 	@Throws(Error::class)

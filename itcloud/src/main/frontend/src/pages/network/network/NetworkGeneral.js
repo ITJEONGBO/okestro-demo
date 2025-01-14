@@ -3,32 +3,25 @@ import { useNetworkById } from "../../../api/RQHook";
 const NetworkGeneral = ({ networkId }) => {
   const { data: network} = useNetworkById(networkId);
 
+  const tableRows = [
+    { label: "이름", value: network?.name },
+    { label: "ID", value: network?.id },
+    { label: "설명", value: network?.description },
+    { label: "VDSM 이름", value: network?.vdsmName },
+    { label: "가상 머신 네트워크", value: network?.usage?.vm ? '예': '아니요' },
+    { label: "VLAN 태그", value: network?.vlan === 0 ? '없음': network?.vlan },
+    { label: "MTU", value: network?.mtu === 0 ? '기본값 (1500)': network?.mtu },
+  ];
+
   return (
     <table className="table">
       <tbody>
-        <tr>
-          <th>이름</th>
-          <td>{network?.name}</td>
+        {tableRows.map((row, index) => (
+          <tr key={index}>
+            <th>{row.label}:</th>
+            <td>{row.value}</td>
           </tr>
-        <tr>
-          <th>ID:</th>
-          <td>{network?.id}</td>
-          </tr>
-        <tr>
-          <th>설명:</th>
-          <td>{network?.description ?? ''}</td></tr>
-        <tr>
-          <th>VDSM 이름:</th>
-          <td>{network?.vdsmName ?? ''}</td></tr>
-        <tr>
-          <th>가상 머신 네트워크:</th>
-          <td>{network?.usage?.vm ? '예': '아니요'}</td></tr>
-        <tr>
-          <th>VLAN 태그:</th>
-          <td>{network?.vlan === 0 ? '없음': network?.vlan}</td></tr>
-        <tr>
-          <th>MTU:</th>
-          <td>{network?.mtu === 0 ? '기본값 (1500)': network?.mtu}</td></tr>
+        ))}
       </tbody>
     </table>
   );

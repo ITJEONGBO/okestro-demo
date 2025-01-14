@@ -5,14 +5,14 @@ import HostDupl from '../computing/host/HostDupl';
 
 const Hosts = () => {
   const {
-      data: hosts = [],
+    data: hosts = [],
   } = useAllHosts((e) => ({ ...e }));
 
   return (
     <>
       <HostDupl
         columns={TableColumnsInfo.HOSTS}
-        hosts={hosts || []}        
+        hosts={hosts}        
       />
     </>
   );

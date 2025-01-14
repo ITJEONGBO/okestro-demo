@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser, fa1, fa2
 } from '@fortawesome/free-solid-svg-icons'
-import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import TableOuter from '../../table/TableOuter';
 const VmPower = () => {
 

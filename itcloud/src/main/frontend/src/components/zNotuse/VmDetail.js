@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import HeaderButton from '../../../components/button/HeaderButton';
+import HeaderButton from '../button/HeaderButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTimes,
@@ -10,19 +10,19 @@ import {
   faMicrochip
 } from '@fortawesome/free-solid-svg-icons';
 import './css/Vm.css';
-import Footer from '../../../components/footer/Footer';
-import NavButton from '../../../components/navigation/NavButton';
-import Path from '../../../components/Header/Path';
-import { useVmById } from '../../../api/RQHook';
-import VmGeneral from './VmGeneral';
-import VmHostDevice from './VmHostDevices';
-import VmEvent from './VmEvent';
-import VmApplication from './VmApplications';
-import VmSnapshot from './VmSnapshots';
-import VmNetwork from './VmNics';
-import VmDisk from './VmDisks';
-import VmModals from './modal/VmModals';
-import VmActionModal from './modal/VmActionModal';
+import Footer from '../footer/Footer';
+import NavButton from '../navigation/NavButton';
+import Path from '../Header/Path';
+import { useVmById } from '../../api/RQHook';
+import VmGeneral from '../../pages/computing/vm/VmGeneral';
+import VmHostDevice from '../../pages/computing/vm/VmHostDevices';
+import VmEvent from '../../pages/computing/vm/VmEvent';
+import VmApplication from '../../pages/computing/vm/VmApplications';
+import VmSnapshot from '../../pages/computing/vm/VmSnapshots';
+import VmNetwork from '../../pages/computing/vm/VmNics';
+import VmDisk from '../../pages/computing/vm/VmDisks';
+import VmModals from '../../pages/computing/vm/modal/VmModals';
+import VmActionModal from '../../pages/computing/vm/modal/VmActionModal';
 
 // React Modal 설정
 Modal.setAppElement('#root');

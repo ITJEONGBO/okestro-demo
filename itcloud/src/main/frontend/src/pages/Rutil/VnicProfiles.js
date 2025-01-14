@@ -5,19 +5,14 @@ import VnicProfileDupl from '../../pages/network/vnicProfile/VnicProfileDupl';
 
 const VnicProfiles = () => {
   const { 
-    data: vnicProfiles = [], 
-    refetch: refetchVnicProfiles, 
-    isError: isVnicProfilesError, 
-    error: vnicProfilesError, 
-    isLoading: isVnicProfilesLoading,
+    data: vnicProfiles = []
   } = useAllVnicProfiles((e) => ({...e,}));
-
 
   return (
     <>
       <VnicProfileDupl
         columns={TableColumnsInfo.VNIC_PROFILES}
-        vnicProfiles={vnicProfiles || []}
+        vnicProfiles={vnicProfiles}
       />
     </>
   );

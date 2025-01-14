@@ -45,8 +45,8 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
       <HostActionModal
         isOpen={['deactivate', 'activate', 'restart', 'reInstall', 'register', 'haOn', 'haOff'].includes(activeModal)}
         action={activeModal} // `type` 전달
-        host={selectedHosts?.[0]}
-        onRequestClose={closeModal}
+        data={selectedHosts}
+        onClose={closeModal}
       />
   </Suspense>
   );
@@ -62,18 +62,11 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
       />
       <span>ID: {selectedIds || ''}</span>
 
-      {/* <HostTable
-        columns={columns}
-        hosts={hosts}
-        selectedHosts={selectedHosts} // 다중 선택 상태 전달
-        setSelectedHosts={(selected) => Array.isArray(selected) && setSelectedHosts(selected)}
-      /> */}
-
       <TablesOuter
         columns={columns}
         data={hosts.map((host) => ({
           ...host,
-          icon: renderHostStatusIcon(host.status),
+          icon: renderHostStatusIcon(host?.status),
           hostedEngine:
             host?.hostedEngine && host?.hostedEngineVM ? (
               <FontAwesomeIcon icon={faPencil} fixedWidth style={{ color: 'gold', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />
@@ -82,12 +75,12 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
             ) : (''),
           status: host?.status,
           spmStatus: host?.spmStatus === 'NONE' ? '보통' : host?.spmStatus,
-          vmCnt: host?.vmSizeVo.allCnt,
-          memoryUsage: host?.usageDto.memoryPercent === null ? '' : host?.usageDto.memoryPercent + '%',
-          cpuUsage: host?.usageDto.cpuPercent === null ? '' : host?.usageDto.cpuPercent + '%',
-          networkUsage: host?.usageDto.networkPercent === null ? '' : host?.usageDto.networkPercent + '%',
-          cluster: <TableRowClick type="cluster" id={host.clusterVo.id}>{host?.clusterVo?.name}</TableRowClick>,
-          dataCenter: <TableRowClick type="datacenter" id={host.dataCenterVo.id}>{host?.dataCenterVo?.name}</TableRowClick>,
+          vmCnt: host?.vmSizeVo?.allCnt,
+          memoryUsage: host?.usageDto?.memoryPercent === null ? '' : host?.usageDto?.memoryPercent + '%',
+          cpuUsage: host?.usageDto?.cpuPercent === null ? '' : host?.usageDto?.cpuPercent + '%',
+          networkUsage: host?.usageDto?.networkPercent === null ? '' : host?.usageDto?.networkPercent + '%',
+          cluster: <TableRowClick type="cluster" id={host?.clusterVo?.id}>{host?.clusterVo?.name}</TableRowClick>,
+          dataCenter: <TableRowClick type="datacenter" id={host?.dataCenterVo?.id}>{host?.dataCenterVo?.name}</TableRowClick>,
         }))}
         shouldHighlight1stCol={true}
         onRowClick={(selectedRows) => setSelectedHosts(selectedRows)}

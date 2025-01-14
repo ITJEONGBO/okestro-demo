@@ -2,110 +2,96 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComputer, faDatabase, faEarthAmericas, faNetworkWired, faPlus, faServer, faSitemap, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
 import VmGeneralChart from "./VmGeneralChart";
 import { useVmById } from "../../../api/RQHook";
+import { formatBytesToMB } from "../../../utils/format";
 
 // 애플리케이션 섹션
 const VmGeneral = ({ vmId }) => {
   const { data: vm } = useVmById(vmId);
+
+  const generalTableRows = [
+    { label: "전원상태", value: vm?.status },
+    { label: "IP 주소", value: vm?.ipv4 },
+    { label: "게스트 운영 체제", value: vm?.osSystem },
+    { label: "게스트 에이전트", value: vm?.guestInterfaceName },
+    { label: "업타임", value: vm?.upTime },
+    { label: "FQDN", value: vm?.fqdn },
+    { label: "실행 호스트", value: vm?.hostVo?.name },
+    { label: "클러스터", 
+      value: 
+        <div className='related_object'>
+          <FontAwesomeIcon icon={faEarthAmericas} fixedWidth className="mr-0.5"/>
+          <span className="text-blue-500 font-bold">{vm?.clusterVo?.name || '#'}</span>
+        </div>
+    },
+    { label: "호스트", 
+      value:  
+        <div className='related_object'>
+          <FontAwesomeIcon icon={faUser} fixedWidth className="mr-0.5"/>
+          <span className="text-blue-500 font-bold"> {vm?.hostVo?.name || '#'}</span>
+        </div>
+    },
+    { label: "네트워크", 
+      value:  
+        <div className='related_object'>
+          <FontAwesomeIcon icon={faServer} fixedWidth className="mr-0.5"/>
+          <span className="text-blue-500 font-bold"> {vm?.hostVo?.name || '#'}</span>
+        </div>
+    },
+    { label: "스토리지 도메인", 
+      value:  
+        <div className='related_object'>
+          <FontAwesomeIcon icon={faDatabase} fixedWidth className="mr-0.5"/>
+          <span>{vm?.storageDomainVo?.name || ''}</span>
+        </div>
+    }
+  ];
+
+  const hardwareTableRows = [
+    { label: "CPU", value: `${vm?.cpuTopologyCnt || '#'}(${vm?.cpuTopologySocket || '#'}:${vm?.cpuTopologyCore || '#'}:${vm?.cpuTopologyThread || '#'})` },
+    { label: "메모리", value: formatBytesToMB(vm?.memorySize) +' MB' ?? '0'},
+    { label: "하드 디스크", value: vm?.storageDomainVo?.name },
+    { label: "네트워크 어댑터", value: vm?.nicVos?.[0]?.name || '#' },
+    { label: "칩셋/펌웨어 유형", value: vm?.chipsetFirmwareType || '#' }
+  ];
+
+  const typeTableRows = [
+    { label: "유형", value: vm?.osSystem },
+    { label: "아키텍처", value: vm?.cpuArc },
+    { label: "운영체제", value: vm?.osSystem },
+    { label: "커널 버전", value: vm?.kernelVersion },
+    { label: "시간대", value: vm?.timeOffset },
+    { label: "로그인된 사용자", value: vm?.loggedInUser },
+    { label: "콘솔 사용자", value: vm?.consoleUser },
+    { label: "콘솔 클라이언트 IP", value: vm?.consoleClientIp },
     
+  ];
+  
   return (
     <>
       <div className='vm-detail-general-boxs'>
-
         <div className='detail-general-box'>
           <table className="table">
             <tbody>
-              <tr>
-                <th >전원상태</th>
-                <td class="!text-blue-500 font-bold">{vm?.status}</td>
-              </tr>
-              <tr>
-                <th>IP 주소</th>
-                <td>{vm?.osSystem}</td>
-              </tr>
-              <tr>
-                <th>게스트 운영 체제</th>
-                <td>{vm?.osSystem}</td>
-              </tr>
-              <tr>
-                <th>게스트 에이전트</th>
-                <td>{vm?.guestInterfaceName}</td>
-              </tr>
-              <tr>
-                <th>업타임</th>
-                <td>{vm?.upTime}</td>
-              </tr>
-              <tr>
-                <th>FQDN</th>
-                <td>{vm?.fqdn}</td>
-              </tr>
-              <tr>
-                <th>실행 호스트</th>
-                <td>{vm?.hostVo?.name}</td>
-              </tr>
-              <tr>
-                <th>클러스터</th>
-                <td>
-                  <div className='related_object'>
-                    <FontAwesomeIcon icon={faEarthAmericas} fixedWidth className="mr-0.5"/>
-                    <span className="text-blue-500 font-bold">{vm?.clusterVo?.name || '#'}</span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <th>호스트</th>
-                <td>
-                  <div className='related_object'>
-                    <FontAwesomeIcon icon={faUser} fixedWidth className="mr-0.5"/>
-                    <span className="text-blue-500 font-bold"> {vm?.hostVo?.name || '#'}</span>
-                  </div>
-                </td>   
-              </tr>
-              <tr>
-                <th>네트워크</th>
-                <td>
-                  <div className='related_object'>
-                    <FontAwesomeIcon icon={faServer} fixedWidth className="mr-0.5"/>
-                    <span className="text-blue-500 font-bold"> {vm?.hostVo?.name || '#'}</span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <th>스토리지 도메인</th>
-                <td>
-                  <div className='related_object'>
-                    <FontAwesomeIcon icon={faDatabase} fixedWidth className="mr-0.5"/>
-                    <span>{vm?.storageDomainVo?.name || ''}</span>
-                  </div>
-                </td>
-              </tr>
+              {generalTableRows.map((row, index) => (
+                <tr key={index}>
+                  <th>{row.label}:</th>
+                  <td>{row.value}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
           
-        <div className='detail-general-box mr-8'>
+        <div className='detail-general-box'>
           <div>VM 하드웨어</div>
           <table className="table">
             <tbody>
-              <tr>
-                <th>CPU</th>
-                <td>{`${vm?.cpuTopologyCnt || '#'}(${vm?.cpuTopologySocket || '#'}:${vm?.cpuTopologyCore || '#'}:${vm?.cpuTopologyThread || '#'})`}</td>
-              </tr>
-              <tr>
-                <th>메모리</th>
-                <td>{vm?.memorySize ? Math.round(vm.memorySize / 1024 / 1024) + ' MB' : '#'}</td>
-              </tr>
-              <tr>
-                <th>하드 디스크1</th>
-                <td>{vm?.storageDomainVo?.name || '#'}</td>
-              </tr>
-              <tr>
-                <th>네트워크 어댑터</th>
-                <td>{vm?.nicVos?.[0]?.name || '#'}</td>
-              </tr>
-              <tr>
-                <th>칩셋/펌웨어 유형</th>
-                <td>{vm?.chipsetFirmwareType || '#'}</td>
-              </tr>
+              {hardwareTableRows.map((row, index) => (
+                <tr key={index}>
+                  <th>{row.label}:</th>
+                  <td>{row.value}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -116,14 +102,14 @@ const VmGeneral = ({ vmId }) => {
             <div className='capacity'>
               <div>CPU</div>
               <div className='capacity_box'>
-                <div>{vm?.usageDto?.cpuPercent || '#'}% 사용됨</div>
-                <div>{vm?.cpuTopologyCnt || '#'} CPU 할당됨</div>
+                <div>{vm?.usageDto?.cpuPercent}% 사용됨</div>
+                <div>{vm?.cpuTopologyCnt} CPU 할당됨</div>
               </div>
             </div>
             <div className='capacity'>
               <div>메모리</div>
               <div className='capacity_box'>
-                <div>{vm?.memoryUsed || '#'}% 사용됨</div>
+                <div>{vm?.usageDto?.memoryPercent}% 사용됨</div>
                 <div>{Math.round(vm?.memoryActual / 1024 / 1024) || '#'} MB 할당됨</div>
               </div>
             </div>
@@ -143,38 +129,12 @@ const VmGeneral = ({ vmId }) => {
           <div className="vm_table_container">
             <table className="table">
               <tbody>
-                <tr>
-                  <th>유형:</th>
-                  <td>{vm?.osSystem || ''}</td>
-                </tr>
-                <tr>
-                  <th>아키텍처:</th>
-                  <td>{vm?.cpuArc || ''}</td>
-                </tr>
-                <tr>
-                  <th>운영체제:</th>
-                  <td>{vm?.osSystem || ''}</td>
-                </tr>
-                <tr>
-                  <th>커널 버전:</th>
-                  <td>{vm?.kernelVersion || ''}</td>
-                </tr>
-                <tr>
-                  <th>시간대:</th>
-                  <td>{vm?.timeOffset || 'KST(UTC+09:00)'}</td>
-                </tr>
-                <tr>
-                  <th>로그인된 사용자:</th>
-                  <td>{vm?.loggedInUser || ''}</td>
-                </tr>
-                <tr>
-                  <th>콘솔 사용자:</th>
-                  <td>{vm?.consoleUser || ''}</td>
-                </tr>
-                <tr>
-                  <th>콘솔 클라이언트 IP:</th>
-                  <td>{vm?.consoleClientIp || ''}</td>
-                </tr>
+                {typeTableRows.map((row, index) => (
+                  <tr key={index}>
+                    <th>{row.label}:</th>
+                    <td>{row.value}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

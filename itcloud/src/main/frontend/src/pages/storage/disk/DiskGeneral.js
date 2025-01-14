@@ -1,43 +1,29 @@
 import { useDiskById } from "../../../api/RQHook";
-import { formatBytesToGB } from '../../../utils/format';
+import { formatBytesToGB, formatBytesToGBToFixedZero } from '../../../utils/format';
 
 const DiskGeneral = ({ diskId }) => {
-  const {
-    data: disk,
-  } = useDiskById(diskId, (e) => ({
-    ...e,
-  }));
+  const { data: disk } = useDiskById(diskId);
+
+  const tableRows = [
+    { label: "별칭", value: disk?.alias },
+    { label: "ID", value: disk?.id },
+    { label: "설명", value: disk?.description },
+    { label: "디스크 프로파일", value: disk?.diskProfileVo?.name },
+    { label: "가상 크기", value: formatBytesToGBToFixedZero(disk?.virtualSize) + ' GB' },
+    { label: "실제 크기", value: formatBytesToGBToFixedZero(disk?.actualSize) + ' GB' },
+  ];
 
   return (
     <div className="tables">
       <div className="table_container_center">
         <table className="table">
           <tbody>
-            <tr>
-              <th>별칭:</th>
-              <td>{disk?.alias}</td>
-            </tr>
-            <tr>
-              <th>설명:</th>
-              <td>{disk?.description}</td>
-            </tr>
-            <tr>
-              <th>ID:</th>
-              <td>{disk?.id}</td>
-            </tr>
-            <tr>
-              <th>디스크 프로파일:</th>
-              <td>{disk?.diskProfileVo?.name}</td>
-            </tr>
-            
-            <tr>
-              <th>가상 크기:</th>
-              <td>{disk?.virtualSize && `${formatBytesToGB(disk.virtualSize)}` }</td>
-            </tr>
-            <tr>
-              <th>실제 크기:</th>
-              <td>{disk?.actualSize && `${formatBytesToGB(disk.actualSize)}`}</td>
-            </tr>
+            {tableRows.map((row, index) => (
+              <tr key={index}>
+                <th>{row.label}:</th>
+                <td>{row.value}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

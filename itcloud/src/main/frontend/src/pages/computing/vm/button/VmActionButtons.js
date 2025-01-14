@@ -42,7 +42,7 @@ const VmActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status, 
   
   const manageActions = [
     { type: 'import', label: '가져오기' },
-    { type: 'copyVm', label: '가상머신 복제', disabled: !isPause },
+    { type: 'copyVm', label: '가상머신 복제', disabled: isEditDisabled || !isPause },
     { type: 'delete', label: '삭제', disabled: isDeleteDisabled || isMaintenance },
     { type: 'templates', label: '템플릿 생성', disabled: isEditDisabled },
     { type: 'ova', label: 'ova로 내보내기', disabled: isEditDisabled },    

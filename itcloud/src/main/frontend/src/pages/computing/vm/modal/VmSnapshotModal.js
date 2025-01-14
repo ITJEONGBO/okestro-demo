@@ -9,12 +9,7 @@ import {
   useDisksFromVM 
 } from '../../../../api/RQHook';
 import '../css/MVm.css';
-const VmSnapshotaddModal = ({ 
-    isOpen, 
-    onRequestClose,
-    snapshotData,
-    vmId,
-}) => {
+const VmSnapshotModal = ({ isOpen, data, vmId, onClose }) => {
     const [id, setId] = useState(''); // 스냅샷 ID
     const [alias, setAlias] = useState(''); // 스냅샷 ID
     const [description, setDescription] = useState(''); // 스냅샷 설명
@@ -51,7 +46,7 @@ const VmSnapshotaddModal = ({
         {
         onSuccess: () => {
           alert("스냅샷 생성 완료(alert기능구현)")
-          onRequestClose();
+          onClose();
         },
         onError: (error) => {
           console.error('Error adding snapshot:', error);
@@ -62,7 +57,7 @@ const VmSnapshotaddModal = ({
     return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={onClose}
       contentLabel="스냅샷 생성"
       className="Modal"
       overlayClassName="Overlay"
@@ -71,7 +66,7 @@ const VmSnapshotaddModal = ({
       <div className="snapshot-new-popup">
         <div className="popup-header">
           <h1>스냅샷 생성</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -101,11 +96,11 @@ const VmSnapshotaddModal = ({
         <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>
   );
 };
 
-export default VmSnapshotaddModal;
+export default VmSnapshotModal;

@@ -10,11 +10,12 @@ const HeaderButton = ({ title, status, buttons = [], popupItems = [], titleIcon 
   const togglePopupBox = () => setIsPopupBoxVisible(!isPopupBoxVisible);
 
   const handlePopupBoxItemClick = (item) => {
+    if (item.disabled) return; // disabled 상태면 클릭 이벤트 무시
     if (item.onClick) {
       item.onClick();
     }
     console.log(`Clicked on ${item.label}`);
-    setIsPopupBoxVisible(false); // 팝업 닫기
+    setIsPopupBoxVisible(false);
   };
 
   // 팝업 외부 클릭 시 닫히도록 처리
@@ -77,17 +78,19 @@ const HeaderButton = ({ title, status, buttons = [], popupItems = [], titleIcon 
                 style={{ display: isPopupBoxVisible ? 'block' : 'none' }}
               >
                 {popupItems.map((item, index) => (
-                  <div                  
+                  <div
                     key={index}
-                    className="popup_item"
+                    className={`popup_item ${item.disabled ? "disabled" : ""}`}
                     onClick={(e) => {
-                      e.stopPropagation();
-                      handlePopupBoxItemClick(item);
+                      if (!item.disabled) {
+                        e.stopPropagation();
+                        handlePopupBoxItemClick(item);
+                      }
                     }}
-                    disabled={item.disabled}
+                    disabled={item.disabled} // 실제 disabled 속성 반영
                   >
-                    {item.label}
-                  </div>
+                  {item.label}
+                </div>
                 ))}
               </div>
             </button>

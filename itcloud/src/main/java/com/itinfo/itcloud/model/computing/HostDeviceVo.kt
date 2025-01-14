@@ -11,6 +11,7 @@ private val log = LoggerFactory.getLogger(HostDeviceVo::class.java)
 /**
  * [HostDeviceVo]
  *
+ * @property id [String]
  * @property name [String]
  * @property capability [String]
  * @property vendorId [String]
@@ -20,6 +21,7 @@ private val log = LoggerFactory.getLogger(HostDeviceVo::class.java)
  * @property driver [String]
  */
 class HostDeviceVo (
+    val id: String = "",
     val name: String = "",
     val capability: String = "",
     val vendorId: String = "",
@@ -32,6 +34,7 @@ class HostDeviceVo (
         gson.toJson(this)
 
     class Builder {
+        private var bId: String = ""; fun id(block: () -> String?) { bId = block() ?: ""}
         private var bName: String = ""; fun name(block: () -> String?) { bName = block() ?: ""}
         private var bCapability: String = ""; fun capability(block: () -> String?) { bCapability = block() ?: ""}
         private var bVendorId: String = ""; fun vendorId(block: () -> String?) { bVendorId = block() ?: ""}
@@ -40,7 +43,7 @@ class HostDeviceVo (
         private var bProductName: String = ""; fun productName(block: () -> String?) { bProductName = block() ?: ""}
         private var bDriver: String = ""; fun driver(block: () -> String?) { bDriver = block() ?: ""}
 
-        fun build(): HostDeviceVo = HostDeviceVo( bName, bCapability, bVendorId, bVendorName, bProductId, bProductName, bDriver)
+        fun build(): HostDeviceVo = HostDeviceVo( bId, bName, bCapability, bVendorId, bVendorName, bProductId, bProductName, bDriver)
     }
 
     companion object {
@@ -48,8 +51,9 @@ class HostDeviceVo (
     }
 }
 
-fun HostDevice.toHostDeviceVo(conn: Connection): HostDeviceVo {
+fun HostDevice.toHostDeviceVo(): HostDeviceVo {
     return HostDeviceVo.builder {
+        id { this@toHostDeviceVo.id() }
         name { this@toHostDeviceVo.name() }
         capability { this@toHostDeviceVo.capability() }
         vendorName { if(this@toHostDeviceVo.vendorPresent()) "${this@toHostDeviceVo.vendor().name()} (${this@toHostDeviceVo.vendor().id()})" else ""}
@@ -58,5 +62,5 @@ fun HostDevice.toHostDeviceVo(conn: Connection): HostDeviceVo {
     }
 }
 
-fun List<HostDevice>.toHostDeviceVos(conn: Connection): List<HostDeviceVo> =
-    this@toHostDeviceVos.map { it.toHostDeviceVo(conn) }
+fun List<HostDevice>.toHostDeviceVos(): List<HostDeviceVo> =
+    this@toHostDeviceVos.map { it.toHostDeviceVo() }

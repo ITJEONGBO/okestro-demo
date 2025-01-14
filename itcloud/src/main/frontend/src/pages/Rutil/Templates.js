@@ -6,20 +6,14 @@ import TemplateDupl from '../../pages/computing/template/TemplateDupl';
 
 const Templates = () => {
   const { 
-    data: templates = [], 
-    status: templatesStatus,
-    isRefetching: isTemplatesRefetching,
-    refetch: refetchTemplates, 
-    isError: isTemplates, 
-    error: templatesError, 
-    isLoading: isTemplatesLoading,
+    data: templates = []
   } = useAllTemplates((e) => ({...e,}));
 
   return (
     <>
       <TemplateDupl
-        templates={templates || []}
         columns={TableColumnsInfo.TEMPLATES}
+        templates={templates}
       />      
     </>
   );

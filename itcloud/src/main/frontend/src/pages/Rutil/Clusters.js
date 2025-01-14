@@ -12,7 +12,7 @@ const Clusters = () => {
     <>
       <ClusterDupl
         columns={TableColumnsInfo.CLUSTERS}
-        clusters={clusters || []}
+        clusters={clusters}
       />
     </>
   );

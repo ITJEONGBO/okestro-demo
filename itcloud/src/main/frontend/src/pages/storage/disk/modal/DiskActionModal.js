@@ -8,13 +8,13 @@ import {
 } from '../../../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
-  <div className="img_input_box">
+  <div className="img-input-box">
     <label>{label}</label>
     {children}
   </div>
 );
 
-const DiskActionModal = ({ isOpen, action, diskId, vmId, type='disk', onDiskCreated, onClose }) => {
+const DiskActionModal = ({ isOpen, action, data, onClose }) => {
 
   const handleFormSubmit = () => {
     // const error = validateForm();
@@ -69,7 +69,7 @@ const DiskActionModal = ({ isOpen, action, diskId, vmId, type='disk', onDiskCrea
       overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="disk_move_popup">
+      <div className="disk-move-popup">
         <div className="popup-header">
           <h1>{action === 'move' ? '디스크 이동' : '디스크 복사'}</h1>
           <button onClick={onClose}>
@@ -77,7 +77,7 @@ const DiskActionModal = ({ isOpen, action, diskId, vmId, type='disk', onDiskCrea
           </button>
         </div>
 
-        <div className="section_table_outer py-1">
+        <div className="section-table-outer py-1">
           <span>디스크 할당:</span>
           <table>
             <thead>

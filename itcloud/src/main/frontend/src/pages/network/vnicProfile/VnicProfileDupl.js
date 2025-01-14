@@ -51,16 +51,8 @@ const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
         columns={columns}
         data={vnicProfiles.map((vnic) => ({
           ...vnic,
-          network: (
-            <TableRowClick type="network" id={vnic?.networkVo?.id}>
-              {vnic?.networkVo?.name}
-            </TableRowClick>
-          ),
-          dataCenter: (
-            <TableRowClick type="datacenter" id={vnic?.dataCenterVo?.id}>
-              {vnic?.dataCenterVo?.name}
-            </TableRowClick>
-          ),
+          network: <TableRowClick type="network" id={vnic?.networkVo?.id}>{vnic?.networkVo?.name}</TableRowClick>,          
+          dataCenter: <TableRowClick type="datacenter" id={vnic?.dataCenterVo?.id}>{vnic?.dataCenterVo?.name}</TableRowClick>,
           passThrough: vnic?.passThrough === 'DISABLED' ? '아니요' : '예',
           networkFilter: vnic?.networkFilterVo?.name || '-',
         }))}

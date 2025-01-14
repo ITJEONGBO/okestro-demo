@@ -5,17 +5,14 @@ import NetworkDupl from '../../pages/network/network/NetworkDupl';
 
 const Networks = () => {
   const { 
-    data: networks = [], 
-    refetch: refetchNetworks, 
-    error: networksError, 
-    isLoading: isNetworksLoading,
+    data: networks = []
   } = useAllNetworks((e) => ({...e,}));
 
   return (
     <>
       <NetworkDupl
         columns={TableColumnsInfo.NETWORKS}
-        networks={networks || []}
+        networks={networks}
       />
     </> 
   );

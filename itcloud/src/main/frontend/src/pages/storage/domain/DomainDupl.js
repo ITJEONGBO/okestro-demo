@@ -10,7 +10,7 @@ const DomainModal = React.lazy(() => import('./modal/DomainModal'));
 const DomainActionModal = React.lazy(() => import('./modal/DomainActionModal'));
 const DomainDeleteModal = React.lazy(() => import('./modal/DomainDeleteModal'));
 
-const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', datacenterId }) => {
+const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', type, datacenterId }) => {
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
   const [selectedDomains, setSelectedDomains] = useState([]); 

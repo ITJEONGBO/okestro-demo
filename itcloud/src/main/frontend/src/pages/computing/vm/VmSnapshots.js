@@ -4,7 +4,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import TablesOuter from '../../../components/table/TablesOuter';
 import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
 import { useDisksFromVM, useSnapshotDetailFromVM, useSnapshotFromVM } from '../../../api/RQHook';
-import VmSnapshotaddModal from './modal/VmSnapshotaddModal';
+import VmSnapshotModal from './modal/VmSnapshotModal';
 import DeleteModal from '../../../components/DeleteModal';
 
 const VmSnapshots = ({vmId}) => {
@@ -298,9 +298,9 @@ const {
       </div>
 
     <Suspense>
-      <VmSnapshotaddModal
+      <VmSnapshotModal
         isOpen={activePopup === 'new'}
-        onRequestClose={closePopup}
+        onClose={closePopup}
         vmId={vmId}
         diskData={disks}
       />

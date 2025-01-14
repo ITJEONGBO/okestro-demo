@@ -5,24 +5,14 @@ import VmDupl from '../../pages/computing/vm/VmDupl';
 
 const Vms = () => {
   const {
-    data: vms = [], 
-    status: vmsStatus,
-    isRefetching: isVmsRefetching,
-    refetch: refetchVms, 
-    isError: isVmsError, 
-    error: vmsError, 
-    isLoading: isVmsLoading,
-  } = useAllVMs((e) => {
-    return {
-      ...e,
-    }
-  });
+    data: vms = []
+  } = useAllVMs((e) => ({ ...e }));
 
   return (
     <>
       <VmDupl
-        vms={vms || []}
         columns={TableColumnsInfo.VMS}
+        vms={vms}
       />
     </>
   );

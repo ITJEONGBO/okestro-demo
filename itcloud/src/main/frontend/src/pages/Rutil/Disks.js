@@ -5,10 +5,7 @@ import DiskDupl from '../../pages/storage/disk/DiskDupl';
 
 const Disks = () => {
   const { 
-    data: disks = [],
-    refetch: refetchDisks, 
-    error: disksError, 
-    isLoading: isDisksLoading,
+    data: disks = []
   } = useAllDisks((e) => ({ 
     ...e,
     connected : e?.connectVm?.name || e?.connectTemplate?.name
@@ -18,7 +15,7 @@ const Disks = () => {
     <>
       <DiskDupl 
         columns={TableColumnsInfo.DISKS}
-        disks={disks || []}
+        disks={disks}
       />
     </>
   );

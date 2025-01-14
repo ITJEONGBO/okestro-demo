@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner, faCheckCircle, faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
 
 
@@ -215,4 +215,20 @@ export const renderDatacenterStatusIcon = (status) => {
 };
 export const renderHostStatusIcon = (status) => {
   return icon(status);
+};
+
+
+export const renderSeverityIcon = (severity) => {
+  switch (severity) {
+    case 'ALERT':
+      return '알림';
+    case 'NORMAL':
+      return <FontAwesomeIcon icon={faCheckCircle} fixedWidth style={{ color: 'green', fontSize: '0.3rem' }} />;      
+    case 'ERROR':
+      return <><FontAwesomeIcon icon={faTimesCircle} fixedWidth style={{ color: 'purple', fontSize: '0.3rem' }} /></>;
+    case 'WARNING':
+      return <FontAwesomeIcon icon={faWarning} fixedWidth style={{ color: 'red', fontSize: '0.3rem' }} />;
+    default:
+      return severity;
+  }
 };

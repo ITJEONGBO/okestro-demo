@@ -1,36 +1,17 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
 import PagingTableOuter from '../../components/table/PagingTableOuter';
 import TableColumnsInfo from '../../components/table/TableColumnsInfo';
+import { renderSeverityIcon } from '../../utils/format';
 
-const EventTable = ({ events } ) => {  
-  const renderSeverityIcon = (severity) => {
-    switch (severity) {
-      case 'ALERT':
-        return '알림';
-      case 'NORMAL':
-        return <FontAwesomeIcon icon={faCheckCircle} fixedWidth style={{ color: 'green', fontSize: '0.3rem' }} />;      
-      case 'ERROR':
-        return <><FontAwesomeIcon icon={faTimesCircle} fixedWidth style={{ color: 'purple', fontSize: '0.3rem' }} /></>;
-      case 'WARNING':
-        return <FontAwesomeIcon icon={faWarning} fixedWidth style={{ color: 'red', fontSize: '0.3rem' }} />;
-      default:
-        return severity;
-    }
-  };
-
-  // 데이터를 변환
-  const transformedEvents = events?.map((event) => ({
-    ...event,
-    severity: renderSeverityIcon(event.severity),
-  }));
-
+const EventTable = ({ events } ) => {
   return (
     <>
       <PagingTableOuter
         columns={TableColumnsInfo.EVENTS}
-        data={transformedEvents}
+        data={events.map((e) => ({
+          ...e,
+          severity: renderSeverityIcon(e?.severity),
+        }))}
         showSearchBox={true}
       />
     </>

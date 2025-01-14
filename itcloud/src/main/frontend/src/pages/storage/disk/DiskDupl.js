@@ -6,9 +6,9 @@ import { formatBytesToGBToFixedZero, icon } from '../../../utils/format';
 import TableRowClick from '../../../components/table/TableRowClick';
 
 const DiskModal = React.lazy(() => import('./modal/DiskModal'));
+const DiskDeleteModal = React.lazy(() => import('./modal/DiskDeleteModal'))
 const DiskUploadModal = React.lazy(() => import('./modal/DiskUploadModal'))
 const DiskActionModal = React.lazy(() => import('./modal/DiskActionModal'))
-const DiskDeleteModal = React.lazy(() => import('./modal/DiskDeleteModal'))
 
 const DiskDupl = ({ disks = [], columns = [] }) => {
   const navigate = useNavigate();
@@ -33,20 +33,20 @@ const DiskDupl = ({ disks = [], columns = [] }) => {
         diskId={selectedDisks[0]?.id}
         onClose={closeModal}
       />
-      <DiskUploadModal
-        isOpen={activeModal === 'upload'}
-        diskId={selectedDisks[0]?.id}
+      <DiskDeleteModal
+        isOpen={activeModal === 'delete'}
+        data={selectedDisks}
         onClose={closeModal}
       />
       <DiskActionModal
         isOpen={['move', 'copy'].includes(activeModal)}
         action={activeModal} // `type` 전달
-        disk={selectedDisks?.[0]}
-        onRequestClose={closeModal}
-      />
-      <DiskDeleteModal
-        isOpen={activeModal === 'delete'}
         data={selectedDisks}
+        onClose={closeModal}
+      />
+      <DiskUploadModal
+        isOpen={activeModal === 'upload'}
+        diskId={selectedDisks[0]?.id}
         onClose={closeModal}
       />
     </Suspense>

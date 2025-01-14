@@ -25,7 +25,7 @@ const HostDeleteModal = ({ isOpen, onClose, data }) => {
 
   const handleFormSubmit = () => {
     if (!ids.length) {
-      console.error('삭제할 데이터센터 ID가 없습니다.');
+      console.error('삭제할 호스트 ID가 없습니다.');
       return;
     }
   

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
-import HeaderButton from '../../../components/button/HeaderButton';
+import HeaderButton from '../button/HeaderButton';
 import './css/Vm.css';
 import Footer from '../../footer/Footer';
-import {useAllVMs } from '../../../api/RQHook';
+import {useAllVMs } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faDesktop, faInfoCircle, faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
 import VmDu from '../../duplication/VmDu';
 import { Tooltip } from 'react-tooltip';
-import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import VmDupl from '../../duplication/VmDupl';
 
 // React Modal 설정

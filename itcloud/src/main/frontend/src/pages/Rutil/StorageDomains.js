@@ -5,17 +5,14 @@ import DomainDupl from '../../pages/storage/domain/DomainDupl';
 
 const StorageDomains = () => {
   const {
-    data: storageDomains = [],
-    refetch: refetchStorageDomains,
-    isError: isStorageDomainsError,
-    isLoading: isStorageDomainsLoading
+    data: storageDomains = []
   } = useAllStorageDomains((e) => ({...e,}));
 
   return (
     <>    
       <DomainDupl
-        domains={storageDomains || []}
         columns={TableColumnsInfo.STORAGE_DOMAINS}
+        domains={storageDomains}
         type={'rutil'}
       />
     </>

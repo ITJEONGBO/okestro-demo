@@ -5,7 +5,7 @@ import TablesOuter from "../../../components/table/TablesOuter";
 // 애플리케이션 섹션
 const VmApplications = ({ vmId }) => {
   const { 
-    data: applications = [], isLoading: isTemplatesLoading,  
+    data: applications = [], isLoading,  
   } = useApplicationFromVM(vmId, (e) => ({...e}));
 
   return (
@@ -13,7 +13,6 @@ const VmApplications = ({ vmId }) => {
         <TablesOuter
           columns={TableColumnsInfo.APPLICATIONS_FROM_VM}
           data={applications.map((e) => ({
-            ...e,
             name: e?.name
           }))}
         />

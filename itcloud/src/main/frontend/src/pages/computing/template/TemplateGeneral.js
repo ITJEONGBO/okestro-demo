@@ -1,84 +1,39 @@
 import { useTemplate } from '../../../api/RQHook';
 
 const TemplateGeneral = ({ templateId }) => {
-  const { data: templateData } = useTemplate(templateId);
+  const { data: template } = useTemplate(templateId);
+
+  const tableRows = [
+    { label: "템플릿 ID", value: template?.id },
+    { label: "이름", value: template?.name },
+    { label: "설명", value: template?.description },
+    { label: "호스트 클러스터", value: template?.clusterVo?.name },
+    { label: "운영 시스템", value: template?.osSystem },
+    { label: "칩셋/펌웨어 유형", value: template?.chipsetFirmwareType },
+    { label: "그래픽 프로토콜", value: '' },
+    { label: "비디오 유형", value: '' },
+    { label: "최적화 옵션", value: template?.optimizeOption },
+    { label: "", value: '' },
+    { label: "설정된 메모리", value: template?.memorySize+' GB' },
+    { label: "CPU 코어 수", value: template?.cpuTopologyCore },
+    { label: "모니터 수", value: template?.monitor },
+    { label: "고가용성", value: template?.ha ? "예" : "아니오" },
+    { label: "우선 순위", value: template?.priority },
+    { label: "USB", value: template?.usb ? "사용" : "사용 안 함" },
+    { label: "소스", value: 'N/A' },
+    { label: "상태 비저장", value: template?.stateless ? "예" : "아니오" },
+  ];
 
   return (
     <>
       <table className="table">
         <tbody>
-          <tr>
-            <th>이름:</th>
-            <td>{templateData?.name}</td>
-          </tr>
-          <tr>
-            <th>설명:</th>
-            <td>{templateData?.description}</td>
-          </tr>
-          <tr>
-            <th>호스트 클러스터:</th>
-            <td>{templateData?.clusterVo?.name}</td>
-          </tr>
-          <tr>
-            <th>운영 시스템:</th>
-            <td>{templateData?.osSystem}</td>
-          </tr>
-          <tr>
-            <th>칩셋/펌웨어 유형:</th>
-            <td>{templateData?.chipsetFirmwareType}</td>
-          </tr>
-          <tr>
-            <th>그래픽 프로토콜:</th>
-            <td>N/A</td>
-          </tr>
-          <tr>
-            <th>비디오 유형:</th>
-            <td>N/A</td>
-          </tr>
-          <tr>
-            <th>최적화 옵션:</th>
-            <td>{templateData?.optimizeOption}</td>
-          </tr>
-        </tbody>
-      </table>
-      <table className="table">
-        <tbody>
-          <tr>
-            <th>설정된 메모리:</th>
-            <td>{templateData?.memorySize} GB</td>
-          </tr>
-          <tr>
-            <th>CPU 코어 수:</th>
-            <td>{templateData?.cpuTopologyCore}</td>
-          </tr>
-          <tr>
-            <th>모니터 수:</th>
-            <td>{templateData?.monitor}</td>
-          </tr>
-          <tr>
-            <th>고가용성:</th>
-            <td>{templateData?.ha ? "예" : "아니오"}</td>
-          </tr>
-          <tr>
-            <th>우선 순위:</th>
-            <td>{templateData?.priority}</td>
-          </tr>
-          <tr>
-            <th>USB:</th>
-            <td>{templateData?.usb ? "사용" : "사용 안 함"}</td>
-          </tr>
-          <tr>
-            <th>소스:</th>
-            <td>N/A</td>
-          </tr>
-          <tr>
-            <th>상태 비저장:</th>
-            <td>{templateData?.stateless ? "예" : "아니오"}</td>
-          </tr>
-          <tr>
-            <th>템플릿 ID:</th>
-            <td>{templateData?.id}</td>
-          </tr>
+          {tableRows.map((row, index) => (
+            <tr key={index}>
+              <th>{row.label}</th>
+              <td>{row.value}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </>

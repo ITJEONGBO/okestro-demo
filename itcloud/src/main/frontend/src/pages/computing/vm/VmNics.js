@@ -43,27 +43,6 @@ const VmNics = ({vmId}) => {
       console.log('네트워크 인터페이스 데이터:', nics);
   }, [nics]);
 
-  function toTableItemPredicateDisks(nic) {
-      return {
-          id: nic?.id ?? '', 
-          name: nic?.name ?? '', 
-          status: nic?.status ?? '',
-          ipv4: nic?.ipv4 ?? '',
-          ipv6: nic?.ipv6 ?? '',
-          macAddress: nic?.macAddress ?? '',
-          network: nic?.networkVo?.name ?? '',
-          vnicProfile: nic?.vnicProfileVo?.name ?? '',
-          interfaceType: nic?.interface_ ?? 'VIRTIO',
-          linked: nic?.linked ?? false,
-          rxSpeed: nic?.rxSpeed ?? '',
-          txSpeed: nic?.txSpeed ?? '',
-          rxTotalSpeed: nic?.rxTotalSpeed ?? '',
-          txTotalSpeed: nic?.txTotalSpeed ?? '',
-          rxTotalError: nic?.rxTotalError ?? '',
-          txTotalError: nic?.txTotalError ?? ''
-      };
-  }
-
   const [visibleDetails, setVisibleDetails] = useState([]);
   useEffect(() => {
     setVisibleDetails(Array(3).fill(false)); // 초기 상태: 모든 detail 숨김
@@ -123,6 +102,7 @@ const VmNics = ({vmId}) => {
         <button onClick={() => selectedNics?.id && toggleModal('delete', true)} disabled={!selectedNics?.id}>제거</button>
       </div>
       <span>id = {selectedNics?.id || ''}</span>
+      
       <div className='network_interface_outer'>
         {nics?.map((nic, index) => (
           <div className={`network_content2 ${selectedNics?.id === nic.id ? 'selected' : ''}`}

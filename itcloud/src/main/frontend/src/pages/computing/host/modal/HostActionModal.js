@@ -21,7 +21,7 @@ const HostActionModal = ({ isOpen, action, onClose, data }) => {
   useEffect(() => {
     if (Array.isArray(data)) {
       const ids = data.map((item) => item.id);
-      const names = data.map((item) => item.name);
+      const names = data.map((item) => item.name); // name이 없는 경우 처리
       setIds(ids);
       setNames(names);
     } else if (data) {
@@ -94,7 +94,7 @@ const HostActionModal = ({ isOpen, action, onClose, data }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_delete_popup">
+      <div className="storage-delete-popup">
         <div className="popup-header">
           <h1>호스트 {getContentLabel(action)}</h1>
           <button onClick={onClose}>
@@ -102,10 +102,10 @@ const HostActionModal = ({ isOpen, action, onClose, data }) => {
           </button>
         </div>
 
-        <div className="disk_delete_box">
+        <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data?.name} 를(을) {getContentLabel(action)} 하시겠습니까? </span>
+            <span> {names.join(', ')} 를(을) {getContentLabel(action)} 하시겠습니까? </span>
           </div>
         </div>
 

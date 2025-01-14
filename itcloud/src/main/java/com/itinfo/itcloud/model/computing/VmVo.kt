@@ -362,8 +362,7 @@ fun List<Vm>.toVmsMenu(conn: Connection): List<VmVo> =
 fun Vm.toVmVoInfo(conn: Connection): VmVo {
     val cluster: Cluster? = conn.findCluster(this@toVmVoInfo.cluster().id()).getOrNull()
     val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
-    val nics: List<Nic> = conn.findAllNicsFromVm(this@toVmVoInfo.id())
-        .getOrDefault(listOf())
+    val nics: List<Nic> = conn.findAllNicsFromVm(this@toVmVoInfo.id()).getOrDefault(listOf())
     val host: Host? =
         if (this@toVmVoInfo.hostPresent())
             conn.findHost(this@toVmVoInfo.host().id()).getOrNull()
@@ -371,8 +370,7 @@ fun Vm.toVmVoInfo(conn: Connection): VmVo {
             conn.findHost(this@toVmVoInfo.placementPolicy().hosts().first().id()).getOrNull()
         else
             null
-    val template: Template? = conn.findTemplate(this@toVmVoInfo.template().id())
-        .getOrNull()
+    val template: Template? = conn.findTemplate(this@toVmVoInfo.template().id()).getOrNull()
 
     val statistics: List<Statistic> = conn.findAllStatisticsFromVm(this@toVmVoInfo.id())
 
