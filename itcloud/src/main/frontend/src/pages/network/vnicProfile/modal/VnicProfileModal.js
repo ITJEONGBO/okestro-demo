@@ -10,6 +10,7 @@ import {
   useNetworksFromDataCenter, 
   useVnicProfile
 } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const FormGroup = ({ label, children }) => (
   <div className="vnic-new-box">
@@ -96,30 +97,28 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       });
       setDataCenterVoId(vnic?.dataCenterVo?.id || '');
       setNetworkVoId(vnic?.networkVo?.id || '');        
-    } else if (!editMode && !isDataCentersLoading) {        
+    } else if (!editMode) {        
       resetForm();
     }
   }, [editMode, vnic]);
 
   useEffect(() => {
-    if (!editMode && datacenters && datacenters.length > 0) {
+    if (!editMode && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
     }
   }, [datacenters, editMode]);
 
   useEffect(() => {
-    if (!editMode && networks && networks.length > 0) {
+    if (!editMode && networks.length > 0) {
       setNetworkVoId(networks[0].id);
     }
   }, [networks, editMode]);
 
   // useEffect(() => {
-  //   if (!editMode && nFilters && nFilters.length > 0) {
+  //   if (!editMode && nFilters.length > 0) {
   //     setFormState((prev) => ({...prev, networkFilter: nFilters[0].value}));
   //   }
   // }, [nFilters, editMode]);
-  
-
   
 
   const handleFormSubmit = () => {
@@ -139,21 +138,21 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
         { vnicId: formState.id, vnicData: dataToSubmit }, 
         {
           onSuccess: () => {
-            alert('vNIC 프로파일이 성공적으로 편집되었습니다.');
+            toast.success('vNIC 프로파일이 성공적으로 편집되었습니다.');
             onClose();
           },
           onError: (error) => {
-            console.error('vNIC 프로파일 편집 중 오류 발생:', error);
+            toast.error('vNIC 프로파일 편집 중 오류 발생:', error);
           }
         });
     } else {
       addVnicProfile(dataToSubmit,{
           onSuccess: () => {
-            alert('vNIC 프로파일이 성공적으로 추가되었습니다.');
+            toast.success('vNIC 프로파일이 성공적으로 추가되었습니다.');
             onClose();
         },
           onError: (error) => {
-            console.error('vNIC 프로파일 추가 중 오류 발생:', error);
+            toast.error('vNIC 프로파일 추가 중 오류 발생:', error);
         }
       });
     } 
@@ -179,25 +178,23 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
         <div className="vnic-new-content">
           <div className="vnic-new-contents" style={{ paddingTop: '0.2rem' }}>
 
-          <FormGroup label="데이터 센터">
+            <FormGroup label="데이터 센터">
+              <select
+                value={dataCenterVoId}
+                onChange={(e) => setDataCenterVoId(e.target.value)}
+                disabled={editMode}
+              >
                 {isDataCentersLoading ? (
-                    <p>데이터 센터를 불러오는 중...</p>
-                  ) : datacenters.length === 0 ? (
-                    <p>사용 가능한 데이터 센터가 없습니다.</p>
-                  ) : (
-                  <select
-                    value={dataCenterVoId}
-                    onChange={(e) => setDataCenterVoId(e.target.value)}
-                    disabled={editMode}
-                  >
-                    {datacenters && datacenters.map((dc) => (
-                      <option key={dc.id} value={dc.id}>
-                        {dc.name}: {dataCenterVoId}
-                      </option>
-                    ))}
-                  </select>
+                  <option>로딩중~</option>
+                ) : (
+                  datacenters.map((dc) => (
+                    <option key={dc.id} value={dc.id}>
+                      {dc.name}: {dc.id}
+                    </option>
+                  ))
                 )}
-              </FormGroup>
+              </select>
+            </FormGroup>
 
             <FormGroup label="네트워크">
               <select
@@ -210,7 +207,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
                 ) : (
                   networks.map((n) => (
                     <option key={n.id} value={n.id}>
-                      {n.name}: {networkVoId}
+                      {n.name}: {n.id}
                     </option>
                   ))
                 )}
@@ -306,8 +303,8 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
         </div>
 
         <div className="edit-footer">
-          <button onClick={onClose}>취소</button>
           <button onClick={handleFormSubmit}>OK</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>
