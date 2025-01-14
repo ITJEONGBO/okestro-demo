@@ -39,6 +39,12 @@ const TemplateNeworkNewInterModal = ({
   ];
   const [selectedInterface, setSelectedInterface] = useState('VIRTIO');
 
+   useEffect(() => {
+    if (!isOpen) {
+      resetForm(); // 모달이 닫힐 때 상태를 초기화
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     console.log('template ID아아아:', templateId); // vmId 값 확인
   }, [templateId]);

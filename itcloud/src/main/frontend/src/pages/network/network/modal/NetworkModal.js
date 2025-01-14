@@ -71,7 +71,12 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
     isLoading: isNetworksLoading,
   } = useClustersFromDataCenter(dataCenterVoId ?? dcId, (e) => ({...e,}))
 
-
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm(); // 모달이 닫힐 때 상태를 초기화
+    }
+  }, [isOpen]);
+  
   useEffect(() => {
     if (editMode && network) {
       setFormState({

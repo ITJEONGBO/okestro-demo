@@ -85,6 +85,12 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
   ];
 
   useEffect(() => {
+    if (!isOpen) {
+      resetForm(); // 모달이 닫힐 때 상태를 초기화
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     if (editMode && vnic) {
       setFormState({
         id: vnic?.id || '',

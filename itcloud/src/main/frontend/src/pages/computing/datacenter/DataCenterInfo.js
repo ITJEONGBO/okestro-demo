@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../../components/navigation/NavButton';
@@ -13,9 +13,7 @@ import DataCenterVms from './DataCenterVms';
 import DataCenterDomains from './DataCenterDomains';
 import DataCenterNetworks from './DataCenterNetworks';
 import DataCenterEvents from './DataCenterEvents';
-
-const DataCenterModal = React.lazy(() => import('./modal/DataCenterModal'));
-const DataCenterDeleteModal = React.lazy(() => import('./modal/DataCenterDeleteModal'));
+import DataCenterModals from './modal/DataCenterModals';
 
 const DataCenterInfo = () => {
   const navigate = useNavigate();
@@ -83,22 +81,6 @@ const DataCenterInfo = () => {
     { type: 'delete', label: '삭제', onClick: () => openModal("delete") },
   ];
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DataCenterModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        dcId={dataCenterId}
-        onClose={closeModal}
-      />
-      <DataCenterDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={dataCenter}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
-
   return (
     <div id="section">
       <HeaderButton
@@ -119,7 +101,11 @@ const DataCenterInfo = () => {
       </div>
 
       {/* 데이터센터 모달창 */}
-      { renderModals() }
+      <DataCenterModals
+        activeModal={activeModal}
+        dataCenter={dataCenter}
+        onClose={closeModal}
+      />
       <Footer/>
     </div>
   );

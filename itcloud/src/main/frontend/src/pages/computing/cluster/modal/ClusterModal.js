@@ -175,6 +175,11 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
     ]
   };
 
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm(); // 모달이 닫힐 때 상태를 초기화
+    }
+  }, [isOpen]);
   
   useEffect(() => {
     if (editMode && cluster) {
@@ -195,12 +200,17 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
     }
   }, [editMode, cluster]);
 
-
   useEffect(() => {
     if (!editMode && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
     }
   }, [editMode, datacenters]);
+
+  useEffect(() => {
+    if (!editMode && networks.length > 0) {
+      setNetworkVoId(networks[0].id);
+    }
+  }, [editMode, networks]);
 
   useEffect(() => {
     if (!editMode && dcId) {

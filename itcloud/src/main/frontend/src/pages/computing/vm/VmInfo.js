@@ -1,8 +1,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderButton from '../../../components/button/HeaderButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes,faInfoCircle,faExclamationTriangle,faMicrochip } from '@fortawesome/free-solid-svg-icons';
+import { faMicrochip } from '@fortawesome/free-solid-svg-icons';
 import './css/Vm.css';
 import Footer from '../../../components/footer/Footer';
 import NavButton from '../../../components/navigation/NavButton';
@@ -16,10 +15,7 @@ import VmSnapshots from './VmSnapshots';
 import VmNics from './VmNics';
 import VmDisks from './VmDisks';
 import { renderVmStatus } from '../../../utils/format';
-
-const VmModal = React.lazy(() => import('./modal/VmModal'))
-const VmDeleteModal = React.lazy(() => import('./modal/VmDeleteModal'))
-const VmActionModal = React.lazy(() => import('./modal/VmActionModal'))
+import VmModals from './modal/VmModals';
 
 const VmInfo = () => {
   const navigate = useNavigate();
@@ -99,31 +95,6 @@ const VmInfo = () => {
     { type: 'ova', label: 'OVA로 내보내기' ,onClick: () => openModal('ova') }
   ];
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <VmModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        vmId={vm?.id || null}
-        onClose={closeModal}
-      />
-      <VmDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={vm}
-        onClose={closeModal}
-      />
-      {popupItems.some((item) => item.type === activeModal) && (
-        <VmActionModal
-          isOpen={activeModal}
-          action={activeModal} // 선택된 type을 전달
-          data={vm}
-          contentLabel={activeModal}
-          onClose={closeModal}
-        />
-      )}
-    </Suspense>
-  );
-
   return (
     <div id="section">
       <HeaderButton
@@ -146,7 +117,11 @@ const VmInfo = () => {
       </div>
 
       {/* vm 모달창 */}
-      { renderModals() }
+      <VmModals
+        activeModal={activeModal}
+        vmId={vmId} // vmId 전달
+        onClose={closeModal}
+      />
       <Footer/>
     </div>
   );

@@ -1,12 +1,10 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import TablesOuter from '../../../components/table/TablesOuter';
 import DataCenterActionButtons from './button/DataCenterActionButtons';
 import { renderDataCenterStatus, renderDatacenterStatusIcon } from '../../../utils/format';
-
-const DataCenterModal = React.lazy(() => import('./modal/DataCenterModal'));
-const DataCenterDeleteModal = React.lazy(() => import('./modal/DataCenterDeleteModal'));
+import DataCenterModals from './modal/DataCenterModals';
 
 Modal.setAppElement('#root');
 
@@ -25,26 +23,6 @@ const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
   //버튼 활성화 조건
   const status = selectedDataCenters.length === 0 ? 'none': selectedDataCenters.length === 1 ? 'single': 'multiple';
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DataCenterModal
-        isOpen={activeModal === 'create'}
-        onClose={closeModal}
-      />
-      <DataCenterModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        dcId={selectedDataCenters[0]?.id}
-        onClose={closeModal}
-      />
-      <DataCenterDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={selectedDataCenters}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
-
   return (
     <>
       <DataCenterActionButtons
@@ -57,9 +35,7 @@ const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
         columns={columns}
         data={datacenters.map((dc) => ({
           ...dc,
-          // name: <TableRowClick type="datacenter" id={dc?.id}>
-          //   {dc?.name}
-          // </TableRowClick>,
+          // name: <TableRowClick type="datacenter" id={dc?.id}>{dc?.name}</TableRowClick>,
           icon: renderDatacenterStatusIcon(dc?.status),
           status: renderDataCenterStatus(dc?.status),
           storageType: dc?.storageType ? '로컬' : '공유됨'
@@ -71,7 +47,12 @@ const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
       />
 
       {/* 데이터센터 모달창 */}
-      { renderModals() }
+      <DataCenterModals
+        activeModal={activeModal}
+        dataCenter={selectedDataCenters[0]}
+        selectedDataCenters={selectedDataCenters}
+        onClose={closeModal}
+      />
     </>
   );
 };

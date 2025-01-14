@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ClusterActionButtons from './button/ClusterActionButtons';
 import TablesOuter from '../../../components/table/TablesOuter';
 import TableRowClick from '../../../components/table/TableRowClick';
-
-const ClusterModal = React.lazy(() => import('./modal/ClusterModal'));
-const ClusterDeleteModal = React.lazy(() => import('./modal/ClusterDeleteModal'));
+import ClusterModals from './modal/ClusterModals';
 
 const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
   const navigate = useNavigate();
@@ -20,28 +18,6 @@ const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
   const closeModal = () => setActiveModal(null);
 
   const status = selectedClusters.length === 0 ? 'none': selectedClusters.length === 1 ? 'single': 'multiple';
-
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ClusterModal
-        isOpen={activeModal === 'create'}
-        dcId={datacenterId}
-        onClose={closeModal}
-      />
-      <ClusterModal
-        isOpen={activeModal === 'edit'}
-        editMode
-        cId={selectedClusters[0]?.id}
-        dcId={datacenterId}
-        onClose={closeModal}
-      />
-      <ClusterDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={selectedClusters}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
   
   return (
     <>
@@ -56,10 +32,7 @@ const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
         columns={columns}
         data={clusters.map((cluster) => ({
           ...cluster,
-          // name:
-          //   <TableRowClick type="datacenter" id={cluster?.id}>
-          //     {cluster?.name}
-          //   </TableRowClick>,
+          // name:<TableRowClick type="datacenter" id={cluster?.id}>{cluster?.name}</TableRowClick>,
           hostCnt: cluster?.hostSize?.allCnt,
           vmCnt: cluster?.vmSize?.allCnt,
           dataCenter: <TableRowClick type="datacenter" id={cluster?.dataCenterVo?.id}>{cluster?.dataCenterVo?.name}</TableRowClick>,
@@ -72,7 +45,13 @@ const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
       />
 
       {/* 클러스터 모달창 */}
-      { renderModals() }
+      <ClusterModals
+        activeModal={activeModal}
+        cluster={selectedClusters[0]}
+        selectedClusters={selectedClusters}
+        dcId={datacenterId}
+        onClose={closeModal}
+      />
     </>
   );
 };

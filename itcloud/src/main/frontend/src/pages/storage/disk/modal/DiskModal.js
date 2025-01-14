@@ -95,6 +95,12 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
     { value: "VIRTIO", label: "VirtIO" },
     { value: "SATA", label: "SATA" },
   ];
+  
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm(); // 모달이 닫힐 때 상태를 초기화
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (editMode && disk) {

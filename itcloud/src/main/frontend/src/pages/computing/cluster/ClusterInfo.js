@@ -12,9 +12,7 @@ import ClusterHosts from './ClusterHosts';
 import ClusterVms from './ClusterVms';
 import ClusterNetworks from './ClusterNetworks';
 import ClusterEvents from './ClusterEvents';
-
-const ClusterModal = React.lazy(() => import('./modal/ClusterModal'));
-const ClusterDeleteModal = React.lazy(() => import('./modal/ClusterDeleteModal'));
+import ClusterModals from './modal/ClusterModals';
 
 const ClusterInfo = () => {
   const navigate = useNavigate();
@@ -71,22 +69,6 @@ const ClusterInfo = () => {
     { type: 'delete', label: '삭제', onClick: () => openModal("delete") },
   ];
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ClusterModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        cId={clusterId}
-        onClose={closeModal}
-      />
-      <ClusterDeleteModal
-        isOpen={activeModal === 'delete' }
-        data={cluster}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
-
   return (
     <div id="section">
       <HeaderButton
@@ -107,7 +89,12 @@ const ClusterInfo = () => {
       </div>
 
       {/* 클러스터 모달창 */}
-      { renderModals() }
+      <ClusterModals
+        activeModal={activeModal}
+        cluster={cluster}
+        selectedClusters={cluster}
+        onClose={closeModal}
+      />
       <Footer/>
     </div>
   );

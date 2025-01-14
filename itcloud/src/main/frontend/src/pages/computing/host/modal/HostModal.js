@@ -43,6 +43,12 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
     isLoading: isClustersLoading,
   } = useAllClusters((e) => ({...e,}));
 
+   useEffect(() => {
+    if (!isOpen) {
+      resetForm(); // 모달이 닫힐 때 상태를 초기화
+    }
+  }, [isOpen]);
+
    // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
     if (editMode && host) {

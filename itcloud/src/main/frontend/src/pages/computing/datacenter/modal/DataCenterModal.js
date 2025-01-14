@@ -38,6 +38,12 @@ const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
 
   const { data: datacenter } = useDataCenter(dcId);
 
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm(); // 모달이 닫힐 때 상태를 초기화
+    }
+  }, [isOpen]);  
+  
   // 모달이 열릴 때 기존 데이터를 상태에 설정
   useEffect(() => {
     if (editMode && datacenter) {
@@ -50,11 +56,9 @@ const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
         version: datacenter.version,
         quotaMode: datacenter.quotaMode,
       });
-    } else if (!editMode) {
-      resetForm();
     }
   }, [editMode, datacenter]);
-  
+
 
   const validateForm = () => {
     if (!CheckKorenName(formState.name) || !CheckName(formState.name)) {
