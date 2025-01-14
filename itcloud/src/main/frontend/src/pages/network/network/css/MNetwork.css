@@ -201,15 +201,29 @@
     font-size: 0.33rem;
 }
 .network-separation-left{
-    width:65%
+    width:68%
 }
 .network-separation-left>div:first-child{
     display:flex;
     justify-content: space-between;
     height:13%;
 }
+.network-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: lightblue;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .network-item:hover {
+    border: 1.3px dashed blue; /* 테두리 점선으로 변경 */
+    transform: scale(1); /* 크기 10% 증가 */
+  }
 .network-separation-left>div:first-child>div{
-    width:50%;
+    width:37%;
     text-align:center;
     padding:0.2rem;
 }
@@ -217,34 +231,50 @@
     border: 1px solid #a3a3a3;
     display:flex;
     justify-content: space-between;
-    padding:0.1rem;
+    padding:0.15rem;
     margin-bottom: 0.16rem;
 }
 .interface{
     border: 1px solid #a3a3a3;
     padding:0.1rem;
+    width: 39%;
+}
+.host_network_outer{
+    padding:0.2rem;
+    font-size:0.33rem;
+    height: 53.5vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 .container{
     display: flex;
     align-items: center;
-    border: 1px solid yellow;
+    border: 1px solid skyblue;
     cursor:pointer;
     padding: 0.1rem 0.2rem;
     margin-bottom:0.1rem;
     background-color: white;
 }
 .container:hover{
-    background: #d1d1d1;
+    background: lightblue;
+}
+.outer-networks{
+    width:100%;
+}
+.interface-header{
+    margin-bottom:0.1rem;
 }
 .assigned-network-outer{
-    background:pink;
+    border: 1px solid #949fa3;;
     display: flex;
     align-items: center;
+    padding:0.2rem;
+    width: 39%;
 }
 .assigned-network{
     display: flex;
     align-items: center;
-    border: 1px solid yellow;
+    border: 1px dashed gray;
     padding: 0.1rem 0.2rem;
     cursor:pointer;
 }
@@ -254,8 +284,13 @@
     margin-right: 10px;
 }
 .network_separation_right{
-    width: 37%;
+    width: 33%;
     padding: 0 0.5rem;
+}
+.network-outer-item{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: space-between; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
 }
 .right-section {
     display: flex;
