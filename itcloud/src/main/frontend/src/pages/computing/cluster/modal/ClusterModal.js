@@ -106,79 +106,73 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
     { value: "do_not_migrate", label: "가상 머신은 마이그레이션 하지 않음" },
   ];
   
-  const cpuArcOptions = (arc) => {
-    switch (arc) {
-      case 'X86_64':
-        return [
-          'Intel Nehalem Family', 
-          'Secure Intel Nehalem Family', 
-          'Intel Westmere Family', 
-          'Secure Intel Westmere Family',
-          'Intel SandyBridge Family',
-          'Secure Intel SandyBridge Family',
-          'Intel IvyBridge Family',
-          'Secure Intel IvyBridge Family',
-          'Intel Haswell Family',
-          'Secure Intel Haswell Family',
-          'Intel Broadwell Family',
-          'Secure Intel Broadwell Family',
-          'Intel Skylake Client Family',
-          'Secure Intel Skylake Client Family',
-          'Intel Skylake Server Family',
-          'Secure Intel Skylake Server Family',
-          'Intel Cascadelake Server Family',
-          'Secure Intel Cascadelake Server Family',
-          'Intel Icelake Server Family',
-          'Secure Intel Icelake Server Family',
-          'AMD Opteron G4',
-          'AMD Opteron G5',
-          'AMD EPYC',
-          'Secure AMD EPYC'
-        ];
-      case 'PPC64':
-        return ['IBM POWER8', 'IBM POWER9'];
-      case 'S390X':
-        return [
-          'IBM z114, z196',
-          'IBM zBC12, zEC12',
-          'IBM z13s, z13',
-          'IBM z14'
-        ];
-      default: // UNDEFINED
-        return [
-          '자동 감지',
-          'Intel Nehalem Family', 
-          'Secure Intel Nehalem Family', 
-          'Intel Westmere Family', 
-          'Secure Intel Westmere Family',
-          'Intel SandyBridge Family',
-          'Secure Intel SandyBridge Family',
-          'Intel IvyBridge Family',
-          'Secure Intel IvyBridge Family',
-          'Intel Haswell Family',
-          'Secure Intel Haswell Family',
-          'Intel Broadwell Family',
-          'Secure Intel Broadwell Family',
-          'Intel Skylake Client Family',
-          'Secure Intel Skylake Client Family',
-          'Intel Skylake Server Family',
-          'Secure Intel Skylake Server Family',
-          'Intel Cascadelake Server Family',
-          'Secure Intel Cascadelake Server Family',
-          'Intel Icelake Server Family',
-          'Secure Intel Icelake Server Family',
-          'AMD Opteron G4',
-          'AMD Opteron G5',
-          'AMD EPYC',
-          'Secure AMD EPYC',
-          'IBM POWER8',
-          'IBM POWER9',
-          'IBM z114, z196',
-          'IBM zBC12, zEC12',
-          'IBM z13s, z13',
-          'IBM z14'
-        ];
-    }
+  const cpuArcOptions = {
+    X86_64: [
+      'Intel Nehalem Family', 
+      'Secure Intel Nehalem Family', 
+      'Intel Westmere Family', 
+      'Secure Intel Westmere Family',
+      'Intel SandyBridge Family',
+      'Secure Intel SandyBridge Family',
+      'Intel IvyBridge Family',
+      'Secure Intel IvyBridge Family',
+      'Intel Haswell Family',
+      'Secure Intel Haswell Family',
+      'Intel Broadwell Family',
+      'Secure Intel Broadwell Family',
+      'Intel Skylake Client Family',
+      'Secure Intel Skylake Client Family',
+      'Intel Skylake Server Family',
+      'Secure Intel Skylake Server Family',
+      'Intel Cascadelake Server Family',
+      'Secure Intel Cascadelake Server Family',
+      'Intel Icelake Server Family',
+      'Secure Intel Icelake Server Family',
+      'AMD Opteron G4',
+      'AMD Opteron G5',
+      'AMD EPYC',
+      'Secure AMD EPYC'
+    ],
+    PPC64: ['IBM POWER8', 'IBM POWER9'],
+    S390X: [
+      'IBM z114, z196',
+      'IBM zBC12, zEC12',
+      'IBM z13s, z13',
+      'IBM z14'
+    ],
+    UNDEFINED: [
+      '자동 감지',
+      'Intel Nehalem Family', 
+      'Secure Intel Nehalem Family', 
+      'Intel Westmere Family', 
+      'Secure Intel Westmere Family',
+      'Intel SandyBridge Family',
+      'Secure Intel SandyBridge Family',
+      'Intel IvyBridge Family',
+      'Secure Intel IvyBridge Family',
+      'Intel Haswell Family',
+      'Secure Intel Haswell Family',
+      'Intel Broadwell Family',
+      'Secure Intel Broadwell Family',
+      'Intel Skylake Client Family',
+      'Secure Intel Skylake Client Family',
+      'Intel Skylake Server Family',
+      'Secure Intel Skylake Server Family',
+      'Intel Cascadelake Server Family',
+      'Secure Intel Cascadelake Server Family',
+      'Intel Icelake Server Family',
+      'Secure Intel Icelake Server Family',
+      'AMD Opteron G4',
+      'AMD Opteron G5',
+      'AMD EPYC',
+      'Secure AMD EPYC',
+      'IBM POWER8',
+      'IBM POWER9',
+      'IBM z114, z196',
+      'IBM zBC12, zEC12',
+      'IBM z13s, z13',
+      'IBM z14'
+    ]
   };
 
   
@@ -196,47 +190,27 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
       });
       setDataCenterVoId(cluster?.dataCenterVo?.id);
       setNetworkVoId(cluster?.networkVo?.id);
-    } else if (!editMode && !isDataCentersLoading) {
+    } else if (!editMode) {
       resetForm();
     }
-  }, [editMode, cluster, isDataCentersLoading]);
+  }, [editMode, cluster]);
 
 
   useEffect(() => {
-    if (!editMode && datacenters && datacenters.length > 0) {
+    if (!editMode && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
     }
   }, [editMode, datacenters]);
-  
-  useEffect(() => {
-    if (!editMode && dcId) {
-      setDataCenterVoId(dcId); // 초기값 설정
-    }
-  }, [editMode, dcId]);
-  
-  
-  useEffect(() => {
-    if (!editMode && networks && networks.length > 0) {
-      setNetworkVoId(networks[0].id);
-    }
-  }, [editMode, networks]);
 
   useEffect(() => {
-    const options = cpuArcOptions(formState.cpuArc);
-    setCpuOptions(options);
-    if (!editMode) {
-      setFormState((prev) => ({
-        ...prev,
-        cpuType: '', // CPU 유형 초기화
-        biosType: 'CLUSTER_DEFAULT', // BIOS 유형 초기화
-      }));
-    } else if (editMode && options.length > 0 && !options.includes(formState.cpuType)) {
-      // 현재 CPU 유형이 새 옵션 리스트에 없으면 초기화
-      setFormState((prev) => ({
-        ...prev,
-      }));
+    if (!editMode && dcId) {
+      setDataCenterVoId(dcId);
     }
-  }, [formState.cpuArc, editMode]);
+  }, [editMode, dcId]);
+
+  useEffect(() => {
+    setCpuOptions(cpuArcOptions[formState.cpuArc] || []);
+  }, [formState.cpuArc]);
   
   
   const validateForm = () => {
@@ -274,6 +248,8 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
 
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
 
+    const mutation = editMode ? editCluster : addCluster
+
     if (editMode) {
       dataToSubmit.id = formState.id;
       editCluster({ 
@@ -292,6 +268,7 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
       addCluster(dataToSubmit, {
         onSuccess: () => {
           toast.success('클러스터 생성 완료');
+          resetForm();
           onClose();
         },
         onError: (error) => {

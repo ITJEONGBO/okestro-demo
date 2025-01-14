@@ -24,6 +24,7 @@ const NetworkDeleteModal = ({ isOpen, onClose, data }) => {
   }, [data]);
 
   const handleFormSubmit = () => {
+    // 삭제할 네트워크에 호스트나 뭐가 붙어잇으면 삭제불가능
     if (!ids.length) {
       console.error('삭제할 네트워크 ID가 없습니다.');
       return;

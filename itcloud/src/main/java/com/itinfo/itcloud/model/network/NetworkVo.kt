@@ -200,31 +200,55 @@ fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
  */
 fun NetworkVo.toNetworkBuilder(): NetworkBuilder {
 	val network = this@toNetworkBuilder
-	return NetworkBuilder()
+
+	val builder = NetworkBuilder()
 		.dataCenter(DataCenterBuilder().id(network.datacenterVo.id).build())
 		.name(network.name)
 		.description(network.description)
 		.comment(network.comment)
 		.mtu(network.mtu)  // 제한수가 있음
-		.vlan(if (network.vlan != 0) VlanBuilder().id(network.vlan) else null)
-		.usages(if(network.usage.vm){ NetworkUsage.VM } else null)
 		.portIsolation(network.portIsolation)
+	if(network.usage.vm){
+		builder.usages(NetworkUsage.VM)
+	}
+	if(network.vlan != 0){
+		builder.vlan(VlanBuilder().id(network.vlan))
+	}
 //	.externalProvider(
 //		if(network.openStackNetworkVo.id.isNotEmpty())
 //			OpenStackNetworkProviderBuilder().id(network.openStackNetworkVo.id)
 //		else
 //			null
 //	)
+
+	return builder
 }
 
 // 필요 name, datacenter_id
 fun NetworkVo.toAddNetworkBuilder(): Network =
 	this@toAddNetworkBuilder.toNetworkBuilder().build()
 
-
 fun NetworkVo.toEditNetworkBuilder(): Network =
 	this@toEditNetworkBuilder.toNetworkBuilder().id(this@toEditNetworkBuilder.id).build()
 
+fun NetworkVo.toAddClusterAttach(conn: Connection, networkId: String) {
+	val network = conn.findNetwork(networkId)
+		.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+
+	clusterVos.forEach { clusterVo ->
+		attachNetworkToCluster(conn, clusterVo, networkId)
+	}
+}
+
+private fun attachNetworkToCluster(conn: Connection, clusterVo: ClusterVo, networkId: String) {
+	val cluster = conn.findCluster(clusterVo.id)
+		.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+	log.info("{} attach", clusterVo.name)
+	conn.addNetworkFromCluster(
+		clusterVo.id,
+		NetworkBuilder().id(networkId).required(clusterVo.required).build()
+	).getOrNull()
+}
 
 
 // 클러스터 연결.할당 (attach 가 되어잇어야 required 선택가능)
@@ -246,24 +270,6 @@ fun NetworkVo.toEditNetworkBuilder(): Network =
 //		}
 //	}
 //}
-fun NetworkVo.toAddClusterAttach(conn: Connection, networkId: String) {
-	val network = conn.findNetwork(networkId)
-		.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-
-	clusterVos.forEach { clusterVo ->
-		attachNetworkToCluster(conn, clusterVo, networkId)
-	}
-}
-
-private fun attachNetworkToCluster(conn: Connection, clusterVo: ClusterVo, networkId: String) {
-	val cluster = conn.findCluster(clusterVo.id)
-		.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
-	log.info("{} attach", clusterVo.name)
-	conn.addNetworkFromCluster(
-		clusterVo.id,
-		NetworkBuilder().id(networkId).required(clusterVo.required).build()
-	).getOrNull()
-}
 
 // 네트워크 레이블
 fun NetworkVo.toAddNetworkLabel(conn: Connection, networkId: String) {

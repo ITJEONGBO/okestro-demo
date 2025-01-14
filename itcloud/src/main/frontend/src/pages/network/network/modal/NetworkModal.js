@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../css/MNetwork.css';
 import { 
   useAllDataCenters,
@@ -10,6 +11,7 @@ import {
   useEditNetwork, 
   useNetworkById, 
 } from '../../../../api/RQHook';
+import { CheckKorenName, CheckName } from '../../../../utils/CheckName';
 
 const FormGroup = ({ label, children }) => (
   <div className="network-form-group">
@@ -18,26 +20,43 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const NetworkModal = ({ isOpen, editMode = false, networkId, onClose }) => {
+const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) => {
+  const { mutate: addNetwork } = useAddNetwork();
+  const { mutate: editNetwork } = useEditNetwork();
+  
+  //  Fault reason is "Operation Failed". Fault detail is "[Cannot edit Network. This logical network is used by host: rutilvm-dev.host04
   const [formState, setFormState] = useState({
     id: '',
     name: '',
     description: '',
     comment: '',
-    portIsolation: false,
     mtu: '0',
     vlan: '0',
     usageVm: true,
+    portIsolation: false,
   });
-  const [dataCenterVoId, setDataCenterVoId] = useState('');
-  // const [clusterVoId, setClusterVoId] = useState('');
+  const [dataCenterVoId, setDataCenterVoId] = useState(dcId || '');
   const [clusterVoList, setClusterVoList] = useState([]);
   
+  const resetForm = () => {
+    setFormState({
+      id: '',
+      name: '',
+      description: '',
+      comment: '',
+      mtu: '0',
+      vlan: '0',
+      usageVm: true,
+      portIsolation: false,
+    });
+    setDataCenterVoId(dcId ||'');
+    setClusterVoList([]);
+  };
+
   const { 
     data: network, 
     refetch: refetchNetworks,
-    isLoading: isNetworkLoading, 
-    isError: isNetworkError
+    isLoading: isNetworkLoading
   } = useNetworkById(networkId);
 
   const {
@@ -50,19 +69,12 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, onClose }) => {
     data: clusters = [],
     refetch: refetchClusters,
     isLoading: isNetworksLoading,
-  } = useClustersFromDataCenter(
-    dataCenterVoId ? dataCenterVoId: undefined, 
-    (e) => ({...e,})
-  )
+  } = useClustersFromDataCenter(dataCenterVoId ?? dcId, (e) => ({...e,}))
 
-  const { mutate: addNetwork } = useAddNetwork();
-  const { mutate: editNetwork } = useEditNetwork();
-  
 
   useEffect(() => {
     if (editMode && network) {
-      setFormState((prev) => ({
-        ...prev,
+      setFormState({
         id: network?.id || '',
         name: network?.name || '',
         description: network?.description || '',
@@ -70,21 +82,19 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, onClose }) => {
         mtu: network?.mtu || '0',
         vlan: network?.vlan || '0',
         usageVm: network?.usage?.vm || true,
-      }));
-      setDataCenterVoId((prevId) => prevId || network?.datacenterVo?.id || '');
+      });
+      setDataCenterVoId(network?.datacenterVo?.id || '');
+    } else if(!editMode){
+      resetForm();
     }
-  }, [editMode, network]);
-  
-
+  }, [editMode, network]);  
 
   useEffect(() => {
-    if (!editMode && datacenters.length > 0 && !dataCenterVoId) {
+    if (!editMode && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
     }
-  }, [datacenters, editMode, dataCenterVoId]);
+  }, [datacenters, editMode]);
   
-    
-
   useEffect(() => {
     if (clusters && clusters.length > 0) {
       setClusterVoList((prev) => 
@@ -97,83 +107,66 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, onClose }) => {
     }
   }, [clusters]);
   
-  
-  const resetForm = () => {
-    setFormState({
-      id: '',
-      name: '',
-      description: '',
-      comment: '',
-      portIsolation: false,
-      mtu: '0',
-      vlan: '0',
-      usageVm: true,
-    });
-    setDataCenterVoId('');
-    setClusterVoList([]);
-  };
-
-  // 클러스터 연결 정보를 데이터에 추가
-  const clusterConnectionData = clusterVoList.map((cluster) => ({
-    id: cluster.id,
-    name: cluster.name,
-    // isConnected: cluster.isConnected,
-    required: cluster.isRequired,
-  }));
-
   const validateForm = () => {
-    if (!formState.name) return '이름을 입력해주세요.';
-    if (!dataCenterVoId) return '데이터 센터를 선택해주세요.';
-    return null;
+    if (!CheckKorenName(formState.name) || !CheckName(formState.name)) {
+      toast.error('이름이 유효하지 않습니다.');
+      return false;
+    }
+    if (!CheckKorenName(formState.description)) {
+      toast.error('설명이 유효하지 않습니다.');
+      return false;
+    }
+    if (!CheckName(dataCenterVoId)) {
+      toast.error('데이터센터를 선택해주세요.');
+      return false;
+    }
+    return true;
   };
+
 
   const handleFormSubmit = () => {
-    const error = validateForm();
-    if (error) {
-      alert(error);
-      return;
-    }
+    if (!validateForm()) return;
 
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
 
     const dataToSubmit = {
       datacenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
+      clusterVos: clusterVoList.map((cluster) => ({
+        id: cluster.id,
+        name: cluster.name,
+        required: cluster.isRequired,
+      })),
       ...formState,
       mtu: formState.mtu ? parseInt(formState.mtu, 10) : 0, // mtu가 빈 값이면 1500 설/정
       vlan: formState.vlan !== 0 ? parseInt(formState.vlan, 10) : 0, // 빈 문자열을 null로 설정
       usage: { vm: formState.usageVm },
-      clusterVos: clusterConnectionData, 
     };
     
     console.log("Form Data: ", dataToSubmit);
-    
-    // if (editMode && network.usage?.management) {
-    //   alert('관리 네트워크는 수정할 수 없습니다.');
-    //   return;
-    // }
 
     if (editMode) {
       editNetwork(
-        { networkId: formState.id, networkData: dataToSubmit}, 
+        { networkId: formState.id, networkData: dataToSubmit },
         {
           onSuccess: () => {
-            alert('네트워크 편집 완료');
-            onClose();
+            // 호스트가 붙어있다면 편집불가
+            toast.success('네트워크 편집 완료');
+            onClose(); // 모달 닫기
           },
           onError: (error) => {
-            console.error('Error editing network:', error);
-          }
+            toast.error(`Error editing network: ${error.message}`);
+          },
         }
       );
     } else {
       addNetwork(dataToSubmit, {
         onSuccess: () => {
-          alert('네트워크 생성 완료');
-          onClose();
+          toast.success('네트워크 생성 완료');
+          onClose(); // 모달 닫기
         },
         onError: (error) => {
-          console.error('Error adding network:', error);
-        }
+          toast.error(`Error adding network: ${error.message}`);
+        },
       });
     }
   };   
@@ -196,11 +189,9 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, onClose }) => {
             </button>
         </div>
         <div className='network-new-content'>
-          {/* <div className="flex"> */}
           <div className="network_first_contents">
 
             <FormGroup label="데이터 센터">
-              
               <select
                 value={dataCenterVoId}
                 onChange={(e) => setDataCenterVoId(e.target.value)}

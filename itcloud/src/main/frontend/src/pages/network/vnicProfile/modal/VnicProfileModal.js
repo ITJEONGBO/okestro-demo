@@ -3,7 +3,6 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import '../css/MVnic.css';
-
 import { 
   useAddVnicProfile, 
   useAllDataCenters, 
@@ -20,6 +19,9 @@ const FormGroup = ({ label, children }) => (
 );
 
 const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, onClose }) => {
+  const { mutate: addVnicProfile } = useAddVnicProfile();
+  const { mutate: editVnicProfile } = useEditVnicProfile();
+
   const [formState, setFormState] = useState({
     id: '',
     name: '',
@@ -28,10 +30,22 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     portMirroring: false,
     migration: false,
   });
-  // const [networkFilter, setNetworkFilter] = useState('');
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [networkVoId, setNetworkVoId] = useState('');  
+  // const [networkFilter, setNetworkFilter] = useState('');
 
+  const resetForm = () => {
+    setFormState({
+      id: '',
+      name: '',
+      description: '',
+      // passthrough: '',
+      portMirroring: false,
+      migration: false,
+    })
+    setDataCenterVoId('');
+    setNetworkVoId(networkId || '');
+  };
 
   const { 
     data: vnic,
@@ -46,15 +60,8 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
   const {
     data: networks = [],
     isLoading: isNetworksLoading
-  } = useNetworksFromDataCenter(
-    dataCenterVoId ? dataCenterVoId : undefined, 
-    (e) => ({...e,})
-  );
+  } = useNetworksFromDataCenter(dataCenterVoId ? dataCenterVoId : undefined, (e) => ({...e,}));
   
-
-  const { mutate: addVnicProfile } = useAddVnicProfile();
-  const { mutate: editVnicProfile } = useEditVnicProfile();
-
   const nFilters = [ 
     { value: "vdsm-no-mac-spoofing", label: "vdsm-no-mac-spoofing" },
     { value: "allow-arp", label: "allow-arp" },
@@ -76,10 +83,8 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     { value: "", label: "No Network Filter" },
   ];
 
-  
   useEffect(() => {
     if (editMode && vnic) {
-      console.log('vnic:', vnic);
       setFormState({
         id: vnic?.id || '',
         name: vnic?.name || '',
@@ -87,7 +92,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
         // passthrough: vnic.passThrough !== 'DISABLED',
         migration: vnic.migration || false, 
         portMirroring: vnic.portMirroring || false,
-        networkFilter: vnic?.networkFilterVo?.id || ''
+        // networkFilter: vnic?.networkFilterVo?.id || ''
       });
       setDataCenterVoId(vnic?.dataCenterVo?.id || '');
       setNetworkVoId(vnic?.networkVo?.id || '');        
@@ -115,20 +120,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
   // }, [nFilters, editMode]);
   
 
-  const resetForm = () => {
-    setFormState({
-      id: '',
-      name: '',
-      description: '',
-      // passthrough: '',
-      portMirroring: false,
-      migration: false,
-      // networkFilter: ''
-    })
-    setDataCenterVoId('');
-    setNetworkVoId('');
-  };
-
+  
 
   const handleFormSubmit = () => {
     if (!formState.name) return alert('이름을 입력해주세요.');
