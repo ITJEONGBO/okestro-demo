@@ -1,4 +1,4 @@
-import { faCamera, faChevronRight, faExclamationTriangle, faEye, faNewspaper, faServer, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faChevronDown, faChevronRight, faExclamationTriangle, faEye, faNewspaper, faServer, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Suspense, useEffect, useState } from 'react';
 import TablesOuter from '../../../components/table/TablesOuter';
@@ -6,11 +6,14 @@ import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
 import { useDisksFromVM, useSnapshotDetailFromVM, useSnapshotFromVM } from '../../../api/RQHook';
 import VmSnapshotModal from './modal/VmSnapshotModal';
 import DeleteModal from '../../../components/DeleteModal';
+import { formatBytesToMB } from '../../../utils/format';
+import VmSnapshotDeleteModal from './modal/VmSanpshotDeleteModal';
 
 const VmSnapshots = ({vmId}) => {
   const [activePopup, setActivePopup] = useState(null);
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
-  const [selectedSnapshot, setSelectedSnapshot] = useState(null);
+  const [selectedSnapshots, setSelectedSnapshots] = useState([]); 
+  const [activeSections, setActiveSections] = useState({});
   const [bootable, setBootable] = useState(true);
   const toggleModal = (type, isOpen) => {
     setModals((prev) => ({ ...prev, [type]: isOpen }));
@@ -23,9 +26,28 @@ const VmSnapshots = ({vmId}) => {
   };
 
   const [activeSection, setActiveSection] = useState(null); // 단일 섹션 상태 관리
-  const toggleSection = (section) => {
-    setActiveSection(prev => prev === section ? null : section); // 클릭 시 해당 섹션만 열림
+  const toggleSnapshotSelection = (snapshot, event) => {
+    if (event.ctrlKey) {
+      setSelectedSnapshots((prevSelected) => {
+        if (prevSelected.some((item) => item.id === snapshot.id)) {
+          return prevSelected.filter((item) => item.id !== snapshot.id); // 선택 해제
+        } else {
+          return [...prevSelected, snapshot]; // 새로 추가
+        }
+      });
+    } else {
+      setSelectedSnapshots([snapshot]); // 단일 선택
+    }
   };
+  
+  const toggleSection = (snapshotId, section) => {
+    setActiveSections((prevSections) => ({
+      ...prevSections,
+      [snapshotId]: prevSections[snapshotId] === section ? null : section,
+    }));
+  };
+
+  
     const { 
     data: snapshots, 
   } = useSnapshotFromVM(vmId, toTableItemPredicateSnapshots);  
@@ -38,7 +60,7 @@ const VmSnapshots = ({vmId}) => {
       fqdn: snapshot?.fqdn ?? '',  
       created: snapshot?.creationDate ?? 'N/A', 
       vmStatus: snapshot?.vmVo?.status ?? 'N/A', 
-      memorySize: snapshot?.memorySize ?? 'N/A', 
+  
       memorySize: snapshot?.vmVo?.memorySize ?? 'N/A', 
       memoryActual: snapshot?.vmVo?.actualSize
       ? `${(snapshot.vmVo?.actualSize / (1024 ** 3)).toFixed(2)} GB`
@@ -67,14 +89,19 @@ const VmSnapshots = ({vmId}) => {
 
 const { 
   data: snapshotdetail, 
-} = useSnapshotDetailFromVM(vmId, selectedSnapshot?.id, (e) => ({
+} = useSnapshotDetailFromVM(vmId, selectedSnapshots[0]?.id, (e) => ({
   ...e,
   id: e?.id ?? '', 
   description: e?.description || 'N/A',
   status: e?.status || 'N/A',
   date: e?.date || 'N/A',
   vmName: e?.vmVo?.name || 'N/A',
-  memoryActual: e?.memoryActual || 'N/A',
+  memorySize: e?.vmVo?.memorySize
+    ? `${formatBytesToMB(e.vmVo.memorySize)} MB` // 바이트를 MB로 변환
+    : 'N/A',
+  memoryActual: e?.vmVo?.memoryActual
+    ? `${formatBytesToMB(e.vmVo.memoryActual)} MB` // 바이트를 MB로 변환
+    : 'N/A',
   snapshotDisks: e?.snapshotDiskVos?.map((disk) => ({
     id: disk?.id || 'N/A',
     alias: disk?.alias || 'N/A',
@@ -107,87 +134,134 @@ const {
         <button className='disabled'>미리보기</button>
         <button className='disabled'>커밋</button>
         <button className='disabled'>되돌리기</button>
-        <button onClick={() => selectedSnapshot?.id && toggleModal('delete', true)} disabled={!selectedSnapshot?.id}>삭제</button>
+        <button
+  onClick={() => {
+    if (selectedSnapshots.length) {
+      toggleModal('delete', true); // 모달 열기
+    } else {
+      console.error('No snapshots selected for deletion.');
+    }
+  }}
+  disabled={!selectedSnapshots.length} // 선택된 항목이 없으면 비활성화
+>
+  삭제
+</button>
         <button className='disabled'>복제</button>
       </div>
-      <span>id = {selectedSnapshot?.id || ''}</span>
+      <span>  선택된 ID: {selectedSnapshots.map((snap) => snap.id).join(', ') || '없음'}</span>
       <div className="snapshot_list">
         {snapshots && snapshots.length > 0 ? (
           snapshots.map((snapshot) => (
             <div>
-            <div 
-              key={snapshot.id}
-              className="snapshot-content"
-              onClick={() => setSelectedSnapshot(snapshot)} // snapshot_content 클릭 시 선택되도록 추가
-              style={{
-              border: selectedSnapshot?.id === snapshot.id ? '1px solid #b9b9b9' : 'none', // 선택된 항목 강조 효과
-              }}
-            >
+      <div
+  onClick={(event) => toggleSnapshotSelection(snapshot, event)}
+  className="snapshot-content"
+  style={{
+    border: selectedSnapshots.some((item) => item.id === snapshot.id) ? '1px solid #b9b9b9' : 'none',
+  }}
+>
+  <div className="snapshot-content-left">
+    <div><FontAwesomeIcon icon={faCamera} fixedWidth /></div>
+    <span>{snapshot.name || 'Unnamed Snapshot'}</span>
+  </div>
 
-                <div className="snapshot-content-left">
-                  <div><FontAwesomeIcon icon={faCamera} fixedWidth /></div>
-                  <span>{snapshot.name || 'Unnamed Snapshot'}</span>
-                </div>
+  <div className="snapshot-content-right">
+  {/* 일반 섹션 */}
+  <div
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleSection(snapshot.id, 'general');
+    }}
+    style={{
+      color: activeSections[snapshot.id] === 'general' ? '#449bff' : 'inherit',
+    }}
+  >
+    <FontAwesomeIcon
+      icon={
+        activeSections[snapshot.id] === 'general'
+          ? faChevronDown // 아래를 향한 화살표
+          : faChevronRight // 오른쪽 화살표
+      }
+      fixedWidth
+    />
+    <span>일반</span>
+    <FontAwesomeIcon icon={faEye} fixedWidth />
+  </div>
 
-              
-                <div className="snapshot-content-right">
-                  {/* 일반 섹션 */}
-                  <div
-                    onClick={() => {
-                      setActiveSection(activeSection === 'general' ? null : 'general');
-                      setSelectedSnapshot(snapshot);
-                    }}
-                    style={{ color: activeSection === 'general' && selectedSnapshot?.id === snapshot.id ? '#449bff' : 'inherit' }}
-                  >
-                    <FontAwesomeIcon icon={faChevronRight} fixedWidth />
-                    <span>일반</span>
-                    <FontAwesomeIcon icon={faEye} fixedWidth />
-                  </div>
+  {/* 디스크 섹션 */}
+  <div
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleSection(snapshot.id, 'disk');
+    }}
+    style={{
+      color: activeSections[snapshot.id] === 'disk' ? '#449bff' : 'inherit',
+    }}
+  >
+    <FontAwesomeIcon
+      icon={
+        activeSections[snapshot.id] === 'disk'
+          ? faChevronDown
+          : faChevronRight
+      }
+      fixedWidth
+    />
+    <span>디스크</span>
+    <FontAwesomeIcon icon={faTrash} fixedWidth />
+  </div>
 
-                  {/* 디스크 섹션 */}
-                  <div
-                    onClick={() => {
-                      setActiveSection(activeSection === 'disk' ? null : 'disk');
-                      setSelectedSnapshot(snapshot);
-                    }}
-                    style={{ color: activeSection === 'disk' && selectedSnapshot?.id === snapshot.id ? '#449bff' : 'inherit' }}
-                  >
-                    <FontAwesomeIcon icon={faChevronRight} fixedWidth />
-                    <span>디스크</span>
-                    <FontAwesomeIcon icon={faTrash} fixedWidth />
-                  </div>
+  {/* 네트워크 섹션 */}
+  <div
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleSection(snapshot.id, 'network');
+    }}
+    style={{
+      color: activeSections[snapshot.id] === 'network' ? '#449bff' : 'inherit',
+    }}
+  >
+    <FontAwesomeIcon
+      icon={
+        activeSections[snapshot.id] === 'network'
+          ? faChevronDown
+          : faChevronRight
+      }
+      fixedWidth
+    />
+    <span>네트워크 인터페이스</span>
+    <FontAwesomeIcon icon={faServer} fixedWidth />
+  </div>
 
-                  {/* 네트워크 섹션 */}
-                  <div
-                    onClick={() => {
-                      setActiveSection(activeSection === 'network' ? null : 'network');
-                      setSelectedSnapshot(snapshot);
-                    }}
-                    style={{ color: activeSection === 'network' && selectedSnapshot?.id === snapshot.id ? '#449bff' : 'inherit' }}
-                  >
-                    <FontAwesomeIcon icon={faChevronRight} fixedWidth />
-                    <span>네트워크 인터페이스</span>
-                    <FontAwesomeIcon icon={faServer} fixedWidth />
-                  </div>
+  {/* 설치된 애플리케이션 섹션 */}
+  <div
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleSection(snapshot.id, 'applications');
+    }}
+    style={{
+      color: activeSections[snapshot.id] === 'applications' ? '#449bff' : 'inherit',
+    }}
+  >
+    <FontAwesomeIcon
+      icon={
+        activeSections[snapshot.id] === 'applications'
+          ? faChevronDown
+          : faChevronRight
+      }
+      fixedWidth
+    />
+    <span>설치된 애플리케이션</span>
+    <FontAwesomeIcon icon={faNewspaper} fixedWidth />
+  </div>
+</div>
 
-                  {/* 설치된 애플리케이션 섹션 */}
-                  <div
-                    onClick={() => {
-                      setActiveSection(activeSection === 'applications' ? null : 'applications');
-                      setSelectedSnapshot(snapshot);
-                    }}
-                    style={{ color: activeSection === 'applications' && selectedSnapshot?.id === snapshot.id ? '#449bff' : 'inherit' }}
-                  >
-                    <FontAwesomeIcon icon={faChevronRight} fixedWidth />
-                    <span>설치된 애플리케이션</span>
-                    <FontAwesomeIcon icon={faNewspaper} fixedWidth />
-                  </div>
-                </div>
-                  </div>
+
+</div>
+
               
               
               {/* General Section */}
-              {activeSection === 'general' && selectedSnapshot?.id === snapshot.id && (
+              {activeSections[snapshot.id]  === 'general'&&  (
                 <div className="snap-hidden-content active">
                   <table className="snap-table">
                     <tbody>
@@ -209,11 +283,11 @@ const {
                       </tr>
                       <tr>
                         <th>설정된 메모리:</th>
-                        <td>{snapshotdetail?.vmVo?.memorySize || ''} </td>
+                        <td>{snapshotdetail?.memorySize || 'N/A'} </td>
                       </tr>
                       <tr>
                         <th>할당할 실제 메모리:</th>
-                        <td>{snapshotdetail?.vmVo?.memoryActual || 'N/A'} </td>
+                        <td>{snapshotdetail?.memoryActual || 'N/A'} </td>
                       </tr>
                       <tr>
                         <th>CPU 코어 수:</th>
@@ -225,7 +299,7 @@ const {
               )}
 
               {/* Disk Section */}
-              {activeSection === 'disk' && selectedSnapshot?.id === snapshot.id && (
+              {activeSections[snapshot.id]  === 'disk' && (
                 <div className="snap-hidden-content active">
                   <TablesOuter
                     columns={TableColumnsInfo.SNAPSHOT_DISK_FROM_VM}
@@ -236,7 +310,7 @@ const {
               )}
 
               {/* Network Section */}
-              {activeSection === 'network' && selectedSnapshot?.id === snapshot.id && (
+              {activeSections[snapshot.id]  === 'network' && (
                 <div className="snap-hidden-content active">
                   {Array.isArray(snapshotdetail?.nicVos) && snapshotdetail.nicVos.length > 0 ? (
                     snapshotdetail.nicVos.map((nic, index) => (
@@ -285,10 +359,30 @@ const {
 
 
               {/* Applications Section */}
-              {activeSection === 'applications' && selectedSnapshot?.id === snapshot.id && (
+              {activeSections[snapshot.id]  === 'applications'&& (
                 <div className="snap-hidden-content active">
-                  설치된 애플리케이션 섹션 내용
-                </div>
+                {selectedSnapshots.map((snapshot, index) => (
+                <div>
+                {selectedSnapshots.map((snapshot, index) => (
+                  <div key={index}>
+                    <h4>스냅샷 ID: {snapshot.id}</h4>
+                    {snapshot?.applicationVos && snapshot.applicationVos.length > 0 ? (
+                      snapshot.applicationVos.map((app, appIndex) => (
+                        <div key={appIndex} className="application-item">
+                          <p>애플리케이션 이름: {app.name || '정보 없음'}</p>
+                          <p>버전: {app.version || '정보 없음'}</p>
+                          <p>설명: {app.description || '정보 없음'}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p>설치된 애플리케이션 데이터가 없습니다.</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+                ))}
+              </div>
               )}
             </div>
           ))
@@ -305,17 +399,15 @@ const {
         diskData={disks}
       />
     
-      {modals.delete && selectedSnapshot && (
-        <DeleteModal
-          isOpen={modals.delete}
-          type='Snapshot'
-          onRequestClose={() => toggleModal('delete', false)}
-          contentLabel={'스냅샷'}
-          data={ selectedSnapshot}
-          vmId={vmId}
-      
-        />
-      )}
+    {modals.delete && selectedSnapshots.length > 0 && (
+      <VmSnapshotDeleteModal
+        isOpen={modals.delete}
+        onClose={() => toggleModal('delete', false)}
+        data={selectedSnapshots}
+        vmId={vmId}
+      />
+)}
+
     </Suspense>
     
     </>

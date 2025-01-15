@@ -39,6 +39,7 @@ export function sizeToBytes(size) {
 export function zeroValue(size) {
   return size < 1 ? "< 1 GB" : `${size} GB`;
 }
+
 export function icon(status) {
   const tooltipId = `status-tooltip-${status}`;
   let iconProps = {};

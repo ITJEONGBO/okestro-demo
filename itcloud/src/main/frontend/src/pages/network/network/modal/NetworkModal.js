@@ -316,11 +316,35 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
               </div>
             </FormGroup>
 
-            <FormGroup label="MTU">
-              <div className="network_new_radio">
-
-                <div className='network-new-radio-btn'>
-                  <div>
+            <FormGroup label="MTU" className="mtu-form">
+              <div className='mtu-input-outer'>
+                <div className='mtu-radio-input'>
+                    <div style={{fontSize:'0.32rem'}}>
+                      <input 
+                        type='radio'
+                        checked={formState.mtu === '0'} // 기본값 상태 체크
+                        onChange={() => setFormState((prev) => ({ ...prev, mtu: '0' }))}
+                      />
+                      <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
+                    </div>
+                    <div style={{fontSize:'0.32rem'}}>
+                      <input 
+                        type='radio'
+                        checked={formState.mtu === '0'} // 기본값 상태 체크
+                        onChange={() => setFormState((prev) => ({ ...prev, mtu: '0' }))}
+                      />
+                      <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
+                    </div>
+                </div>
+                <div className='mtu-text-input' style={{fontSize:'10px'}}>
+                  <input 
+                        type='text'
+                  />
+                </div>
+              </div>
+      
+                {/* <div className='network-new-radio-btn'>
+                  <div className='network-mtu-radio'>
                     <input
                       type="radio"
                       name="mtu"
@@ -330,7 +354,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                     />
                     <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
                    </div>
-                   <div>
+                   <div className='network-mtu-radio'>
                     <input
                       type="radio"
                       name="mtu"
@@ -340,19 +364,19 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                     />
                     <label style={{ fontSize: "0.32rem"  }}>사용자 정의</label>
                   </div>
-                </div>
+                </div> */}
                 
-                <input
+                {/* <input
                   type="number"
                   id="mtu_input"
                   value={formState.mtu === '0' ? '' : formState.mtu} // 편집 모드에서 기본값 처리
                   onChange={(e) => setFormState((prev) => ({ ...prev, mtu: e.target.value }))}
                   disabled={formState.mtu === '0'}
-                />
-              </div>
+                /> */}
+     
             </FormGroup>
 
-
+         
             
             {/* <FormGroup>
               <input 

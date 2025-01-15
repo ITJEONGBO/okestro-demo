@@ -5,7 +5,8 @@ import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import { formatBytesToMB, renderHostStatusIcon, renderUpDownStatusIcon } from '../../../utils/format';
 import { 
   useConnectedHostsFromNetwork, 
-  useDisconnectedHostsFromNetwork 
+  useDisconnectedHostsFromNetwork, 
+  useNetworkInterfaceFromHost
 } from "../../../api/RQHook";
 
 const NetworkHostModal = React.lazy(() => import('./modal/NetworkHostModal'));
@@ -18,6 +19,7 @@ const NetworkHosts = ({ networkId }) => {
     data: disconnectedHosts = [], isLoading: isDisconnectedLoading, 
   } = useDisconnectedHostsFromNetwork(networkId, (e) => ({...e})); 
 
+
   const [activeFilter, setActiveFilter] = useState("connected");
   const [selectedHost, setSelectedHost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,11 +29,12 @@ const NetworkHosts = ({ networkId }) => {
       <NetworkHostModal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
-        // hostId={hosts} // 호스트 데이터 전달
+        nicData={nics}
+        hostId={selectedHostId}
       />
     </Suspense>
   );
-
+  const selectedHostId = (Array.isArray(selectedHost) ? selectedHost : []).map((host) => host.id).join(', ');
   const buttonClass = (filter) => `filter_button ${activeFilter === filter ? "active" : ""}`;
 
   const transformHostData = (hosts) => {
@@ -51,10 +54,18 @@ const NetworkHosts = ({ networkId }) => {
     }));
   };
 
+
+  const { data: nics = [] } = useNetworkInterfaceFromHost(selectedHostId, (e) => ({ ...e,}));
+
   return (
     <>
       <div className="header-right-btns">
-        <button onClick={() => setIsModalOpen(true)}>호스트 네트워크 설정</button>
+        <button 
+          onClick={() => setIsModalOpen(true)} 
+          disabled={!selectedHost} // selectedHost가 없으면 버튼 비활성화
+        >
+          호스트 네트워크 설정
+        </button>
       </div>
 
       <div className="host-filter-btns">
@@ -66,7 +77,7 @@ const NetworkHosts = ({ networkId }) => {
         </button>
       </div>
 
-      <span>id = {selectedHost?.id || ''}</span>
+      <span>id = {selectedHostId || ''}</span> 
 
       {/* {isHostsLoading ? (
         <p>로딩 중...</p>

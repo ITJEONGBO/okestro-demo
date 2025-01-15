@@ -119,8 +119,14 @@ const DeleteModal = ({
       });
       onRequestClose();
     }else if (type === 'Snapshot') {
-      console.log('Deleting Snapshot');
-      handleDelete(() => deleteSnapshot({ vmId, snapshotId: id }));
+      console.log('Deleting Snapshots');
+      id.forEach((snapshotId, index) => {
+        handleDelete(() =>
+          deleteSnapshot(
+            { vmId, snapshotId },
+          )
+        );
+      });
       onRequestClose();
     }else if (type === 'vmDisk') {
       console.log('Deleting vmDisk');
@@ -171,7 +177,7 @@ const DeleteModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="storage-delete-popup">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>{contentLabel} 삭제</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -185,7 +191,7 @@ const DeleteModal = ({
           </div>
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleFormSubmit}>OK</button>
           <button onClick={onRequestClose}>취소</button>

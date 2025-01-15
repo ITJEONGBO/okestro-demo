@@ -30,6 +30,7 @@ const RadialBarChart =({ percentage }) => {
             fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
             fontWeight: 'bold',
             color: '#111',
+            offsetY: 10, // 텍스트를 아래로 이동
             formatter: (val) => {
               return parseInt(val) + "%"; // 값 포맷
             },
@@ -48,6 +49,7 @@ const RadialBarChart =({ percentage }) => {
     labels: [], // 라벨을 제거합니다.
     colors: ['#FF4560'], // 초기 색상 설정
   });
+  
   
   // 창 크기가 변경될 때 차트 크기 업데이트
   const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.12);

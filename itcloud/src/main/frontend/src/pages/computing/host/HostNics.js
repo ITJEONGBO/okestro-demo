@@ -5,7 +5,6 @@ import { useNetworkInterfaceFromHost } from "../../../api/RQHook";
 import TablesOuter from "../../../components/table/TablesOuter";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import NetworkHostModal from "../../network/network/modal/NetworkHostModal";
-import TestModal from "../../network/network/modal/TestModal";
 
 const HostNics = ({ hostId }) => {
   const { data: nics = [] } = useNetworkInterfaceFromHost(hostId, (e) => ({
@@ -197,7 +196,7 @@ const HostNics = ({ hostId }) => {
         nicData={nics}
         hostId={hostId}
       /> */}
-          <TestModal
+          <NetworkHostModal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         nicData={nics}

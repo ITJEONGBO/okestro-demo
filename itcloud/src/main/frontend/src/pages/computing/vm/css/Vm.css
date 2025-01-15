@@ -320,6 +320,8 @@
     border: 1px solid #b9b9b9;
     border-top: none;
     color:gray;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 0.3rem;
     font-size: 0.34rem;
 }

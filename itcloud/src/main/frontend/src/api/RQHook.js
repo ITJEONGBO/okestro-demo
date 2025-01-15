@@ -420,7 +420,7 @@ export const useNetworkFromCluster = (clusterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['networkFromCluster', clusterId], 
   queryFn: async () => {
-    console.log(`useNetworkFromCluster ... ${clusterId}`);
+    console.log(`테스트해보기useNetworkFromCluster ... ${clusterId}`);
     const res = await ApiManager.findNetworksFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
@@ -1119,22 +1119,23 @@ export const useAddSnapshotFromVM = () => {
  * @returns useMutation 훅
  */
 export const useDeleteSnapshot = () => {
-  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  const queryClient = useQueryClient(); // Query 캐싱을 위한 클라이언트
   return useMutation({
-    mutationFn: async ({ vmId,snapshotId}) => {
-      // ID들이 제대로 전달되는지 확인하기 위해 로그 추가
-      console.log('vmId:', vmId);
-      console.log('snapshotId:', snapshotId);
-      return await ApiManager.deleteSnapshotFromVM(vmId,snapshotId);
+    mutationFn: async ({ vmId, snapshotId }) => {
+      console.log('Deleting snapshot:', vmId, snapshotId);
+      const response = await ApiManager.deleteSnapshotFromVM(vmId, snapshotId);
+      return response;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries('SnapshotFromVM');
+      queryClient.invalidateQueries('SnapshotFromVM'); // 쿼리 캐시 무효화
     },
     onError: (error) => {
-      console.error('Error deleting snapshot:', error);
+      console.error('Error during snapshot deletion:', error);
     },
   });
 };
+
+
 
 
 /**
