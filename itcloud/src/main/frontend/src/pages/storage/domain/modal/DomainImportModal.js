@@ -19,6 +19,7 @@ import {
   useImportDomain,
   useLoginIscsiFromHost,
 } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 Modal.setAppElement('#root');
 
@@ -280,11 +281,11 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
 
   const handleSearchIscsi = () => {
     if (!hostVoId) {
-      alert('호스트를 선택해주세요.');
+      toast.error('호스트를 선택해주세요.');
       return;
     }
     if (!address || !port) {
-      alert('주소와 포트를 입력해주세요.');
+      toast.error('주소와 포트를 입력해주세요.');
       return;
     }
   
@@ -305,7 +306,7 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
 
   const handleSearchFcp = () => {
     if (!hostVoId) {
-      alert('호스트를 선택해주세요.');
+      toast.error('호스트를 선택해주세요.');
       return;
     }  
     importFcpFromHost(
@@ -324,7 +325,7 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
 
   const handleLoginIscsi = () => {
     if (!target) { // 체크박스를 선택해주세요
-      alert('항목을 선택해주세요.');
+      toast.error('항목을 선택해주세요.');
       return;
     }
   
@@ -347,7 +348,7 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
   const handleFormSubmit = () => {
     const error = validateForm();
     if (error) {
-      alert(error);
+      toast.error(error);
       return;
     }
   
@@ -392,23 +393,23 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
         { domainId: formState.id, domainData: dataToSubmit },
         {
           onSuccess: () => {
-            alert('도메인 편집 완료');
             onClose();
+            toast.success('도메인 편집 완료');
           },
         }
       );
     // } else if (importMode) {
     //   importDomain(dataToSubmit, {
     //     onSuccess: () => {
-    //       alert('도메인 가져오기 완료');
+    //       toast.success('도메인 가져오기 완료');
     //       onClose();
     //     },
     //   });
     } else {
       addDomain(dataToSubmit, {
         onSuccess: () => {
-          alert('도메인 생성 완료');
           onClose();
+          toast.success('도메인 생성 완료');
         },
       });
     }

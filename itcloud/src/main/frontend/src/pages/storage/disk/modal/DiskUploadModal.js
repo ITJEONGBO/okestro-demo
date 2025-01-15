@@ -10,6 +10,7 @@ import {
   useHostsFromDataCenter,
   useUploadDisk,
 } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const FormGroup = ({ label, children }) => (
   <div className="img_input_box">
@@ -112,7 +113,7 @@ const DiskUploadModal = ({ isOpen, onClose }) => {
   const handleFormSubmit = () => {
     const error = validateForm();
     if (error) {
-      alert(error);
+      toast.error(error);
       return;
     }
 
@@ -146,11 +147,11 @@ const DiskUploadModal = ({ isOpen, onClose }) => {
       diskData,
       {
         onSuccess: () => {
-          alert("디스크 업로드 완료")
           onClose();  // 성공 시 모달 닫기
+          toast.success("디스크 업로드 완료")
         },
         onError: (error) => {
-          console.error('Error editing Host:', error);
+          toast.error('Error editing Host:', error);
         }
       }
     );

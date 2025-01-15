@@ -5,6 +5,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import TablesOuter from "../../../../components/table//TablesOuter";
 import TableColumnsInfo from "../../../../components/table/TableColumnsInfo";
 import { useFindDiskListFromVM } from "../../../../api/RQHook";
+import toast from "react-hot-toast";
 
 const VmConnectionPlusModal = ({
   isOpen,
@@ -26,7 +27,7 @@ const VmConnectionPlusModal = ({
       onSelectDisk(selectedDiskId, selectedDiskDetails);
       onRequestClose();
     } else {
-      alert("디스크를 선택하세요!");
+      toast.error("디스크를 선택하세요!");
     }
   };
 

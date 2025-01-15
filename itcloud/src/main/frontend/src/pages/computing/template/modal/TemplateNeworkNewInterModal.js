@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faGlassWhiskey } from '@fortawesome/free-solid-svg-icons';
 import { useAddNicFromTemplate, useAddNicFromVM, useAllNicsFromTemplate, useAllVnicProfiles, useEditNicFromTemplate, useEditNicFromVM, useNetworkInterfaceFromVM } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const TemplateNeworkNewInterModal = ({
   isOpen,
@@ -114,11 +115,11 @@ const TemplateNeworkNewInterModal = ({
         nicData: dataToSubmit
       }, {
         onSuccess: () => {
-          alert('템플릿 네트워크인터페이스 편집 완료');
+          toast.success('템플릿 네트워크인터페이스 편집 완료');
           onRequestClose();
         },
         onError: (error) => {
-          console.error('Error editing network:', error);
+          toast.error('Error editing network:', error);
         }
       });
     } else {
@@ -129,11 +130,11 @@ const TemplateNeworkNewInterModal = ({
         },
         { 
         onSuccess: () => {
-          alert('템플릿 네트워크인터페이스 생성 완료');
+          toast.success('템플릿 네트워크인터페이스 생성 완료');
           onRequestClose();
         },
         onError: (error) => {
-          console.error('Error adding network:', error);
+          toast.error('Error adding network:', error);
         }
       });
     }

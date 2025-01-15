@@ -9,6 +9,7 @@ import {
   useNetworkInterfaceByVMId, 
   useNetworkInterfaceFromVM 
 } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const VmNetworkNewInterfaceModal = ({
   isOpen,
@@ -139,11 +140,11 @@ const VmNetworkNewInterfaceModal = ({
         nicData: dataToSubmit,
       }, {
         onSuccess: () => {
-          alert('네트워크인터페이스 편집 완료');
           onRequestClose();
+          toast.success('네트워크인터페이스 편집 완료');
         },
         onError: (error) => {
-          console.error('Error editing network:', error);
+          toast.error('Error editing network:', error);
         },
       });
     } else {
@@ -154,11 +155,11 @@ const VmNetworkNewInterfaceModal = ({
         },
         {
           onSuccess: () => {
-            alert('네트워크인터페이스 생성 완료');
+            toast.success('네트워크인터페이스 생성 완료');
             onRequestClose();
           },
           onError: (error) => {
-            console.error('Error adding network:', error);
+            toast.error('Error adding network:', error);
           },
         }
       );

@@ -21,6 +21,7 @@ import {
 } from '../../../../api/RQHook';
 import VmConnectionPlusModal from './VmConnectionPlusModal';
 import DiskModal from '../../../storage/disk/modal/DiskModal';
+import toast from 'react-hot-toast';
 
 
 const VmModal = ({ isOpen, editMode = false, vmdata, vmId, selectedVm, onDiskSelection, onClose }) => {
@@ -469,19 +470,19 @@ const VmModal = ({ isOpen, editMode = false, vmdata, vmId, selectedVm, onDiskSel
   const handleFormSubmit = () => { // 디스크  연결은 id값 보내기 생성은 객체로 보내기
     
     if (maxMemory > 9223372036854775807 ||  memorySize > 9223372036854775807) {
-      alert('메모리 값이 너무 큽니다. 다시 확인해주세요.');
+      toast.error('메모리 값이 너무 큽니다. 다시 확인해주세요.');
       return;
     }
     
     const selectedCluster = clusters.find((c) => c.id === clusterVoId);
     if (!selectedCluster) {
-      alert("클러스터를 선택해주세요.");
+      toast.error("클러스터를 선택해주세요.");
       return;
     }
     // 선택된 템플릿 찾기
     const selectedTemplate = templates.find((t) => t.id === templateId);
     if (!selectedTemplate) {
-      alert("네트워크를 선택해주세요.");
+      toast.error("네트워크를 선택해주세요.");
       return;
     }
 
@@ -576,21 +577,21 @@ const VmModal = ({ isOpen, editMode = false, vmdata, vmId, selectedVm, onDiskSel
       vmdata: dataToSubmit
     }, {
       onSuccess: () => {
-        alert('가상머신 편집 완료');
         onClose();
+        toast.success('가상머신 편집 완료');
       },
       onError: (error) => {
-        console.error('Error editing vm:', error);
+        toast.error('Error editing vm:', error);
       }
     });
     } else {
       addVM(dataToSubmit, {
         onSuccess: () => {
-          alert('가상머신 생성 완료');
           onClose();
+          toast.success('가상머신 생성 완료');
         },
         onError: (error) => {
-          console.error('Error adding vm:', error);
+          toast.error('Error adding vm:', error);
         },
       });
     }
@@ -981,7 +982,7 @@ const VmModal = ({ isOpen, editMode = false, vmdata, vmId, selectedVm, onDiskSel
                               setVmdisks((prev) => [...prev, newDisk]); // vmdisks에 추가
                               setIsConnectionPopupOpen(false); // 모달 닫기
                             } else {
-                              alert("디스크를 선택하지 않았습니다!");
+                              toast.error("디스크를 선택하지 않았습니다!");
                             }
                           }}
                           excludedDiskIds={selectedDisks.map((disk) => disk.id)}
@@ -1035,7 +1036,7 @@ const VmModal = ({ isOpen, editMode = false, vmdata, vmId, selectedVm, onDiskSel
       setVmdisks((prev) => [...prev, newDisk]); // vmdisks에 추가
       setIsConnectionPopupOpen(false); // 모달 닫기
     } else {
-      alert("디스크를 선택하지 않았습니다!");
+      toast.error("디스크를 선택하지 않았습니다!");
     }
   }}
   excludedDiskIds={selectedDisks.map((disk) => disk.id)}

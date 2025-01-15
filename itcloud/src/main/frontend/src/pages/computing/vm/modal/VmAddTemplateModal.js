@@ -12,6 +12,7 @@ import {
   useDisksFromVM, 
   useDomainsFromDataCenter 
 } from '../../../../api/RQHook'; // 클러스터 가져오는 훅
+import toast from 'react-hot-toast';
 
 const VmAddTemplateModal = ({ 
   isOpen, 
@@ -156,11 +157,11 @@ const [selectedFormat, setSelectedFormat] = useState('RAW');
 
 const handleFormSubmit = () => {
   if (!name) {
-    alert('이름을 입력하세요.');
+    toast.error('이름을 입력하세요.');
     return;
   }
   if (!selectedCluster) {
-    alert('클러스터를 선택하세요.');
+    toast.error('클러스터를 선택하세요.');
     return;
   }
 
@@ -206,11 +207,11 @@ const handleFormSubmit = () => {
     {vmId, templateData: dataToSubmit},
     {
     onSuccess: () => {
-      alert('템플릿 생성 완료');
       onRequestClose();
+      toast.success('템플릿 생성 완료');
     },
     onError: (error) => {
-      console.error('Error adding Template:', error);
+      toast.error('Error adding Template:', error);
     },
   });
 };

@@ -9,6 +9,7 @@ import {
   useDisksFromVM 
 } from '../../../../api/RQHook';
 import '../css/MVm.css';
+import toast from 'react-hot-toast';
 const VmSnapshotModal = ({ isOpen, data, vmId, onClose }) => {
     const [id, setId] = useState(''); // 스냅샷 ID
     const [alias, setAlias] = useState(''); // 스냅샷 ID
@@ -45,11 +46,11 @@ const VmSnapshotModal = ({ isOpen, data, vmId, onClose }) => {
         { vmId, snapshotData: dataToSubmit },
         {
         onSuccess: () => {
-          alert("스냅샷 생성 완료(alert기능구현)")
           onClose();
+          toast.success("스냅샷 생성 완료")
         },
         onError: (error) => {
-          console.error('Error adding snapshot:', error);
+          toast.error('Error adding snapshot:', error);
         }
       });
     }

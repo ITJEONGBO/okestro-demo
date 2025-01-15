@@ -128,7 +128,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
   
 
   const handleFormSubmit = () => {
-    if (!formState.name) return alert('이름을 입력해주세요.');
+    if (!formState.name) return toast.error('이름을 입력해주세요.');
 
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedNetwork = networks.find((n) => n.id === networkVoId);    

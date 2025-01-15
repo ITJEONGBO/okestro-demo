@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useEditTemplate, useTemplate } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const TemplateEditModal = ({ isOpen, editMode = false, templateId, onClose }) => {
   const [id, setId] = useState('');
@@ -58,12 +59,8 @@ const TemplateEditModal = ({ isOpen, editMode = false, templateId, onClose }) =>
   }, [isOpen, templateData]);
 
   const handleFormSubmit = () => {
-    if (!templateId) {
-      console.error('템플릿 ID가 없습니다. 수정 요청을 취소합니다.');
-      return;
-    }
     if (name === '') {
-      alert("이름을 입력해주세요.");
+      toast.error("이름을 입력해주세요.");
       return;
     }
     const dataToSubmit = {
@@ -88,11 +85,11 @@ const TemplateEditModal = ({ isOpen, editMode = false, templateId, onClose }) =>
         },
         {
           onSuccess: () => {
-            alert("템플릿 편집 완료");
             onClose();
+            toast.success("템플릿 편집 완료");
           },
           onError: (error) => {
-            console.error('Error editing cluster:', error);
+            toast.error('Error editing cluster:', error);
           },
         }
       );

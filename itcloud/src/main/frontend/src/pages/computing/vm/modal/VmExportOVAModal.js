@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useAllHosts } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
   const [host, setHost] = useState('#');
@@ -17,15 +18,15 @@ const VmExportOVAModal = ({ isOpen, onRequestClose, selectedVms }) => {
 
   const handleExport = () => {
     if (!host || host === '#') {
-      alert('호스트를 선택하세요.');
+      toast.error('호스트를 선택하세요.');
       return;
     }
     if (!directory || directory === '#') {
-      alert('디렉토리를 입력하세요.');
+      toast.error('디렉토리를 입력하세요.');
       return;
     }
     if (!name) {
-      alert('이름을 입력하세요.');
+      toast.error('이름을 입력하세요.');
       return;
     }
 

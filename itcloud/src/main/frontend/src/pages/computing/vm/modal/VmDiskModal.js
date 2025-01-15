@@ -13,6 +13,7 @@ import {
   useAddDiskFromVM,
   useDisksFromVM,
 } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const FormGroup = ({ label, children }) => (
   <div className="img_input_box">
@@ -203,7 +204,7 @@ const VmDiskModal = ({ isOpen, editMode = false, diskId, vmId, onClose }) => {
   const handleFormSubmit = () => {
     const error = validateForm();
     if (error) {
-      alert(error);
+      toast.error(error);
       return;
     }
     
@@ -262,8 +263,8 @@ const VmDiskModal = ({ isOpen, editMode = false, diskId, vmId, onClose }) => {
         { diskId: formState.id, diskData: diskDataToSubmit}, 
         {
           onSuccess: () => {
-            alert("디스크 편집 완료")
             onClose();  // 성공 시 모달 닫기
+            toast.success("디스크 편집 완료")
           },
         }
       );
@@ -272,7 +273,7 @@ const VmDiskModal = ({ isOpen, editMode = false, diskId, vmId, onClose }) => {
     //     {vmId:vmId, diskData: vmDataToSubmit },
     //     {
     //     onSuccess: () => {
-    //       alert("VM 디스크 생성 완료");
+    //       toast.success("VM 디스크 생성 완료");
     //       onClose(); // 성공 시 모달 닫기
     //     },
     //     onError: (error) => {
@@ -282,8 +283,8 @@ const VmDiskModal = ({ isOpen, editMode = false, diskId, vmId, onClose }) => {
     } else {
       addDisk(diskDataToSubmit, {
         onSuccess: () => {
-          alert("디스크 생성 완료")
           onClose();
+          toast.success("디스크 생성 완료")
         },
       });
     }

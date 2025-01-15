@@ -344,7 +344,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
   const handleFormSubmit = () => {
     const error = validateForm();
     if (error) {
-      alert(error);
+      toast.error(error);
       return;
     }
   
@@ -397,7 +397,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
     // } else if (importMode) {
     //   importDomain(dataToSubmit, {
     //     onSuccess: () => {
-    //       alert('도메인 가져오기 완료');
+    //       toast.success('도메인 가져오기 완료');
     //       onClose();
     //     },
     //   });
