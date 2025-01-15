@@ -32,7 +32,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     migration: false,
   });
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
-  const [networkVoId, setNetworkVoId] = useState('');  
+  const [networkVoId, setNetworkVoId] = useState(networkId || '');  
   // const [networkFilter, setNetworkFilter] = useState('');
 
   const resetForm = () => {
@@ -43,7 +43,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       // passthrough: '',
       portMirroring: false,
       migration: false,
-    })
+    });
     setDataCenterVoId('');
     setNetworkVoId(networkId || '');
   };
@@ -61,7 +61,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
   const {
     data: networks = [],
     isLoading: isNetworksLoading
-  } = useNetworksFromDataCenter(dataCenterVoId ? dataCenterVoId : undefined, (e) => ({...e,}));
+  } = useNetworksFromDataCenter(dataCenterVoId || undefined, (e) => ({...e,}));
   
   const nFilters = [ 
     { value: "vdsm-no-mac-spoofing", label: "vdsm-no-mac-spoofing" },
@@ -103,7 +103,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       });
       setDataCenterVoId(vnic?.dataCenterVo?.id || '');
       setNetworkVoId(vnic?.networkVo?.id || '');        
-    } else if (!editMode) {        
+    } else if (!editMode && !isDataCentersLoading) {        
       resetForm();
     }
   }, [editMode, vnic]);
@@ -120,12 +120,6 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     }
   }, [networks, editMode]);
 
-  // useEffect(() => {
-  //   if (!editMode && nFilters.length > 0) {
-  //     setFormState((prev) => ({...prev, networkFilter: nFilters[0].value}));
-  //   }
-  // }, [nFilters, editMode]);
-  
 
   const handleFormSubmit = () => {
     if (!formState.name) return toast.error('이름을 입력해주세요.');
@@ -139,29 +133,19 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     };
     console.log('dataToSubmit:', dataToSubmit); 
 
-    if (editMode) {
-      editVnicProfile(
-        { vnicId: formState.id, vnicData: dataToSubmit }, 
-        {
-          onSuccess: () => {
-            toast.success('vNIC 프로파일이 성공적으로 편집되었습니다.');
-            onClose();
-          },
-          onError: (error) => {
-            toast.error('vNIC 프로파일 편집 중 오류 발생:', error);
-          }
-        });
-    } else {
-      addVnicProfile(dataToSubmit,{
-          onSuccess: () => {
-            toast.success('vNIC 프로파일이 성공적으로 추가되었습니다.');
-            onClose();
+    const mutation = editMode ? editVnicProfile : addVnicProfile;
+    mutation(
+      editMode ? { vnicId: formState.id, vnicData: dataToSubmit } : dataToSubmit,
+      {
+        onSuccess: () => {
+          toast.success(editMode ? 'vNIC 프로파일이 성공적으로 편집되었습니다.' : 'vNIC 프로파일이 성공적으로 추가되었습니다.');
+          onClose();
         },
-          onError: (error) => {
-            toast.error('vNIC 프로파일 추가 중 오류 발생:', error);
-        }
-      });
-    } 
+        onError: (error) => {
+          toast.error(`vNIC 프로파일 ${editMode ? '편집' : '추가'} 중 오류 발생: ${error}`);
+        },
+      }
+    );
   };
 
   return (
@@ -193,7 +177,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
                 {isDataCentersLoading ? (
                   <option>로딩중~</option>
                 ) : (
-                  datacenters.map((dc) => (
+                  datacenters && datacenters.map((dc) => (
                     <option key={dc.id} value={dc.id}>
                       {dc.name}: {dc.id}
                     </option>
@@ -211,9 +195,9 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
                 {isNetworksLoading ? (
                   <option>loading ~~</option>
                 ) : (
-                  networks.map((n) => (
+                  networks && networks.map((n) => (
                     <option key={n.id} value={n.id}>
-                      {n.name}: {n.id}
+                      {n.name}: {networkVoId}
                     </option>
                   ))
                 )}
@@ -237,7 +221,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
               />
             </FormGroup>
                       
-            <FormGroup label="네트워크 필터">
+            {/* <FormGroup label="네트워크 필터">
               <select
                 id="networkFilter"
                 value={formState.networkFilter}
@@ -249,7 +233,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
                   </option>
                 ))}
               </select>
-            </FormGroup>
+            </FormGroup> */}
 
 {/* 
             <div className="vnic-new-checkbox">

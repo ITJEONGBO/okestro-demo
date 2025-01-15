@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteVnicProfile } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const VnicProfileDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const VnicProfileDeleteModal = ({ isOpen, onClose, data }) => {
 
   const handleFormSubmit = () => {
     if (!ids.length) {
-      console.error('삭제할 vnicProfile ID가 없습니다.');
+      toast.error('삭제할 vnicProfile ID가 없습니다.');
       return;
     }
   
@@ -34,11 +35,13 @@ const VnicProfileDeleteModal = ({ isOpen, onClose, data }) => {
         onSuccess: () => {
           if (ids.length === 1 || index === ids.length - 1) { // 마지막 vnicProfile 삭제 후 이동
             onClose(); // Modal 닫기
+            toast.success("vnic profile 삭제 성공")
             navigate('/vnicProfiles');
           }
         },
         onError: (error) => {
-          console.error(`vnicProfile 삭제 오류:`, error);
+          onClose();
+          toast.error(`vnicProfile 삭제 오류:`, error);
         },
       });
     });

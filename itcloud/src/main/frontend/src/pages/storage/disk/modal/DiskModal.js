@@ -23,6 +23,13 @@ const FormGroup = ({ label, children }) => (
 );
 
 const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', onClose }) => {
+  const { mutate: addDisk } = useAddDisk();
+  const { mutate: editDisk } = useEditDisk();
+  const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 세부페이지 안에 디스크생성성
+
+  const [activeTab, setActiveTab] = useState('img');
+  const handleTabClick = (tab) => { setActiveTab(tab); };
+  
   const [formState, setFormState] = useState({
     id: '',
     size: '',
@@ -44,8 +51,28 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
   const [diskProfileVoId, setDiskProfileVoId] = useState('');
   const [interface_, setInterface_] = useState('');
 
-  const [activeTab, setActiveTab] = useState('img');
-  const handleTabClick = (tab) => { setActiveTab(tab); };
+  const resetForm = () => {
+    setFormState({
+      id: '',
+      size: '',
+      appendSize: 0,
+      alias: '',
+      description: '',
+      wipeAfterDelete: false,
+      bootable: false,
+      sharable: false,
+      backup: true,
+      sparse: true,
+      readOnly: false,
+      logicalName:'',
+      passDiscard:true
+    });
+    setInterface_('');
+    setDataCenterVoId('');
+    setDomainVoId('');
+    setDiskProfileVoId('');
+  };
+
 
   // 디스크 데이터 가져오기
   const {
@@ -71,24 +98,14 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
     data: domains = [],
     refetch: refetchDomains,
     isLoading: isDomainsLoading,
-  } = useAllActiveDomainFromDataCenter(
-    dataCenterVoId, 
-    (e) => ({...e,})
-  );
+  } = useAllActiveDomainFromDataCenter(dataCenterVoId, (e) => ({...e,}));
 
   // 선택한 도메인이 가진 디스크 프로파일 가져오기
   const {
     data: diskProfiles = [],
     refetch: diskProfilesRefetch,
     isLoading: isDiskProfilesLoading,
-  } = useAllDiskProfileFromDomain(
-    domainVoId, 
-    (e) => ({...e,})
-  );  
-
-  const { mutate: addDisk } = useAddDisk();
-  const { mutate: editDisk } = useEditDisk();
-  const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 세부페이지 안에 디스크생성성
+  } = useAllDiskProfileFromDomain(domainVoId, (e) => ({...e,}));  
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const interfaceList = [
@@ -105,7 +122,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
 
   useEffect(() => {
     if (editMode && disk) {
-      console.log('Setting edit mode state with disk:', disk);
       setFormState({
         id: disk?.id || '',
         size: (disk?.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
@@ -120,35 +136,10 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
       setDataCenterVoId(disk?.dataCenterVo?.id || '');
       setDomainVoId(disk?.storageDomainVo?.id || '');
       setDiskProfileVoId(disk?.diskProfileVo?.id || '');
-      // 
     } else if (!editMode && !isDatacentersLoading) {
       resetForm();
     }
   }, [editMode, disk]);
-  
-  // useEffect(() => {
-  //   if (editMode && vmdisk) {
-  //     console.log('Setting edit mode state with disk:', vmdisk);
-  //     setFormState({
-  //       id: vmdisk.id || '',
-  //       size: (vmdisk.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
-  //       appendSize: 0,
-  //       alias: vmdisk.alias || '',
-  //       description: vmdisk.description || '',
-  //       wipeAfterDelete: vmdisk.wipeAfterDelete || false,
-  //       sharable: vmdisk.sharable || false,
-  //       backup: vmdisk.backup || false,
-  //       sparse: vmdisk.sparse || false,
-  //       readOnly:vmdisk.readOnly || false
-  //     });
-  //     setDataCenterVoId(disk?.dataCenterVo?.id || '');
-  //     setDomainVoId(disk?.storageDomainVo?.id || '');
-  //     setDiskProfileVoId(disk?.diskProfileVo?.id || '');
-  //     // 
-  //   } else if (!editMode) {
-  //     resetForm();
-  //   }
-  // }, [editMode, vmdisk]);
 
   useEffect(() => {
     if (!editMode && datacenters && datacenters.length > 0) {
@@ -173,29 +164,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
       setInterface_(interfaceList[0].value);
     }
   }, [interfaceList, editMode]);
-  
-
-  const resetForm = () => {
-    setFormState({
-      id: '',
-      size: '',
-      appendSize: 0,
-      alias: '',
-      description: '',
-      wipeAfterDelete: false,
-      bootable: false,
-      sharable: false,
-      backup: true,
-      sparse: true,
-      readOnly: false,
-      logicalName:'',
-      passDiscard:true
-    });
-    setInterface_('');
-    setDataCenterVoId('');
-    setDomainVoId('');
-    setDiskProfileVoId('');
-  };
+    
 
   const validateForm = () => {
     if (!formState.alias) return '별칭을 입력해주세요.';
@@ -414,23 +383,21 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
               )}
 
               <FormGroup label="데이터 센터">
-                {isDatacentersLoading ? (
-                    <p>데이터 센터를 불러오는 중...</p>
-                  ) : datacenters.length === 0 ? (
-                    <p>사용 가능한 데이터 센터가 없습니다.</p>
+                <select
+                  value={dataCenterVoId}
+                  onChange={(e) => setDataCenterVoId(e.target.value)}
+                  disabled={editMode}
+                >
+                  {isDatacentersLoading ? (
+                    <option>로딩중~</option>
                   ) : (
-                  <select
-                    value={dataCenterVoId}
-                    onChange={(e) => setDataCenterVoId(e.target.value)}
-                    disabled={editMode}
-                  >
-                    {datacenters && datacenters.map((dc) => (
+                    datacenters && datacenters.map((dc) => (
                       <option key={dc.id} value={dc.id}>
-                        {dc.name}: {dataCenterVoId}
+                        {dc.name}: {dc.id}
                       </option>
-                    ))}
-                  </select>
-                )}
+                    ))
+                  )}
+                </select>
               </FormGroup>
 
               <FormGroup label="스토리지 도메인">

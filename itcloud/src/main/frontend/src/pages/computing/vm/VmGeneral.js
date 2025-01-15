@@ -15,35 +15,36 @@ const VmGeneral = ({ vmId }) => {
     { label: "게스트 에이전트", value: vm?.guestInterfaceName },
     { label: "업타임", value: vm?.upTime },
     { label: "FQDN", value: vm?.fqdn },
-    { label: "실행 호스트", value: vm?.hostVo?.name },
+    // { label: "실행 호스트", value: vm?.hostVo?.name },
+    { label: "", value: ' ' },
     { label: "클러스터", 
       value: 
         <div className='related_object'>
           <FontAwesomeIcon icon={faEarthAmericas} fixedWidth className="mr-0.5"/>
-          <span className="text-blue-500 font-bold">{vm?.clusterVo?.name || '#'}</span>
+          <span className="text-blue-500 font-bold">{vm?.clusterVo?.name}</span>
         </div>
     },
     { label: "호스트", 
       value:  
         <div className='related_object'>
           <FontAwesomeIcon icon={faUser} fixedWidth className="mr-0.5"/>
-          <span className="text-blue-500 font-bold"> {vm?.hostVo?.name || '#'}</span>
+          <span className="text-blue-500 font-bold"> {vm?.hostVo?.name}</span>
         </div>
     },
     { label: "네트워크", 
       value:  
         <div className='related_object'>
           <FontAwesomeIcon icon={faServer} fixedWidth className="mr-0.5"/>
-          <span className="text-blue-500 font-bold"> {vm?.hostVo?.name || '#'}</span>
+          <span className="text-blue-500 font-bold"> {vm?.hostVo?.name}</span>
         </div>
     },
-    { label: "스토리지 도메인", 
-      value:  
-        <div className='related_object'>
-          <FontAwesomeIcon icon={faDatabase} fixedWidth className="mr-0.5"/>
-          <span>{vm?.storageDomainVo?.name || ''}</span>
-        </div>
-    }
+    // { label: "스토리지 도메인", 
+    //   value:  
+    //     <div className='related_object'>
+    //       <FontAwesomeIcon icon={faDatabase} fixedWidth className="mr-0.5"/>
+    //       <span>{vm?.storageDomainVo?.name}</span>
+    //     </div>
+    // }
   ];
 
   const hardwareTableRows = [
@@ -74,7 +75,7 @@ const VmGeneral = ({ vmId }) => {
             <tbody>
               {generalTableRows.map((row, index) => (
                 <tr key={index}>
-                  <th>{row.label}:</th>
+                  <th>{row.label}</th>
                   <td>{row.value}</td>
                 </tr>
               ))}
@@ -88,7 +89,7 @@ const VmGeneral = ({ vmId }) => {
             <tbody>
               {hardwareTableRows.map((row, index) => (
                 <tr key={index}>
-                  <th>{row.label}:</th>
+                  <th>{row.label}</th>
                   <td>{row.value}</td>
                 </tr>
               ))}

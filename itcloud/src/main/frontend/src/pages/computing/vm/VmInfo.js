@@ -9,7 +9,7 @@ import Path from '../../../components/Header/Path';
 import { useVmById } from '../../../api/RQHook';
 import VmGeneral from './VmGeneral';
 import VmHostDevices from './VmHostDevices';
-import VmEvent from './VmEvent';
+import VmEvents from './VmEvents';
 import VmApplications from './VmApplications';
 import VmSnapshots from './VmSnapshots';
 import VmNics from './VmNics';
@@ -70,7 +70,7 @@ const VmInfo = () => {
       nics: VmNics,
       applications: VmApplications,
       hostDevices: VmHostDevices,
-      events: VmEvent,
+      events: VmEvents,
     }[activeTab];
     return SectionComponent ? <SectionComponent vmId={vmId} /> : null;
   };
@@ -119,7 +119,7 @@ const VmInfo = () => {
       {/* vm 모달창 */}
       <VmModals
         activeModal={activeModal}
-        vm={vm} // vmId 전달
+        vm={vm}
         selectedVms={vm}
         onClose={closeModal}
       />

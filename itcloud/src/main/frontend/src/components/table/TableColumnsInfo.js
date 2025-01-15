@@ -131,7 +131,34 @@ const TableColumnsInfo = {
     { header: '업타임', accessor: 'upTime', clickable: false, width: '12%' },
     { header: '설명', accessor: 'description', clickable: false, width: '25%' }
   ],
-  // 디스크 DISKS
+  DISKS_FROM_VM: [
+    { header: '', accessor: 'status', clickable: false,width:'4%' },
+    { header: '별칭', accessor: 'alias', clickable: true ,width:'10%'},
+    { header: '', accessor: '', clickable: false,width:'4%' },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '연결 대상', accessor: '', clickable: false },
+    { header: '인터페이스', accessor: '', clickable: false },
+    { header: '논리적 이름', accessor: '', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '유형', accessor: '', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ],
+  DISK_IMAGES_FROM_VM: [
+    { header: '', accessor: 'status', clickable: false,width:'4%' },
+    { header: '별칭', accessor: 'alias', clickable: true ,width:'10%'},
+    { header: '', accessor: 'icon1', clickable: false,width:'4%' },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '실제 크기', accessor: 'actualSize', clickable: false },
+    { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    { header: '스토리지 유형', accessor: 'creationDate', clickable: false },
+    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '인터페이스', accessor: '', clickable: false },    
+    { header: '논리적 이름', accessor: '', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ],
   APPLICATIONS_FROM_VM: [
     { header: '설치된 애플리케이션', accessor: 'name' }
   ],
@@ -438,20 +465,7 @@ const TableColumnsInfo = {
     { header: '유형', accessor: 'storageType', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-  DISKS_FROM_:  [
-    { header: '이름', accessor: 'alias', clickable: true ,width:'10%'},
-    { header: 'ID', accessor: 'id', clickable: false },
-    { header: '', accessor: 'icon1', clickable: false,width:'4%' },
-    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
-    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
-    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
-    { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
-    { header: '생성 일자', accessor: 'creationDate', clickable: false },
-    { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '콘텐츠', accessor: 'content', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
-  ],
+  
   LUN_DISK:  [
     { header: '이름', accessor: 'alias', clickable: true,width:'10%' },
     { header: 'ID', accessor: 'id', clickable: false },
