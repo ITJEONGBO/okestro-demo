@@ -576,7 +576,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
       {/* ISCSI 의 경우 */}
       {isIscsi && (        
         <div className="storage_popup_iSCSI">
-          <div className="tab_content">
+          <div className="section-table-outer">
             {isIscsisLoading ? (
               <div className="label_font_body">로딩 중...</div>
             ) : isIscsisError ? (
@@ -584,6 +584,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
             ) : (
               <>
                 { editMode ? (
+             
                   <Tables
                     columns={TableColumnsInfo.LUNS_TARGETS}
                     data={
@@ -604,6 +605,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
                     onRowClick={handleRowClick}
                     // shouldHighlight1stCol={true}
                   />
+           
                 // ): importMode ? (
                 //   <>
                 //     <label className='label_font_name'>대상 검색</label>
@@ -682,14 +684,14 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
             )}
           </div>
           <div>
-            <span>id: {lunId}</span>
+            <span style={{ fontSize: '22px' }}>id: {lunId}</span>
           </div>
         </div>
       )}
       
       {isFibre && (
         <div className="storage_popup_iSCSI">
-          <div className="tab_content">
+          <div className="section-table-outer">
             {isFibresLoading ? (
               <div className="label_font_body">로딩 중...</div>
             ) : isFibresError ? (
@@ -739,7 +741,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
                   />
                 )} 
                 <div>
-                  <span>id: {lunId}</span>
+                  <span style={{ fontSize: '22px' }}>id: {lunId}</span>
                 </div>
               </> 
             )}
