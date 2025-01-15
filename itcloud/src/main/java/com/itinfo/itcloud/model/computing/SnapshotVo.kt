@@ -81,10 +81,6 @@ fun Snapshot.toSnapshotVo(conn: Connection, vmId: String): SnapshotVo {
     val nics: List<Nic> = conn.findAllSnapshotNicsFromVm(vmId, this@toSnapshotVo.id()).getOrDefault(listOf())
     val applications: List<Application> = conn.findAllApplicationsFromVm(vmId).getOrDefault(listOf())
 
-    nics.forEach {
-        println( it.name() + " " + it.mac().address())
-    }
-
     return SnapshotVo.builder {
         id { this@toSnapshotVo.id() }
         description { this@toSnapshotVo.description() }

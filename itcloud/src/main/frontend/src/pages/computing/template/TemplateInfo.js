@@ -12,9 +12,7 @@ import TemplateEvents from './TemplateEvents';
 import TemplateNics from './TemplateNics';
 import TemplateDisks from './TemplateDisks';
 import TemplateStorage from './TemplateStorage';
-
-const TemplateEditModal = React.lazy(() => import('./modal/TemplateEditModal'));
-const TemplateDeleteModal = React.lazy(() => import('./modal/TemplateDeleteModal'));
+import TemplateModals from './modal/TemplateModals';
 
 const TemplateInfo = () => {
   const navigate = useNavigate();
@@ -34,8 +32,6 @@ const TemplateInfo = () => {
       navigate('/computing/templates');
     }
   }, [isError, isLoading, template, navigate]);
-
-  // const [modals, setModals] = useState({ edit: false, delete: false });
 
   const sections = [
     { id: 'general', label: '일반' },
@@ -76,24 +72,6 @@ const TemplateInfo = () => {
     { type: 'addVm', label: '새 가상머신', onClick: () => openModal('addVm') },
   ];
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'edit' && (
-        <TemplateEditModal
-          editMode
-          templateId={templateId}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <TemplateDeleteModal
-          data={template}
-          onClose={closeModal}
-        />
-      )}
-    </Suspense>
-  );
-
   return (
     <div id="section">
       <HeaderButton
@@ -114,7 +92,12 @@ const TemplateInfo = () => {
       </div>
 
       {/* template 모달창 */}
-      { renderModals() }
+      <TemplateModals
+        activeModal={activeModal}
+        template={template}
+        selectedTemplates={template}
+        onClose={closeModal}
+      />
       <Footer />
     </div>
   );

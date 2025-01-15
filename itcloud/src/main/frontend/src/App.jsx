@@ -20,7 +20,7 @@ import TemplateInfo from './pages/computing/template/TemplateInfo';
 import AllNetwork from './pages/network/network/AllNetwork';
 import NetworkInfo from './pages/network/network/NetworkInfo';
 import AllVnic from './pages/network/vnicProfile/AllVnic';
-import VnicInfo from './pages/network/vnicProfile/VnicInfo';
+import VnicProfileInfo from './pages/network/vnicProfile/VnicProfileInfo';
 import AllDomain from './pages/storage/domain/AllDomain';
 import DomainInfo from './pages/storage/domain/DomainInfo';
 import AllDisk from './pages/storage/disk/AllDisk';
@@ -128,8 +128,7 @@ const App = () => {
               <Route path="/networks/:id/:section" element={<NetworkInfo />} /> 
 
               <Route path="/vnicProfiles" element={<AllVnic />} />
-              {/* <Route path="/vnicProfiles/:id/" element={<VnicInfo />} /> */}
-              <Route path="/vnicProfiles/:id/:section" element={<VnicInfo />} />
+              <Route path="/vnicProfiles/:id/:section" element={<VnicProfileInfo />} />
 
               <Route path="/storages/rutil-manager" element={<RutilManager />} />
               <Route path="/storages/rutil-manager/:section" element={<RutilManager />} />

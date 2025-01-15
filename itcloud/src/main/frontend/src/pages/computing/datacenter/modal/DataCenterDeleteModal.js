@@ -26,7 +26,7 @@ const DataCenterDeleteModal = ({ isOpen, onClose, data }) => {
 
   const handleFormSubmit = () => {
     if (!ids.length) {
-      console.error('삭제할 데이터센터 ID가 없습니다.');
+      toast.error('삭제할 데이터센터 ID가 없습니다.');
       return;
     }
   
@@ -34,14 +34,13 @@ const DataCenterDeleteModal = ({ isOpen, onClose, data }) => {
       deleteDataCenter(datacenterId, {
         onSuccess: () => {
           if (ids.length === 1 || index === ids.length - 1) { // 마지막 데이터센터 삭제 후 이동
-            toast.success("데이터센터 삭제 완료")
             onClose(); // Modal 닫기
+            toast.success("데이터센터 삭제 완료")
             navigate('/computing/rutil-manager/datacenters');
           }
         },
         onError: (error) => {
-          // toast.error("데이터센터 삭제 실패")
-          console.error(`데이터센터 삭제 오류:`, error);
+          toast.error(`데이터센터 삭제 오류:`, error);
         },
       });
     });

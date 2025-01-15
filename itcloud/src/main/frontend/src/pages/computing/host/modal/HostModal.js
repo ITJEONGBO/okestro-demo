@@ -9,6 +9,7 @@ import {
   useHost, 
   useAllClusters,
 } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
   const [formState, setFormState] = useState({
@@ -106,7 +107,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
   const handleFormSubmit = () => {
     const error = validateForm();
     if (error) {
-      alert(error);
+      toast.error(error);
       return;
     }
 
@@ -126,11 +127,11 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
         { hostId: formState.id, hostData: dataToSubmit }, 
         {
           onSuccess: () => {
-            alert("Host 편집 완료")
             onClose();  // 성공 시 모달 닫기
+            toast.success("Host 편집 완료")
           },
           onError: (error) => {
-            console.error('Error editing Host:', error);
+            toast.error('Error editing Host:', error);
           }
         }
       );
@@ -139,11 +140,11 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
       dataToSubmit.hostEngine = formState.hostEngine;
       addHost(dataToSubmit, {
         onSuccess: () => {
-          alert("Host 생성 완료")
           onClose();
+          toast.success("Host 생성 완료")
         },
         onError: (error) => {
-          console.error('Error adding Host:', error);
+          toast.error('Error adding Host:', error);
         }
       });
     }

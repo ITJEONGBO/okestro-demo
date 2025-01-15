@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TablesOuter from '../../../components/table/TablesOuter';
 import HostActionButtons from './button/HostActionButtons'
@@ -10,7 +10,6 @@ import HostModals from './modal/HostModals';
 
 const HostDupl = ({ hosts = [], columns, clusterId }) => {
   const navigate = useNavigate();
-
   const [activeModal, setActiveModal] = useState(null);
   const [selectedHosts, setSelectedHosts] = useState([]);
   const selectedIds = (Array.isArray(selectedHosts) ? selectedHosts : []).map(host => host.id).join(', ');

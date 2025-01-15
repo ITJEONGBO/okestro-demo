@@ -47,11 +47,11 @@ const VmGeneral = ({ vmId }) => {
   ];
 
   const hardwareTableRows = [
-    { label: "CPU", value: `${vm?.cpuTopologyCnt || '#'}(${vm?.cpuTopologySocket || '#'}:${vm?.cpuTopologyCore || '#'}:${vm?.cpuTopologyThread || '#'})` },
+    { label: "CPU", value: `${vm?.cpuTopologyCnt}(${vm?.cpuTopologySocket}:${vm?.cpuTopologyCore}:${vm?.cpuTopologyThread})` },
     { label: "메모리", value: formatBytesToMB(vm?.memorySize) +' MB' ?? '0'},
     { label: "하드 디스크", value: vm?.storageDomainVo?.name },
-    { label: "네트워크 어댑터", value: vm?.nicVos?.[0]?.name || '#' },
-    { label: "칩셋/펌웨어 유형", value: vm?.chipsetFirmwareType || '#' }
+    { label: "네트워크 어댑터", value: vm?.nicVos?.[0]?.name },
+    { label: "칩셋/펌웨어 유형", value: vm?.chipsetFirmwareType }
   ];
 
   const typeTableRows = [
@@ -110,7 +110,7 @@ const VmGeneral = ({ vmId }) => {
               <div>메모리</div>
               <div className='capacity_box'>
                 <div>{vm?.usageDto?.memoryPercent}% 사용됨</div>
-                <div>{Math.round(vm?.memoryActual / 1024 / 1024) || '#'} MB 할당됨</div>
+                <div>{Math.round(vm?.memoryActual / 1024 / 1024) || '0'} MB 할당됨</div>
               </div>
             </div>
             <div className='capacity'>

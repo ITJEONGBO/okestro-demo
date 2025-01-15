@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import VnicProfileActionButtons from './button/VnicProfileActionButtons.js';
 import TablesOuter from '../../../components/table/TablesOuter.js';

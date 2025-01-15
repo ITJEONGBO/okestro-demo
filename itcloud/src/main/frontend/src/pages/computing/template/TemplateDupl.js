@@ -1,91 +1,52 @@
 import React, { useState } from 'react';
-import TemplateTable from './TemplateTable';
 import TemplateActionButtons from './button/TemplateActionButtons';
 import TemplateModals from './modal/TemplateModals';
-import HeaderButton from '../../../components/button/HeaderButton';
-import { faDesktop } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import TablesOuter from '../../../components/table/TablesOuter';
+import TableRowClick from '../../../components/table/TableRowClick';
 
 const TemplateDupl = ({ templates = [], columns = [], type }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [action, setAction] = useState(null);
-  const [selectedTemplates, setSelectedTemplates] = useState([]); 
-
-  const handleActionClick = (actionType) => {
-    setAction(actionType);
-    setIsModalOpen(true);
-  };
-
+  const navigate = useNavigate();
+  const [activeModal, setActiveModal] = useState(null);
+  const [selectedTemplates, setSelectedTemplates] = useState([]);
   const selectedIds = (Array.isArray(selectedTemplates) ? selectedTemplates : []).map((template) => template.id).join(', ');
 
-  const renderSection = () => (
-    <div id="section">
-      <HeaderButton
-        titleIcon={faDesktop}
-        title={'템플릿'}
-        buttons={[]}
-      />
-      <div className="host_btn_outer">
-        <TemplateActionButtons
-          onEdit={() => selectedTemplates.length === 1 && handleActionClick('edit')} 
-          onDelete={() => selectedTemplates.length > 0 && handleActionClick('delete')} 
-          isEditDisabled={selectedTemplates.length !== 1}
-          isDeleteDisabled={selectedTemplates.length === 0}
-        />
-        <span>선택된 템플릿 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
-    
-        <TemplateTable
-          columns={columns}
-          templates={templates}
-          setSelectedTemplates={(selected) => {
-            if (Array.isArray(selected)) setSelectedTemplates(selected); 
-          }}
-        />
-        
-        <TemplateModals
-          isModalOpen={isModalOpen}
-          action={action}
-          onRequestClose={() => setIsModalOpen(false)}
-          selectedTemplate={selectedTemplates.length > 0 ? selectedTemplates[0] : null} 
-          selectedTemplates={selectedTemplates}
-        
-        />
-      </div>
-    </div>
-  );
+  const handleNameClick = (id) => navigate(`/computing/templates/${id}`);
   
-  if (type === 'rutil') {
-    return renderSection();
-  } else {
-    return (
-      <>
-        <div onClick={(e) => e.stopPropagation()}> 
-          <TemplateActionButtons
-            onEdit={() => selectedTemplates.length === 1 && handleActionClick('edit')} 
-            onDelete={() => selectedTemplates.length > 0 && handleActionClick('delete')} 
-            isEditDisabled={selectedTemplates.length !== 1} 
-            isDeleteDisabled={selectedTemplates.length === 0} 
-          />
-          <span>선택된 템플릿 ID: {selectedIds || '선택된 항목이 없습니다.'}</span>
-      
-          <TemplateTable
-            columns={columns}
-            templates={templates}
-            setSelectedTemplates={(selected) => {
-              if (Array.isArray(selected)) setSelectedTemplates(selected); // 유효한 선택만 반영
-            }}
-          />
-          
-          <TemplateModals
-            isModalOpen={isModalOpen}
-            action={action}
-            onRequestClose={() => setIsModalOpen(false)}
-            selectedTemplate={selectedTemplates.length > 0 ? selectedTemplates[0] : null} 
-            selectedTemplates={selectedTemplates}
-          />
-        </div>
-      </>
-    );
-  }
+  const openModal = (action) => setActiveModal(action);
+  const closeModal = () => setActiveModal(null);
+  
+  return (
+    <>
+      <TemplateActionButtons
+        openModal={openModal}
+        isEditDisabled={selectedTemplates.length !== 1}
+        isDeleteDisabled={selectedTemplates.length === 0}
+        // status={selectedTemplates[0]?.status}
+      />
+      <span>ID: {selectedIds || ''}</span>
+
+      <TablesOuter
+        columns={columns}
+        data={templates.map((temp) => ({
+          ...temp,
+          cluster:<TableRowClick type="cluster" id={temp?.clusterVo?.id}>{temp?.clusterVo?.name}</TableRowClick>,
+          dataCenter: <TableRowClick type="datacenter" id={temp?.dataCenterVo?.id}>{temp?.dataCenterVo?.name}</TableRowClick>,
+        }))}
+        shouldHighlight1stCol={true}
+        onRowClick={(selectedRows) => setSelectedTemplates(selectedRows)} 
+        clickableColumnIndex={[0]}
+        onClickableColumnClick={(row) => handleNameClick(row.id)}
+        />
+
+        <TemplateModals
+          activeModal={activeModal}
+          template={selectedTemplates[0]}
+          selectedTemplates={selectedTemplates}
+          onClose={closeModal}
+        />
+    </>
+  );
 };
 
 export default TemplateDupl;

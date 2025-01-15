@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useDeleteDiskFromVM, useDeleteVm, useDisksFromVM } from '../../../../api/RQHook';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const VmDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
 
   const handleFormSubmit = () => {
     if (!ids.length) {
-      console.error('삭제할 가상머신 ID가 없습니다.');
+      toast.error('삭제할 가상머신 ID가 없습니다.');
       return;
     }
   
@@ -50,11 +51,12 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
           onSuccess: () => {
             if (ids.length === 1 || index === ids.length - 1) {
               onClose();
+              toast.success('가상머신 삭제 성공');
               navigate('/computing/vms');
             }
           },
           onError: (error) => {
-            console.error(`가상머신 삭제 오류:`, error);
+            toast.error(`가상머신 삭제 오류:`, error);
           },
         }
       );

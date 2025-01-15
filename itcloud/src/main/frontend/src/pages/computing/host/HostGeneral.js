@@ -81,7 +81,7 @@ const HostGeneral = ({ hostId }) => {
             {tabs.find(({ tab }) => tab === activeTab)?.tableRows.map((row, index) => (
               <tr key={index}>
                 <th>{row.label}:</th>
-                <td>{row.value || "N/A"}</td>
+                <td>{row.value}</td>
               </tr>
             ))}
           </tbody>

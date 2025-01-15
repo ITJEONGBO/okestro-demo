@@ -3,8 +3,7 @@ import TablesOuter from "../../../components/table/TablesOuter";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TableRowClick from '../../../components/table/TableRowClick';
 
-
-const VnicVms = ({ vnicProfileId  }) => {
+const VnicProfileVms = ({ vnicProfileId  }) => {
   const { 
     data: vms = [] 
   } = useAllVmsFromVnicProfiles(vnicProfileId, (e) => ({...e,}));
@@ -20,4 +19,4 @@ const VnicVms = ({ vnicProfileId  }) => {
   );
 };
 
-export default VnicVms;
+export default VnicProfileVms;

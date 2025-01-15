@@ -1,19 +1,20 @@
 import React from 'react';
 
-const TemplateActionButtons = ({ 
-  onEdit, 
-  onDelete, 
-  isEditDisabled,
-  isDeleteDisabled
-}) => {
+const TemplateActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status }) => {
+  
+  const basicActions = [
+    // { type: 'create', label: '생성', disabled: false },
+    { type: 'edit', label: '편집',  },
+    { type: 'delete', label: '삭제', disabled: isDeleteDisabled },
+  ];
+
   return (
     <div className="header-right-btns">
-      {onEdit && (
-        <button onClick={onEdit} disabled={isEditDisabled}>편집</button>
-      )}
-      {onDelete && (
-        <button onClick={onDelete} disabled={isDeleteDisabled}>제거</button>
-      )}
+      {basicActions.map(({ type, label, disabled }) => (
+        <button key={type} onClick={() => openModal(type)} disabled={disabled}>
+          {label}
+        </button>
+      ))}
     </div>
   );
 };

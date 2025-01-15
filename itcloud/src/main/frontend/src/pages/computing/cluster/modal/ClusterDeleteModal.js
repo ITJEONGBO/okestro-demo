@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteCluster } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const ClusterDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const ClusterDeleteModal = ({ isOpen, onClose, data }) => {
 
   const handleFormSubmit = () => {
     if (!ids.length) {
-      console.error('삭제할 클러스터 ID가 없습니다.');
+      toast.error('삭제할 클러스터 ID가 없습니다.');
       return;
     }
   
@@ -34,11 +35,12 @@ const ClusterDeleteModal = ({ isOpen, onClose, data }) => {
         onSuccess: () => {
           if (ids.length === 1 || index === ids.length - 1) { // 마지막 클러스터 삭제 후 이동
             onClose();
+            toast.success("클러스터 삭제 성공")
             navigate('/computing/rutil-manager/clusters');
           }
         },
         onError: (error) => {
-          console.error(`클러스터 삭제 오류:`, error);
+          toast.error(`클러스터 삭제 오류:`, error);
         },
       });
     });

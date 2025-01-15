@@ -1,14 +1,10 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import VmActionButtons from './button/VmActionButtons';
 import TablesOuter from '../../../components/table/TablesOuter';
 import TableRowClick from '../../../components/table/TableRowClick';
 import { renderVmStatusIcon } from '../../../utils/format';
-
-const VmModal = React.lazy(() => import('./modal/VmModal'));
-const VmDeleteModal = React.lazy(() => import('./modal/VmDeleteModal'));
-const VmActionModal = React.lazy(() => import('./modal/VmActionModal'));
-const VmSnapshotModal = React.lazy(() => import('./modal/VmSnapshotModal'));
+import VmModals from './modal/VmModals';
 
 const VmDupl = ({ vms = [], columns =[], actionType, status }) => {
   const navigate = useNavigate();
@@ -20,40 +16,6 @@ const VmDupl = ({ vms = [], columns =[], actionType, status }) => {
   
   const openModal = (action) => setActiveModal(action);
   const closeModal = () => setActiveModal(null);
-
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <VmModal
-        isOpen={activeModal === 'create'}
-        onClose={closeModal}
-      />
-      <VmModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        vmId={selectedVms[0]?.id || null}
-        onClose={closeModal}
-      />
-      <VmDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={selectedVms}
-        onClose={closeModal}
-      />
-      <VmActionModal
-        isOpen={['start', 'pause', 'reboot', 'reset', 'stop', 'powerOff'].includes(activeModal)}
-        action={activeModal} // `type` 전달
-        data={selectedVms}
-        onClose={closeModal}
-      />
-
-      {/* 스냅샷 생성, 마이그레이션 등 모달 넣어야함 */}
-      <VmSnapshotModal
-        isOpen={activeModal === 'snapshot'}
-        // data={}
-        vmId={selectedVms[0]?.id}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
 
   return (
     <>
@@ -88,7 +50,12 @@ const VmDupl = ({ vms = [], columns =[], actionType, status }) => {
         />
         
         {/* vm 모달 */}
-        { renderModals() }
+        <VmModals
+          activeModal={activeModal}
+          vm={selectedVms[0]} 
+          selectedVms={selectedVms}
+          onClose={closeModal}
+        />
       </div>
     </>
   );

@@ -3,8 +3,7 @@ import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TableRowClick from "../../../components/table/TableRowClick";
 import TablesOuter from "../../../components/table/TablesOuter";
 
-
-const VnicTemplates = ({  vnicProfileId  }) => {
+const VnicProfileTemplates = ({  vnicProfileId  }) => {
   const { 
     data: templates = [] 
   } = useAllTemplatesFromVnicProfiles(vnicProfileId, (e) => ({...e,}));
@@ -20,4 +19,4 @@ const VnicTemplates = ({  vnicProfileId  }) => {
   );
 };
 
-export default VnicTemplates;
+export default VnicProfileTemplates;

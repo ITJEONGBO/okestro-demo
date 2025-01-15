@@ -6,12 +6,12 @@ import Path from '../../../components/Header/Path';
 import { adjustFontSize } from '../../../UIEvent';
 import { faLaptop, } from '@fortawesome/free-solid-svg-icons'
 import NavButton from '../../../components/navigation/NavButton';
-import VnicVms from './VnicVms';
-import VnicTemplates from './VnicTemplates';
+import VnicProfileVms from './VnicProfileVms';
+import VnicProfileTemplates from './VnicProfileTemplates';
 import { useVnicProfile } from '../../../api/RQHook';
 import VnicProfileModals from './modal/VnicProfileModals';
 
-const VnicInfo = () => {
+const VnicProfileInfo = () => {
   const navigate = useNavigate();
   const { id: vnicProfileId, section } = useParams();
   const {
@@ -51,8 +51,8 @@ const VnicInfo = () => {
 
   const renderSectionContent = () => {
     const SectionComponent = {
-      vms: VnicVms,
-      templates: VnicTemplates
+      vms: VnicProfileVms,
+      templates: VnicProfileTemplates
     }[activeTab];
     return SectionComponent ? <SectionComponent vnicProfileId={vnicProfileId} /> : null;
   };
@@ -99,4 +99,4 @@ const VnicInfo = () => {
   );
 };
 
-export default VnicInfo;
+export default VnicProfileInfo;

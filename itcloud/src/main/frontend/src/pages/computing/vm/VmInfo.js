@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderButton from '../../../components/button/HeaderButton';
 import { faMicrochip } from '@fortawesome/free-solid-svg-icons';
@@ -78,11 +78,11 @@ const VmInfo = () => {
   const sectionHeaderButtons = [
     { type: 'edit', label: '편집', disabled: !isUp, onClick: () => openModal("edit")},
     { type: 'start', label: '실행', disabled: !isMaintenance, onClick: () => openModal("start") },
-    { type: 'pause', label: '일시중지', disabled: !isMaintenance, onClick: () => openModal("pause") },
-    { type: 'reboot', label: '재부팅', disabled: !isMaintenance, onClick: () => openModal("reboot") },
-    { type: 'reset', label: '재설정', disabled: !isMaintenance, onClick: () => openModal("reset") },
-    { type: 'stop', label: '종료', disabled: !isMaintenance, onClick: () => openModal("stop") },
-    { type: 'powerOff', label: '전원 끔', disabled: !isMaintenance, onClick: () => openModal("powerOff") },
+    { type: 'pause', label: '일시중지', disabled: !isUp, onClick: () => openModal("pause") },
+    { type: 'reboot', label: '재부팅', disabled: !isUp, onClick: () => openModal("reboot") },
+    { type: 'reset', label: '재설정', disabled: !isUp, onClick: () => openModal("reset") },
+    { type: 'stop', label: '종료', disabled: !isUp, onClick: () => openModal("stop") },
+    { type: 'powerOff', label: '전원 끔', disabled: !isUp, onClick: () => openModal("powerOff") },
     { type: 'snapshots', label: '스냅샷 생성', },
     { type: 'migration', label: '마이그레이션', }
   ];
@@ -119,7 +119,8 @@ const VmInfo = () => {
       {/* vm 모달창 */}
       <VmModals
         activeModal={activeModal}
-        vmId={vmId} // vmId 전달
+        vm={vm} // vmId 전달
+        selectedVms={vm}
         onClose={closeModal}
       />
       <Footer/>
