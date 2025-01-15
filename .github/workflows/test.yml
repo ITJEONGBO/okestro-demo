@@ -1,38 +1,30 @@
-name: Test OVPN Connection
+name: Upload Artifact to Synology NAS
 
 on:
   push:
     tags:
-      - 'itcloud-v*'  # Triggers on tags with prefix 'v'
-
+      - 'upload-v*'  # Triggers on tags with prefix 'v'
 
 jobs:
-  show-context:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Show github context object
-        run: echo $JSON
-        env:
-          JSON: ${{ toJSON(github) }}
-  
-  test:
-    runs-on: ubuntu-latest
-    name: Typical Usage of OpenVPN
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install OpenVPN
-        run: |
-          sudo apt update
-          sudo apt install -y openvpn openvpn-systemd-resolved
+    - name: Make test file
+      run: echo "${{ github.sha }}" > test.txt
       
-      - name: Connect to VPN
-        uses: "kota65535/github-openvpn-connect-action@v2"
-        with:
-          config_file: .github/workflows/client.ovpn
-          username: ${{ secrets.OVPN_USERNAME }}
-          password: ${{ secrets.OVPN_PASSWORD }}
-      
-      - name: Check if connected
-        run: curl -v ${{ secrets.SERVER_IP }}
+    - name: Debug Connection
+      run: |
+        echo "Testing connection to Synology NAS..."
+        curl -v -k https://${{ secrets.SYNOLOGY_HOST }}:5001
+        
+    - name: Test upload
+      uses: bungabear/synology_upload_action@master
+      with:
+        host: ${{ secrets.SYNOLOGY_HOST }}
+        username:  ${{ secrets.SYNOLOGY_USERNAME }}
+        password:  ${{ secrets.SYNOLOGY_PASSWORD }}
+        filepath: test.txt
+        filename:  synology_upload_test.txt
+        uploadpath: /Source
+        overwrite: true
+        createparent: true
