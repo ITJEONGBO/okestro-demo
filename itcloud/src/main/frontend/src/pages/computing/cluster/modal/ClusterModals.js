@@ -1,20 +1,20 @@
 import React from "react";
-import ClusterDeleteModal from "./ClusterDeleteModal";
 import ClusterModal from "./ClusterModal";
+import ClusterDeleteModal from "./ClusterDeleteModal";
 
-const ClusterModals = ({ activeModal, cluster, selectedClusters = [], dcId, onClose }) => {
+const ClusterModals = ({ activeModal, cluster, selectedClusters = [], datacenterId, onClose }) => {
   const modals = {
     create: 
       <ClusterModal 
         isOpen={activeModal === 'create'} 
-        dcId={dcId}
+        datacenterId={datacenterId}
         onClose={onClose} 
-        />,
+      />,
     edit: (
       <ClusterModal
         editMode
         isOpen={activeModal === 'edit'}
-        cId={cluster?.id}
+        clusterId={cluster?.id}
         onClose={onClose}
     />
     ),

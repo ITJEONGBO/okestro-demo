@@ -1,34 +1,35 @@
-import React, { Suspense } from 'react';
-import '../css/MTemplate.css';
+import React from "react";
+import TemplateEditModal from './TemplateEditModal';
+import TemplateDeleteModal from './TemplateDeleteModal';
 
-const TemplateModals = ({ isModalOpen, action, onRequestClose, selectedTemplate,selectedTemplates }) => {
-  const TemplateEditModal = React.lazy(() => import('./TemplateEditModal'));
-  const DeleteModal = React.lazy(() => import('../../../../components/DeleteModal'));
-
-  if (!isModalOpen || !action) return null;
+const TemplateModals = ({ activeModal, template, selectedTemplates = [], onClose }) => {
+  const modals = {
+    create: (
+      <span>..</span>
+    ),
+    edit: (
+      <TemplateEditModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        templateId={template?.id}
+        onClose={onClose}
+    />
+    ),
+    delete: (
+      <TemplateDeleteModal
+        isOpen={activeModal === 'delete' }
+        data={selectedTemplates}
+        onClose={onClose}
+      />
+    )
+  };
 
   return (
-    <Suspense>
-      {action === 'add' ? (
-        <span>생성</span>
-      ) : action === 'edit' ? (
-        <TemplateEditModal
-          isOpen={isModalOpen}
-          onRequestClose={onRequestClose}
-          editMode={true}
-          templateId={selectedTemplate?.id}
-          selectedTemplate={selectedTemplate}
-        />
-      ): action === 'delete' ? (
-        <DeleteModal
-          isOpen={isModalOpen}
-          type="Template"
-          onRequestClose={onRequestClose}
-          contentLabel="템플릿"
-          data={selectedTemplates}
-        />
-      ): null}
-    </Suspense>
+    <>
+      {Object.keys(modals).map((key) => (
+          <React.Fragment key={key}>{modals[key]}</React.Fragment>
+      ))}
+    </>
   );
 };
 

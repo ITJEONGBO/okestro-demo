@@ -6,10 +6,7 @@ import { renderHostStatusIcon } from '../../../utils/format';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import TableRowClick from '../../../components/table/TableRowClick';
-
-const HostModal = React.lazy(() => import('./modal/HostModal'));
-const HostActionModal = React.lazy(() => import('./modal/HostActionModal'));
-const HostDeleteModal = React.lazy(() => import('./modal/HostDeleteModal'));
+import HostModals from './modal/HostModals';
 
 const HostDupl = ({ hosts = [], columns, clusterId }) => {
   const navigate = useNavigate();
@@ -22,34 +19,6 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
   
   const openModal = (action) => setActiveModal(action);
   const closeModal = () => setActiveModal(null);
-
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <HostModal
-        isOpen={activeModal === 'create'}
-        clusterId={clusterId}
-        onClose={closeModal}
-      />
-      <HostModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        hId={selectedHosts[0]?.id || null}
-        clusterId={clusterId}
-        onClose={closeModal}
-      />
-      <HostDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={selectedHosts}
-        onClose={closeModal}
-      />
-      <HostActionModal
-        isOpen={['deactivate', 'activate', 'restart', 'reInstall', 'register', 'haOn', 'haOff'].includes(activeModal)}
-        action={activeModal} // `type` 전달
-        data={selectedHosts}
-        onClose={closeModal}
-      />
-  </Suspense>
-  );
 
   return (
     <>
@@ -90,7 +59,13 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
       />
 
       {/* 호스트 모달창 */}
-      { renderModals() }
+      <HostModals
+        activeModal={activeModal}
+        host={selectedHosts[0]}
+        selectedHosts={selectedHosts}
+        clusterId={clusterId}
+        onClose={closeModal}
+      />
     </>
   );
 };

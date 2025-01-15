@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import HeaderButton from '../../../components/button/HeaderButton';
 import Footer from '../../../components/footer/Footer';
@@ -9,9 +9,7 @@ import NavButton from '../../../components/navigation/NavButton';
 import VnicVms from './VnicVms';
 import VnicTemplates from './VnicTemplates';
 import { useVnicProfile } from '../../../api/RQHook';
-
-const VnicProfileModal = React.lazy(() => import('./modal/VnicProfileModal'));
-const VnicProfileDeleteModal = React.lazy(() => import('./modal/VnicProfileDeleteModal'));
+import VnicProfileModals from './modal/VnicProfileModals';
 
 const VnicInfo = () => {
   const navigate = useNavigate();
@@ -70,24 +68,6 @@ const VnicInfo = () => {
       return () => { window.removeEventListener('resize', adjustFontSize); };
   }, []);
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'edit' && (
-        <VnicProfileModal
-          editMode
-          vnicProfileId={vnicProfileId}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <VnicProfileDeleteModal
-          data={vnic}
-          onClose={closeModal}
-        />
-      )}
-    </Suspense>
-  );
-
   return (
     <div id="section">
       <HeaderButton
@@ -108,7 +88,12 @@ const VnicInfo = () => {
       </div>
 
       {/* 클러스터 모달창 */}
-      { renderModals() }
+      <VnicProfileModals
+        activeModal={activeModal}
+        vnicProfile={vnic}
+        selectedVnicProfiles={vnic}
+        onClose={closeModal}
+      />
       <Footer/>
     </div>
   );

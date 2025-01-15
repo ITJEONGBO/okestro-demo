@@ -168,16 +168,14 @@ fun List<Nic>.toNicVosFromVm(conn: Connection, vmId: String): List<NicVo> =
 	this@toNicVosFromVm.map { it.toNicVoFromVm(conn, vmId) }
 
 fun Nic.toEditNicVoFromVm(conn: Connection): NicVo {
-	val vnicProfile: VnicProfile = conn.findVnicProfile(this@toEditNicVoFromVm.vnicProfile().id())
-		.getOrNull() ?: throw ErrorPattern.VNIC_PROFILE_NOT_FOUND.toException()
-	val network: Network = conn.findNetwork(vnicProfile.network().id())
-		.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+	val vnicProfile: VnicProfile? = conn.findVnicProfile(this@toEditNicVoFromVm.vnicProfile().id()).getOrNull()
+	val network: Network? = vnicProfile?.network()?.let { conn.findNetwork(it.id()).getOrNull() }
 
 	return NicVo.builder {
 		id { this@toEditNicVoFromVm.id() }
 		name { this@toEditNicVoFromVm.name() }
-		networkVo { network.fromNetworkToIdentifiedVo() }
-		vnicProfileVo { vnicProfile.fromVnicProfileToIdentifiedVo() }
+		networkVo { network?.fromNetworkToIdentifiedVo() }
+		vnicProfileVo { vnicProfile?.fromVnicProfileToIdentifiedVo() }
 		plugged { this@toEditNicVoFromVm.plugged() }
 		synced { this@toEditNicVoFromVm.synced() }
 		linked { this@toEditNicVoFromVm.linked() }
@@ -187,22 +185,38 @@ fun Nic.toEditNicVoFromVm(conn: Connection): NicVo {
 }
 
 
-fun Nic.toNicVoFromSnapshot(conn: Connection, vmId: String): NicVo {
-	conn.findVm(vmId)
-		.getOrNull() ?: throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+//fun Nic.toNicVoFromSnapshot(conn: Connection, vmId: String): NicVo {
+//	conn.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+//	val nic: Nic = conn.findNicFromVm(vmId, this@toNicVoFromSnapshot.id())
+//		.getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toException()
+//	val vnicProfile: VnicProfile? = conn.findVnicProfile(nic.vnicProfile().id()).getOrNull()
+//	val networkId: String = vnicProfile?.network()?.id() ?: "" // TODO: 없을 경우 예외처리
+//	val network: Network? = conn.findNetwork(networkId).getOrNull()
+//
+//	return NicVo.builder {
+//		name { this@toNicVoFromSnapshot.name() }
+//		networkVo { network?.fromNetworkToIdentifiedVo() }
+//		vnicProfileVo { vnicProfile?.fromVnicProfileToIdentifiedVo() }
+//		interface_ { this@toNicVoFromSnapshot.interface_() }
+//		macAddress { if (this@toNicVoFromSnapshot.macPresent()) this@toNicVoFromSnapshot.mac().address() else null }
+//	}
+//}
+//fun List<Nic>.toNicVosFromSnapshot(conn: Connection, vmId: String): List<NicVo> =
+//	this@toNicVosFromSnapshot.map { it.toNicVoFromSnapshot(conn, vmId) }
 
-	val nic: Nic = conn.findNicFromVm(vmId, this@toNicVoFromSnapshot.id())
-		.getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toException()
-	val vnicProfile: VnicProfile? = conn.findVnicProfile(nic.vnicProfile().id()).getOrNull()
-	val networkId: String = vnicProfile?.network()?.id() ?: "" // TODO: 없을 경우 예외처리
-	val network: Network? = conn.findNetwork(networkId).getOrNull()
+fun Nic.toNicVoFromSnapshot(conn: Connection, vmId: String): NicVo {
+	conn.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+	val nic = this@toNicVoFromSnapshot
+//	val nicVm: Nic? = conn.findNicFromVm(vmId, nic.id()).getOrNull()
 
 	return NicVo.builder {
-		name { this@toNicVoFromSnapshot.name() }
-		networkVo { network?.fromNetworkToIdentifiedVo() }
-		vnicProfileVo { vnicProfile?.fromVnicProfileToIdentifiedVo() }
-		interface_ { this@toNicVoFromSnapshot.interface_() }
-		macAddress { if (this@toNicVoFromSnapshot.macPresent()) this@toNicVoFromSnapshot.mac().address() else null }
+		name { nic.name() }
+		interface_ { nic.interface_() }
+		linked { nic.linked() }
+		macAddress { if(nic.macPresent()) nic.mac().address() else "" }
+		plugged { nic.plugged() }
+		synced { nic.synced() }
+//		networkVo { nicVm.ne }
 	}
 }
 fun List<Nic>.toNicVosFromSnapshot(conn: Connection, vmId: String): List<NicVo> =

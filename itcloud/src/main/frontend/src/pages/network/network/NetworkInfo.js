@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { faServer } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../../components/navigation/NavButton';
@@ -12,9 +12,7 @@ import NetworkHosts from './NetworkHosts.js';
 import NetworkVms from './NetworkVms.js'
 import NetworkTemplates from './NetworkTemplates.js'
 import NetworkClusters from './NetworkClusters.js';
-
-const NetworkModal = React.lazy(() => import('./modal/NetworkModal'))
-const NetworkDeleteModal = React.lazy(() => import('./modal/NetworkDeleteModal'));
+import NetworkModals from './modal/NetworkModals.js';
 
 const NetworkInfo = () => {
   const navigate = useNavigate();
@@ -73,21 +71,6 @@ const NetworkInfo = () => {
     { type: 'delete', label: '삭제', onClick: () => openModal("delete") },
   ];
   
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <NetworkModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        networkId={networkId}
-        onClose={closeModal}
-      />
-      <NetworkDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={networkId}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
 
   return (
     <div id="section">
@@ -109,7 +92,12 @@ const NetworkInfo = () => {
       </div>
 
       {/* 네트워크 모달창 */}
-      { renderModals() }
+      <NetworkModals
+        activeModal={activeModal}
+        network={network}
+        selectedNetworks={network}
+        onClose={closeModal}
+      />
       <Footer/>
     </div>
   );

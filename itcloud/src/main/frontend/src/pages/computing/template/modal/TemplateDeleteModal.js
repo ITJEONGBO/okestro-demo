@@ -5,7 +5,7 @@ import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icon
 import { useNavigate } from 'react-router-dom';
 import { useDeleteTemplate } from '../../../../api/RQHook';
 
-const TemplateDeleteModal = ({ onClose, data }) => {
+const TemplateDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
   const [ids, setIds] = useState([]);
   const [names, setNames] = useState([]);
@@ -46,7 +46,7 @@ const TemplateDeleteModal = ({ onClose, data }) => {
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onRequestClose={onClose}
       className="Modal"
       overlayClassName="Overlay"

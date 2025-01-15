@@ -89,8 +89,8 @@ const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
         dataCenterData: dataToSubmit   // 수정할 데이터
       }, {
         onSuccess: () => {
-          toast.success("데이터센터 편집 완료")
           onClose();  // 성공 시 모달 닫기
+          toast.success("데이터센터 편집 완료")
         },
         onError: (error) => {
           toast.error('Error editing data center:', error);
@@ -99,8 +99,8 @@ const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
     } else {
       addDataCenter(dataToSubmit, {
         onSuccess: () => {
-          toast.success("데이터센터 생성 완료")
           onClose();
+          toast.success("데이터센터 생성 완료")
         },
         onError: (error) => {
           toast.error('Error adding data center:', error);

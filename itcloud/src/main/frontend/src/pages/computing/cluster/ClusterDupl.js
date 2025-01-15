@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClusterActionButtons from './button/ClusterActionButtons';
 import TablesOuter from '../../../components/table/TablesOuter';
@@ -49,7 +49,7 @@ const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
         activeModal={activeModal}
         cluster={selectedClusters[0]}
         selectedClusters={selectedClusters}
-        dcId={datacenterId}
+        datacenterId={datacenterId}
         onClose={closeModal}
       />
     </>

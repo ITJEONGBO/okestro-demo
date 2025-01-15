@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import VnicProfileActionButtons from './button/VnicProfileActionButtons.js';
 import TablesOuter from '../../../components/table/TablesOuter.js';
 import TableRowClick from '../../../components/table/TableRowClick.js';
-
-const VnicProfileModal = React.lazy(() => import('./modal/VnicProfileModal'));
-const VnicProfileDeleteModal = React.lazy(() => import('./modal/VnicProfileDeleteModal'));
+import VnicProfileModals from './modal/VnicProfileModals.js';
 
 const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
   const navigate = useNavigate();
@@ -18,26 +16,6 @@ const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
 
   const openModal = (action) => setActiveModal(action);
   const closeModal = () => setActiveModal(null);
-
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <VnicProfileModal
-        isOpen={activeModal === 'create'}
-        onClose={closeModal}
-      />
-      <VnicProfileModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        vnicProfileId={selectedVnicProfiles[0]?.id}
-        onClose={closeModal}
-      />
-      <VnicProfileDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={selectedVnicProfiles}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
 
   return (
     <div onClick={(e) => e.stopPropagation()}> {/* 테이블 외부 클릭 방지 */}
@@ -64,7 +42,13 @@ const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
       />
 
       {/* vnicProfile 모달창 */}
-      { renderModals() }
+      <VnicProfileModals
+        activeModal={activeModal}
+        vnicProfile={selectedVnicProfiles[0]}
+        selectedVnicProfiles={selectedVnicProfiles}
+        networkId={networkId}
+        onClose={closeModal}
+      />
     </div>
   );
 };

@@ -190,6 +190,7 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
+
 		value="스토리지 도메인 데이터센터 목록",
 		notes="선택된 스토리지 도메인의 데이터센터 목록을 조회한다"
 	)

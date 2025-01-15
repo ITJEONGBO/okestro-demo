@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import TablesOuter from '../../../components/table/TablesOuter';
 import DataCenterActionButtons from './button/DataCenterActionButtons';
 import { renderDataCenterStatus, renderDatacenterStatusIcon } from '../../../utils/format';
 import DataCenterModals from './modal/DataCenterModals';
 
-Modal.setAppElement('#root');
+// Modal.setAppElement('#root');
 
 const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
   const navigate = useNavigate();

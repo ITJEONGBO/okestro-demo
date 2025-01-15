@@ -23,7 +23,7 @@ import VmConnectionPlusModal from './VmConnectionPlusModal';
 import DiskModal from '../../../storage/disk/modal/DiskModal';
 
 
-const VmModal = ({ isOpen, onClose, editMode = false, vmdata, vmId, selectedVm, onDiskSelection }) => {
+const VmModal = ({ isOpen, editMode = false, vmdata, vmId, selectedVm, onDiskSelection, onClose }) => {
 
   // 일반
   const [id, setId] = useState('');

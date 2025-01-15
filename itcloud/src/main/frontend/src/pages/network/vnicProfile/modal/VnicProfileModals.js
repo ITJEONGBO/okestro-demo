@@ -1,38 +1,37 @@
-import React, { Suspense } from 'react';
+import React from "react";
+import VnicProfileModal from "./VnicProfileModal.js";
+import VnicProfileDeleteModal from "./VnicProfileDeleteModal.js";
 
-const VnicProfileModals = ({ 
-  isModalOpen, 
-  action, 
-  onRequestClose, 
-  selectedVnicProfile,
-  selectedVnicProfiles,
-}) => {
-  const VnicProfileModal = React.lazy(() => import('./VnicProfileModal.js'));
-  const DeleteModal = React.lazy(() => import('../../../../components/DeleteModal.js'));
-
-  if (!isModalOpen || !action) return null;
+const VnicProfileModals = ({ activeModal, vnicProfile, selectedVnicProfiles = [], networkId, onClose }) => {
+  const modals = {
+    create: 
+      <VnicProfileModal
+        isOpen={activeModal === 'create'} 
+        networkId={networkId}
+        onClose={onClose} 
+      />,
+    edit: (
+      <VnicProfileModal
+        editMode
+        isOpen={activeModal === 'edit'}
+        vnicProfileId={vnicProfile?.id}
+        onClose={onClose}
+    />
+    ),
+    delete: (
+      <VnicProfileDeleteModal
+        isOpen={activeModal === 'delete' }
+        data={selectedVnicProfiles}
+        onClose={onClose}
+      />
+    )
+  };
 
   return (
     <>
-      <Suspense>
-        {action === 'create' || action === 'edit' ? (
-          <VnicProfileModal
-            isOpen={isModalOpen}
-            onRequestClose={onRequestClose}
-            editMode={action === 'edit'}
-            vnicProfileId={selectedVnicProfile?.id || null}
-          
-          />
-        ) : (
-          <DeleteModal
-            isOpen={isModalOpen}
-            type="vnicProfile"
-            onRequestClose={onRequestClose}
-            contentLabel="vNIC 프로파일"
-            data={selectedVnicProfiles}
-          />
-        )}
-      </Suspense>
+      {Object.keys(modals).map((key) => (
+          <React.Fragment key={key}>{modals[key]}</React.Fragment>
+      ))}
     </>
   );
 };

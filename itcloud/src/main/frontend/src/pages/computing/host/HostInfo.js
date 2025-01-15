@@ -13,10 +13,7 @@ import HostNics from './HostNics'
 import HostDevices from './HostDevices';
 import HostEvents from './HostEvents'
 import { renderHostStatus } from '../../../utils/format';
-
-const HostModal = React.lazy(() => import('./modal/HostModal'))
-const HostActionModal = React.lazy(() => import('./modal/HostActionModal'))
-const HostDeleteModal = React.lazy(() => import('./modal/HostDeleteModal'));
+import HostModals from './modal/HostModals';
 
 const HostInfo = () => {
   const navigate = useNavigate();
@@ -88,31 +85,6 @@ const HostInfo = () => {
     { type: 'haOff', label: '글로벌 HA 유지 관리를 비활성화', disabled: !isUp, onClick: () => openModal('haOff') },
   ];
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <HostModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        hId={host?.id || null}
-        onClose={closeModal}
-      />
-      <HostDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={host}
-        onClose={closeModal}
-      />
-      {popupItems.some((item) => item.type === activeModal) && (
-        <HostActionModal
-          action={activeModal} // 선택된 type을 전달
-          isOpen={activeModal}
-          data={host}
-          contentLabel={activeModal}
-          onClose={closeModal}
-        />
-      )}
-      </Suspense>
-  );
-
   return (
     <div id="section">
       <HeaderButton
@@ -135,7 +107,12 @@ const HostInfo = () => {
       </div>
       
       {/* 호스트 모달창 */}
-      { renderModals() }
+      <HostModals
+        activeModal={activeModal}
+        host={host}
+        selectedHosts={host}
+        onClose={closeModal}
+      />
       <Footer/>
     </div>
   );

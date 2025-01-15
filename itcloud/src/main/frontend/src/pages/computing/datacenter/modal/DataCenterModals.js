@@ -1,5 +1,4 @@
 import React from "react";
-
 import DataCenterModal from "./DataCenterModal";
 import DataCenterDeleteModal from "./DataCenterDeleteModal";
 

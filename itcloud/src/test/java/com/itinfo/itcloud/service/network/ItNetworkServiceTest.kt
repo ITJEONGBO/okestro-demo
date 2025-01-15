@@ -257,15 +257,15 @@ class ItNetworkServiceTest {
 
 	/**
 	 * [should_findAllHostsFromNetwork]
-	 * [ItNetworkService.findAllHostsFromNetwork]에 대한 단위테스트
+	 * [ItNetworkService.findConnectedHostsFromNetwork]에 대한 단위테스트
 	 *
-	 * @see ItNetworkService.findAllHostsFromNetwork
+	 * @see ItNetworkService.findConnectedHostsFromNetwork
 	 */
 	@Test
 	fun should_findAllHostsFromNetwork() {
 		log.debug("should_findAllHostsFromNetwork ... ")
 		val result: List<HostVo> =
-			service.findAllHostsFromNetwork(networkId)
+			service.findConnectedHostsFromNetwork(networkId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))

@@ -104,6 +104,7 @@ const DataCenterInfo = () => {
       <DataCenterModals
         activeModal={activeModal}
         dataCenter={dataCenter}
+        selectedDataCenters={dataCenter}
         onClose={closeModal}
       />
       <Footer/>

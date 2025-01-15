@@ -1,14 +1,10 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DiskActionButtons from './button/DiskActionButtons';
 import TablesOuter from '../../../components/table/TablesOuter';
 import { formatBytesToGBToFixedZero, icon } from '../../../utils/format';
 import TableRowClick from '../../../components/table/TableRowClick';
-
-const DiskModal = React.lazy(() => import('./modal/DiskModal'));
-const DiskDeleteModal = React.lazy(() => import('./modal/DiskDeleteModal'))
-const DiskUploadModal = React.lazy(() => import('./modal/DiskUploadModal'))
-const DiskActionModal = React.lazy(() => import('./modal/DiskActionModal'))
+import DiskModals from './modal/DiskModals';
 
 const DiskDupl = ({ disks = [], columns = [] }) => {
   const navigate = useNavigate();
@@ -19,39 +15,7 @@ const DiskDupl = ({ disks = [], columns = [] }) => {
   const handleNameClick = (id) => navigate(`/storages/disks/${id}`);
   
   const openModal = (action) => setActiveModal(action);
-  const closeModal = () => setActiveModal(null);
-
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DiskModal
-        isOpen={activeModal === 'create'}
-        onClose={closeModal}
-      />
-      <DiskModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        diskId={selectedDisks[0]?.id}
-        onClose={closeModal}
-      />
-      <DiskDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={selectedDisks}
-        onClose={closeModal}
-      />
-      <DiskActionModal
-        isOpen={['move', 'copy'].includes(activeModal)}
-        action={activeModal} // `type` 전달
-        data={selectedDisks}
-        onClose={closeModal}
-      />
-      <DiskUploadModal
-        isOpen={activeModal === 'upload'}
-        diskId={selectedDisks[0]?.id}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
-  
+  const closeModal = () => setActiveModal(null);  
 
   return (
     <div onClick={(e) => e.stopPropagation()}> {/* 테이블 외부 클릭 방지 */}
@@ -91,7 +55,13 @@ const DiskDupl = ({ disks = [], columns = [] }) => {
       />
 
       {/* 디스크 모달창 */}
-      { renderModals() }
+      <DiskModals
+        activeModal={activeModal}
+        disk={selectedDisks[0]}
+        selectedDisks={selectedDisks}
+        // datacenterId={datacenterId}
+        onClose={closeModal}
+      />
     </div>
   );
 };

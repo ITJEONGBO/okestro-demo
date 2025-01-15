@@ -116,80 +116,73 @@ class VmSnapshotServiceImpl(
 	@Throws(Error::class)
 	override fun findAllFromVm(vmId: String): List<SnapshotVo> {
 		log.info("findAllFromVm ... ")
-		val res: List<Snapshot> =
-			conn.findAllSnapshotsFromVm(vmId).getOrDefault(listOf())
+		val res: List<Snapshot> = conn.findAllSnapshotsFromVm(vmId)
+			.getOrDefault(listOf())
 		return res.toSnapshotVos(conn, vmId)
 	}
 
 	@Throws(Error::class)
 	override fun findOneFromVm(vmId: String, snapshotId: String): SnapshotVo? {
 		log.info("findOneFromVm ... vmId: {}, snapshotId: {}", vmId, snapshotId)
-		val res: Snapshot? =
-			conn.findSnapshotFromVm(vmId, snapshotId).getOrNull()
+		val res: Snapshot? = conn.findSnapshotFromVm(vmId, snapshotId)
+			.getOrNull()
 		return res?.toSnapshotVo(conn, vmId)
 	}
 
 	@Throws(Error::class)
 	override fun addFromVm(vmId: String, snapshotVo: SnapshotVo): SnapshotVo? {
 		log.info("addFromVm ... ")
-		val res: Snapshot? =
-			conn.addSnapshotFromVm(
-				vmId, snapshotVo.toAddSnapshot()
-			).getOrNull()
+		val res: Snapshot? = conn.addSnapshotFromVm(
+			vmId, snapshotVo.toAddSnapshot()
+		).getOrNull()
 		return res?.toSnapshotVo(conn, vmId)
 	}
 
 	@Throws(Error::class)
 	override fun removeFromVm(vmId: String, snapshotId: String): Boolean {
 		log.info("removeFromVm ... vmId: {}, snapshotId: {}", vmId, snapshotId)
-		val res: Result<Boolean> =
-			conn.removeSnapshotFromVm(vmId, snapshotId)
+		val res: Result<Boolean> = conn.removeSnapshotFromVm(vmId, snapshotId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun removeMultiFromVm(vmId: String, snapshotIds: List<String>): Boolean {
 		log.info("removeMultiFromVm ... vmId: {}, snapshotIds: {}", vmId, snapshotIds)
-		val res: Result<Boolean> =
-			conn.removeMultiSnapshotFromVm(vmId, snapshotIds)
+		val res: Result<Boolean> = conn.removeMultiSnapshotFromVm(vmId, snapshotIds)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun previewFromVm(vmId: String, snapshotId: String): Boolean {
 		log.info("previewFromVm ... vmId: {}, snapshotId: {}", vmId, snapshotId)
-		val res: Result<Boolean> =
-			conn.previewSnapshotFromVm(
-				vmId,
-				SnapshotBuilder().id(snapshotId).build()
-			)
+		val res: Result<Boolean> = conn.previewSnapshotFromVm(
+			vmId,
+			SnapshotBuilder().id(snapshotId).build()
+		)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun commitFromVm(vmId: String): Boolean {
 		log.info("commitFromVm ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.commitSnapshotFromVm(vmId)
+		val res: Result<Boolean> = conn.commitSnapshotFromVm(vmId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun undoFromVm(vmId: String): Boolean {
 		log.info("undoFromVm ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.undoSnapshotFromVm(vmId)
+		val res: Result<Boolean> = conn.undoSnapshotFromVm(vmId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun cloneFromVm(vmId: String, name: String): Boolean {
 		log.info("cloneFromVm ... vmId: {}, name: {}", vmId, name)
-		val res: Result<Boolean> =
-			conn.cloneSnapshotFromVm(
-				vmId,
-				VmBuilder().id(vmId).name(name).build()
-			)
+		val res: Result<Boolean> = conn.cloneSnapshotFromVm(
+			vmId,
+			VmBuilder().id(vmId).name(name).build()
+		)
 		return res.isSuccess
 	}
 

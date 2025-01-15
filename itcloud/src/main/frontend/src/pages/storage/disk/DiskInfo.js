@@ -9,9 +9,7 @@ import { useDiskById } from '../../../api/RQHook.js';
 import DiskGeneral from './DiskGeneral.js';
 import DiskVms from './DiskVms.js'
 import DiskDomains from './DiskDomains.js';
-
-const DiskModal = React.lazy(() => import('./modal/DiskModal'))
-const DiskDeleteModal = React.lazy(() => import('./modal/DiskDeleteModal'));
+import DiskModals from './modal/DiskModals.js';
 
 const DiskInfo = () => {
   const navigate = useNavigate();
@@ -67,24 +65,6 @@ const DiskInfo = () => {
     // { type: 'upload', label: '업로드', onClick: () => openModal('restart') },
   ];
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      {activeModal === 'edit' && (
-        <DiskModal
-          editMode
-          diskId={diskId}
-          onClose={closeModal}
-        />
-      )}
-      {activeModal === 'delete' && (
-        <DiskDeleteModal
-          data={disk}
-          onClose={closeModal}
-        />
-      )}
-      </Suspense>
-  );
-
   return (
     <div id="section">
       <HeaderButton
@@ -105,7 +85,12 @@ const DiskInfo = () => {
       </div>
 
       {/* 디스크 모달창 */}
-      { renderModals() }
+      <DiskModals
+        activeModal={activeModal}
+        disk={disk}
+        selectedDisks={disk}
+        onClose={closeModal}
+      />
       <Footer/>
     </div>
   );

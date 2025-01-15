@@ -21,7 +21,7 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
+const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClose }) => {
   const { mutate: addCluster } = useAddCluster();
   const { mutate: editCluster } = useEditCluster();
 
@@ -35,7 +35,7 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
     biosType: 'CLUSTER_DEFAULT',
     errorHandling: 'migrate',
   });
-  const [dataCenterVoId, setDataCenterVoId] = useState(dcId || '');
+  const [dataCenterVoId, setDataCenterVoId] = useState(datacenterId || '');
   const [networkVoId, setNetworkVoId] = useState('');
   const [cpuOptions, setCpuOptions] = useState([]);
 
@@ -51,7 +51,7 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
       errorHandling: 'migrate',
     });
     setCpuOptions([]);
-    setDataCenterVoId(dcId ||'');
+    setDataCenterVoId(datacenterId ||'');
     setNetworkVoId('');
   };
 
@@ -61,7 +61,7 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
     data: cluster,
     refetch: refetchCluster,
     isLoading: isClusterLoading
-  } = useCluster(cId);
+  } = useCluster(clusterId);
   
   // 데이터센터 가져오기
   const {
@@ -213,10 +213,10 @@ const ClusterModal = ({ isOpen, editMode = false, cId, dcId, onClose }) => {
   }, [editMode, networks]);
 
   useEffect(() => {
-    if (!editMode && dcId) {
-      setDataCenterVoId(dcId);
+    if (!editMode && datacenterId) {
+      setDataCenterVoId(datacenterId);
     }
-  }, [editMode, dcId]);
+  }, [editMode, datacenterId]);
 
   useEffect(() => {
     setCpuOptions(cpuArcOptions[formState.cpuArc] || []);

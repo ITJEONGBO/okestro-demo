@@ -4,6 +4,7 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromApplicationsToIdentifiedVos
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.network.NicVo
+import com.itinfo.itcloud.model.network.toNicVoFromSnapshot
 import com.itinfo.itcloud.model.network.toNicVosFromSnapshot
 import com.itinfo.itcloud.model.network.toNicVosFromVm
 import com.itinfo.itcloud.model.storage.DiskImageVo
@@ -36,11 +37,11 @@ private val log = LoggerFactory.getLogger(SnapshotVo::class.java)
  */
 class SnapshotVo (
     val id: String = "",
-    val vmVo: VmVo = VmVo(),
     val description: String = "",
+    val status: String = "",
     val date: String = "",
     val persistMemory: Boolean = false,
-    val status: String = "",
+    val vmVo: VmVo = VmVo(),
     val snapshotDiskVos: List<SnapshotDiskVo> = listOf(),
     val nicVos: List<NicVo> = listOf(),
     val applicationVos: List<IdentifiedVo> = listOf(),
@@ -49,18 +50,17 @@ class SnapshotVo (
 
     class Builder {
         private var bId: String = ""; fun id(block: () -> String?) { bId = block() ?: "" }
-        private var bVmVo: VmVo = VmVo(); fun vmVo(block: () -> VmVo?) { bVmVo = block() ?: VmVo()  }
         private var bDescription: String = ""; fun description(block: () -> String?) { bDescription= block() ?: "" }
+        private var bStatus: String = ""; fun status(block: () -> String?) { bStatus= block() ?: "" }
         private var bDate: String = ""; fun date(block: () -> String?) { bDate= block() ?: "" }
         private var bPersistMemory: Boolean = false; fun persistMemory(block: () -> Boolean?) { bPersistMemory= block() ?: false }
-        private var bStatus: String = ""; fun status(block: () -> String?) { bStatus= block() ?: "" }
+        private var bVmVo: VmVo = VmVo(); fun vmVo(block: () -> VmVo?) { bVmVo = block() ?: VmVo()  }
         private var bSnapshotDiskVos: List<SnapshotDiskVo> = listOf(); fun snapshotDiskVos(block: () -> List<SnapshotDiskVo>?) { bSnapshotDiskVos = block() ?: listOf() }
         private var bNicVos: List<NicVo> = listOf(); fun nicVos(block: () -> List<NicVo>?) { bNicVos = block() ?: listOf() }
         private var bApplicationVos: List<IdentifiedVo> = listOf(); fun applicationVos(block: () -> List<IdentifiedVo>?) { bApplicationVos = block() ?: listOf() }
 
-        fun build(): SnapshotVo = SnapshotVo( bId, bVmVo, bDescription, bDate, bPersistMemory, bStatus, bSnapshotDiskVos, bNicVos, bApplicationVos)
+        fun build(): SnapshotVo = SnapshotVo(bId, bDescription, bStatus, bDate, bPersistMemory, bVmVo, bSnapshotDiskVos, bNicVos, bApplicationVos )
     }
-
     companion object {
         inline fun builder(block: SnapshotVo.Builder.() -> Unit): SnapshotVo = SnapshotVo.Builder().apply(block).build()
     }
@@ -75,16 +75,15 @@ fun List<Snapshot>.toSnapshotsIdName(): List<SnapshotVo> =
 
 
 fun Snapshot.toSnapshotVo(conn: Connection, vmId: String): SnapshotVo {
-    val vm: Vm =
-        conn.findVm(vmId).getOrNull()
-            ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+    val vm: Vm = conn.findVm(vmId)
+        .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+    val disks: List<Disk> = conn.findAllSnapshotDisksFromVm(vmId, this@toSnapshotVo.id()).getOrDefault(listOf())
+    val nics: List<Nic> = conn.findAllSnapshotNicsFromVm(vmId, this@toSnapshotVo.id()).getOrDefault(listOf())
+    val applications: List<Application> = conn.findAllApplicationsFromVm(vmId).getOrDefault(listOf())
 
-    val disks: List<Disk> =
-        conn.findAllSnapshotDisksFromVm(vmId, this@toSnapshotVo.id()).getOrDefault(listOf())
-    val nics: List<Nic> =
-        conn.findAllSnapshotNicsFromVm(vmId, this@toSnapshotVo.id()).getOrDefault(listOf())
-    val applications: List<Application> =
-        conn.findAllApplicationsFromVm(vmId).getOrDefault(listOf())
+    nics.forEach {
+        println( it.name() + " " + it.mac().address())
+    }
 
     return SnapshotVo.builder {
         id { this@toSnapshotVo.id() }

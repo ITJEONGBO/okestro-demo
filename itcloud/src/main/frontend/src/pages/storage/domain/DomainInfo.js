@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { faDatabase } from '@fortawesome/free-solid-svg-icons';
 import NavButton from '../../../components/navigation/NavButton';
@@ -13,10 +13,7 @@ import DomainEvents from './DomainEvents';
 import DomainDisks from './DomainDisks';
 import DomainTemplates from './DomainTemplates';
 import DomainDiskSnapshots from './DomainDiskSnapshots';
-
-const DomainModal = React.lazy(() => import('./modal/DomainModal'));
-const DomainActionModal = React.lazy(() => import('./modal/DomainActionModal'));
-const DomainDeleteModal = React.lazy(() => import('./modal/DomainDeleteModal'));
+import DomainModals from './modal/DomainModals';
 
 const DomainInfo = () => {
   const navigate = useNavigate();
@@ -72,28 +69,6 @@ const DomainInfo = () => {
     { type: 'destroy', label: '파괴', onClick: () => openModal("destroy")},
   ]
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DomainModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        domainId={domainId}
-        onClose={closeModal}
-      />
-      <DomainDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={domain}
-        onClose={closeModal}
-        />
-      <DomainDeleteModal
-        isOpen={activeModal === 'destroy'}
-        data={domain}
-        deleteMode={false}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
-
   return (
     <div id="section">
       <HeaderButton
@@ -115,7 +90,12 @@ const DomainInfo = () => {
       </div>
       
       {/* domain 모달창 */}
-      { renderModals() }
+      <DomainModals
+        activeModal={activeModal}
+        domain={domain}
+        selectedClusters={domain}
+        onClose={closeModal}
+      />
       <Footer/>
     </div>
   );

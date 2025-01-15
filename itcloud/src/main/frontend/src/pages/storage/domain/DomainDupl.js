@@ -1,14 +1,11 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DomainActionButtons from './button/DomainActionButtons';
 import { formatBytesToGBToFixedZero, renderDomainStatus, renderDomainStatusIcon } from '../../../utils/format';
 import TablesOuter from '../../../components/table/TablesOuter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
-
-const DomainModal = React.lazy(() => import('./modal/DomainModal'));
-const DomainActionModal = React.lazy(() => import('./modal/DomainActionModal'));
-const DomainDeleteModal = React.lazy(() => import('./modal/DomainDeleteModal'));
+import DomainModals from './modal/DomainModals';
 
 const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', datacenterId }) => {
   const navigate = useNavigate();
@@ -20,44 +17,6 @@ const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', datacen
   
   const openModal = (action) => setActiveModal(action);
   const closeModal = () => setActiveModal(null);
-
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DomainModal
-        isOpen={activeModal === 'create'}
-        onClose={closeModal}
-      />
-      <DomainModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        domainId={selectedDomains[0]?.id || null}
-        onClose={closeModal}
-      />
-      <DomainModal
-        isOpen={activeModal === 'import'}
-        domainId={selectedDomains[0]?.id || null}
-        onClose={closeModal}
-      />
-      <DomainDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={selectedDomains}
-        onClose={closeModal}
-        />
-      <DomainDeleteModal
-        isOpen={activeModal === 'destroy'}
-        data={selectedDomains}
-        deleteMode={false}
-        onClose={closeModal}
-      />
-      <DomainActionModal
-        isOpen={['attach', 'detach', 'activate', 'maintenance'].includes(activeModal)}
-        action={activeModal} // `type` 전달
-        data={selectedDomains[0]}
-        datacenterId={datacenterId}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
   
   return (
     <>
@@ -98,7 +57,13 @@ const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', datacen
       />
       
       {/* 도메인 모달창 */}
-      { renderModals() }
+      <DomainModals
+        activeModal={activeModal}
+        domain={selectedDomains[0]}
+        selectedDomains={selectedDomains}
+        datacenterId={datacenterId}
+        onClose={closeModal}
+      />
     </>
   );
 };

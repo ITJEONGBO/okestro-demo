@@ -4,13 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useEditTemplate, useTemplate } from '../../../../api/RQHook';
 
-const TemplateEditModal = ({ 
-  isOpen, 
-  onRequestClose, 
-  editMode, 
-  templateId,
-  selectedTemplate
-}) => {
+const TemplateEditModal = ({ isOpen, editMode = false, templateId, onClose }) => {
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -45,7 +39,7 @@ const TemplateEditModal = ({
   // 초기값설정
   useEffect(() => {
     if (isOpen) {
-      const template = templateData || selectedTemplate;
+      const template = templateData;
       if (template) {
         setId(template?.id || '');
         setName(template?.name || ''); // 이름안뜸
@@ -61,7 +55,7 @@ const TemplateEditModal = ({
         setSelectedChipset(template?.chipsetFirmwareType || 'Q35_OVMF');
       }
     }
-  }, [isOpen, templateData, selectedTemplate]);
+  }, [isOpen, templateData]);
 
   const handleFormSubmit = () => {
     if (!templateId) {
@@ -95,7 +89,7 @@ const TemplateEditModal = ({
         {
           onSuccess: () => {
             alert("템플릿 편집 완료");
-            onRequestClose();
+            onClose();
           },
           onError: (error) => {
             console.error('Error editing cluster:', error);
@@ -109,7 +103,7 @@ const TemplateEditModal = ({
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={onClose}
       contentLabel={editMode ? '템플릿 수정' : '템플릿 생성'}
       className="Modal"
       overlayClassName="Overlay newRolePopupOverlay"
@@ -118,7 +112,7 @@ const TemplateEditModal = ({
       <div className="template-eidt-popup">
         <div className="popup-header">
           <h1>{editMode ? '템플릿 수정' : '템플릿 생성'}</h1>
-          <button onClick={onRequestClose}>
+          <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
@@ -239,7 +233,7 @@ const TemplateEditModal = ({
 
         <div className="edit-footer">
           <button onClick={() => {handleFormSubmit();}}>OK</button>
-          <button onClick={onRequestClose}>취소</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

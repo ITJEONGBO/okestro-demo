@@ -1,12 +1,9 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NetworkActionButtons from './button/NetworkActionButtons';
 import TablesOuter from '../../../components/table/TablesOuter';
 import TableRowClick from '../../../components/table/TableRowClick';
-
-const NetworkModal = React.lazy(() => import('./modal/NetworkModal'));
-const NetworkImportModal = React.lazy(() => import('./modal/NetworkImportModal'));
-const NetworkDeleteModal = React.lazy(() => import('./modal/NetworkDeleteModal'));
+import NetworkModals from './modal/NetworkModals';
   
 const NetworkDupl = ({ networks = [], columns = [] }) => {
   const navigate = useNavigate();
@@ -18,31 +15,6 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
   
   const openModal = (action) => setActiveModal(action);
   const closeModal = () => setActiveModal(null);
-
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <NetworkModal
-        isOpen={activeModal === 'create'}
-        onClose={closeModal}
-      />
-      <NetworkModal
-        editMode
-        isOpen={activeModal === 'edit'}
-        networkId={selectedNetworks[0]?.id}
-        onClose={closeModal}
-      />
-      <NetworkImportModal
-        isOpen={activeModal === 'import'}
-        networkId={selectedNetworks[0]?.id}
-        onClose={closeModal}
-      />
-      <NetworkDeleteModal
-        isOpen={activeModal === 'delete'}
-        data={selectedNetworks}
-        onClose={closeModal}
-      />
-    </Suspense>
-  );
 
   return (
     <>
@@ -56,10 +28,7 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
         columns={columns}
         data={networks.map((network) => ({
           ...network,
-          // name: 
-          //   <TableRowClick type="network" id={network?.id}>
-          //     {network?.name}
-          //   </TableRowClick>,
+          // name: <TableRowClick type="network" id={network?.id}>{network?.name}</TableRowClick>,
           vlan: network?.vlan === 0 ? '-' : network?.vlan,
           mtu: network?.mtu === 0 ? '기본값(1500)' : network?.mtu,
           datacenter: <TableRowClick type="datacenter" id={network?.datacenterVo?.id}>{network?.datacenterVo?.name}</TableRowClick>,
@@ -72,7 +41,12 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
       />
 
       {/* 네트워크 모달창 */}
-      { renderModals() }
+      <NetworkModals
+        activeModal={activeModal}
+        network={selectedNetworks[0]}
+        selectedNetworks={selectedNetworks}
+        onClose={closeModal}
+      />
     </>
   );
 };
