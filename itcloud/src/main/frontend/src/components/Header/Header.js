@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faBell, faRotate, faUser
+  faBars,
+  faBell, faCog, faRotate, faUser
 } from '@fortawesome/free-solid-svg-icons'
 import { adjustFontSize } from '../../UIEvent';
 import './Header.css';
@@ -68,22 +69,24 @@ const Header = ({ setAuthenticated }) => {
     return (
         <div className="header">
             <div className="header-right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
+                <FontAwesomeIcon icon={faBars} fixedWidth className='menu-icon'/>
                 {/* <img className='logo' src={logo} alt="logo Image" /> */}
                 <img className='rutil-logo' src={rutil_logo} alt="logo Image" />
             </div>
 
             <div className="header-left">
+                {/* 새로고침 */}
                 <div onClick={() => window.location.reload()} style={{ cursor: 'pointer' }}>
                   <FontAwesomeIcon icon={faRotate} fixedWidth />
+                </div> 
+                {/* 설정 */}
+                <div>
+                    <FontAwesomeIcon icon={faCog} fixedWidth/>
                 </div>
                 {/* 알림 */}
                 <div 
                   className="fa-bell-wrapper" 
                   onClick={toggleBellActive}
-                  style={{ 
-                    backgroundColor: isBellActive ? '#ebececd8' : 'transparent',
-                    borderRadius: '50%'
-                  }}
                 >
                     <FontAwesomeIcon icon={faBell} fixedWidth/>
                     <div className='bell-box' style={{ display: isBellActive ? 'block' : 'none' }} onClick={stopPropagation}>
@@ -94,10 +97,7 @@ const Header = ({ setAuthenticated }) => {
                 {/*user */}
                 <div className='user-btn' 
                   onClick={toggleLoginBox}
-                  style={{ 
-                      backgroundColor: isLoginBoxVisible ? '#ebececd8' : 'transparent',
-                      borderRadius: '50%'
-                  }}
+          
                 >
                   <FontAwesomeIcon icon={faUser} fixedWidth/>&nbsp;<span>{username}</span>
                   <div className='user-loginbox' 

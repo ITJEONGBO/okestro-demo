@@ -826,8 +826,8 @@ const MainOuter = ({ children }) => {
                         </div>
                     </Link>
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}>
-        <FontAwesomeIcon icon={asidePopupVisible ? faChevronLeft : faChevronRight} fixedWidth />
-    </button>
+                        <FontAwesomeIcon icon={asidePopupVisible ? faChevronLeft : faChevronRight} fixedWidth />
+                    </button>
 
                 </div>
             </div>

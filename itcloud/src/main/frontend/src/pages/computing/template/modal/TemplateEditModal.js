@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useEditTemplate, useTemplate } from '../../../../api/RQHook';
 import toast from 'react-hot-toast';
+import '../css/MTemplate.css';
 
 const TemplateEditModal = ({ isOpen, editMode = false, templateId, onClose }) => {
   const [id, setId] = useState('');

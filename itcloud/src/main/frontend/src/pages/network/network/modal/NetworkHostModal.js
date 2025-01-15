@@ -364,7 +364,7 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
         </div>
 
         <div className="host_network_outer">
-          <div className="py-2 font-bold underline">드래그 하여 변경</div>
+          <div className="py-1 font-bold underline">드래그 하여 변경</div>
           <div className="host-network-separation">
           <div className="network-separation-left">
   <div>

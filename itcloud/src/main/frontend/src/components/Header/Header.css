@@ -1,7 +1,8 @@
 .header{
     height: 5.5%;
     margin: 0 auto;
-    border-radius: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
     padding: 0 0.3rem;
     background-color: #ffffff;
     display: flex;
@@ -16,7 +17,14 @@
     display: flex;
     align-items: center; /* 세로 중앙 정렬 추가 */
 }
-
+.menu-icon{
+    margin-right: 0.24rem;
+    font-size: 0.44rem;
+    color: rgb(145, 150, 155);
+}
+.menu-icon:hover{
+    color: black;
+}
 .header-right > span {
     color: rgb(0, 0, 0);
     font-weight: 600;
@@ -51,7 +59,10 @@
 /* Header 아이콘들 */
 .user-btn,
 .fa-bell-wrapper { position: relative; }
-
+.user-btn{
+    display: flex;
+    align-items: center;
+}
 .user-loginbox{
     position: absolute;
     background-color: #ffffff;

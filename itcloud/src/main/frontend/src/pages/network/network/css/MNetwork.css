@@ -68,12 +68,11 @@
 {
     width: 47%;
     height: 3.3vh;
-    padding: 0 3px;
     border-radius: 3px;
     cursor: pointer;
     font-size: 0.29rem;
     outline: none;
-    border: 1px solid  rgb(206, 206, 206);
+
 }
 .mtu-form input[type="text"]{
     width: 57%;
@@ -234,6 +233,9 @@
     justify-content: space-between;
     padding:0.15rem;
     margin-bottom: 0.16rem;
+}
+.separation-left-content:last-child{
+    margin-bottom: 1rem
 }
 .interface{
     border: 1px solid #a3a3a3;

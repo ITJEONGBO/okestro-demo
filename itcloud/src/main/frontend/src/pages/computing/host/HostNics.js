@@ -75,13 +75,42 @@ const HostNics = ({ hostId }) => {
     }));
   };
 
+  const [isExpandedAll, setIsExpandedAll] = useState(false); // '모두 확장' 버튼 상태 관리
+
   const toggleAllBoxes = () => {
     if (visibleBoxes.length === nics.length) {
+      // 모두 숨기기
       setVisibleBoxes([]);
+      setIsExpandedAll(false);
+      setActiveButton((prev) => {
+        const newButtons = { ...prev };
+        nics.forEach((_, index) => {
+          newButtons[index] = "NETWORK_FROM_HOST";
+        });
+        return newButtons;
+      });
     } else {
+      // 모두 확장
       setVisibleBoxes(nics.map((_, index) => index));
+      setIsExpandedAll(true);
+      setActiveButton((prev) => {
+        const newButtons = { ...prev };
+        nics.forEach((_, index) => {
+          newButtons[index] = "NETWORK_FROM_HOST";
+        });
+        return newButtons;
+      });
+      setActiveTable((prev) => {
+        const newTables = { ...prev };
+        nics.forEach((_, index) => {
+          newTables[index] = "NETWORK_FROM_HOST";
+        });
+        return newTables;
+      });
     }
   };
+  
+  
 
   const switchTable = (index, tableType) => {
     setActiveTable((prev) => ({
@@ -98,97 +127,103 @@ const HostNics = ({ hostId }) => {
     <>
       <div className="header-right-btns">
         <button>VF 보기</button>
-        <button onClick={toggleAllBoxes}>
-          {visibleBoxes.length === nics.length ? "모두 숨기기" : "모두 확장"}
+        <button
+          onClick={toggleAllBoxes}
+          className={isExpandedAll ? "btn-expanded" : "btn-collapsed"} // 상태에 따라 클래스 변경
+        >
+          {isExpandedAll ? "모두 숨기기" : "모두 확장"}
         </button>
         <button onClick={() => setIsModalOpen(true)}>호스트 네트워크 설정</button>
         <button>네트워크 설정 저장</button>
         <button>모든 네트워크 동기화</button>
       </div>
 
-      {nics.map((data, index) => (
-        <div
-          className="host-network-boxs"
-          key={index}
-          style={{ marginBottom: "0.2rem" }}
-        >
-          <div
-            className="host_network_firstbox"
-            onClick={() => toggleHiddenBox(index)}
-          >
-            <div className="section-table-outer">
-              <TablesOuter
-                columns={[
-                  { header: "", accessor: "icon", width: "5%" }, // 아이콘 컬럼
-                  ...TableColumnsInfo.NETWORK_INTERFACE_FROM_HOST,
-                ]}
-                data={[data]}
-                onRowClick={() => console.log("Row clicked")}
-              />
-            </div>
-          </div>
-          {visibleBoxes.includes(index) && (
-            <div className="host-network-hiddenbox flex">
-              <div className="h-network-change-table">
-                <button
-                  onClick={() => switchTable(index, "NETWORK_FROM_HOST")}
-                  className={`h-icon-btn ${
-                    activeButton[index] === "NETWORK_FROM_HOST"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200"
-                  }`}
-                >
-                  <FontAwesomeIcon
-                    icon={faCrown}
-                    fixedWidth
-                    style={{ fontSize: "0.3rem" }}
-                  />
-                </button>
-
-                {data.bondingVo?.slaves && data.bondingVo.slaves.length > 0 && (
-                  <button
-                    onClick={() =>
-                      switchTable(index, "NETWORK_FROM_HOST_SLAVE")
-                    }
-                    className={`h-icon-btn ${
-                      activeButton[index] === "NETWORK_FROM_HOST_SLAVE"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    <FontAwesomeIcon
-                      icon={faTimes}
-                      fixedWidth
-                      style={{ fontSize: "0.3rem" }}
-                    />
-                  </button>
-                )}
-              </div>
-
+      <div className="host-nic-table-outer">
+        {nics.map((data, index) => (
+            <div
+              className="host-network-boxs"
+              key={index}
+              style={{ marginBottom: "0.2rem" }}
+            >
               <div
-                className="section_table_outer"
-                // style={{ marginLeft: "0.4rem" }}
+                className="host_network_firstbox"
+                onClick={() => toggleHiddenBox(index)}
               >
-                {activeTable[index] === "NETWORK_FROM_HOST" && (
+                <div className="section-table-outer">
                   <TablesOuter
-                    columns={TableColumnsInfo.NETWORK_FROM_HOST}
+                    columns={[
+                      { header: "", accessor: "icon", width: "5%" }, // 아이콘 컬럼
+                      ...TableColumnsInfo.NETWORK_INTERFACE_FROM_HOST,
+                    ]}
                     data={[data]}
                     onRowClick={() => console.log("Row clicked")}
                   />
-                )}
-                {activeTable[index] === "NETWORK_FROM_HOST_SLAVE" &&
-                  data.bondingVo?.slaves && (
-                    <TablesOuter
-                      columns={TableColumnsInfo.NETWORK_FROM_HOST_SLAVE}
-                      data={data.bondingVo.slaves} // bondingVo.slaves를 데이터로 전달
-                      onRowClick={() => console.log("Row clicked")}
-                    />
-                  )}
+                </div>
               </div>
+              {visibleBoxes.includes(index) && (
+                <div className="host-network-hiddenbox flex">
+                  <div className="h-network-change-table">
+                  <button
+      onClick={() => switchTable(index, "NETWORK_FROM_HOST")}
+      className={`h-icon-btn ${
+        activeButton[index] === "NETWORK_FROM_HOST"
+          ? "bg-blue-500 text-white"
+          : "bg-gray-200"
+      }`}
+    >
+      <FontAwesomeIcon
+        icon={faCrown}
+        fixedWidth
+        style={{ fontSize: "0.3rem" }}
+      />
+    </button>
+
+
+                    {data.bondingVo?.slaves && data.bondingVo.slaves.length > 0 && (
+                      <button
+                        onClick={() =>
+                          switchTable(index, "NETWORK_FROM_HOST_SLAVE")
+                        }
+                        className={`h-icon-btn ${
+                          activeButton[index] === "NETWORK_FROM_HOST_SLAVE"
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200"
+                        }`}
+                      >
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          fixedWidth
+                          style={{ fontSize: "0.3rem" }}
+                        />
+                      </button>
+                    )}
+                  </div>
+
+                  <div
+                    className="section_table_outer"
+                    // style={{ marginLeft: "0.4rem" }}
+                  >
+                    {activeTable[index] === "NETWORK_FROM_HOST" && (
+                      <TablesOuter
+                        columns={TableColumnsInfo.NETWORK_FROM_HOST}
+                        data={[data]}
+                        onRowClick={() => console.log("Row clicked")}
+                      />
+                    )}
+                    {activeTable[index] === "NETWORK_FROM_HOST_SLAVE" &&
+                      data.bondingVo?.slaves && (
+                        <TablesOuter
+                          columns={TableColumnsInfo.NETWORK_FROM_HOST_SLAVE}
+                          data={data.bondingVo.slaves} // bondingVo.slaves를 데이터로 전달
+                          onRowClick={() => console.log("Row clicked")}
+                        />
+                      )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
 {/* 
       <NetworkHostModal
         isOpen={isModalOpen}
