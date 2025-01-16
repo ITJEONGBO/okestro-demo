@@ -11,21 +11,11 @@
   white-space: nowrap;
   overflow: hidden; 
   text-overflow: ellipsis;
-
 }
 .custom-table tbody tr {
   cursor: pointer; 
 }
-.my-context-menu > div {
-  padding: 0.06rem;
-  border-bottom: 1px solid #d3d3d3;
-  padding-right: 1.3rem;
-  cursor:pointer;
-  font-size:0.28rem;
-}
-.my-context-menu > div:hover {
-  background-color:#ededed;
-}
+
 /*pagingtable.css*/
 .pagination {
   margin-bottom: 10px; 

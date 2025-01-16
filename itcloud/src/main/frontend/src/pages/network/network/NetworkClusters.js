@@ -50,6 +50,11 @@ const NetworkClusters = ({ networkId }) => {
         }))}
         shouldHighlight1stCol={true}
         multiSelect={false}
+        onContextMenuItems={(row) => [
+          <div className='right-click-menu-box'>
+            <button className='right-click-menu-btn' onClick={() => setIsModalOpen(true)}>네트워크 관리</button>
+          </div>
+        ]}
       />
 
       {/* 네트워크 관리창 */}

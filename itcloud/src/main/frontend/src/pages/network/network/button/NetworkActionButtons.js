@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const NetworkActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status, selectedNetworks }) => {
+const NetworkActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled,type = 'default'  }) => {
   const navigate = useNavigate();
   const basicActions = [
     { type: 'create', label: '생성', disabled: false },
@@ -10,18 +10,22 @@ const NetworkActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, sta
     { type: 'import', label: '가져오기' },
   ];
 
+  const wrapperClass = type === 'context' ? 'right-click-menu-box' : 'header-right-btns';
   return (
-    <div className="header-right-btns">
-      {basicActions.map(({ type, label, disabled }) => (
-        <button 
-          key={type} 
-          onClick={() => openModal(type)} 
+    <div className={wrapperClass}>
+      {basicActions.map(({ type: actionType, label, disabled }) => (
+        <button
+          key={actionType}
+          onClick={() => openModal(actionType)}
           disabled={disabled}
+          className='right-click-menu-btn'
         >
           {label}
         </button>
       ))}
-      <button onClick={() => navigate('/vnicProfiles')} >vnicProfile</button>
+      {type !== 'context' && (
+        <button onClick={() => navigate('/vnicProfiles')}>vnicProfile</button>
+      )}
     </div>
   );
 };

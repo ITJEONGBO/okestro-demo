@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react'; 
+import React, { Suspense, useEffect, useState } from 'react'; 
 import TablesOuter from "../../../components/table/TablesOuter";
 import TableRowClick from '../../../components/table/TableRowClick';
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
@@ -24,16 +24,7 @@ const NetworkHosts = ({ networkId }) => {
   const [selectedHost, setSelectedHost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const renderModals = () => (
-    <Suspense fallback={<div>Loading...</div>}>
-      <NetworkHostModal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        nicData={nics}
-        hostId={selectedHostId}
-      />
-    </Suspense>
-  );
+
   const selectedHostId = (Array.isArray(selectedHost) ? selectedHost : []).map((host) => host.id).join(', ');
   const buttonClass = (filter) => `filter_button ${activeFilter === filter ? "active" : ""}`;
 
@@ -54,8 +45,30 @@ const NetworkHosts = ({ networkId }) => {
     }));
   };
 
-
   const { data: nics = [] } = useNetworkInterfaceFromHost(selectedHostId, (e) => ({ ...e,}));
+  useEffect(() => {
+    if (nics.length > 0) {
+      console.log("NIC 데이터:", nics);
+    } else {
+      console.log("NIC 데이터가 없습니다.");
+    }
+  }, [nics]);
+
+  const renderModals = () => {
+    if (isModalOpen) {
+      return (
+        <Suspense fallback={<div>Loading...</div>}>
+          <NetworkHostModal
+            isOpen={isModalOpen}
+            onRequestClose={() => setIsModalOpen(false)}
+            nicData={nics}
+            hostId={selectedHostId}
+          />
+        </Suspense>
+      );
+    }
+    return null;
+  };
 
   return (
     <>

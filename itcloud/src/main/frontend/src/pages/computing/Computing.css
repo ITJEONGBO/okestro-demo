@@ -1,5 +1,7 @@
 
 /*새로만들기 팝업*/
+
+/* 
 .datacenter_new_popup{
     position: absolute;
     box-sizing: border-box;
@@ -10,9 +12,8 @@
     height: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
-/* 
 .datacenter_new_content{
 
     font-size: 0.32rem;

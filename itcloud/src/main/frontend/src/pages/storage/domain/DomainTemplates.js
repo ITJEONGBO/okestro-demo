@@ -48,7 +48,7 @@ const DiskRow = ({ disk }) => (
 
 const DomainTemplates = ({ domainId }) => {
   const { 
-    data: templates, 
+    data: templates=[], 
     status: templatesStatus, 
     isLoading: isTemplatesLoading, 
     isError: isTemplatesError,

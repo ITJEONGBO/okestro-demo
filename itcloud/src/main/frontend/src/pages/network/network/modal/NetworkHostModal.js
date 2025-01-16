@@ -25,6 +25,7 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
   });
   const clusterId = host?.clusterVo?.id;
 
+
   useEffect(() => {
     if (!clusterId) {
       console.error("클러스터 ID가 없습니다. 요청을 건너뜁니다.");
@@ -88,7 +89,8 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
         : [{ id: nic.id, name: nic.name }], // slaves가 없으면 nic의 name 사용
     })) || []
   );
-  
+
+
 
   // Networks in Outer 생성
   const [unassignedNetworksOuter, setUnassignedNetworksOuter] = useState(

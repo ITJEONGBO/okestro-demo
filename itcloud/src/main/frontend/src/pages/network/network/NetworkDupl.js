@@ -38,6 +38,13 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
         clickableColumnIndex={[0]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true} // 다중 선택 활성화
+        onContextMenuItems={(row) => [
+          <NetworkActionButtons
+            openModal={openModal}
+            isEditDisabled={!row} 
+            type='context'
+          />
+        ]}
       />
 
       {/* 네트워크 모달창 */}

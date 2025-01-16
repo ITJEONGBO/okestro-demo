@@ -354,27 +354,26 @@ const TableColumnsInfo = {
 
 
   DISK_SNAPSHOT_FROM_STORAGE_DOMAIN: [
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '실제 크기', accessor: 'actualSize', clickable: false },
-    { header: '디스크 별칭', accessor: 'alias', clickable: false },
+    { header: '크기', accessor: 'actualSize', clickable: false },
     { header: '생성 일자', accessor: 'creationDate', clickable: false },
-    // { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
-    { header: '연결 대상', accessor: 'connectVm', clickable: false },
-    // { header: '유형', accessor: 'type', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
+    { header: '스냅샷 생성일', accessor: 'alias', clickable: false },
+    { header: '디스크 별칭', accessor: 'alias', clickable: false },
+    { header: '스냅샷 설명', accessor: 'description', clickable: false },
+    { header: '연결 대상', accessor: 'storageDomainVo.name', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
     { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false },
   ],
   
   SNAPSHOT_DISK_FROM_VM: [
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '별칭', accessor: 'alias', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false, width: '5%' },
+    { header: '별칭', accessor: 'alias', clickable: false, width: '17%' },
     { header: '생성 일자', accessor: 'date', clickable: false },
     { header: '가상 크기', accessor: 'provisionedSize', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
     { header: '할당 정책', accessor: 'sparse', clickable: false },
     { header: '인터페이스', accessor: 'interface', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
-    { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false },
+    { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false, width: '16%' },
   ],
   
   TEMPLATE_VMS:[

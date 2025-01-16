@@ -12,7 +12,7 @@ const NetworkTemplates = ({ networkId }) => {
   } = useAllTemplatesFromNetwork(networkId, (e) => ({ ...e }));
 
   const [selectedNics, setSelectedNics] = useState([]);
-  const selectedIds = (Array.isArray(selectedNics) ? selectedNics : []).map(nic => nic.id).join(', ');
+  const selectedIds = (Array.isArray(selectedNics) ? selectedNics : []).map(template => template.id).join(', ');
 
   const handleNameClick = (id) => navigate(`/computing/templates/${id}`);
 

@@ -28,6 +28,8 @@ const Tables = ({
         mouseY: e.clientY - 47,
         menuItems,
       });
+    }else {
+      console.warn("메뉴 항목이 비어 있습니다.");
     }
     setContextRowIndex(rowIndex);
     setSelectedRowIndex(null);   
@@ -54,8 +56,6 @@ const Tables = ({
     };
   }, [onRowClick]);
 
-
-
   // 테이블 정렬기능
   const [sortedData, setSortedData] = useState(data);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' }); 
@@ -79,7 +79,7 @@ const Tables = ({
     setSortedData(sorted);
   };
   
-  
+  // 내림, 오름차순
   const handleSort = (column) => {
     if (column.isIcon) return;
     const { accessor } = column;
@@ -250,79 +250,7 @@ const Tables = ({
           </tbody>
 
 
-          {/*옛날tbody <tbody>
-            {data.length === 0 ? ( // 데이터가 없을 때 메시지 표시
-              <tr>
-                <td colSpan={columns.length} style={{ textAlign: 'center' }}>
-                  내용이 없습니다
-                </td>
-              </tr>
-            ) : (
-              data.map((row, rowIndex) => (
-                <tr
-                  key={rowIndex}
-                  onClick={() => {
-                    setSelectedRowIndex(rowIndex);
-                    setContextRowIndex(null); // 다른 우클릭된 행을 초기화
-                    onRowClick(row); // 클릭한 행의 전체 데이터를 onRowClick에 전달
-                  }}
-                  onContextMenu={(e) => handleContextMenu(e, rowIndex)} // 우클릭 시 메뉴 표시
-                  style={{
-                    backgroundColor: selectedRowIndex === rowIndex || contextRowIndex === rowIndex
-                      ? 'rgb(218, 236, 245)' // 선택된 행과 우클릭된 행만 색칠
-                      : 'transparent', // 나머지는 초기화
-                  }}
-                >
-                  {columns.map((column, colIndex) => (
-                <td
-                  key={colIndex}
-                  data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
-                  data-tooltip-content={row[column.accessor]}
-                  style={{
-                    // maxWidth: '200px',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    textAlign: (typeof row[column.accessor] === 'string' || typeof row[column.accessor] === 'number')
-                      ? 'left'
-                      : 'center',
-                    verticalAlign: 'middle',
-                    cursor: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
-                    color: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit',
-                    fontWeight: row[column.accessor] && clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
-                  }}
-                  onClick={(e) => {
-                    if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-                      e.stopPropagation();
-                      if (onClickableColumnClick) {
-                        onClickableColumnClick(row);
-                      }
-                    }
-                  }}
-                  onMouseOver={(e) => {
-                    if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-                      e.target.style.textDecoration = 'underline';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (row[column.accessor] && clickableColumnIndex.includes(colIndex)) {
-                      e.target.style.textDecoration = 'none';
-                    }
-                  }}
-                >
-                  {typeof row[column.accessor] === 'object' &&  column.header === 'icon' ? ( 
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                      {row[column.accessor]}
-                    </div>
-                  ) : (
-                    row[column.accessor]
-                  )}
-                </td>
-              ))}
-                </tr>
-              ))
-            )}
-          </tbody> */}
+   
         </table>
       </div>
       {/* 우클릭 메뉴 박스 */}
@@ -336,7 +264,6 @@ const Tables = ({
             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.16)',
             fontSize: '0.3rem',
             backgroundColor: 'white',
-            border: '1px solid #eaeaea',
             zIndex: '3',
             borderRadius:'1px'
           }}
