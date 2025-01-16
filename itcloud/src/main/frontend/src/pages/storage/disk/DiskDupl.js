@@ -6,7 +6,7 @@ import { formatBytesToGBToFixedZero, icon } from '../../../utils/format';
 import TableRowClick from '../../../components/table/TableRowClick';
 import DiskModals from './modal/DiskModals';
 
-const DiskDupl = ({ disks = [], columns = [] }) => {
+const DiskDupl = ({ disks = [], columns = [], type = 'disk' }) => {
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
   const [selectedDisks, setSelectedDisks] = useState([]); // 다중 선택된 디스크
@@ -30,23 +30,36 @@ const DiskDupl = ({ disks = [], columns = [] }) => {
       {/* 타입값을 줘서 vmdisk와 disk구분해야할듯  */}
       <TablesOuter
         columns={columns}
-        data={disks.map((d) => ({
-          ...d,
-          alias: d?.alias || d?.diskImageVo?.alias,
-          icon: icon(d.status),
-          storageDomain: <TableRowClick type="domains" id={d?.storageDomainVo?.id || d?.diskImageVo?.storageDomainVo?.id}>{d?.storageDomainVo?.name|| d?.diskImageVo?.storageDomainVo?.name}</TableRowClick>,
-          sharable: d?.sharable ? 'O' : '',
-          icon1: d?.bootable ? '🔑' : '',
-          icon2: d?.readOnly ? '🔒' : '',
-          sparse: d?.sparse ? '씬 프로비저닝' : '사전 할당',
-          connectVm: (
-            <TableRowClick type={d?.connectVm?.id ? "vms" : "templates"} id={d?.connectVm?.id || d?.connectTemplate?.id}>
-              {d?.connectVm?.name || d?.connectTemplate?.name}
-            </TableRowClick>
-          ),
-          virtualSize: formatBytesToGBToFixedZero(d?.virtualSize),
-          actualSize: formatBytesToGBToFixedZero(d?.actualSize),
-        }))}
+        data={disks.map((d) => {
+          if (type === 'disk') {
+            return {
+              ...d,
+              alias: d?.alias || d?.diskImageVo?.alias,
+              icon: icon(d.status),
+              storageDomain: <TableRowClick type="domains" id={d?.storageDomainVo?.id}>{d?.storageDomainVo?.name}</TableRowClick>,
+              sharable: d?.sharable ? 'O' : '',
+              icon1: d?.bootable ? '🔑' : '',
+              icon2: d?.readOnly ? '🔒' : '',
+              sparse: d?.sparse ? '씬 프로비저닝' : '사전 할당',
+              connectVm: (
+                <TableRowClick type={d?.connectVm?.id ? 'vms' : 'templates'} id={d?.connectVm?.id || d?.connectTemplate?.id}>
+                  {d?.connectVm?.name || d?.connectTemplate?.name}
+                </TableRowClick>
+              ),
+              virtualSize: formatBytesToGBToFixedZero(d?.virtualSize),
+              actualSize: formatBytesToGBToFixedZero(d?.actualSize),
+            };
+          } else if (type === 'vm') {
+            return {
+              ...d,
+              alias: d?.alias || d?.diskImageVo?.alias,
+              icon: icon(d.status),
+              storageDomain: <TableRowClick type="domains" id={d?.diskImageVo?.storageDomainVo?.id}>{d?.diskImageVo?.storageDomainVo?.name}</TableRowClick>,
+              storageType: d?.diskImageVo?.storageType,
+              
+            };
+          }
+        })}
         shouldHighlight1stCol={true}
         onRowClick={(selectedRows) => setSelectedDisks(selectedRows)}
         clickableColumnIndex={[0]}

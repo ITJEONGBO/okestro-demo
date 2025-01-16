@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useDisksFromVM } from '../../../api/RQHook';
 import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
-import DiskDupl from '../../storage/disk/DiskDupl';
+import DiskDupl from '../../storage/disk/DiskDupl'
 
 const VmDisks = ({ vmId }) => {
   const { 
     data: disks = [], isLoading: isDisksLoading,
-  } = useDisksFromVM(vmId, (e) => ({...e}));
+  } = useDisksFromVM(vmId, (e) => ({ ...e }));
 
   const [activeDiskType, setActiveDiskType] = useState('all'); // 필터링된 디스크 유형
 
@@ -14,9 +14,10 @@ const VmDisks = ({ vmId }) => {
     setActiveDiskType(type); // 디스크 유형 변경
   };
 
+  // diskImageVo.storageType으로 필터링
   const filteredDisks = activeDiskType === 'all'
     ? disks
-    : disks.filter((disk) => disk.storageType === activeDiskType);
+    : disks.filter((disk) => disk.diskImageVo?.storageType?.toLowerCase() === activeDiskType);
 
   return (
     <div>
@@ -41,16 +42,17 @@ const VmDisks = ({ vmId }) => {
           >
             직접 LUN
           </button>
-        </div>        
+        </div>
       </div>
 
-      <DiskDupl 
+      <DiskDupl
         disks={filteredDisks}
         columns={
           activeDiskType === 'all' ? TableColumnsInfo.DISKS_FROM_VM
             : activeDiskType === 'image' ? TableColumnsInfo.DISK_IMAGES_FROM_VM
             : TableColumnsInfo.LUN_DISK
         }
+        type='vm'
       />
     </div>
   );
