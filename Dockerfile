@@ -48,19 +48,19 @@ FROM eclipse-temurin:11-jdk-focal
 # Add labels to the runtime stage
 LABEL maintainer="Chan Hee Lee <chanhi2000@gmail.com>"
 LABEL description="RutilVM"
-LABEL version="0.1.2"
+LABEL version="0.1.9"
 LABEL vcs-url="https://github.com/ITJEONGBO/okestro-demo"
-LABEL build-date="2024-12-02"
+LABEL build-date="2025-01-17"
 LABEL commit-hash="05f9e12ee27c1532623112d1df92004226d0d347"
 LABEL license="Apache-2.0"
 LABEL environment="production"
 LABEL app-name="itcloud"
 
-ENV ITCLOUD_VERSION=0.1.2
-ENV ITCLOUD_RELEASE_DATE=2024-12-02
+ENV ITCLOUD_VERSION=0.1.9
+ENV ITCLOUD_RELEASE_DATE=2025-01-17
 ENV ITCLOUD_PORT_HTTP=8080
 ENV ITCLOUD_PORT_HTTPS=8443
-ENV ITCLOUD_OVIRT_IP=192.168.0.70
+ENV ITCLOUD_OVIRT_IP=192.168.0.20
 RUN echo "================== common.properties =================="
 RUN echo ""
 RUN echo "version: $ITCLOUD_VERSION"
@@ -70,7 +70,7 @@ RUN echo "http-ports: $ITCLOUD_PORT_HTTPS"
 RUN echo "ovirt-ip: $ITCLOUD_OVIRT_IP"
 RUN echo ""
 
-ENV POSTGRES_JDBC_URL=192.168.0.70
+ENV POSTGRES_JDBC_URL=192.168.0.20
 ENV POSTGRES_JDBC_PORT=5432
 ENV POSTGRES_DATASOURCE_JDBC_ID=rutil
 ENV POSTGRES_DATASOURCE_JDBC_PW=rutil1!
