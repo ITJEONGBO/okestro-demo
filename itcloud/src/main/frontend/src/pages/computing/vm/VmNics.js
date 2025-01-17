@@ -1,55 +1,53 @@
-import React, { useState, useEffect ,useParams, Suspense} from 'react';
+import React, { useState, useEffect, Suspense} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faArrowCircleUp, faChevronRight, faGlassWhiskey, faPlug, faTimes } from  '@fortawesome/free-solid-svg-icons'
 import { useNetworkInterfaceFromVM } from '../../../api/RQHook';
 import VmNetworkNewInterfaceModal from './modal/VmNetworkNewInterfaceModal';
 import DeleteModal from '../../../components/DeleteModal';
 
-const VmNics = ({vmId}) => {
+const VmNics = ({ vmId }) => {
   const { 
     data: nics = [], isLoading: isDisksLoading
   } = useNetworkInterfaceFromVM(vmId, (e) => ({...e}));
-
-  //   , (nic) => ({
-  //   ...nic,
-  //   id: nic?.id ?? '', 
-  //   name: nic?.name ?? '', 
-  //   status: nic?.status ?? '',
-  //   ipv4: nic?.ipv4 ?? '',
-  //   ipv6: nic?.ipv6 ?? '',
-  //   macAddress: nic?.macAddress ?? '',
-  //   network: nic?.networkVo?.name ?? '',
-  //   vnicProfile: nic?.vnicProfileVo?.name ?? '',
-  //   interfaceType: nic?.interface_ ?? 'VIRTIO',
-  //   linked: nic?.linked ?? false,
-  //   rxSpeed: nic?.rxSpeed ?? '',
-  //   txSpeed: nic?.txSpeed ?? '',
-  //   rxTotalSpeed: nic?.rxTotalSpeed ?? '',
-  //   txTotalSpeed: nic?.txTotalSpeed ?? '',
-  //   rxTotalError: nic?.rxTotalError ?? '',
-  //   txTotalError: nic?.txTotalError ?? ''
-  // }));
 
   const [modals, setModals] = useState({ create: false, edit: false, delete: false });
   const [selectedNics, setSelectedNics] = useState(null);
   const toggleModal = (type, isOpen) => {
       setModals((prev) => ({ ...prev, [type]: isOpen }));
   };
-  console.log('VM ID:', vmId);
+  
+  const nicDefault = (nic) => [
+    { label: "이름", value: nic?.name },
+    { label: "네트워크 이름", value: nic?.networkVo?.name },
+    { label: "IPv4", value: nic?.ipv4 },
+    { label: "IPv6", value: nic?.ipv6 },
+    { label: "MAC", value: nic?.macAddress },
+  ];
 
-
-  // API 응답 데이터 확인
-  useEffect(() => {
-      console.log('네트워크 인터페이스 데이터:', nics);
-  }, [nics]);
+  const nicInfo = (nic) => [
+    { label: "연결됨", value: nic?.linked ? '연결됨' : '연결 안 됨' },
+    { label: "네트워크 이름", value: nic?.networkVo?.name },
+    { label: "프로파일 이름", value: nic?.vnicProfileVo?.name },
+    { label: "링크 상태", value: nic?.status },
+    { label: "유형", value: nic?.interfaceType },
+    { label: "속도 (Mbps)", value: nic?.speed },
+    { label: "포트 미러링", value: nic?.portMirroring || '비활성화됨' },
+    { label: "게스트 인터페이스 이름", value: nic?.guestInterfaceName },
+  ];
+  
+  const nicStatic = (nic) => [
+    { label: "Rx 속도 (Mbps)", value: nic?.rxSpeed },
+    { label: "Tx 속도 (Mbps)", value: nic?.txSpeed },
+    { label: "총 Rx", value: nic?.rxTotalSpeed },
+    { label: "총 Tx", value: nic?.txTotalSpeed },
+    { label: "중단 (Pkts)", value: nic?.rxTotalError },
+  ];
+  
 
   const [visibleDetails, setVisibleDetails] = useState([]);
   useEffect(() => {
     setVisibleDetails(Array(3).fill(false)); // 초기 상태: 모든 detail 숨김
   }, []);
-    
-  // 팝업 열기/닫기 핸들러
-
   
 
   const [activePopup, setActivePopup] = useState(null);

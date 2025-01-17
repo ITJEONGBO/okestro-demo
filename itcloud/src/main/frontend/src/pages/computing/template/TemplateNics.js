@@ -1,12 +1,10 @@
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { useAllNicsFromTemplate } from "../../../api/RQHook";
 import TablesOuter from "../../../components/table/TablesOuter";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
-import NicActionButtons from '../../network/network/button/NicActionButton';
 import TableRowClick from "../../../components/table/TableRowClick";
 import { renderUpDownStatusIcon } from "../../../utils/format";
-
-// const TemplateNeworkNewInterModal = React.lazy(() => import('./modal/'));
+import NicActionButtons from '../../network/nic/NicActionButton';
 
 const TemplateNics = ({ templateId }) => {
   const { 
@@ -58,7 +56,7 @@ const TemplateNics = ({ templateId }) => {
       <span>id = {selectedIds || ''}</span>
 
       <TablesOuter
-        columns={TableColumnsInfo.NICS_FROM_TEMPLATES}
+        columns={TableColumnsInfo.NICS_FROM_TEMPLATE}
         data={vnicProfiles.map((nic) => ({
           ...nic,
           status: renderUpDownStatusIcon(nic?.status),

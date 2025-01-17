@@ -41,9 +41,9 @@ const VmInfo = () => {
 
   const sections = [
     { id: 'general', label: '일반' },
+    { id: 'nics', label: '네트워크 인터페이스' },
     { id: 'disks', label: '디스크' },
     { id: 'snapshots', label: '스냅샷' },
-    { id: 'nics', label: '네트워크 인터페이스' },
     { id: 'applications', label: '애플리케이션' },
     { id: 'hostDevices', label: '호스트 장치' },
     { id: 'events', label: '이벤트' }
@@ -65,9 +65,9 @@ const VmInfo = () => {
   const renderSectionContent = () => {
     const SectionComponent = {
       general: VmGeneral,
+      nics: VmNics,
       disks: VmDisks,
       snapshots: VmSnapshots,
-      nics: VmNics,
       applications: VmApplications,
       hostDevices: VmHostDevices,
       events: VmEvents,

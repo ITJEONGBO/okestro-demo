@@ -43,7 +43,7 @@ const VmHostDevices = ({ vmId }) => {
       <span>ID: {selectedIds || ''}</span>
 
       <TablesOuter 
-        columns={TableColumnsInfo.DEVICE_FROM_HOST} 
+        columns={TableColumnsInfo.HOST_DEVICE_FROM_VM} 
         data={hostDevices.map((hostDevice) => ({
           ...hostDevice,
           name: hostDevice?.name ?? 'Unknown',

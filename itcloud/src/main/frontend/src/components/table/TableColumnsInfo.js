@@ -4,7 +4,6 @@
  */
 
 const TableColumnsInfo = {
-
   DATACENTERS: [
     { header: '', accessor: 'icon', clickable: false, width: '3%'  },
     { header: '이름', accessor: 'name', clickable: true }, 
@@ -44,7 +43,6 @@ const TableColumnsInfo = {
     { header: '가상 머신 수', accessor: 'vmCnt', clickable: false, width: '9%'  },
     { header: '코멘트', accessor: 'comment', clickable: false },
   ],
-
   NETWORK_FROM_CLUSTER: [
     { header: '상태', accessor: 'status', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
@@ -134,7 +132,9 @@ const TableColumnsInfo = {
   DISKS_FROM_VM: [
     { header: '', accessor: 'status', clickable: false,width:'4%' },
     { header: '별칭', accessor: 'alias', clickable: true ,width:'10%'},
-    { header: '', accessor: '', clickable: false,width:'4%' },
+    { header: '부팅가능', accessor: '', clickable: false,width:'4%' },
+    { header: '공유가능', accessor: '', clickable: false,width:'4%' },
+    { header: '읽기전용', accessor: '', clickable: false,width:'4%' },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '연결 대상', accessor: 'connectionvm', clickable: false },
     { header: '인터페이스', accessor: 'interface', clickable: false },
@@ -146,7 +146,9 @@ const TableColumnsInfo = {
   DISK_IMAGES_FROM_VM: [
     { header: '', accessor: 'status', clickable: false,width:'4%' },
     { header: '별칭', accessor: 'alias', clickable: true ,width:'10%'},
-    { header: '', accessor: 'icon1', clickable: false,width:'4%' },
+    { header: '부팅가능', accessor: '', clickable: false,width:'4%' },
+    { header: '공유가능', accessor: '', clickable: false,width:'4%' },
+    { header: '읽기전용', accessor: '', clickable: false,width:'4%' },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
     { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
@@ -159,9 +161,35 @@ const TableColumnsInfo = {
     { header: '상태', accessor: 'status', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
+  DISK_LUN_FROM_VM: [
+    { header: '', accessor: 'status', clickable: false,width:'4%' },
+    { header: '별칭', accessor: 'alias', clickable: true ,width:'10%'},
+    { header: '부팅가능', accessor: '', clickable: false,width:'4%' },
+    { header: '공유가능', accessor: '', clickable: false,width:'4%' },
+    { header: '읽기전용', accessor: '', clickable: false,width:'4%' },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: 'LUN ID', accessor: 'lunId', clickable: false },
+    { header: '시리얼', accessor: 'serial', clickable: false },
+    { header: '벤더 ID', accessor: 'venderId', clickable: false },
+    { header: '제품 ID', accessor: 'productId', clickable: false },
+    { header: '연결 대상', accessor: 'connectionvm', clickable: false },
+    { header: '인터페이스', accessor: 'interface', clickable: false },    
+    { header: '논리적 이름', accessor: 'logicalName', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ],
   APPLICATIONS_FROM_VM: [
     { header: '설치된 애플리케이션', accessor: 'name' }
   ],
+  HOST_DEVICE_FROM_VM: [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '기능', accessor: 'capability', clickable: false },
+    { header: '벤더', accessor: 'vendorName', clickable: false },
+    { header: '제품', accessor: 'productName', clickable: false },
+    { header: '드라이버', accessor: 'driver', clickable: false },
+    { header: '현재 사용중', accessor: 'used', clickable: false },
+  ],
+
+
 
   TEMPLATES:[
     { header: '이름', accessor: 'name', clickable: true },
@@ -173,6 +201,25 @@ const TableColumnsInfo = {
     { header: '클러스터', accessor: 'cluster', clickable: true },
     { header: '데이터센터', accessor: 'dataCenter', clickable: true },
     { header: '설명', accessor: 'description', clickable: false },
+  ],
+  VMS_FROM_TEMPLATE:[
+    { header: '', accessor: 'icon', clickable: false, width: '10%' },
+    { header: '이름', accessor: 'name', clickable: true, width: '20%' },
+    { header: 'IP주소', accessor: 'ipv4', clickable: false, width: '20%' },
+    { header: 'FQDN', accessor: 'fqdn', clickable: false, width: '20%' },
+    { header: '상태', accessor: 'status', clickable: false, width: '10%' },
+    { header: '호스트', accessor: 'host', clickable: true, width: '25%' },
+    { header: '업타임', accessor: 'upTime', clickable: false, width: '20%' },
+    { header: '설명', accessor: 'description', clickable: false, width: '25%' },
+  ],
+  NICS_FROM_TEMPLATE: [
+    { header: '', accessor: 'status', clickable: false, width: '7%' },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '연결됨', accessor: 'plugged', clickable: true},
+    { header: '네트워크 이름', accessor: 'network', clickable: false },
+    { header: '프로파일 이름', accessor: 'vnicProfile', clickable: false },
+    { header: '링크 상태', accessor: 'linked', clickable: false },
+    { header: '유형', accessor: 'interface_', clickable: false },
   ],
 
   NETWORKS: [
@@ -325,15 +372,7 @@ const TableColumnsInfo = {
 
 //---------------------------
     // 템플릿
-  NICS_FROM_TEMPLATES: [
-    { header: '', accessor: 'status', clickable: false, width: '7%' },
-    { header: '이름', accessor: 'name', clickable: false },
-    { header: '연결됨', accessor: 'plugged', clickable: true},
-    { header: '네트워크 이름', accessor: 'network', clickable: false },
-    { header: '프로파일 이름', accessor: 'vnicProfile', clickable: false },
-    { header: '링크 상태', accessor: 'linked', clickable: false },
-    { header: '유형', accessor: 'interface_', clickable: false },
-  ],
+  
     
 //------------------------------------------
   DISKS_FROM_STORAGE_DOMAIN: [
@@ -376,17 +415,6 @@ const TableColumnsInfo = {
     { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false, width: '16%' },
   ],
   
-  TEMPLATE_VMS:[
-    { header: '', accessor: 'icon', clickable: false, width: '10%' },
-    { header: '이름', accessor: 'name', clickable: true, width: '20%' },
-    { header: 'IP주소', accessor: 'ipv4', clickable: false, width: '20%' },
-    { header: 'FQDN', accessor: 'fqdn', clickable: false, width: '20%' },
-    { header: '상태', accessor: 'status', clickable: false, width: '10%' },
-    { header: '호스트', accessor: 'host', clickable: true, width: '25%' },
-    { header: '업타임', accessor: 'upTime', clickable: false, width: '20%' },
-    { header: '설명', accessor: 'description', clickable: false, width: '25%' },
-    
-  ],
 
   DISKS: [
     { header: '별칭', accessor: 'alias', clickable: true },

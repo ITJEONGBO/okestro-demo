@@ -10,11 +10,11 @@ const TemplateVms = ({ templateId }) => {
 
   return (
     <>
-        <TablesOuter
-          columns={TableColumnsInfo.TEMPLATE_VMS} 
-          data={vms} 
-          clickableColumnIndex={[1]} 
-        />
+      <TablesOuter
+        columns={TableColumnsInfo.VMS_FROM_TEMPLATE} 
+        data={vms} 
+        clickableColumnIndex={[1]} 
+      />
     </>
   );
 };
