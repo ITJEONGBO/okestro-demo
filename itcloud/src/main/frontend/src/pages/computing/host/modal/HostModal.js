@@ -69,20 +69,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
       resetForm();
     }
   }, [editMode, host, isClustersLoading]);
-
-  useEffect(() => {
-    if (!editMode && clusters && clusters.length > 0) {
-      setClusterVoId(clusters[0].id);
-    }
-  }, [clusters, editMode]);
-
-  useEffect(() => {
-    if (!editMode && clusterId) {
-      setClusterVoId(clusterId); // 초기값 설정
-    }
-  }, [clusterId, editMode]);
-
-
+  
   const resetForm = () => {
     setFormState({
       id: '',
@@ -96,6 +83,19 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
     });
     setClusterVoId('');
   };
+
+  useEffect(() => {
+    if (!editMode && clusters && clusters.length > 0) {
+      setClusterVoId(clusters[0].id);
+    }
+  }, [clusters, editMode]);
+
+  useEffect(() => {
+    if (!editMode && clusterId) {
+      setClusterVoId(clusterId); // 초기값 설정
+    }
+  }, [clusterId, editMode]);
+
 
   const validateForm = () => {
     if (!formState.name) return '이름을 입력해주세요.';

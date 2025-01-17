@@ -381,6 +381,19 @@ const ApiManager = {
     url: ENDPOINTS.FIND_ALL_CLUSTERS(), 
     // defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
   }),
+  /**
+   * @name ApiManager.findAllUpClusters
+   * @description 클러스터 목록 (datacenter status=up)
+   *
+   * @returns 
+   * 
+   * @see
+   */
+  findAllUpClusters: async ()  => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_UP_CLUSTERS(), 
+    // defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
+  }),
    /**
    * @name ApiManager.findCluster
    * @description 클러스터

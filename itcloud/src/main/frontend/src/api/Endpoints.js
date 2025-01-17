@@ -42,6 +42,7 @@ const ENDPOINTS = {
 
   // region: Cluster
   FIND_ALL_CLUSTERS: () =>      `/api/v1/computing/clusters`,
+  FIND_ALL_UP_CLUSTERS: () =>      `/api/v1/computing/clusters/up`,
   FIND_CLUSTER: (clusterId) =>  `/api/v1/computing/clusters/${clusterId}`, 
   FIND_HOSTS_FROM_CLUSTER:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/hosts`, 
   FIND_VMS_FROM_CLUSTER:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/vms`, 

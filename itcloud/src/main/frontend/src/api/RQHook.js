@@ -388,6 +388,21 @@ export const useAllClusters = (mapPredicate) => useQuery({
   }
 })
 /**
+ * @name useAllUpClusters
+ * @description 클러스터 (dc status=up) 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 객체 변형 처리
+ */
+export const useAllUpClusters = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allClusters'],
+  queryFn: async () => {
+    console.log(`useAllUpClusters ...`);
+    const res = await ApiManager.findAllUpClusters()
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+/**
  * @name useCluster
  * @description 클러스터 상세조회 useQuery 훅
  * 

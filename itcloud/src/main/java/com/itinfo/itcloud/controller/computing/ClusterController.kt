@@ -38,6 +38,22 @@ class ClusterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
+		value="클러스터 목록 조회(데이터센터 up)",
+		notes="전체 클러스터 목록을 조회한다(데이터센터가 up상태만)"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/up")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun clustersUp(): ResponseEntity<List<ClusterVo>> {
+		log.info("/computing/clusters/up ... 클러스터(up) 목록")
+		return ResponseEntity.ok(iCluster.findAllUp())
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
 		value="클러스터 정보 상세조회",
 		notes="선택된 클러스터의 정보를 조회한다"
 	)

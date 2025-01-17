@@ -3,6 +3,8 @@ package com.itinfo.itcloud.service.computing
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.fromClusterToIdentifiedVo
+import com.itinfo.itcloud.model.fromClustersToIdentifiedVos
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
@@ -27,6 +29,14 @@ interface ItClusterService {
 	 */
 	@Throws(Error::class)
 	fun findAll(): List<ClusterVo>
+	/**
+	 * [ItClusterService.findAllUp]
+	 * 클러스터 목록(데이터센터 up)
+	 *
+	 * @return List<[ClusterVo]> 클러스터 목록
+	 */
+	@Throws(Error::class)
+	fun findAllUp(): List<ClusterVo>
 	/**
 	 * [ItClusterService.findOne]
 	 * 클러스터 정보 (편집창)
@@ -169,6 +179,17 @@ class ClusterServiceImpl(
 		val res: List<Cluster> = conn.findAllClusters()
 			.getOrDefault(listOf())
 		return res.toClustersMenu(conn)
+	}
+
+	@Throws(Error::class)
+	override fun findAllUp(): List<ClusterVo> {
+		log.info("findAllUp ... ")
+		val res: List<DataCenter> = conn.findAllDataCenters(follow = "clusters")
+			.getOrDefault(listOf())
+			.filter { it.status() == DataCenterStatus.UP }
+
+		return res.flatMap { it.clusters().orEmpty() }
+			.map { it.toClusterIdName() }
 	}
 
 	@Throws(Error::class)
