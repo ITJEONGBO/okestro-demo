@@ -18,9 +18,9 @@ interface HostSamplesHistoryRepository : JpaRepository<HostSamplesHistoryEntity,
 
 	@Query(
 		value = """
-			SELECT * FROM host_Samples_History h  WHERE host_status=1
-			and h.history_Datetime = (SELECT MAX(h2.history_Datetime) FROM host_Samples_History h2 WHERE h2.host_Id = h.host_Id)
-			ORDER BY h.cpu_Usage_Percent DESC
+			select * from host_samples_history h  where host_status=1
+			and h.history_datetime = (select max(h2.history_datetime) from host_samples_history h2 where h2.host_id = h.host_id)
+			order by h.cpu_usage_percent desc
 			""" ,
 		nativeQuery = true
 	)
@@ -28,9 +28,9 @@ interface HostSamplesHistoryRepository : JpaRepository<HostSamplesHistoryEntity,
 
 	@Query(
 		value = """
-			SELECT * FROM host_Samples_History h  WHERE host_status=1 
-			and h.history_Datetime = (SELECT MAX(h2.history_Datetime) FROM host_Samples_History h2 WHERE h2.host_Id = h.host_Id)
-			ORDER BY h.memory_Usage_Percent DESC
+			select * from host_samples_history h  where host_status=1 
+			and h.history_datetime = (select max(h2.history_datetime) from host_samples_history h2 where h2.host_id = h.host_id)
+			order by h.memory_usage_percent desc
 			""",
 		nativeQuery = true
 	)

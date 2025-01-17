@@ -15,9 +15,9 @@ interface StorageDomainSamplesHistoryRepository : JpaRepository<StorageDomainSam
 	// storage 사용량 3
 	@Query(
 		value = """
-			SELECT * FROM storage_domain_samples_history s  WHERE storage_domain_status=1 AND (s.available_disk_size_gb notnull) and s.history_Datetime = 
-          		(SELECT MAX(s2.history_Datetime) FROM storage_domain_samples_history s2 WHERE s2.storage_domain_id = s.storage_domain_id)
-   			ORDER BY s.used_disk_size_gb desc
+			select * from storage_domain_samples_history s  where storage_domain_status=1 and (s.available_disk_size_gb notnull) and s.history_datetime = 
+          		(select max(s2.history_datetime) from storage_domain_samples_history s2 where s2.storage_domain_id = s.storage_domain_id)
+   			order by s.used_disk_size_gb desc
 			""",
 		nativeQuery = true
 	)

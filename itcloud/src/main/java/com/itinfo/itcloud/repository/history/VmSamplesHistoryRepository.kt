@@ -15,12 +15,12 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 	@Query(
 		value =
 		"""
-			SELECT DISTINCT v.vm_id, v.* 
-			FROM Vm_Samples_History v 
-			JOIN vm_configuration c ON v.vm_id = c.vm_id WHERE v.vm_status = 1 
-			AND v.history_Datetime = ( SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id) 
-			AND NOT EXISTS (SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name ='external-HostedEngineLocal') 
-			ORDER BY v.cpu_Usage_Percent DESC
+			select distinct v.vm_id, v.* 
+			from vm_samples_history v 
+			join vm_configuration c on v.vm_id = c.vm_id where v.vm_status = 1 
+			and v.history_datetime = ( select max(v2.history_datetime) from vm_samples_history v2 where v2.vm_id = v.vm_id) 
+			and not exists (select 1 from vm_configuration c2 where c2.vm_id = v.vm_id and c2.vm_name ='external-hostedenginelocal') 
+			order by v.cpu_usage_percent desc
 		""", nativeQuery = true
 	)
 	fun findVmCpuChart(page: Pageable?): List<VmSamplesHistoryEntity>
@@ -28,12 +28,12 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 	@Query(
 		value =
 		"""
-			SELECT DISTINCT v.vm_id, v.* 
-			FROM Vm_Samples_History v 
-			JOIN vm_configuration c ON v.vm_id = c.vm_id WHERE v.vm_status = 1 
-			AND v.history_Datetime = ( SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id) 
-			AND NOT EXISTS (SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name ='external-HostedEngineLocal') 
-			ORDER BY v.memory_Usage_Percent DESC
+			select distinct v.vm_id, v.* 
+			from vm_samples_history v 
+			join vm_configuration c on v.vm_id = c.vm_id where v.vm_status = 1 
+			and v.history_datetime = ( select max(v2.history_datetime) from vm_samples_history v2 where v2.vm_id = v.vm_id) 
+			and not exists (select 1 from vm_configuration c2 where c2.vm_id = v.vm_id and c2.vm_name ='external-hostedenginelocal') 
+			order by v.memory_usage_percent desc
 		""", nativeQuery = true
 	)
 	fun findVmMemoryChart(page: Pageable?): List<VmSamplesHistoryEntity>
@@ -45,33 +45,33 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 	@Query(
 		value =
 		"""
-		  WITH RankedVMs AS (
-			 SELECT *, 
-				   ROW_NUMBER() OVER (PARTITION BY vm_id ORDER BY history_datetime DESC) AS rn
-			 FROM vm_samples_history
-			 WHERE cpu_usage_percent IS NOT NULL
-				  AND vm_id NOT IN (SELECT vm_id 
-									FROM vm_samples_history
-									WHERE history_id = 1)
-				  AND CAST(EXTRACT(MINUTE FROM history_datetime) AS INTEGER) % 10 = 0
+		  with rankedvms as (
+			 select *, 
+				   row_number() over (partition by vm_id order by history_datetime desc) as rn
+			 from vm_samples_history
+			 where cpu_usage_percent is not null
+				  and vm_id not in (select vm_id 
+									from vm_samples_history
+									where history_id = 1)
+				  and cast(extract(minute from history_datetime) as integer) % 10 = 0
 		  ), 
-		  LatestVMStatus AS (
-			 SELECT vm_id, 
+		  latestvmstatus as (
+			 select vm_id, 
 				   vm_status
-			 FROM vm_samples_history
-			 WHERE history_datetime = (SELECT MAX(history_datetime) 
-									   FROM vm_samples_history AS sub
-									   WHERE sub.vm_id = vm_samples_history.vm_id)
-				  AND vm_id NOT IN (SELECT vm_id 
-									FROM vm_samples_history
-									WHERE history_id = 1)
+			 from vm_samples_history
+			 where history_datetime = (select max(history_datetime) 
+									   from vm_samples_history as sub
+									   where sub.vm_id = vm_samples_history.vm_id)
+				  and vm_id not in (select vm_id 
+									from vm_samples_history
+									where history_id = 1)
 		  )
-		  SELECT *
-		  FROM RankedVMs
-		  JOIN LatestVMStatus ON RankedVMs.vm_id = LatestVMStatus.vm_id
-		  WHERE RankedVMs.rn <= 10 
-			AND LatestVMStatus.vm_status = 1
-		  ORDER BY RankedVMs.vm_id, RankedVMs.history_datetime DESC
+		  select *
+		  from rankedvms
+		  join latestvmstatus on rankedvms.vm_id = latestvmstatus.vm_id
+		  where rankedvms.rn <= 10 
+			and latestvmstatus.vm_status = 1
+		  order by rankedvms.vm_id, rankedvms.history_datetime desc
 		""", nativeQuery = true
 	)
 	fun findVmUsageListChart(): List<VmSamplesHistoryEntity>
@@ -80,11 +80,13 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 
 	@Query(
 		value =
-		"SELECT DISTINCT v.vm_id, v.* FROM Vm_Samples_History v " +
-				"JOIN vm_configuration c ON v.vm_id = c.vm_id WHERE v.vm_status = 1 " +
-				"AND v.history_Datetime = ( SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id) " +
-				"AND NOT EXISTS ( SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name LIKE '%HostedEngineLocal%' ) " +
-				"ORDER BY history_Datetime desc ",
+		"""
+			select distinct v.vm_id, v.* from vm_samples_history v
+			join vm_configuration c on v.vm_id = c.vm_id where v.vm_status = 1 
+			and v.history_datetime = ( select max(v2.history_datetime) from vm_samples_history v2 where v2.vm_id = v.vm_id) 
+			and not exists ( select 1 from vm_configuration c2 where c2.vm_id = v.vm_id and c2.vm_name like '%hostedenginelocal%' )
+			order by history_datetime desc 
+		""",
 		nativeQuery = true
 	)
 	fun findVmMetricListChart(): List<VmSamplesHistoryEntity>
