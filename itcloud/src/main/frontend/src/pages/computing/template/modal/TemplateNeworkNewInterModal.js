@@ -150,7 +150,7 @@ const TemplateNeworkNewInterModal = ({
       shouldCloseOnOverlayClick={false}
     >
       <div className="new_network_interface">
-        <div className="popup_header">
+        <div className="popup-header">
           <h1>{editMode ? '네트워크 인터페이스 편집' : '새 네트워크 인터페이스 생성'}</h1>
           <button onClick={onRequestClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
@@ -168,25 +168,25 @@ const TemplateNeworkNewInterModal = ({
             />
           </div>
           <div className="select_box">
-  <label htmlFor="profile">프로파일</label>
-  <select
-    id="profile"
-    value={vnicProfileVoId} // vnicProfileVoId를 상태로 연결
-    onChange={(e) => {
-      setVnicProfileVoId(e.target.value); // 선택된 프로파일 ID 업데이트
-      const selectedVnic = vnics?.find((vnic) => vnic.id === e.target.value);
-      setVnicProfileVoName(selectedVnic ? selectedVnic.name : ''); // 선택된 프로파일 이름 업데이트
-    }}
-  >
-    <option value="">프로파일을 선택하세요</option>
-    {vnics?.map((vnic) => (
-      <option key={vnic.id} value={vnic.id}>
-        {vnic.name} {/* 각 프로파일의 이름을 표시 */}
-      </option>
-    ))}
-  </select>
-</div>
-          <div className="network_form_group">
+            <label htmlFor="profile">프로파일</label>
+            <select
+              id="profile"
+              value={vnicProfileVoId} // vnicProfileVoId를 상태로 연결
+              onChange={(e) => {
+                setVnicProfileVoId(e.target.value); // 선택된 프로파일 ID 업데이트
+                const selectedVnic = vnics?.find((vnic) => vnic.id === e.target.value);
+                setVnicProfileVoName(selectedVnic ? selectedVnic.name : ''); // 선택된 프로파일 이름 업데이트
+              }}
+            >
+              <option value="">프로파일을 선택하세요</option>
+              {vnics?.map((vnic) => (
+                <option key={vnic.id} value={vnic.id}>
+                  {vnic.name} {/* 각 프로파일의 이름을 표시 */}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="select_box">
   <label htmlFor="type">유형</label>
   <select
     id="type"
@@ -200,10 +200,7 @@ const TemplateNeworkNewInterModal = ({
     ))}
   </select>
   <span>선택된 유형: {selectedInterface}</span>
-</div>
-
-
-
+          </div>
           <div className="plug_radio_btn">
             <span>링크 상태</span>
             <div>
@@ -233,41 +230,38 @@ const TemplateNeworkNewInterModal = ({
               </div>
             </div>
           </div>
-
           <div className="plug_radio_btn">
-  <span>카드 상태</span>
-  <div>
-    <div className="radio_outer">
-      <div>
-        <input
-          type="radio"
-          name="plugged_status"
-          id="plugged"
-          checked={plugged === true} // plugged가 true일 때 선택
-          onChange={() => setPlugged(true)} // true로 설정
-        />
-        <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
-        <label htmlFor="plugged">연결됨</label>
-      </div>
-      <div>
-        <input
-          type="radio"
-          name="plugged_status"
-          id="unplugged"
-          checked={plugged === false} // plugged가 false일 때 선택
-          onChange={() => setPlugged(false)} // false로 설정
-        />
-        <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
-        <label htmlFor="unplugged">분리</label>
-      </div>
-    </div>
-  </div>
+            <span>카드 상태</span>
+            <div>
+              <div className="radio_outer">
+                <div>
+                  <input
+                    type="radio"
+                    name="plugged_status"
+                    id="plugged"
+                    checked={plugged === true} // plugged가 true일 때 선택
+                    onChange={() => setPlugged(true)} // true로 설정
+                  />
+                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
+                  <label htmlFor="plugged">연결됨</label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    name="plugged_status"
+                    id="unplugged"
+                    checked={plugged === false} // plugged가 false일 때 선택
+                    onChange={() => setPlugged(false)} // false로 설정
+                  />
+                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
+                  <label htmlFor="unplugged">분리</label>
+                </div>
+              </div>
+            </div>
           </div>
-
-
         </div>
 
-        <div className="edit_footer">
+        <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
           <button onClick={handleSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onRequestClose}>취소</button>

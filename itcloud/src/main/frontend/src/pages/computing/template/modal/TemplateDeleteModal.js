@@ -34,7 +34,7 @@ const TemplateDeleteModal = ({ isOpen, onClose, data }) => {
         onSuccess: () => {
           if (ids.length === 1 || index === ids.length - 1) { // 마지막 템플릿 삭제 후 이동
             onClose();
-            navigate('/computing/rutil-manager/templates');
+            navigate('/computing/templates');
           }
         },
         onError: (error) => {

@@ -1589,7 +1589,7 @@ migrateHostsFromVM: async (vmId) => {
       return makeAPICall({
         method: "DELETE",
         url: ENDPOINTS.DELETE_NICS_FROM_TEMPLATE(templateId, nicId),
-        data: nicId,
+        data: nicId
         // defaultValues: DEFAULT_VALUES.DELETE_NIC_FROM_VM
       });
     },

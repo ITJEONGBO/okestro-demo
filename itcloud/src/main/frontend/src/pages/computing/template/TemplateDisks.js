@@ -5,6 +5,7 @@ import { useAllDisksFromTemplate } from '../../../api/RQHook';
 
 const TemplateDisks = ({ templateId }) => {
   const [isRowExpanded, setRowExpanded] = useState({});
+  const [selectedDiskId, setSelectedDiskId] = useState(null); // 선택된 디스크 ID 상태
 
   const toggleRow = (id) => {
     setRowExpanded((prev) => ({
@@ -24,13 +25,13 @@ const TemplateDisks = ({ templateId }) => {
     return {
       id: diskAttachment?.id ?? '',
       alias: disk.alias || 'Unnamed Disk',
-      virtualSize: (disk.virtualSize / (1024 ** 3)).toFixed(2), // 가상 크기를 GiB로 변환
-      actualSize: (disk.actualSize / (1024 ** 3)).toFixed(2),   // 실제 크기를 GiB로 변환
+      virtualSize: (disk.virtualSize / (1024 ** 3)).toFixed(0), // 가상 크기를 GiB로 변환
+      actualSize: (disk.actualSize / (1024 ** 3)).toFixed(0),   // 실제 크기를 GiB로 변환
       creationTime: disk.createDate || 'N/A',                  // 생성 날짜
       storageDomainName: disk.storageDomainVo?.name || 'Unknown',
       diskType: disk.contentType || 'Unknown',
       status: disk.status || 'Unknown',
-      spaceUsed: (82).toFixed(2), // 예시 데이터
+      spaceUsed: (82).toFixed(0), // 예시 데이터
       spaceFree: (17).toFixed(2), // 예시 데이터
       spaceTotal: (99).toFixed(2), // 예시 데이터
       policy: disk.sparse ? '씬 프로비저닝' : '두꺼운 프로비저닝',
@@ -44,8 +45,9 @@ const TemplateDisks = ({ templateId }) => {
   return (
     <div className="host_empty_outer">
       <div className="header-right-btns">
-        <button>복제</button>
+        <button disabled={!selectedDiskId}>복제</button>
       </div>
+      <span>선택된 ID: {selectedDiskId || '없음'}</span>
       <div className="section-table-outer">
         <table>
           <thead>
@@ -64,7 +66,13 @@ const TemplateDisks = ({ templateId }) => {
           <tbody>
             {disks.map((disk) => (
               <React.Fragment key={disk.id}>
-                <tr>
+                <tr
+                  onClick={() => setSelectedDiskId(disk.id)} // 디스크 선택 처리
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor: selectedDiskId === disk.id ? 'skyblue' : 'transparent', // 선택된 행 하이라이트
+                  }}
+                >
                   <td onClick={() => toggleRow(disk.id)} style={{ cursor: 'pointer' }}>
                     <FontAwesomeIcon icon={isRowExpanded[disk.id] ? faMinusCircle : faPlusCircle} fixedWidth />
                     {disk.alias}

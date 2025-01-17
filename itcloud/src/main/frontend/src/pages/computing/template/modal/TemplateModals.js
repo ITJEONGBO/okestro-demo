@@ -1,12 +1,13 @@
 import React from "react";
 import TemplateEditModal from './TemplateEditModal';
 import TemplateDeleteModal from './TemplateDeleteModal';
+import VmModal from "../../vm/modal/VmModal";
 
 const TemplateModals = ({ activeModal, template, selectedTemplates = [], onClose }) => {
   const modals = {
-    create: (
-      <span>..</span>
-    ),
+    // create: (
+    //   <span>..</span>
+    // ),
     edit: (
       <TemplateEditModal
         editMode
@@ -18,6 +19,13 @@ const TemplateModals = ({ activeModal, template, selectedTemplates = [], onClose
     delete: (
       <TemplateDeleteModal
         isOpen={activeModal === 'delete' }
+        data={selectedTemplates}
+        onClose={onClose}
+      />
+    ),
+    addVm: (
+      <VmModal
+        isOpen={activeModal === 'addVm' }
         data={selectedTemplates}
         onClose={onClose}
       />

@@ -196,7 +196,7 @@ button[disabled],select[disabled],input[disabled]{
 }
  /*우클릭 메뉴박스*/
  .right-click-menu-box{
-    width:7vw;
+    width:8.5vw;
  }
  .right-click-menu-box .right-click-menu-btn {
     width:100%;

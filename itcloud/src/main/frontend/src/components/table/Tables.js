@@ -20,7 +20,15 @@ const Tables = ({
   const [contextMenu, setContextMenu] = useState(null);
   const handleContextMenu = (e, rowIndex) => {
     e.preventDefault();
-    const rowData = data[rowIndex];
+    const rowData = sortedData[rowIndex];
+  
+    // 우클릭 시 해당 행을 선택된 행으로 설정
+    setSelectedRows([rowIndex]);
+    setSelectedRowIndex(rowIndex);
+    if (typeof onRowClick === 'function') {
+      onRowClick([rowData]); // 선택된 행 데이터를 전달
+    }
+  
     if (onContextMenuItems) {
       const menuItems = onContextMenuItems(rowData);
       setContextMenu({
@@ -28,11 +36,10 @@ const Tables = ({
         mouseY: e.clientY - 47,
         menuItems,
       });
-    }else {
+    } else {
       console.warn("메뉴 항목이 비어 있습니다.");
     }
     setContextRowIndex(rowIndex);
-    setSelectedRowIndex(null);   
   };
   
   // 테이블 외부 클릭 시 선택된 행 초기화, 단 메뉴 박스,모달,headerbutton 제외

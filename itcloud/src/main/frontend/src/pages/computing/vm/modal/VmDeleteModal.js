@@ -52,7 +52,7 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
             if (ids.length === 1 || index === ids.length - 1) {
               onClose();
               toast.success('가상머신 삭제 성공');
-              navigate('/computing/vms');
+              // navigate('/computing/vms');
             }
           },
           onError: (error) => {

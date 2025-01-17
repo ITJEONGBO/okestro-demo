@@ -415,6 +415,17 @@ const TableColumnsInfo = {
     { header: '디스크 스냅샷 ID', accessor: 'id', clickable: false, width: '16%' },
   ],
   
+  TEMPLATE_VMS:[
+    { header: '상태', accessor: 'icon', clickable: false, width: '5%' },
+    { header: '이름', accessor: 'name', clickable: true, width: '20%' },
+    { header: '호스트', accessor: 'hostVo', clickable: true, width: '25%' },
+    { header: 'IP주소', accessor: 'ipv4', clickable: false, width: '20%' },
+    { header: 'FQDN', accessor: 'fqdn', clickable: false, width: '20%' },
+    { header: '상태', accessor: 'status', clickable: false, width: '10%' },
+    { header: '업타임', accessor: 'upTime', clickable: false, width: '20%' },
+    { header: '설명', accessor: 'description', clickable: false, width: '25%' },
+
+  ],
 
   DISKS: [
     { header: '별칭', accessor: 'alias', clickable: true },

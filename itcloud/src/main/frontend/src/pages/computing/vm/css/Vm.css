@@ -163,7 +163,18 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
-    
+.network_content_detail>div{
+    width: 50%;
+    padding:0.2rem;
+}
+.network_content_detail_box>div{
+    font-size:0.4rem;
+    margin-bottom:0.2rem;
+}
+.network_content_detail_box .snap_table th{
+    margin-right: 0.6rem;
+    display: block;
+}
 .select_box select,
 .input_box input{
     width: 47%;

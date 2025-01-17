@@ -36,7 +36,7 @@ const VnicProfileDeleteModal = ({ isOpen, onClose, data }) => {
           if (ids.length === 1 || index === ids.length - 1) { // 마지막 vnicProfile 삭제 후 이동
             onClose(); // Modal 닫기
             toast.success("vnic profile 삭제 성공")
-            navigate('/vnicProfiles');
+            // navigate('/vnicProfiles');
           }
         },
         onError: (error) => {

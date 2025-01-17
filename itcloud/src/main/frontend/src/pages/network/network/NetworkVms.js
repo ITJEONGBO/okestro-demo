@@ -4,6 +4,7 @@ import TablesOuter from "../../../components/table/TablesOuter";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TableRowClick from "../../../components/table/TableRowClick";
 import { formatBytesToMB, renderUpDownStatusIcon, renderVmStatusIcon } from "../../../utils/format";
+import VmDeleteModal from '../../computing/vm/modal/VmDeleteModal';
 
 // const 
 
@@ -72,15 +73,16 @@ const NetworkVms = ({ networkId }) => {
       />
 
       {/* nic 를 삭제하는 코드를 넣어야함 */}
-      {/* <Suspense>
+      <Suspense>
         {isDeleteModalOpen && (
           <VmDeleteModal
             isOpen={isDeleteModalOpen}
             onRequestClose={() => toggleDeleteModal(false)}
             data={modalData}
+            onClose={() => toggleDeleteModal(false)} 
           />
         )}
-      </Suspense> */}
+      </Suspense>
     </>
   );
 };

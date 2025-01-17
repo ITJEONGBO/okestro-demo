@@ -20,7 +20,8 @@ const TableRowClick = ({
       domains: `/storages/domains/${id}`,
       disks: `/storages/disks/${id}`,
       network: `/networks/${id}`,
-      templates: `/computing/templates/${id}`
+      templates: `/computing/templates/${id}`,
+      vnicProfile: `/vnicProfiles/${id}/vms`,
     };
 
     const path = paths[type];

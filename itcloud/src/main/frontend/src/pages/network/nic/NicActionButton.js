@@ -3,7 +3,7 @@ import React from 'react';
 const NicActionButtons = ({ openModal, isEditDisabled, status }) => {
   const basicActions = [
     { type: 'create', label: '생성', disabled: false }, 
-    { type: 'edit', label: '편집', disabled: status !== 'single' },
+    { type: 'edit', label: '편집', disabled: isEditDisabled },
     { type: 'delete', label: '삭제', disabled: status === 'none' }, 
   ];
 

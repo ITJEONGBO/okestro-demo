@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useAllNicsFromTemplate } from "../../../api/RQHook";
 import TablesOuter from "../../../components/table/TablesOuter";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TableRowClick from "../../../components/table/TableRowClick";
 import { renderUpDownStatusIcon } from "../../../utils/format";
-import NicActionButtons from '../../network/nic/NicActionButton';
+import TemplateNeworkNewInterModal from './modal/TemplateNeworkNewInterModal';
+import TemplateDeleteModal from "./modal/TemplateDeleteModal";
+import DeleteModal from "../../../components/DeleteModal";
+import NicActionButtons from "../../network/nic/NicActionButton"
 
 const TemplateNics = ({ templateId }) => {
   const { 
@@ -20,32 +23,39 @@ const TemplateNics = ({ templateId }) => {
 
   // 템플릿에 연결된 vNIC 프로파일 데이터 가져오기
 
-  // const renderModals = () => (
-  //   <Suspense fallback={<div>Loading...</div>}>
-  //     {activeModal === 'create' && (
-  //       <TemplateNeworkNewInterModal
-  //       isOpen={modals.create || modals.edit}
-  //       onRequestClose={() => toggleModal(modals.create ? 'create' : 'edit', false)}
-  //       editMode={modals.edit}
-  //       nicData={selectedVnicProfiles[0]} // 수정 시 첫 번째 항목 전달
-  //       templateId={templateId}
-  //     />
-  //     )}
-  //     {activeModal === 'edit' && (
-  //       <HostModal
-  //         editMode
-  //         hId={selectedHosts[0]?.id || null}
-  //         clusterId={clusterId}
-  //         onClose={closeModal}
-  //       />
-  //     )}
-  //     {activeModal === 'delete' && (
-  //       <HostDeleteModal
-  //       data={selectedHosts}
-  //       onClose={closeModal}
-  //       />
-  //     )}
-  // );
+  const renderModals = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+      {activeModal === 'create' && (
+        <TemplateNeworkNewInterModal
+          isOpen={true}
+          onRequestClose={closeModal}
+          editMode={false}
+          templateId={templateId}
+          nicData={selectedVnicProfiles[0]} // 수정 시 첫 번째 항목 전달
+        />
+      )}
+      {activeModal === 'edit' && (
+           <TemplateNeworkNewInterModal
+           isOpen={true}
+           onRequestClose={closeModal}
+           editMode={true}
+           templateId={templateId}
+           nicData={selectedVnicProfiles[0]} // 수정 시 첫 번째 항목 전달
+         />
+      )}
+      
+      {activeModal === 'delete' && (
+        <DeleteModal
+        isOpen={true}
+        onRequestClose={closeModal}
+        type="NetworkInterfaceFromTemplate" // 전달되는 타입
+        templateId={templateId} // 템플릿 ID 전달
+        data={selectedVnicProfiles} // 선택된 NIC 데이터 전달
+        contentLabel="NIC 삭제"
+        />
+      )}
+    </Suspense>
+  );
 
   return (
     <>
@@ -70,7 +80,7 @@ const TemplateNics = ({ templateId }) => {
       />
 
       {/* nic 모달창 */}
-      {/* { renderModals() } */}
+      { renderModals() }
     </>
   );
 };

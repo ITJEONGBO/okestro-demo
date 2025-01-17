@@ -39,6 +39,13 @@ const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
         clickableColumnIndex={[0]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true}
+        onContextMenuItems={(row) => [
+          <VnicProfileActionButtons
+            openModal={openModal}
+            isEditDisabled={!row} 
+            type='context'
+          />
+        ]}
       />
 
       {/* vnicProfile 모달창 */}

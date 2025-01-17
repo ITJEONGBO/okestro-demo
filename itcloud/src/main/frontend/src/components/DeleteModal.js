@@ -132,6 +132,10 @@ const DeleteModal = ({
       console.log('Deleting vmDisk');
       handleDelete(() => deleteDiskFromVM({ vmId, diskAttachmentId: id }));
       onRequestClose();
+    }else if(type ==='TemplateNic'){
+      handleDelete(() => deleteNicFromTemplate({ templateId, nicId: id }));
+      console.log('Deleting NicFromTemplate');
+      onRequestClose();
     }
   };
 

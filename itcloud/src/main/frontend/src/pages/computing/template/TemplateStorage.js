@@ -5,6 +5,7 @@ import { useAllStoragesFromTemplate } from '../../../api/RQHook';
 
 const TemplateStorage = ({ templateId }) => {
   const [isRowExpanded, setRowExpanded] = useState({});
+  const [selectedStorageId, setSelectedStorageId] = useState(null); // 선택된 스토리지 ID 상태
 
   const toggleRow = (id) => {
     setRowExpanded((prev) => ({
@@ -38,9 +39,10 @@ const TemplateStorage = ({ templateId }) => {
 
   return (
     <div className="host_empty_outer">
-        <div className="header-right-btns">
-            <button >삭제</button>
-        </div>
+      <div className="header-right-btns">
+        <button disabled={!selectedStorageId}>삭제</button>
+      </div>
+      <span>선택된 ID: {selectedStorageId || '없음'}</span>
       <div className="section-table-outer">
         <table>
           <thead>
@@ -56,7 +58,13 @@ const TemplateStorage = ({ templateId }) => {
           <tbody>
             {storages.map((storage) => (
               <React.Fragment key={storage.id}>
-                <tr>
+                <tr
+                  onClick={() => setSelectedStorageId(storage.id)} // 선택된 스토리지 ID 설정
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor: selectedStorageId === storage.id ? '#f0f8ff' : 'transparent', // 선택된 행 하이라이트
+                  }}
+                >
                   <td onClick={() => toggleRow(storage.id)} style={{ cursor: 'pointer' }}>
                     <FontAwesomeIcon icon={isRowExpanded[storage.id] ? faMinusCircle : faPlusCircle} fixedWidth />
                     {storage.name}

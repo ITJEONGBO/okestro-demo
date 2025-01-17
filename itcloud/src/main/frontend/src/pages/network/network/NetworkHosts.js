@@ -109,6 +109,17 @@ const NetworkHosts = ({ networkId }) => {
             : transformHostData(disconnectedHosts)
         }
         onRowClick={(row) => setSelectedHost(row)}
+        // onContextMenuItems={(row) => [
+        //   <div className='right-click-menu-box'>
+        //     <button 
+        //     onClick={() => setIsModalOpen(true)} 
+        //     className='right-click-menu-btn'
+        //     disabled={!selectedHost} // selectedHost가 없으면 버튼 비활성화
+        //   >
+        //     호스트 네트워크 설정
+        //   </button>
+        // </div>
+        // ]}
       />
 
       {/* 호스트 네트워크 모달창 */}
