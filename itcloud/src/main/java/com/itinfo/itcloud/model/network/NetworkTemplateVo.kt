@@ -23,6 +23,7 @@ private val log = LoggerFactory.getLogger(NetworkTemplateVo::class.java)
  * @property nicName [String] 
  */
 class NetworkTemplateVo(
+	val id: String = "",
 	val name: String = "",
 	// val version: Int = 0,
 	val status: TemplateStatus = TemplateStatus.ILLEGAL,
@@ -34,13 +35,14 @@ class NetworkTemplateVo(
 		gson.toJson(this)
 
 	class Builder {
+		private var bId: String = "";fun id(block: () -> String?) { bId = block() ?: "" }
 		private var bName: String = "";fun name(block: () -> String?) { bName = block() ?: "" }
 		// private var bVersion: Int = 0;fun version(block: () -> Int?) { bVersion = block() ?: 0 }
 		private var bStatus: TemplateStatus = TemplateStatus.ILLEGAL;fun status(block: () -> TemplateStatus?) { bStatus = block() ?: TemplateStatus.ILLEGAL }
 		private var bClusterName: String = "";fun clusterName(block: () -> String?) { bClusterName = block() ?: "" }
 		private var bNicId: String = "";fun nicId(block: () -> String?) { bNicId = block() ?: "" }
 		private var bNicName: String = "";fun nicName(block: () -> String?) { bNicName = block() ?: "" }
-		fun build(): NetworkTemplateVo = NetworkTemplateVo(bName, /* bVersion,*/ bStatus, bClusterName, bNicId, bNicName)
+		fun build(): NetworkTemplateVo = NetworkTemplateVo(bId, bName, /* bVersion,*/ bStatus, bClusterName, bNicId, bNicName)
 	}
 
 	companion object {
@@ -54,6 +56,7 @@ fun Template.toNetworkTemplateVo(conn: Connection, nic: Nic): NetworkTemplateVo 
 		conn.findCluster(this@toNetworkTemplateVo.cluster().id())
 			.getOrNull()
 	return NetworkTemplateVo.builder {
+		id { this@toNetworkTemplateVo.id() }
 		name { this@toNetworkTemplateVo.name() }
 		status { this@toNetworkTemplateVo.status() }
 		clusterName { cluster?.name() }
