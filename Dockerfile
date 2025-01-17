@@ -48,7 +48,7 @@ FROM eclipse-temurin:11-jdk-focal
 # Add labels to the runtime stage
 LABEL maintainer="Chan Hee Lee <chanhi2000@gmail.com>"
 LABEL description="RutilVM"
-LABEL version="0.1.9"
+LABEL version="0.2.0"
 LABEL vcs-url="https://github.com/ITJEONGBO/okestro-demo"
 LABEL build-date="2025-01-17"
 LABEL commit-hash="05f9e12ee27c1532623112d1df92004226d0d347"
@@ -123,8 +123,8 @@ CMD [\
 #  "--server.ssl.key-store-password=${ITCLOUD_SSL_PASSWORD}", \
 #  "--server.ssl.key-alias=${ITCLOUD_SSL_ALIAS}", \
   "--spring.datasource.engine.url=${POSTGRES_JDBC_URL_ENGINE}", \
-  "--spring.datasource.engine.username:${POSTGRES_DATASOURCE_JDBC_ID}", \
-  "--spring.datasource.engine.password:${POSTGRES_DATASOURCE_JDBC_PW}", \
+  "--spring.datasource.engine.username=${POSTGRES_DATASOURCE_JDBC_ID}", \
+  "--spring.datasource.engine.password=${POSTGRES_DATASOURCE_JDBC_PW}", \
   "--spring.datasource.history.url=${POSTGRES_JDBC_URL_HISTORY}", \
   "--spring.datasource.history.username=${POSTGRES_DATASOURCE_JDBC_ID}", \
   "--spring.datasource.history.password=${POSTGRES_DATASOURCE_JDBC_PW}", \
