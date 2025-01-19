@@ -322,6 +322,31 @@ const ApiManager = {
   }),
 
   /**
+   * @name ApiManager.findDiskListFromDataCenter
+   * @description 연결할 수 있는 디스크 목록
+   * 
+   * @param {string} dataCenterId
+   * @returns 
+   **/
+  findDiskListFromDataCenter : async (dataCenterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ATTACH_DISK_LIST_FROM_DATA_CENTER(dataCenterId), 
+    // defaultValues: DEFAULT_VALUES.FIND_DISK_LIST_FROM_VM
+  }),  
+  /**
+   * @name ApiManager.findAllISOFromDataCenter
+   * @description iso 목록
+   * 
+   * @param {string} dataCenterId
+   * @returns 
+   **/
+  findAllISOFromDataCenter : async (dataCenterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ISOS_FROM_DATA_CENTER(dataCenterId), 
+    // defaultValues: DEFAULT_VALUES.FIND_ISOS_FROM_VM
+  }),
+
+  /**
    * @name ApiManager.addDataCenter
    * @description 새 데이터센터 생성
    * 
@@ -1261,28 +1286,6 @@ const ApiManager = {
     // defaultValues: DEFAULT_VALUES.FIND_EVENTS_FROM_VM
   }),
 
-  /**
-   * @name ApiManager.findAllISO
-   * @description iso 목록
-   * 
-   * @returns 
-   **/
-  findAllISO : async () => makeAPICall({
-    method: "GET", 
-    url: ENDPOINTS.FIND_ISOS_FROM_VM(), 
-    // defaultValues: DEFAULT_VALUES.FIND_ISOS_FROM_VM
-  }),
-  /**
-   * @name ApiManager.findDiskListFromVM
-   * @description 연결할 수 있는 디스크 목록
-   * 
-   * @returns 
-   **/
-  findDiskListFromVM : async () => makeAPICall({
-    method: "GET", 
-    url: ENDPOINTS.FIND_DISK_LIST_FROM_VM(), 
-    // defaultValues: DEFAULT_VALUES.FIND_DISK_LIST_FROM_VM
-  }),
   /**
    * @name ApiManager.findNicFromVM
    * @description iso 목록

@@ -360,48 +360,57 @@ fun List<Vm>.toVmsMenu(conn: Connection): List<VmVo> =
  * 가상머신 메뉴
  */
 fun Vm.toVmVoInfo(conn: Connection): VmVo {
-    val cluster: Cluster? = conn.findCluster(this@toVmVoInfo.cluster().id()).getOrNull()
+    val vm = this@toVmVoInfo
+    val cluster: Cluster? = conn.findCluster(vm.cluster().id()).getOrNull()
     val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
-    val nics: List<Nic> = conn.findAllNicsFromVm(this@toVmVoInfo.id()).getOrDefault(listOf())
+    val nics: List<Nic> = conn.findAllNicsFromVm(vm.id()).getOrDefault(listOf())
     val host: Host? =
-        if (this@toVmVoInfo.hostPresent())
-            conn.findHost(this@toVmVoInfo.host().id()).getOrNull()
-        else if (!this@toVmVoInfo.hostPresent() && this@toVmVoInfo.placementPolicy().hostsPresent())
-            conn.findHost(this@toVmVoInfo.placementPolicy().hosts().first().id()).getOrNull()
+        if (vm.hostPresent())
+            conn.findHost(vm.host().id()).getOrNull()
+        else if (!vm.hostPresent() && vm.placementPolicy().hostsPresent())
+            conn.findHost(vm.placementPolicy().hosts().first().id()).getOrNull()
         else
             null
-    val template: Template? = conn.findTemplate(this@toVmVoInfo.template().id()).getOrNull()
-
-    val statistics: List<Statistic> = conn.findAllStatisticsFromVm(this@toVmVoInfo.id())
+    val template: Template? = conn.findTemplate(vm.template().id()).getOrNull()
+    val statistics: List<Statistic> = conn.findAllStatisticsFromVm(vm.id())
 
 
     return VmVo.builder {
-        id { this@toVmVoInfo.id() }
-        name { this@toVmVoInfo.name() }
-        description { this@toVmVoInfo.description() }
-        osSystem { this@toVmVoInfo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
-        chipsetFirmwareType { this@toVmVoInfo.bios().type().toString() }
-        priority { this@toVmVoInfo.highAvailability().priorityAsInteger() }
-        optimizeOption { this@toVmVoInfo.type().toString() }
-        memorySize { this@toVmVoInfo.memory() }
-        memoryActual { this@toVmVoInfo.memoryPolicy().guaranteed() }
-        cpuTopologyCore { this@toVmVoInfo.cpu().topology().coresAsInteger() }
-        cpuTopologySocket { this@toVmVoInfo.cpu().topology().socketsAsInteger() }
-        cpuTopologyThread { this@toVmVoInfo.cpu().topology().threadsAsInteger() }
+        id { vm.id() }
+        name { vm.name() }
+        description { vm.description() }
+        osSystem { vm.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
+        chipsetFirmwareType { vm.bios().type().toString() }
+        priority { vm.highAvailability().priorityAsInteger() }
+        optimizeOption { vm.type().toString() }
+        memorySize { vm.memory() }
+        memoryActual { vm.memoryPolicy().guaranteed() }
+        memoryInstalled { statistics.findMemory("memory.installed") }
+        memoryUsed { statistics.findMemory("memory.used") }
+        memoryBuffered { statistics.findMemory("memory.buffered") }
+        memoryCached { statistics.findMemory("memory.cached") }
+        memoryFree { statistics.findMemory("memory.free") }
+        memoryUnused { statistics.findMemory("memory.unused") }
+        cpuTopologyCore { vm.cpu().topology().coresAsInteger() }
+        cpuTopologySocket { vm.cpu().topology().socketsAsInteger() }
+        cpuTopologyThread { vm.cpu().topology().threadsAsInteger() }
         cpuTopologyCnt {
-            this@toVmVoInfo.cpu().topology().coresAsInteger() *
-                    this@toVmVoInfo.cpu().topology().socketsAsInteger() *
-                    this@toVmVoInfo.cpu().topology().threadsAsInteger()
+            vm.cpu().topology().coresAsInteger() *
+                    vm.cpu().topology().socketsAsInteger() *
+                    vm.cpu().topology().threadsAsInteger()
         }
-        monitor { this@toVmVoInfo.display().monitorsAsInteger() }
-        usb { this@toVmVoInfo.usb().enabled() }
-        timeOffset { this@toVmVoInfo.timeZone().name() }
-        status { this@toVmVoInfo.status() }
-        hostEngineVm { this@toVmVoInfo.origin() == "managed_hosted_engine" } // 엔진여부
+        stateless { vm.stateless() }
+        startPaused { vm.startPaused() }
+        deleteProtected { vm.deleteProtected() }
+        monitor { vm.display().monitorsAsInteger() }
+        usb { vm.usb().enabled() }
+        timeOffset { vm.timeZone().name() }
+        status { vm.status() }
+        hostEngineVm { vm.origin() == "managed_hosted_engine" } // 엔진여부
         upTime { statistics.findVmUptime() }
-        ipv4 { nics.findVmIpv4(conn, this@toVmVoInfo.id()) }
-        ipv6 { nics.findVmIpv6(conn, this@toVmVoInfo.id()) }
-        fqdn { this@toVmVoInfo.fqdn() }
+        ipv4 { nics.findVmIpv4(conn, vm.id()) }
+        ipv6 { nics.findVmIpv6(conn, vm.id()) }
+        fqdn { vm.fqdn() }
         hostVo { host?.fromHostToIdentifiedVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() } // 메모리, cpu, 네트워크
@@ -914,7 +923,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         templateVo { template?.fromTemplateToIdentifiedVo() }
         description { this@toVmVo.description() }
         comment { this@toVmVo.comment() }
-        osSystem { this@toVmVo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
+        osSystem { this@toVmVo.os().type() }
         chipsetFirmwareType { this@toVmVo.bios().type().toString() }
         optimizeOption { this@toVmVo.type().toString() } //
         stateless { this@toVmVo.stateless() }

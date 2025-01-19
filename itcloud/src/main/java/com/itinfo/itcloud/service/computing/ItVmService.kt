@@ -148,7 +148,7 @@ class VmServiceImpl(
 	override fun findOne(vmId: String): VmVo? {
 		log.info("findOne ... vmId : {}", vmId)
 		val res: Vm? = conn.findVm(vmId).getOrNull()
-		return res?.toVmVoInfo(conn)
+		return res?.toVmVo(conn)
 	}
 
 

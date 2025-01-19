@@ -469,7 +469,7 @@ const TableColumnsInfo = {
     { header: 'ID', accessor: 'id', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
-    { header: '스토리지 도메인', accessor: 'storageDomainVo', clickable: false, width: '15%'  },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false, width: '15%'  },
     { header: '인터페이스', accessor: 'select', clickable: false },
     { header: 'R/O', accessor: 'checkbox', clickable: false, width: '5%'  },
     { header: 'i', accessor: 'checkbox', clickable: false, width: '5%'  },

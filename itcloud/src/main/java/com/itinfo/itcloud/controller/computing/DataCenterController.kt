@@ -2,10 +2,14 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
+import com.itinfo.itcloud.controller.storage.DiskController
+import com.itinfo.itcloud.controller.storage.DiskController.Companion
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.computing.ItDataCenterService
 import io.swagger.annotations.Api
@@ -182,7 +186,7 @@ class DataCenterController: BaseController() {
 	): ResponseEntity<List<HostVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/hosts ... 데이터센터 호스트 목록", dataCenterId)
+		log.info("/computing/datacenters/{}/hosts ... 데이터센터 호스트 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllHostsFromDataCenter(dataCenterId))
 	}
 
@@ -205,7 +209,7 @@ class DataCenterController: BaseController() {
 	): ResponseEntity<List<VmVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/vms ... 데이터센터 가상머신 목록", dataCenterId)
+		log.info("/computing/datacenters/{}/vms ... 데이터센터 가상머신 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllVmsFromDataCenter(dataCenterId))
 	}
 
@@ -228,7 +232,7 @@ class DataCenterController: BaseController() {
 	): ResponseEntity<List<StorageDomainVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/storageDomains ... 데이터센터 스토리지 목록", dataCenterId)
+		log.info("/computing/datacenters/{}/storageDomains ... 데이터센터 스토리지 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllStorageDomainsFromDataCenter(dataCenterId))
 	}
 
@@ -252,7 +256,7 @@ class DataCenterController: BaseController() {
 	): ResponseEntity<List<StorageDomainVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/activeDomains ... Domain(s) 목록", dataCenterId)
+		log.info("/computing/datacenters/{}/activeDomains ... Domain(s) 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllActiveStorageDomainsFromDataCenter(dataCenterId))
 	}
 
@@ -302,6 +306,52 @@ class DataCenterController: BaseController() {
 		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllEventsFromDataCenter(dataCenterId))
 	}
+
+
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - 디스크 연결 목록(데이터센터Id 기반)",
+		notes="해당 데이터센터 내에 있는 디스크 연결 목록을 조회한다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/attachDisks")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun attachDisks(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<DiskImageVo>?> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/datacenters/{}/attachDisks ... 가상머신 생성창 - 디스크 연결 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAttachDiskImageFromDataCenter(dataCenterId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - ISO 목록(데이터센터Id 기반)",
+		notes="해당 데이터센터 내에 있는 ISO 목록(CD/DVD 연결)을 조회한다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/iso")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun iso(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<IdentifiedVo>?> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/datacenters/{}/iso ... 가상머신 생성창 - 디스크 연결 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllISOFromDataCenter(dataCenterId))
+	}
+
+
+
+
 
 
 //	@Deprecated("필요없음")

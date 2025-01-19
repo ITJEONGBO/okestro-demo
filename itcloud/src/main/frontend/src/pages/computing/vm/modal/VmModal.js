@@ -10,7 +10,7 @@ import {
   useAllnicFromVM, 
   useAllTemplates, 
   useAllVMs, 
-  useCDFromVM, 
+  useCDFromDataCenter, 
   useClustersFromDataCenter, 
   useDiskById, 
   useDisksFromVM, 
@@ -19,7 +19,7 @@ import {
   useNetworkInterfaceFromVM, 
   useVmById,
 } from '../../../../api/RQHook';
-import VmConnectionPlusModal from './VmConnectionPlusModal';
+import VmConnectionPlusModal from './VmDiskConnectionModal';
 import DiskModal from '../../../storage/disk/modal/DiskModal';
 import toast from 'react-hot-toast';
 
@@ -245,7 +245,7 @@ const VmModal = ({ isOpen, editMode = false, vmdata, vmId, selectedVm, onDiskSel
   const [selectedCd, setSelectedCd] = useState(''); // 선택된 CD/DVD
   const [cdList, setCdList] = useState([]); // CD/DVD 목록
 
-  const { data: cdData } = useCDFromVM((cd) => ({
+  const { data: cdData } = useCDFromDataCenter((cd) => ({
     id: cd?.id,
     name: cd?.name,
   }));

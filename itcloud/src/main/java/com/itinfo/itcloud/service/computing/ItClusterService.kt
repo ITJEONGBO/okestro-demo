@@ -189,7 +189,7 @@ class ClusterServiceImpl(
 			.filter { it.status() == DataCenterStatus.UP }
 
 		return res.flatMap { it.clusters().orEmpty() }
-			.map { it.toClusterIdName() }
+			.map { it.toClusterMenu(conn) }
 	}
 
 	@Throws(Error::class)

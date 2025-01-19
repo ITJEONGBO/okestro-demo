@@ -201,24 +201,6 @@ interface ItDiskService {
      */
     @Throws(Error::class)
     fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo>
-    /**
-     * [ItDiskService.findAttachDiskImage]
-     * 가상머신 생성 - 인스턴스 이미지 - 연결 -> 디스크 목록
-     * 기준: 아무것도 연결되어 있지 않은 디스크
-     * 인스턴스 이미지 -> 생성 시 필요한 스토리지 도메인
-     *
-     * @return List<[DiskImageVo]> 디스크  목록
-     */
-    @Throws(Error::class)
-    fun findAttachDiskImage(): List<DiskImageVo>
-    /**
-     * [ItDiskService.findAllISO]
-     * 가상머신 생성 - 부트 옵션 - 생성 시 필요한 CD/DVD 연결할 ISO 목록 (디스크이미지)
-     *
-     * @return List<[IdentifiedVo]> ISO 목록
-     */
-    @Throws(Error::class)
-    fun findAllISO(): List<IdentifiedVo>
 
 
     /**
@@ -558,34 +540,6 @@ class DiskServiceImpl(
             conn.findAllStorageDomainsFromDisk(diskId).getOrDefault(listOf())
         return res.toStorageDomainsMenu(conn)
     }
-
-    @Throws(Error::class)
-    override fun findAttachDiskImage(): List<DiskImageVo> {
-        log.info("findAttachDiskImage ... ")
-        val attDiskIds = conn.findAllVms()
-            .getOrDefault(listOf())
-            .flatMap {
-                conn.findAllDiskAttachmentsFromVm(it.id())
-                    .getOrDefault(listOf())
-            }.map { it.id() }
-
-        val res: List<Disk> = conn.findAllDisks()
-            .getOrDefault(listOf())
-            .filter {
-                it.format() == DiskFormat.COW &&!attDiskIds.contains(it.id()) && it.quotaPresent()
-            }
-        return res.toDisksInfo(conn)
-    }
-
-    @Throws(Error::class)
-    override fun findAllISO(): List<IdentifiedVo> {
-        log.info("findAllISO ... ")
-        val res: List<Disk> = conn.findAllDisks()
-            .getOrDefault(listOf())
-            .filter { it.contentType() == DiskContentType.ISO && it.status() == DiskStatus.OK}
-        return res.fromDisksToIdentifiedVos()
-    }
-
 
     @Deprecated("")
     @Throws(Error::class)

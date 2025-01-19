@@ -313,6 +313,47 @@ export const useEventsFromDataCenter = (dataCenterId, mapPredicate) => useQuery(
 });
 
 /**
+ * @name useFindDiskListFromDataCenter
+ * @description 가상머신 연결할 수 있는 디스크 useQuery훅
+ * 
+ * @param {string} dataCenterId 데이터센터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findDisksFromVM
+ */
+export const useFindDiskListFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['FindDiskListFromDataCenter', dataCenterId ], 
+  queryFn: async () => {
+    console.log(`FindDiskListFromDataCenter ...`, dataCenterId);
+    const res = await ApiManager.findDiskListFromDataCenter(dataCenterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+});
+/**
+ * @name useCDFromDataCenter
+ * @description 가상머신 생성창 - CD/DVD 연결할 ISO 목록 useQuery훅
+ * 
+ * @param {string} dataCenterId 데이터센터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllISO
+ */
+export const useCDFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['CDFromDataCenter', dataCenterId], 
+  queryFn: async () => {
+    console.log(`useCDFromDataCenter ...`, dataCenterId);
+    const res = await ApiManager.findAllISOFromDataCenter(dataCenterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  },
+});
+
+
+
+/**
  * @name useAddDataCenter
  * @description 데이터센터 생성 useMutation 훅
  * 
@@ -1670,24 +1711,6 @@ export const useDeleteDiskFromVM = () => {
 
 
 /**
- * @name useFindDiskListFromVM
- * @description 가상머신 연결할 수 있는 디스크 useQuery훅
- * 
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.findDisksFromVM
- */
-export const useFindDiskListFromVM = (mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['FindDiskListFromVM'], 
-  queryFn: async () => {
-    const res = await ApiManager.findDiskListFromVM(); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  },
-});
-
-/**
  * @name useAddDataCenter
  * @description 가상머신 디스크 연결 useMutation 훅
  * 
@@ -1734,25 +1757,6 @@ export const useAddDisksFromVM = () => {
 //   },
 
 // });
-
-
-/**
- * @name useCDFromVM
- * @description 가상머신 생성창 - CD/DVD 연결할 ISO 목록 useQuery훅
- * 
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.findAllISO
- */
-export const useCDFromVM = (mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['CDFromVM'], 
-  queryFn: async () => {
-    const res = await ApiManager.findAllISO(); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  },
-});
 
 
 //endregion: VM

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import toast from 'react-hot-toast';
 import '../../domain/css/MDomain.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -10,10 +11,7 @@ import {
   useAllActiveDataCenters,
   useAllActiveDomainFromDataCenter, 
   useAllDiskProfileFromDomain,
-  useAddDiskFromVM,
-  useDisksFromVM,
 } from '../../../../api/RQHook';
-import toast from 'react-hot-toast';
 
 const FormGroup = ({ label, children }) => (
   <div className="img_input_box">
@@ -22,10 +20,9 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', onClose }) => {
+const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
-  const { mutate: addDiskVm } = useAddDiskFromVM(); // 가상머신 세부페이지 안에 디스크생성성
 
   const [activeTab, setActiveTab] = useState('img');
   const handleTabClick = (tab) => { setActiveTab(tab); };
@@ -81,11 +78,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
     isLoading: isDiskLoading
   } = useDiskById(diskId);
 
-  // 가상머신 디스크목록
-  // const {
-  //   data: vmdisk = [],
-  // } = useDisksFromVM(vmId);
-
   // 전체 데이터센터 가져오기
   const {
     data: datacenters = [],
@@ -107,12 +99,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
     isLoading: isDiskProfilesLoading,
   } = useAllDiskProfileFromDomain(domainVoId, (e) => ({...e,}));  
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const interfaceList = [
-    { value: "VIRTIO_SCSI", label: "VirtIO-SCSI" },
-    { value: "VIRTIO", label: "VirtIO" },
-    { value: "SATA", label: "SATA" },
-  ];
   
   useEffect(() => {
     if (!isOpen) {
@@ -159,12 +145,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
     }
   }, [diskProfiles, editMode]);
 
-  useEffect(() => {
-    if (!editMode && interfaceList.length > 0) {
-      setInterface_(interfaceList[0].value);
-    }
-  }, [interfaceList, editMode]);
-    
 
   const validateForm = () => {
     if (!formState.alias) return '별칭을 입력해주세요.';
@@ -200,38 +180,8 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
       size: sizeToBytes
     };
 
-    
-    //가상머신  디스크
-    const vmDataToSubmit = {
-        bootable: formState.bootable,
-        readOnly: formState.readOnly,
-        passDiscard:formState.passDiscard,
-        interface_:interface_,
-        logicalName:formState.logicalName,
-        diskImageVo: { 
-          alias: formState.alias,
-          size: sizeToBytes,
-          description: formState.description,
-          wipeAfterDelete:formState.wipeAfterDelete,
-          backup:formState.backup,
-          sparse:formState.sparse,
-          dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
-          storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
-          diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
-        }
-    }
-
     console.log("Form Data: ", diskDataToSubmit); // 데이터를 확인하기 위한 로그
-    console.log("Form vmDataToSubmit: ", vmDataToSubmit); // 데이터를 확인하기 위한 로그
-
-    // if (actionType === "vm") {
-    //   if (onDiskCreated) {
-    //     console.log("DiskModal에서 생성된 디스크 데이터:", dataToSubmit);
-    //     onDiskCreated(dataToSubmit);
-    //   }
-    //   onRequestClose(); // 모달 닫기
-    // }
-
+    
     if (editMode) {
       diskDataToSubmit.appendSize = appendSizeToBytes;   
       editDisk(
@@ -241,20 +191,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
             onClose();  // 성공 시 모달 닫기
             toast.success("디스크 편집 완료")
           },
-        }
-      );
-    // } else if (actionType === 'vmDisk'){ // 가상머신 세부페이지 디스크
-    //   addDiskVm(
-    //     {vmId:vmId, diskData: vmDataToSubmit },
-    //     {
-    //     onSuccess: () => {
-    //       toast.success("VM 디스크 생성 완료");
-    //       onClose(); // 성공 시 모달 닫기
-    //     },
-    //     onError: (error) => {
-    //       toast.error('vNIC 프로파일 추가 중 오류 발생:', error);
-    //     },
-    //     });
+        });
     } else {
       addDisk(diskDataToSubmit, {
         onSuccess: () => {
@@ -264,7 +201,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
       });
     }
   };
-
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -297,14 +234,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
           >
             직접 LUN
           </div>
-          {/* <div></div> */}
-          {/* <div
-            id="storage_directlun_btn"
-            onClick={() => handleTabClick('directlun')}
-            className={activeTab === 'directlun' ? 'active' : ''}
-          >
-            직접LUN
-          </div> */}
         </div>
 
         {/*이미지*/}
@@ -349,38 +278,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
                   onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
                 />
               </FormGroup>
-
-              
-
-              {(actionType === 'vm' || actionType === 'vmDisk') && (
-                <FormGroup label="인터페이스">
-                <select
-                  value={interface_}
-                  onChange={(e) => setInterface_(e.target.value)}
-                >
-                  {interfaceList.map((inter) => (
-                    <option key={inter.value} value={inter.value}>
-                      {inter.label} :{inter.value}
-                    </option>
-                  ))}
-                </select>
-              </FormGroup>
-
-                // <div className="tab_content">
-                //   {isIscsisLoading ? (
-                //       <div className="loading-message">로딩 중...</div>
-                //     ) : isIscsisError ? (
-                //       <div className="error-message">데이터를 불러오는 중 오류가 발생했습니다.</div>
-                //     ) : (
-                //       <Table
-                //         columns={TableColumnsInfo.FIBRE}
-                //         data={fibres}
-                //         onRowClick={(row) => console.log('선택한 행 데이터:', row)}
-                //         shouldHighlight1stCol={true}
-                //       />
-                //     )}
-                // </div>
-              )}
 
               <FormGroup label="데이터 센터">
                 <select
@@ -449,47 +346,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
                 />
                 <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
               </div>
-
-              {(actionType === 'vm' || actionType === 'vmDisk') && (
-                <>
-                <div>
-                  <input 
-                    type="checkbox" 
-                    id="backup" 
-                    checked={formState.active}
-                    onChange={(e) => setFormState((prev) => ({ ...prev, bootable: e.target.checked }))}
-                  />
-                  <label htmlFor="backup">디스크 활성화</label>
-                </div>
-                <div>
-                  <input 
-                    type="checkbox" 
-                    id="backup" 
-                    checked={formState.bootable}
-                    onChange={(e) => setFormState((prev) => ({ ...prev, bootable: e.target.checked }))}
-                  />
-                  <label htmlFor="backup">부팅 가능</label>
-                </div>
-                <div>
-                  <input 
-                    type="checkbox" 
-                    id="backup" 
-                    checked={formState.readOnly}
-                    onChange={(e) => setFormState((prev) => ({ ...prev, readOnly: e.target.checked }))}
-                  />
-                  <label htmlFor="backup">읽기전용</label>
-                </div>
-                {/* <div>
-                  <input 
-                    type="checkbox" 
-                    id="backup" 
-                    checked={formState.cancelActive}
-                    onChange={(e) => setFormState((prev) => ({ ...prev, cancelActive: e.target.checked }))}
-                  />
-                  <label htmlFor="backup">취소 활성화</label>
-                </div> */}
-                </>
-              )}
  
               <div>
                 <input 
@@ -512,22 +368,19 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
               </div>
 
             </div>
-         
-        </div>
-     )} 
+          </div>
+        )} 
         {/* 직접LUN */}
-        {activeTab === 'directlun' && (
+        { activeTab === 'directlun' && (
           <div id="storage_directlun_outer">
             <div id="storage_lun_first">
               <div className="disk_new_img_left">
-                <div className="img_input_box">
-                  <span>별칭</span>
+                <FormGroup label="별칭">
                   <input type="text" />
-                </div>
-                <div className="img_input_box">
-                  <span>설명</span>
+                </FormGroup>
+                <FormGroup label="설명">
                   <input type="text" />
-                </div>
+                </FormGroup>
                 <div className="img_select_box">
                   <label htmlFor="os">데이터 센터</label>
                   <select id="os">
@@ -556,6 +409,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, vmId, actionType='disk', 
             </div>
           </div>
         )}
+
         <div className="edit-footer">
           <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onClose}>취소</button>

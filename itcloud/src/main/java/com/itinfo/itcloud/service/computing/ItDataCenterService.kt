@@ -2,7 +2,9 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.fromDisksToIdentifiedVos
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.toNetworkVos
 import com.itinfo.itcloud.model.setting.PermissionVo
@@ -13,6 +15,8 @@ import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
 import com.itinfo.itcloud.repository.engine.entity.toVmId
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.storage.DiskServiceImpl
+import com.itinfo.itcloud.service.storage.ItDiskService
 import com.itinfo.itcloud.service.storage.StorageServiceImpl
 import com.itinfo.itcloud.service.storage.StorageServiceImpl.Companion
 import com.itinfo.util.ovirt.*
@@ -142,6 +146,28 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo>
+
+	/**
+	 * [ItDataCenterService.findAttachDiskImageFromDataCenter]
+	 * 가상머신 생성 - 인스턴스 이미지 - 연결 -> 디스크 목록
+	 * 기준: 아무것도 연결되어 있지 않은 디스크
+	 * 인스턴스 이미지 -> 생성 시 필요한 스토리지 도메인
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[DiskImageVo]> 디스크  목록
+	 */
+	@Throws(Error::class)
+	fun findAttachDiskImageFromDataCenter(dataCenterId: String): List<DiskImageVo>
+	/**
+	 * [ItDataCenterService.findAllISOFromDataCenter]
+	 * 가상머신 생성 - 부트 옵션 - 생성 시 필요한 CD/DVD 연결할 ISO 목록 (디스크이미지)
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[IdentifiedVo]> ISO 목록
+	 */
+	@Throws(Error::class)
+	fun findAllISOFromDataCenter(dataCenterId: String): List<IdentifiedVo>
+
 
 
 	/**
@@ -313,6 +339,43 @@ class DataCenterServiceImpl(
 					(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
 					(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter?.name())))}
 		return res.toEventVos()
+	}
+
+
+	@Throws(Error::class)
+	override fun findAttachDiskImageFromDataCenter(dataCenterId: String): List<DiskImageVo> {
+		log.info("findAttachDiskImageByDataCenter ... 데이터센터 ID: $dataCenterId")
+		conn.findDataCenter(dataCenterId)
+			.getOrNull() ?: throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+
+		val attDiskIds = conn.findAllVms()
+			.getOrDefault(listOf())
+			.flatMap {
+				conn.findAllDiskAttachmentsFromVm(it.id()).getOrDefault(listOf())
+			}.map { it.id() }
+
+		// 데이터센터가 가진 디스크 목록 전체 출력
+		val res: List<Disk> = conn.findDataCenter(dataCenterId, follow = "storagedomains.disks")
+			.getOrNull()!!
+			.storageDomains()
+			.flatMap { it.disks().orEmpty() }
+			.map { it }
+			.filter { it.format() == DiskFormat.COW && !attDiskIds.contains(it.id()) && it.quotaPresent() }
+
+		return res.toDisksInfo(conn)
+	}
+
+
+	@Throws(Error::class)
+	override fun findAllISOFromDataCenter(dataCenterId: String): List<IdentifiedVo> {
+		log.info("findAllISOFromDataCenter ... ")
+		val res: List<Disk> = conn.findDataCenter(dataCenterId, follow = "storagedomains.disks")
+			.getOrNull()!!
+			.storageDomains()
+			.flatMap { it.disks().orEmpty() }
+			.map { it }
+			.filter { it.contentType() == DiskContentType.ISO && it.status() == DiskStatus.OK }
+		return res.fromDisksToIdentifiedVos()
 	}
 
 
