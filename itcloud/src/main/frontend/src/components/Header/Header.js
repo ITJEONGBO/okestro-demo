@@ -70,7 +70,9 @@ const Header = ({ setAuthenticated }) => {
         <div className="header">
             <div className="header-right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
                 <FontAwesomeIcon icon={faBars} fixedWidth className='menu-icon'/>
-                {/* <img className='logo' src={logo} alt="logo Image" /> */}
+                {/* <button id='aside_popup_btn'>
+                                <FontAwesomeIcon icon={faBars} fixedWidth />
+                            </button> */}
                 <img className='rutil-logo' src={rutil_logo} alt="logo Image" />
             </div>
 
@@ -80,8 +82,11 @@ const Header = ({ setAuthenticated }) => {
                   <FontAwesomeIcon icon={faRotate} fixedWidth />
                 </div> 
                 {/* 설정 */}
-                <div>
-                    <FontAwesomeIcon icon={faCog} fixedWidth/>
+                <div 
+                    onClick={() => navigate('/settings/users')} 
+                    style={{ cursor: 'pointer' }}
+                    >
+                    <FontAwesomeIcon icon={faCog} fixedWidth />
                 </div>
                 {/* 알림 */}
                 <div 

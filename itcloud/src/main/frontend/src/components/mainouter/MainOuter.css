@@ -6,7 +6,7 @@
     display: none;
 }
 /* 
-#main_outer{
+.main-outer{
     height: 88vh;
     display: flex;
     justify-content: space-between;
@@ -31,65 +31,61 @@
     position: relative;
 }
 } */
-#aside_popup div {
+.aside-popup div {
     white-space: nowrap;       
     overflow: hidden;          
     text-overflow: ellipsis;  
 }
-#main_outer{
+.main-outer{
     height: 92vh;
     display: flex;
     justify-content: space-between;
     width: 100%;
 }
-#aside_outer {
+.aside-outer {
     width: 3%;
-    display: flex;
+    margin-right: 0.07rem;
 }
+.blue-text {
+    color: rgb(43, 43, 43);
+    border-radius: 0.3rem;
+}
+
 #aside {
-    width: 3vw;
-    height: 100%;
+    width: 100%;
     background-color: #ffffff;
-    border-radius: 5px;
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
     border-right: 1px solid rgb(219 219 219);
+    font-size: 0.56rem;
+    margin-bottom: 0.08rem;
+    padding: 0.1rem;
+}
+.nav{
     display: flex;
-    flex-direction: column; /* 컬럼 방향으로 요소 정렬 */
     justify-content: space-between;
-    
-
+    width: 100%;
+    color: rgb(105, 105, 105);
 }
 .link-no-underline {
     text-decoration: none;
     color: inherit; /* 필요에 따라 색상을 설정하세요 */
   }
-#aside>#nav div, #setting_icon {
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    padding:  0.5rem 0;
-    font-size: 0.6rem;
-    color: rgb(105, 105, 105);
-    cursor: pointer;
-}
-#aside>#nav>div:hover, #setting_icon:hover {
-    color: black;
-}
-#aside_popup {
-    width: 13.8vw;
+
+.aside-popup {
+    width: 100%;
     background-color: white;
     display: none;
-
-    overflow-y: auto;   /* 세로 스크롤 자동 생성 */
-    max-height: 100%;   /* 최대 높이를 지정하여 스크롤이 필요한 경우 동작하게 설정 */
+    overflow-y: auto;
+    height: 93.4%;
+    max-height: 100%;
 }
-#aside_popup>div>div {
+.aside-popup>div>div {
     color: rgb(145, 150, 155);
     font-size: 0.33rem;
     cursor: pointer;
     padding-top: 0.1rem;
 }
-#aside_popup_btn{
+/* #aside_popup_btn{
     font-size: 0.5rem;
     right: 0;
     border:none;
@@ -99,50 +95,35 @@
     width: 100%;
     cursor: pointer;
     padding: 0.35rem 0;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.aside_popup_content i:first-child,
-.aside_popup_second_content i:first-child,
-.aside_popup_third_content i:first-child,
-.aside_popup_fourth_content i:first-child
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+} */
+.aside-popup-content i:first-child,
+.aside-popup-second-content i:first-child,
+.aside-popup-third-content i:first-child,
+.aside-popup-fourth-content i:first-child
  {
     font-size: 0.24rem;
     margin-right: 0.27rem;
 }
-.aside_popup_content>span,
-.aside_popup_second_content>span, 
-.aside_popup_third_content>span,
-.aside_popup_fourth_content >span
+.aside-popup-content>span,
+.aside-popup-second-content>span, 
+.aside-popup-third-content>span,
+.aside-popup-fourth-content >span
 {
     margin-left: 0.1rem;
 }
-#aside_popup_first,#aside_popup_first2 {
- 
-}
-.aside_popup_content{
+
+.aside-popup-content{
     padding-left: 0.2rem;
 }
-#aside_popup_third_content{
-    padding-left: 0.7rem;
-}
 
-#aside_popup_last_machine,#aside_popup_last_storage {
-    padding-left: 1.33rem;
-}
-
-#aside_popup_last_machine>div:hover,#aside_popup_last_storage>div:hover{
-    background-color: #e6eefa;
-}
-#aside_popup_last_machine>div span,#aside_popup_last_storage>div span{
-    margin-left: 0.1rem;
-}
-.aside_popup_second_content{
+.aside-popup-second-content{
     padding-left: 0.4rem;
     
 }
-#context_menu {
+.context-menu {
     position: absolute;
     display: none;
     background-color: white;
@@ -151,20 +132,24 @@
     z-index: 1000;
     border-radius: 3px;
 }
-#context_menu div {
+.context-menu div {
     font-size: 0.3rem;
     cursor: pointer;
     text-align: left;
     padding:0.03rem 0.2rem 0.03rem 0.2rem;
     border-bottom: 1px solid rgb(226, 226, 226);
 }
-#context_menu div:hover {
+.context-menu div:hover {
     background-color: #e6eefa;
 }
+.aside-popup-third-content{
+    padding-left: 0.6rem;
+}
+
     /*설정(설정)팝업*/
-    .setting_setting_outer{
+    /* .setting_setting_outer{
         display: none;
-        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        position: absolute; 
         top: 0;
         left: 0;
         width: 100%;
@@ -182,13 +167,13 @@
         width: 48%;
         left: 50%;
         transform: translate(-50%, -50%);
-        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     }
     .setting_setting_popup>form{
         padding: 0.2rem 0.4rem;
-    }
+    } */
         /*설정(설정->역할)*/
-    #setting_part_form>div:first-child{
+    /* #setting_part_form>div:first-child{
         padding: 0.2rem 0;
         font-weight: 600;
     }
@@ -227,11 +212,11 @@
 
     #setting_part_form tbody td:first-child,#setting_part_form tbody td:nth-child(2){
         text-align: center;
-    }
+    } */
         /*역할(새로만들기) 팝업*/
-    .setting_part_new_outer{
+    /* .setting_part_new_outer{
         display: none;
-        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        position: absolute; 
         top: 0;
         left: 0;
         width: 100%;
@@ -250,7 +235,7 @@
         width: 44%;
         left: 50%;
         transform: translate(-50%, -50%);
-        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
     }
     .set_part_text{
         border-bottom: 1px solid gray;
@@ -282,9 +267,5 @@
     .set_part_text>span,.set_part_checkboxs>span{
         margin-bottom: 0.1rem;
         display: block;
-    }
+    } */
     
-    .aside_popup_third_content{
-        padding-left: 0.6rem;
-    }
-   

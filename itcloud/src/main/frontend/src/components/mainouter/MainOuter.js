@@ -59,7 +59,7 @@ const MainOuter = ({ children }) => {
     }, [location.pathname]);
 
     const getClassNames = (id) => {
-        return selectedDiv === id ? 'selected' : ''; // 선택된 항목에 대해 클래스 추가
+       return selected === id ? 'selected blue-text' : ''
     };
 
     useEffect(() => {
@@ -129,7 +129,7 @@ const MainOuter = ({ children }) => {
         const waveGraph = document.querySelector('.wave_graph');
         if (waveGraph) {
             if (selected === 'dashboard' && asidePopupVisible) {
-                waveGraph.style.marginLeft = '0'; // Dashboard일 때 aside_popup이 열려있으면 margin-left를 0으로
+                waveGraph.style.marginLeft = '0'; // Dashboard일 때 aside-popup 열려있으면 margin-left를 0으로
             } else {
                 waveGraph.style.marginLeft = '1rem'; // 기본값
             }
@@ -243,7 +243,7 @@ const MainOuter = ({ children }) => {
             navigate(`/storages/disks/${diskName}`);
         }
     };
-    // 대시보드 경로일 때 aside_popup을 열지 않도록 처리
+    // 대시보드 경로일 때 aside-popup 열지 않도록 처리
     const handleAsidePopupBtnClick = () => {
         setAsidePopupVisible((prev) => !prev); 
 
@@ -289,7 +289,7 @@ const MainOuter = ({ children }) => {
                 <div id="virtual_machine_chart">
                     {/* 첫 번째 레벨 (Rutil Manager) */}
                     <div
-                        className="aside_popup_content"
+                        className="aside-popup-content"
                         id="aside_popup_first"
                         style={{ backgroundColor: getBackgroundColor('rutil-manager') }}
                         onClick={() => {
@@ -319,7 +319,7 @@ const MainOuter = ({ children }) => {
                         return (
                             <div key={dataCenter.id}>
                                 <div
-                                    className="aside_popup_second_content"
+                                    className="aside-popup-second-content"
                                     style={{
                                         backgroundColor: getBackgroundColor(dataCenter.id),
                                         paddingLeft: hasClusters ? '0.4rem' : '0.8rem'
@@ -351,7 +351,7 @@ const MainOuter = ({ children }) => {
                                     return (
                                         <div key={cluster.id}>
                                             <div
-                                                className="aside_popup_third_content"
+                                                className="aside-popup-third-content"
                                                 style={{
                                                     backgroundColor: getBackgroundColor(cluster.id),
                                                     paddingLeft: hasHosts ? '0.6rem' : '1rem'
@@ -383,7 +383,7 @@ const MainOuter = ({ children }) => {
                                                 return (
                                                     <div key={host.id}>
                                                         <div
-                                                            className="aside_popup_fourth_content"
+                                                            className="aside-popup-fourth-content"
                                                             style={{
                                                                 backgroundColor: getBackgroundColor(host.id),
                                                                 paddingLeft: hasVMs ? '0.8rem' : '1.2rem'
@@ -434,7 +434,7 @@ const MainOuter = ({ children }) => {
                                             {isClusterOpen && Array.isArray(cluster.vmDowns) && cluster.vmDowns.map((vmDown) => (
                                                 <div
                                                     key={vmDown.id}
-                                                    className="aside_popup_fourth_content" 
+                                                    className="aside-popup-fourth-content" 
                                                     style={{
                                                         backgroundColor: getBackgroundColor(vmDown.id),
                                                         paddingLeft: '1.2rem'
@@ -475,7 +475,7 @@ const MainOuter = ({ children }) => {
                 <div id="network_chart">
                     {/* 첫 번째 레벨 (Rutil Manager) */}
                     <div
-                        className="aside_popup_content"
+                        className="aside-popup-content"
                         id="aside_popup_first"
                         style={{ backgroundColor: getBackgroundColor('rutil-manager') }}
                         onClick={() => {
@@ -504,7 +504,7 @@ const MainOuter = ({ children }) => {
                         return (
                             <div key={dataCenter.id}>
                                 <div
-                                    className="aside_popup_second_content"
+                                    className="aside-popup-second-content"
                                     style={{
                                         backgroundColor: getBackgroundColor(dataCenter.id),
                                         paddingLeft: hasNetworks ? '0.4rem' : '0.8rem',
@@ -534,7 +534,7 @@ const MainOuter = ({ children }) => {
                                     dataCenter.networks.map((network) => (
                                         <div
                                             key={network.id}
-                                            className="aside_popup_third_content"
+                                            className="aside-popup-third-content"
                                             style={{
                                                 backgroundColor: getBackgroundColor(network.id),
                                                 paddingLeft: '1rem',
@@ -563,7 +563,7 @@ const MainOuter = ({ children }) => {
             <div id="storage_chart">
                 {/* 첫 번째 레벨 (Rutil Manager) */}
                 <div
-                    className="aside_popup_content"
+                    className="aside-popup-content"
                     id="aside_popup_first"
                     style={{ backgroundColor: getBackgroundColor('rutil-manager') }}
                     onClick={() => {
@@ -593,7 +593,7 @@ const MainOuter = ({ children }) => {
                     return (
                         <div key={dataCenter.id}>
                             <div
-                                className="aside_popup_second_content"
+                                className="aside-popup-second-content"
                                 style={{
                                     backgroundColor: getBackgroundColor(dataCenter.id),
                                     paddingLeft: hasDomains ? '0.4rem' : '0.8rem'
@@ -625,7 +625,7 @@ const MainOuter = ({ children }) => {
                                 return (
                                     <div key={domain.id}>
                                         <div
-                                            className="aside_popup_third_content"
+                                            className="aside-popup-third-content"
                                             style={{
                                                 backgroundColor: getBackgroundColor(domain.id),
                                                 paddingLeft: hasDisks ? '0.6rem' : '1rem'
@@ -741,10 +741,10 @@ const MainOuter = ({ children }) => {
 
 
     return (
-      <div id="main_outer" onClick={handleMainClick}>
-        <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
+      <div className="main-outer" onClick={handleMainClick}>
+        <div className="aside-outer" style={{ width: asidePopupVisible ? '16%' : '3%' }}>
             <div id="aside">
-                <div id="nav">
+                <div className="nav">
                     {/*대시보드버튼 */}
                     <Link to='/' className="link-no-underline">
                         <div
@@ -812,9 +812,12 @@ const MainOuter = ({ children }) => {
                            <FontAwesomeIcon icon={faListUl} fixedWidth/>
                         </div>
                     </Link>
+                    {/* <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}>
+                        <FontAwesomeIcon icon={asidePopupVisible ? faChevronLeft : faChevronRight} fixedWidth />
+                    </button> */}
                 </div>
                 <div>
-                    <Link to='/settings/users' className="link-no-underline">
+                    {/* <Link to='/settings/users' className="link-no-underline">
                         <div id="setting_icon" 
                         className={getClassNames('settings')}
                         onClick={() => {
@@ -824,14 +827,12 @@ const MainOuter = ({ children }) => {
                         style={{ backgroundColor: asidePopupBackgroundColor.settings }}>
                         <FontAwesomeIcon icon={faCog} fixedWidth/>
                         </div>
-                    </Link>
-                    <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}>
-                        <FontAwesomeIcon icon={asidePopupVisible ? faChevronLeft : faChevronRight} fixedWidth />
-                    </button>
+                    </Link> */}
+               
 
                 </div>
             </div>
-            <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
+            <div className="aside-popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                 {renderAsidePopupContent()}
             </div>
         </div>
@@ -844,7 +845,7 @@ const MainOuter = ({ children }) => {
             onDiskClick: handleDetailClickStorage // 디스크 클릭 핸들러 전달
         })}
 
-        <div id="context_menu"
+        <div className="context-menu"
                 style={{
                 display: contextMenuVisible ? 'block' : 'none',
                 top: `${contextMenuPosition.y}px`,

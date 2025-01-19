@@ -369,29 +369,29 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
           <div className="py-1 font-bold underline">드래그 하여 변경</div>
           <div className="host-network-separation">
           <div className="network-separation-left">
-  <div>
-    <div>인터페이스</div>
-    <div>할당된 논리 네트워크</div>
-  </div>
+        <div>
+          <div>인터페이스</div>
+          <div>할당된 논리 네트워크</div>
+        </div>
 
-  {outer.map((outerItem) => (
-  <div key={outerItem.id} className="separation-left-content">
-    {/* Render Interface */}
-    {renderInterface(outerItem)}
+        {outer.map((outerItem) => (
+          <div key={outerItem.id} className="separation-left-content">
+            {/* Render Interface */}
+            {renderInterface(outerItem)}
 
-    <div className="flex items-center justify-center">
-      <FontAwesomeIcon
-        icon={faArrowsAltH}
-        style={{ color: "grey", width: "5vw", fontSize: "0.6rem" }}
-      />
-    </div>
+            <div className="flex items-center justify-center">
+              <FontAwesomeIcon
+                icon={faArrowsAltH}
+                style={{ color: "grey", width: "5vw", fontSize: "0.6rem" }}
+              />
+            </div>
 
-    {/* Render Networks for Each Interface */}
-    <div className="assigned-network-outer">
-      <div className="outer-networks">{renderNetworkOuter(outerItem)}</div>
-    </div>
-  </div>
-))}
+            {/* Render Networks for Each Interface */}
+            <div className="assigned-network-outer">
+              <div className="outer-networks">{renderNetworkOuter(outerItem)}</div>
+            </div>
+          </div>
+        ))}
 
 </div>
 
@@ -423,12 +423,12 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
           onClose={() => setIsSecondModalOpen(false)}
           initialSelectedTab="ipv4"
         />
-          {/*본딩 */}
-      <NewBondingModal
-  isOpen={isBondingModalOpen}
-  onClose={closeBondingModal}
-  mode={bondingMode}
-/>
+        {/*본딩 */}
+        <NewBondingModal
+          isOpen={isBondingModalOpen}
+          onClose={closeBondingModal}
+          mode={bondingMode}
+        />
     </Modal>
   );
 };
