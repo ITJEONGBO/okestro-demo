@@ -46,7 +46,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
   const [dataCenterVoId, setDataCenterVoId] = useState('');
   const [domainVoId, setDomainVoId] = useState('');
   const [diskProfileVoId, setDiskProfileVoId] = useState('');
-  const [interface_, setInterface_] = useState('');
 
   const resetForm = () => {
     setFormState({
@@ -64,7 +63,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
       logicalName:'',
       passDiscard:true
     });
-    setInterface_('');
     setDataCenterVoId('');
     setDomainVoId('');
     setDiskProfileVoId('');

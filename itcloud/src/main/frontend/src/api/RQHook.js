@@ -345,7 +345,7 @@ export const useCDFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['CDFromDataCenter', dataCenterId], 
   queryFn: async () => {
-    console.log(`useCDFromDataCenter ...`, dataCenterId);
+    // console.log(`useCDFromDataCenter ...`, dataCenterId);
     const res = await ApiManager.findAllISOFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
@@ -1320,7 +1320,7 @@ export const useAllnicFromVM = (clusterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['AllnicFromVM', clusterId], 
   queryFn: async () => {
-    console.log(`useAllnicFromVM아아아아 ... ${clusterId}`);
+    // console.log(`useAllnicFromVM ... ${clusterId}`);
     const res = await ApiManager.findNicFromVMClusterId(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
   },

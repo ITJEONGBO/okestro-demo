@@ -602,18 +602,15 @@ fun VmVo.toVmResourceBuilder(vmBuilder: VmBuilder): VmBuilder {
  * vm 고가용성
  */
 fun VmVo.toVmHaBuilder(vmBuilder: VmBuilder): VmBuilder {
-	if (this@toVmHaBuilder.ha) {
-		vmBuilder
-            .lease(StorageDomainLeaseBuilder()
-                .storageDomain(StorageDomainBuilder().id(this@toVmHaBuilder.storageDomainVo.id))
-            )
-	}
 	vmBuilder
 		.highAvailability(HighAvailabilityBuilder()
             .enabled(this@toVmHaBuilder.ha)
             .priority(this@toVmHaBuilder.priority)
         )
-
+    if (this@toVmHaBuilder.ha) {
+        vmBuilder
+            .lease(StorageDomainLeaseBuilder().storageDomain(StorageDomainBuilder().id(this@toVmHaBuilder.storageDomainVo.id)))
+    }
 	return vmBuilder
 }
 
