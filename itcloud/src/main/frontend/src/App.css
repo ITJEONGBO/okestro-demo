@@ -118,12 +118,10 @@ button[disabled],select[disabled],input[disabled]{
     align-items: center;
   }
 
-#section,
-#setting_section,
-#detail_section{
+#section{
     background-color: #ffffff;
     border-radius: 5px;
-    width: 96.7%;
+    width: 100%;
     position: relative;
 }
 .header-right-btns {

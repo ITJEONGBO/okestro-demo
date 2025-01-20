@@ -90,13 +90,18 @@ const App = () => {
     setAuthenticated(isAuthenticated());
   }, []);
 
+
+  const [asideVisible, setAsideVisible] = useState(true); // aside-outer 상태 관리
+  const toggleAside = () => {
+    setAsideVisible((prev) => !prev); // 열림/닫힘 상태만 변경
+};
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
         {authenticated ? (
           <>
-          <Header setAuthenticated={setAuthenticated} />
-          <MainOuter>
+          <Header setAuthenticated={setAuthenticated} toggleAside={toggleAside}/>
+          <MainOuter asideVisible={asideVisible}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/computing/rutil-manager" element={<RutilManager />} />

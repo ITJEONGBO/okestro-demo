@@ -31,6 +31,17 @@
     position: relative;
 }
 } */
+.aside-outer {
+    transition: width 0.2s ease; /* 부드러운 열림/닫힘 효과 */
+    overflow: hidden; /* 내부 요소 숨기기 */
+  }
+  .aside-outer.closed {
+    width: 0; 
+    overflow: hidden;
+  }
+  .aside-outer.open {
+    width: 16%; 
+  }
 .aside-popup div {
     white-space: nowrap;       
     overflow: hidden;          

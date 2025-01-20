@@ -108,8 +108,10 @@ const DeleteModal = ({
       handleDelete(() => deleteNetworkInterface({ vmId, nicId: id }));
       console.log('Deleting NetworkInterface');
       onRequestClose();
-    }else if (type === 'NetworkInterfaceFromTemplate') {
-      handleDelete(() => deleteNicFromTemplate({ templateId, nicId: id }));
+    }else if (type === 'NetworkInterfaceFromTemplate' || type === 'TemplateNic') {
+      id.forEach((nicId) => {
+        handleDelete(() => deleteNicFromTemplate({ templateId, nicId }));
+      });
       console.log('Deleting NicFromTemplate');
       onRequestClose();
     }else if (type === 'Disk') {

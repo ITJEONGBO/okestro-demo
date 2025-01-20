@@ -1700,6 +1700,7 @@ migrateHostsFromVM: async (vmId) => {
     });
   },
 
+
   //endregion : Template ---------------------------------------------
 
 
@@ -1921,7 +1922,7 @@ migrateHostsFromVM: async (vmId) => {
       // defaultValues: DEFAULT_VALUES.IMPORT_NETWORK
     });
   },
- 
+
   //endregion: Network
   
   // region: vnicprofile

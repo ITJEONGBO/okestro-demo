@@ -343,42 +343,12 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                 </div>
               </div>
       
-                {/* <div className='network-new-radio-btn'>
-                  <div className='network-mtu-radio'>
-                    <input
-                      type="radio"
-                      name="mtu"
-                      value="default"
-                      checked={formState.mtu === '0'} // 기본값 상태 체크
-                      onChange={() => setFormState((prev) => ({ ...prev, mtu: '0' }))}
-                    />
-                    <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
-                   </div>
-                   <div className='network-mtu-radio'>
-                    <input
-                      type="radio"
-                      name="mtu"
-                      value="user_defined"
-                      checked={formState.mtu !== '0'} // 사용자 정의 상태 체크
-                      onChange={() => setFormState((prev) => ({ ...prev, mtu: '' }))} // 사용자 정의 선택 시 값 초기화
-                    />
-                    <label style={{ fontSize: "0.32rem"  }}>사용자 정의</label>
-                  </div>
-                </div> */}
-                
-                {/* <input
-                  type="number"
-                  id="mtu_input"
-                  value={formState.mtu === '0' ? '' : formState.mtu} // 편집 모드에서 기본값 처리
-                  onChange={(e) => setFormState((prev) => ({ ...prev, mtu: e.target.value }))}
-                  disabled={formState.mtu === '0'}
-                /> */}
-     
+
             </FormGroup>
 
          
             
-            {/* <FormGroup>
+           <FormGroup>
               <input 
                 type="checkbox" 
                 id="dns_settings" 
@@ -392,6 +362,8 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                 id="dns_server" 
                 disabled 
               />
+               </FormGroup> 
+                {/*
               <div className='plusbtns' style={{ 'font-size': "13px", height: '32px' }}>
                 <button class="border-r border-gray-500">+</button>
                 <button>-</button>

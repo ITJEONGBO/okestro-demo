@@ -9,7 +9,7 @@ import { adjustFontSize } from '../../UIEvent';
 import './Header.css';
 import rutil_logo from '../../assets/images/rutil_logo.png'
 
-const Header = ({ setAuthenticated }) => {
+const Header = ({ setAuthenticated,toggleAside  }) => {
     const navigate = useNavigate();
     const [isLoginBoxVisible, setLoginBoxVisible] = useState(false);
     const [isBellActive, setBellActive] = useState(false);
@@ -66,14 +66,24 @@ const Header = ({ setAuthenticated }) => {
       navigate('/')
     }
 
+    // .aside-outer 열림 상태 관리(반응형형)
+ 
+
     return (
         <div className="header">
-            <div className="header-right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
-                <FontAwesomeIcon icon={faBars} fixedWidth className='menu-icon'/>
+            <div className="header-right">
+            <FontAwesomeIcon
+                icon={faBars}
+                fixedWidth
+                className="menu-icon"
+                onClick={toggleAside} // aside-outer 토글
+            />
                 {/* <button id='aside_popup_btn'>
                                 <FontAwesomeIcon icon={faBars} fixedWidth />
                             </button> */}
-                <img className='rutil-logo' src={rutil_logo} alt="logo Image" />
+                <div className='logo-outer'  onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
+                    <img className='rutil-logo' src={rutil_logo} alt="logo Image" />
+                </div>
             </div>
 
             <div className="header-left">

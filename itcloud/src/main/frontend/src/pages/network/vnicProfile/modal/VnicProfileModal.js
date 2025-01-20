@@ -29,7 +29,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     description: '',
     // passthrough: '',
     portMirroring: false,
-    migration: false,
+    migration: true,
   });
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [networkVoId, setNetworkVoId] = useState(networkId || '');  
@@ -42,7 +42,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       description: '',
       // passthrough: '',
       portMirroring: false,
-      migration: false,
+      migration: true,
     });
     setDataCenterVoId('');
     setNetworkVoId(networkId || '');
@@ -119,7 +119,13 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       setNetworkVoId(networks[0].id);
     }
   }, [networks, editMode]);
-
+  useEffect(() => {
+    if (!editMode && networkId) {
+      setNetworkVoId(networkId); // networkId 값을 설정
+    } else if (!editMode && networks.length > 0) {
+      setNetworkVoId(networks[0].id); // networks의 첫 번째 값을 설정
+    }
+  }, [editMode, networkId, networks]);
 
   const handleFormSubmit = () => {
     if (!formState.name) return toast.error('이름을 입력해주세요.');
@@ -221,7 +227,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
               />
             </FormGroup>
                       
-            {/* <FormGroup label="네트워크 필터">
+            <FormGroup label="네트워크 필터">
               <select
                 id="networkFilter"
                 value={formState.networkFilter}
@@ -233,38 +239,45 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
                   </option>
                 ))}
               </select>
-            </FormGroup> */}
+            </FormGroup>
 
-{/* 
+
             <div className="vnic-new-checkbox">
               <input 
                 type="checkbox" 
                 id="passthrough" 
                 checked={formState.passthrough} 
-                onChange={(e) => setFormState((prev) => ({ ...prev, passthrough: e.target.checked }))}
+                onChange={(e) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    passthrough: e.target.checked,
+                    migration: e.target.checked ? prev.migration : true, // 통과 체크 해제 시 migration 기본값 유지
+                  }))
+                }
               />
               <label htmlFor="passthrough">통과</label>
-            </div> */}
+            </div>
 
-          <div className="vnic-new-checkbox">
-            <input
-              type="checkbox"
-              id="migration"
-              checked={formState.migration} // formState.migration 값 반영
-              onChange={(e) =>
-                setFormState((prev) => ({ ...prev, migration: e.target.checked }))
-              }
-            />
-            <label htmlFor="migration">마이그레이션 가능</label>
-          </div>
+            <div className="vnic-new-checkbox">
+              <input
+                type="checkbox"
+                id="migration"
+                checked={formState.migration}
+                disabled={!formState.passthrough} // 통과 여부에 따라 활성화
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, migration: e.target.checked }))
+                }
+              />
+              <label htmlFor="migration">마이그레이션 가능</label>
+            </div>
             
             {/* 페일오버 vNIC 프로파일 */}
-            {/* <div className="vnic_new_box">
+            <div className="vnic-new-box">
               <label htmlFor="failover_vnic_profile">페일오버 vNIC 프로파일</label>
-              <select id="failover_vnic_profile" disabled>
+              <select id="failover_vnic_profile"   disabled={!formState.migration}>
                 <option value="none">없음</option>
               </select>
-            </div> */}
+            </div>
 
 
             <div className="vnic-new-checkbox">
@@ -272,7 +285,10 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
                 type="checkbox" 
                 id="portMirroring" 
                 checked={formState.portMirroring} 
-                onChange={(e) => setFormState((prev) => ({ ...prev, portMirroring: e.target.checked }))}
+                disabled={formState.passthrough} // 통과 여부에 따라 활성화
+                onChange={(e) => 
+                  setFormState((prev) => ({ ...prev, portMirroring: e.target.checked }))
+                }
               />
               <label htmlFor="portMirroring">포트 미러링</label>
             </div>

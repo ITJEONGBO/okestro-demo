@@ -113,6 +113,10 @@
     height:4vh;
     margin-right:0.25rem;
 }
+.logo-outer{
+    
+}
 .rutil-logo{
     width:22%;
+    display:block;
 }

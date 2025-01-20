@@ -14,7 +14,7 @@ import {
     faSquare
 } from '@fortawesome/free-solid-svg-icons'
 
-const MainOuter = ({ children }) => {
+const MainOuter = ({ children,asideVisible  }) => {
     const [lastSelected, setLastSelected] = useState(null); // 마지막 선택 항목 저장
     const [selectedDisk, setSelectedDisk] = useState(null);
     const navigate = useNavigate();
@@ -250,11 +250,12 @@ const MainOuter = ({ children }) => {
     };
 
     const handleClick = (id) => {
-        setSelected(id);  // 선택한 섹션으로 업데이트
-        toggleAsidePopup(id);  // 선택한 섹션의 배경색 설정
-        setAsidePopupVisible(true);  // 팝업을 표시
-        localStorage.setItem('selected', id);  // 선택한 섹션을 로컬 스토리지에 저장
-        
+        if (id !== selected) {
+            setSelected(id); // 선택한 섹션만 업데이트
+            toggleAsidePopup(id); // 배경색 설정
+            setAsidePopupVisible(true); // 항상 열림 상태 유지
+            localStorage.setItem('selected', id); // 로컬 스토리지 저장
+        }
         // 이벤트와 설정을 제외한 경우에만 마지막 선택 항목을 저장
         if (id !== 'event' && id !== 'settings' && id !== 'dashboard') {
             setLastSelected(id);
@@ -742,7 +743,7 @@ const MainOuter = ({ children }) => {
 
     return (
       <div className="main-outer" onClick={handleMainClick}>
-        <div className="aside-outer" style={{ width: asidePopupVisible ? '16%' : '3%' }}>
+        <div  className={`aside-outer ${asideVisible ? 'open' : 'closed'}`}>
             <div id="aside">
                 <div className="nav">
                     {/*대시보드버튼 */}
