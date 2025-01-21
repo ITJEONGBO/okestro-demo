@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 const VmNic = ({ editMode, initialNics = [], availableProfiles = [], onNicsChange }) => {
   const [nics, setNics] = useState(
@@ -11,6 +11,7 @@ const VmNic = ({ editMode, initialNics = [], availableProfiles = [], onNicsChang
       : [{ id: '', name: 'nic1', vnicProfileVo: { id: '' } }]
   );
 
+
   // 선택된 vNIC 데이터만 부모 컴포넌트에 전달
   useEffect(() => {
     const selectedNics = nics
@@ -19,17 +20,20 @@ const VmNic = ({ editMode, initialNics = [], availableProfiles = [], onNicsChang
     onNicsChange(selectedNics);
   }, [nics, onNicsChange]);
 
+  // NIC 추가
   const handleAddNic = () => {
     const newNicNumber = nics.length + 1;
     const newNic = { id: '', name: `nic${newNicNumber}`, vnicProfileVo: { id: '' } };
     setNics([...nics, newNic]);
   };
 
+  // NIC 제거
   const handleRemoveNic = (index) => {
     const updatedNics = nics.filter((_, nicIndex) => nicIndex !== index);
     setNics(updatedNics);
   };
 
+  // NIC 변경
   const handleNicChange = (index, value) => {
     const updatedNics = [...nics];
     updatedNics[index] = {
@@ -73,7 +77,7 @@ const VmNic = ({ editMode, initialNics = [], availableProfiles = [], onNicsChang
             </select>
           </div>
           <div style={{ display: 'flex', marginLeft: '10px' }}>
-            {index === nics.length - 1 && (
+            {index === nics.length - 1 && !!nic.vnicProfileVo.id && (
               <button onClick={handleAddNic} style={{ marginRight: '5px' }}>+</button>
             )}
             {nics.length > 1 && (

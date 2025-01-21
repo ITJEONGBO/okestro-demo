@@ -180,8 +180,8 @@ class VmServiceImpl(
 		val res: Vm? = conn.addVm(
 			vmVo.toAddVmBuilder(),
 			vmVo.diskAttachmentVos.toAddDiskAttachmentList(),
-			vmVo.vnicProfileVos.map { it.id },
-			vmVo.connVo?.id
+			vmVo.vnicProfileVos.map { it.id },  // nic는 생성될때 id만 있으면 되는듯
+			vmVo.connVo?.id  // iso
 		).getOrNull()
 		return res?.toVmVo(conn)
 	}

@@ -20,7 +20,7 @@ const VmCommon = ({ editMode, vmId, dataCenterId, clusterVoId, formInfoState, se
       setFormInfoState((prev) => ({ ...prev, nicVoList: updatedNics }));
     },
     [setFormInfoState]
-  );
+  );  
 
   useEffect(() => {
     if (!editMode && disks?.length > 0) {
@@ -79,11 +79,14 @@ const VmCommon = ({ editMode, vmId, dataCenterId, clusterVoId, formInfoState, se
         <button onClick={() => setIsCreatePopupOpen(true)}>생성</button>
       
         <VmDiskConnectionModal
+          editMode={editMode}
           isOpen={isConnectionPopupOpen}
+          // vmId={vmId}
           dataCenterId = {dataCenterId}
           onRequestClose={() => setIsConnectionPopupOpen(false)}
         />
         <VmDiskModal
+          editMode={editMode}
           isOpen={isCreatePopupOpen}
           dataCenterId = {dataCenterId}
           onClose={() => setIsCreatePopupOpen(false)}
@@ -91,14 +94,12 @@ const VmCommon = ({ editMode, vmId, dataCenterId, clusterVoId, formInfoState, se
       </div>
 
       <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
-      <VmNic
-        editMode={editMode}
-        initialNics={formInfoState.nicVoList}
-        availableProfiles={nics}
-        onNicsChange={handleNicsChange}
-      />
-
-        <span>{nics[0]?.id}</span>
+        <VmNic
+          editMode={editMode}
+          initialNics={formInfoState.nicVoList}
+          availableProfiles={nics}
+          onNicsChange={handleNicsChange}
+        />
       </div>
     </>
   );

@@ -99,7 +99,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const [dataCenterId, setDataCenterId] = useState('');
   const [clusterVoId, setClusterVoId] = useState('');
   const [templateVoId, setTemplateVoId] = useState('');
-  const [osSystem, setOsSystem] = useState('other_os'); // 운영 시스템
+  const [osSystem, setOsSystem] = useState('other_linux'); // 운영 시스템
   const [chipsetOption, setChipsetOption] = useState('Q35_OVMF'); // 칩셋
   const [optimizeOption, setOptimizeOption] = useState('SERVER'); // 최적화옵션
   
@@ -149,7 +149,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     setDataCenterId('');
     setClusterVoId('');
     setTemplateVoId('');
-    setOsSystem('other_os');
+    setOsSystem('other_linux');
     setChipsetOption('Q35_OVMF');
     setOptimizeOption('SERVER');
   };  
@@ -305,7 +305,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       });
       setClusterVoId(vm?.clusterVo?.id || ''); 
       setTemplateVoId(vm?.templateVo?.id || '');
-      setOsSystem(vm?.osSystem || 'other_os');
+      setOsSystem(vm?.osSystem || 'other_linux');
       setChipsetOption(vm?.chipsetFirmwareType || 'Q35_OVMF');
       setOptimizeOption(vm?.optimizeOption || 'SERVER');
     } else if (!editMode && !isClustersLoading) {
@@ -316,7 +316,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   
   useEffect(() => {
     if (!editMode && clusters.length > 0) {
-      setClusterVoId(clusters[0].id); // 첫 번째 클러스터로 초기화
+      setClusterVoId(clusters[0]?.id); // 첫 번째 클러스터로 초기화
       setDataCenterId(clusters[0]?.dataCenterVo?.id);
     }
   }, [clusters, editMode]);

@@ -38,8 +38,8 @@ const VmBoot = ({ editMode, vmId, dataCenterId, formBootState, setFormBootState 
   // 부트옵션(두번째 장치)
   const secDeviceOptionList = [
     { value: '', label: '없음' },
-    { value: 'ha', label: '하드 디스크'  },
     { value: 'cdrom', label: 'CD-ROM' },
+    { value: 'network', label: '네트워크(PXE)' },
   ];
 
 
