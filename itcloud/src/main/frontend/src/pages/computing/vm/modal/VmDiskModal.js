@@ -7,7 +7,7 @@ import {
   useDiskById,
   // useAddDisk,
   // useEditDisk, 
-  useAllActiveDataCenters,
+  // useAllActiveDataCenters,
   useAllActiveDomainFromDataCenter, 
   useAllDiskProfileFromDomain,
   useAddDiskFromVM,
@@ -82,7 +82,6 @@ const VmDiskModal = ({ isOpen, editMode = false, diskId, vmId, dataCenterId, onC
 
   useEffect(() => {
     if (editMode && disk) {
-      console.log('Setting edit mode state with disk:', disk);
       setFormState({
         id: disk?.id || '',
         size: (disk?.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
@@ -96,45 +95,21 @@ const VmDiskModal = ({ isOpen, editMode = false, diskId, vmId, dataCenterId, onC
       });
       setDomainVoId(disk?.storageDomainVo?.id || '');
       setDiskProfileVoId(disk?.diskProfileVo?.id || '');
-      // 
     } else if (!editMode) {
-      resetForm();
+      resetForm(); // 초기화
     }
-  }, [editMode, disk]);
+  }, [editMode, disk]); // 의존성 배열에서 필요한 값만 추가
   
-  // useEffect(() => {
-  //   if (editMode && vmdisk) {
-  //     console.log('Setting edit mode state with disk:', vmdisk);
-  //     setFormState({
-  //       id: vmdisk.id || '',
-  //       size: (vmdisk.virtualSize / (1024 * 1024 * 1024)).toFixed(0),
-  //       appendSize: 0,
-  //       alias: vmdisk.alias || '',
-  //       description: vmdisk.description || '',
-  //       wipeAfterDelete: vmdisk.wipeAfterDelete || false,
-  //       sharable: vmdisk.sharable || false,
-  //       backup: vmdisk.backup || false,
-  //       sparse: vmdisk.sparse || false,
-  //       readOnly:vmdisk.readOnly || false
-  //     });
-  //     setDataCenterVoId(disk?.dataCenterVo?.id || '');
-  //     setDomainVoId(disk?.storageDomainVo?.id || '');
-  //     setDiskProfileVoId(disk?.diskProfileVo?.id || '');
-  //     // 
-  //   } else if (!editMode) {
-  //     resetForm();
-  //   }
-  // }, [editMode, vmdisk]);
-
+  
 
   useEffect(() => {
-    if (!editMode && domains && domains.length > 0) {
+    if (!editMode && domains.length > 0) {
       setDomainVoId(domains[0].id);
     }
   }, [domains, editMode]);
 
   useEffect(() => {
-    if (!editMode && diskProfiles && diskProfiles.length > 0) {
+    if (!editMode && diskProfiles.length > 0) {
       setDiskProfileVoId(diskProfiles[0].id);
     }
   }, [diskProfiles, editMode]);

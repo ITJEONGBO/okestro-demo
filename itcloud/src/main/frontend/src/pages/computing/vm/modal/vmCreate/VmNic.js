@@ -1,7 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const VmNic = ({ editMode, initialNics = [], availableProfiles = [] }) => {
-  const [nics, setNics] = useState(initialNics.length > 0 ? initialNics : [{ id: '', name: 'nic1', vnicProfileVo: { id: '' } }]);
+const VmNic = ({ editMode, initialNics = [], availableProfiles = [], onNicsChange }) => {
+  const [nics, setNics] = useState(
+    initialNics.length > 0
+      ? initialNics.map((nic, index) => ({
+          ...nic,
+          name: nic.name || `nic${index + 1}`,
+          vnicProfileVo: { id: nic.vnicProfileVo?.id || '' },
+        }))
+      : [{ id: '', name: 'nic1', vnicProfileVo: { id: '' } }]
+  );
+
+  // 선택된 vNIC 데이터만 부모 컴포넌트에 전달
+  useEffect(() => {
+    const selectedNics = nics
+      .filter((nic) => nic.vnicProfileVo?.id) // 선택된 vnicProfile만 포함
+      .map((nic) => ({ id: nic.vnicProfileVo.id }));
+    onNicsChange(selectedNics);
+  }, [nics, onNicsChange]);
 
   const handleAddNic = () => {
     const newNicNumber = nics.length + 1;
@@ -14,19 +30,18 @@ const VmNic = ({ editMode, initialNics = [], availableProfiles = [] }) => {
     setNics(updatedNics);
   };
 
-  const handleNicChange = (index, field, value) => {
+  const handleNicChange = (index, value) => {
     const updatedNics = [...nics];
     updatedNics[index] = {
       ...updatedNics[index],
-      [field]: value,
-      vnicProfileVo: field === 'vnicProfileVo' ? { id: value } : updatedNics[index].vnicProfileVo,
+      vnicProfileVo: { id: value },
     };
     setNics(updatedNics);
   };
 
   return (
     <div>
-      <p>vNIC 프로파일을 선택하여 가상 머신 네트워크 인터페이스를 인스턴스화합니다.</p>
+      <p>vNIC 프로파일을 선택하여 가상 머신 네트워크 인터페이스를 설정하세요.</p>
       {nics.map((nic, index) => (
         <div
           key={index}
@@ -47,12 +62,12 @@ const VmNic = ({ editMode, initialNics = [], availableProfiles = [] }) => {
               id={`network_adapter_${index}`}
               style={{ flex: 1 }}
               value={nic.vnicProfileVo?.id || ''}
-              onChange={(e) => handleNicChange(index, 'vnicProfileVo', e.target.value)}
+              onChange={(e) => handleNicChange(index, e.target.value)}
             >
               <option value="">항목을 선택하십시오...</option>
               {availableProfiles.map((profile) => (
                 <option key={profile.id} value={profile.id}>
-                  {profile.name}/{profile.networkVoName}
+                  {profile.name} / {profile.networkVo?.name || ''}
                 </option>
               ))}
             </select>

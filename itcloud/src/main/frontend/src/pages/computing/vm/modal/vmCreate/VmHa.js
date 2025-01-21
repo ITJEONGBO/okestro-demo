@@ -1,9 +1,9 @@
+import { useEffect } from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAllActiveDomainFromDataCenter } from "../../../../../api/RQHook";
-import { useEffect, useState } from "react";
 
-const VmHa = ({ editMode, dataCenterId, formHaState, setFormHaState }) => {
+const VmHa = ({ editMode, vmId, dataCenterId, formHaState, setFormHaState }) => {
   const {
     data: domains = [],
     isLoading: isDomainsLoading
@@ -14,7 +14,7 @@ const VmHa = ({ editMode, dataCenterId, formHaState, setFormHaState }) => {
     if (!editMode && domains.length > 0) {
       setFormHaState((prev) => ({
         ...prev,
-        domainVoId: domains[0].id, // 첫 번째 도메인 ID 선택
+        storageDomainVo: domains[0].id, // 첫 번째 도메인 ID 선택
       }));
     }
   }, [domains, editMode, setFormHaState]);
@@ -25,13 +25,14 @@ const VmHa = ({ editMode, dataCenterId, formHaState, setFormHaState }) => {
     setFormHaState((prev) => ({
       ...prev,
       ha: isChecked,
-      domainVoId: isChecked && domains.length > 0 ? domains[0].id : "", // 체크 시 첫 번째 도메인 선택
+      storageDomainVo: isChecked && domains.length > 0 ? domains[0].id : "", // 체크 시 첫 번째 도메인 선택
     }));
   };
 
   return (
     <>
     <div className="ha-mode-second-content">
+    <span>데이터센터ID: {dataCenterId}</span>
       <div className="checkbox_group">
         <input
           className="check_input"
@@ -53,11 +54,11 @@ const VmHa = ({ editMode, dataCenterId, formHaState, setFormHaState }) => {
         <select
           id="no_lease"
           disabled={!formHaState.ha}
-          value={formHaState.domainVoId || ""}
+          value={formHaState.storageDomainVo || ""}
           onChange={(e) =>
             setFormHaState((prev) => ({
               ...prev,
-              domainVoId: e.target.value,
+              storageDomainVo: e.target.value,
             }))
           }
         >

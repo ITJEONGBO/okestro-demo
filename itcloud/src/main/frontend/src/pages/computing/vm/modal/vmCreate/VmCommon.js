@@ -1,44 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import VmNic from './VmNic';
 import VmDiskModal from '../VmDiskModal';
 import VmDiskConnectionModal from '../VmDiskConnectionModal';
 import { useAllnicFromVM, useDisksFromVM } from '../../../../../api/RQHook';
 
-const VmCommon = ({ editMode, dataCenterId, clusterVoId, vmId, formInfoState, setFormInfoState }) => {
-  const { 
-    data: nics = [],
-    isLoading: isNicsLoading
-  } = useAllnicFromVM(clusterVoId, (e) => ({
-    id: e?.id,
-    name: e?.name,
-    networkVoName: e?.networkVo?.name,
-  }));
-
+const VmCommon = ({ editMode, vmId, dataCenterId, clusterVoId, formInfoState, setFormInfoState }) => {
   const { 
     data: disks = [],
     isLoading: isDisksLoading
-  } = useDisksFromVM(vmId, (e) => ({...e}));
+  } = useDisksFromVM(vmId, (e) => ({ ...e }));
+
+  const { 
+    data: nics = [],
+    isLoading: isNicsLoading
+  } = useAllnicFromVM(clusterVoId, (e) => ({ ...e }));
+
+  const handleNicsChange = useCallback(
+    (updatedNics) => {
+      setFormInfoState((prev) => ({ ...prev, nicVoList: updatedNics }));
+    },
+    [setFormInfoState]
+  );
 
   useEffect(() => {
     if (!editMode && disks?.length > 0) {
-      setFormInfoState((prev) => ({ ...prev, diskVoList: disks }));
+      setFormInfoState((prev) => ({...prev, diskVoList: disks}));
     }
-  }, [disks, editMode]);
+  }, [disks, editMode]);  
   
   useEffect(() => {
     if (!editMode && nics?.length > 0) {
-      setFormInfoState((prev) => ({ ...prev, nicVoList: nics }));
+      setFormInfoState((prev) => ({...prev, nicVoList: nics}))
     }
   }, [nics, editMode]);
-  
 
   const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false);
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
   
-
   return (
     <>
     <div className="edit-second-content mb-1">
+      <span>데이터센터ID: {dataCenterId}</span>
       <div>
         <label htmlFor="name">이름</label>
         <input
@@ -89,11 +91,14 @@ const VmCommon = ({ editMode, dataCenterId, clusterVoId, vmId, formInfoState, se
       </div>
 
       <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
-        <VmNic
-          editMode={editMode}
-          // initialNics={nics}
-          availableProfiles={nics}
-        />
+      <VmNic
+        editMode={editMode}
+        initialNics={formInfoState.nicVoList}
+        availableProfiles={nics}
+        onNicsChange={handleNicsChange}
+      />
+
+        <span>{nics[0]?.id}</span>
       </div>
     </>
   );

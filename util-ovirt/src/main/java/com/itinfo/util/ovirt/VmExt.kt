@@ -174,9 +174,8 @@ fun Connection.addVm(
 		return FailureType.DUPLICATE.toResult(Term.VM.desc)
 	}
 
-	val vmAdded: Vm =
-		this.srvVms().add().vm(vm).send().vm()
-			?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	val vmAdded: Vm = this.srvVms().add().vm(vm).send().vm()
+		?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
 	if(diskAttachments.isNotEmpty()) {
 		this.addMultipleDiskAttachmentsToVm(vmAdded.id(), diskAttachments)
@@ -449,12 +448,11 @@ fun Connection.addNicFromVm(vmId: String, nic: Nic): Result<Nic?> = runCatching 
 }
 
 fun Connection.addMultipleNicsFromVm(vmId: String, vnicProfileIds: List<String>): Result<Boolean> = runCatching {
-	val nics =
-		vnicProfileIds.mapIndexed { index, profileId ->
-			NicBuilder()
-				.name("nic${index + 1}")
-				.vnicProfile(VnicProfileBuilder().id(profileId).build())
-			.build()
+	val nics = vnicProfileIds.mapIndexed { index, profileId ->
+		NicBuilder()
+			.name("nic${index + 1}")
+			.vnicProfile(VnicProfileBuilder().id(profileId).build())
+		.build()
 	}
 
 	val results = nics.map { addNicFromVm(vmId, it) }

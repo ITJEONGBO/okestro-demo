@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,7 +22,7 @@ const Tab = ({ tabs, activeTab, onTabClick }) => (
   </div>
 );
 
-const VmDiskConnectionModal = ({ isOpen, vmId, dataCenterId, onSelectDisk = () => {}, onRequestClose, }) => {
+const VmDiskConnectionModal = ({ isOpen, editMode, vmId, dataCenterId, onSelectDisk = () => {}, onRequestClose, }) => {
   const [activeTab, setActiveTab] = useState("img");
   const [selectedDiskId, setSelectedDiskId] = useState(null);
 
@@ -30,24 +30,24 @@ const VmDiskConnectionModal = ({ isOpen, vmId, dataCenterId, onSelectDisk = () =
     data: disks = [], isLoading
   } = useFindDiskListFromDataCenter(dataCenterId, (e) => ({...e,}));
   
-  console.log("Disks data:", disks);
+  // console.log("Disks data:", disks);
   
   const tabs = [
     { id: "img", label: "이미지"},
     { id: "directlun", label: "직접 LUN"}, // 직접 LUN 데이터 추가 필요
   ];
 
-  const interfaceList = [
-    { value: "VIRTIO_SCSI", label: "VirtIO-SCSI" },
-    { value: "VIRTIO", label: "VirtIO" },
-    { value: "SATA", label: "SATA" },
-  ];
+  // const interfaceList = [
+  //   { value: "VIRTIO_SCSI", label: "VirtIO-SCSI" },
+  //   { value: "VIRTIO", label: "VirtIO" },
+  //   { value: "SATA", label: "SATA" },
+  // ];
 
   // useEffect(() => {
-  //     if (!editMode && interfaceList.length > 0) {
-  //       setInterface_(interfaceList[0].value);
-  //     }
-  //   }, [interfaceList, editMode]);
+  //   if (!editMode && interfaceList.length > 0) {
+  //     setInterface_(interfaceList[0].value);
+  //   }
+  // }, [interfaceList, editMode]);
 
   const handleOkClick = () => {
     if (selectedDiskId) {
@@ -77,7 +77,6 @@ const VmDiskConnectionModal = ({ isOpen, vmId, dataCenterId, onSelectDisk = () =
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>
         </div>
-        
         <Tab 
           tabs={tabs}
           activeTab={activeTab} 

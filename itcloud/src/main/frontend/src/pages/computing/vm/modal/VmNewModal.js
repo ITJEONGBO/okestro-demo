@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect, useMemo } from 'react';
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,7 +9,9 @@ import {
   useAddVm, 
   useEditVm, 
   useAllUpClusters, 
-  useAllTemplates, 
+  useAllTemplates,
+  useDisksFromVM,
+  useAllnicFromVM, 
 } from '../../../../api/RQHook';
 import VmCommon from './vmCreate/VmCommon';
 import VmSystem from './vmCreate/VmSystem';
@@ -37,60 +39,121 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const { mutate: editVM } = useEditVm();
   
   const [selectedModalTab, setSelectedModalTab] = useState('common');
+  
 
-  const initialState = {
-    formInfo: {
-      id: '',
-      name: '',
-      comment: '',
-      description: '',
-      stateless: false,
-      startPaused: false,
-      deleteProtected: false,
+  // 일반
+  const [formInfoState, setFormInfoState] = useState({
+    id: '',
+    name: '',
+    comment: '',
+    description: '',
+    stateless: false,// 무상태
+    startPaused: false, // 일시중지상태로시작
+    deleteProtected: false, //삭제보호
+    diskVoList: [], // 
+    nicVoList: [],  //
+  });
+
+  //시스템
+  const [formSystemState, setFormSystemState] = useState({
+    memorySize: 1024,  // 메모리 크기
+    memoryMax: 1024,   // 최대 메모리
+    memoryActual: 1024, // 할당할 실제메모리
+    cpuTopologyCnt: 1, //총cpu
+    cpuTopologyCore: 1, // 가상 소켓 당 코어
+    cpuTopologySocket: 1, // 가상소켓
+    cpuTopologyThread: 1, //코어당 스레드
+  });
+
+  // 초기실행
+  const [formCloudInitState, setFormCloudInitState] = useState({
+    cloudInit: false,// Cloud-lnit
+    script: '', // 스크립트
+  });
+                                                              
+  // 호스트
+  const [formHostState, setFormHostState] = useState({
+    hostInCluster: true,// 클러스터 내 호스트 버튼
+    hostVos: [],
+    migrationMode: 'migratable', // 마이그레이션 모드
+    migrationEncrypt: 'INHERIT',  // 암호화
+    // migrationPolicy: 'minimal_downtime',// 마이그레이션 정책
+
+  });
+  
+  // 고가용성
+  const [formHaState, setFormHaState] = useState({
+    ha: false,// 고가용성(체크박스)
+    priority: 1,// 초기값
+    storageDomainVo: '',
+  });
+
+  // 부트옵션
+  const [formBootState, setFormBootState] = useState({
+    firstDevice: 'hd', // 첫번째 장치
+    secDevice: '', // 두번째 장치
+    bootingMenu: false,// 부팅메뉴 활성화
+    cdConn: '',
+  });
+
+  const [dataCenterId, setDataCenterId] = useState('');
+  const [clusterVoId, setClusterVoId] = useState('');
+  const [templateVoId, setTemplateVoId] = useState('');
+  const [osSystem, setOsSystem] = useState('other_os'); // 운영 시스템
+  const [chipsetOption, setChipsetOption] = useState('Q35_OVMF'); // 칩셋
+  const [optimizeOption, setOptimizeOption] = useState('SERVER'); // 최적화옵션
+  
+  const resetForm = () => {
+    setFormInfoState({
+      id : '',
+      name : '',
+      comment : '',
+      description : '',
+      stateless : false,
+      startPaused : false,
+      deleteProtected : false,
       diskVoList: [],
       nicVoList: [],
-    },
-    formSystem: {
+    });
+    setFormSystemState({
       memorySize: 1024,
-      maxMemory: 1024,
-      allocatedMemory: 1024,
+      memoryMax: 1024,
+      memoryActual: 1024,
       cpuTopologyCnt: 1,
       cpuTopologyCore: 1,
       cpuTopologySocket: 1,
       cpuTopologyThread: 1,
-    },
-    formCloudInit: {
+    });
+    setFormCloudInitState({
       cloudInit: false,
-      script: '',
-    },
-    formHost: {
-      isSpecificHostSelected: false,
-      hostVoList: [],
+      script: ''
+    });
+    setFormHostState({
+      hostInCluster: true,
+      hostVos: [],
       migrationMode: 'migratable',
-      migrationEncryption: 'inherit',
-    },
-    formHa: {
+      // migrationPolicy: 'minimal_downtime',
+      migrationEncrypt: 'INHERIT',
+    });
+    setFormHaState({
       ha: false,
       priority: 1,
-      domainVoId: '',
-    },
-    formBoot: {
+      storageDomainVo: '',
+    });
+    setFormBootState({
       firstDevice: 'hd',
       secDevice: '',
       bootingMenu: false,
       cdConn: '',
-    },
-    dataCenterId: '',
-    clusterVoId: '',
-    templateVoId: '',
-    osSystem: 'other_os',
-    chipsetOption: 'Q35_OVMF',
-    optimizeOption: 'SERVER',
-  };
-  
-  const [state, setState] = useState(initialState);
-  const resetForm = () => setState(initialState);
-  
+    });
+    setDataCenterId('');
+    setClusterVoId('');
+    setTemplateVoId('');
+    setOsSystem('other_os');
+    setChipsetOption('Q35_OVMF');
+    setOptimizeOption('SERVER');
+  };  
+
 
   // 가상머신 상세데이터 가져오기
   const { 
@@ -102,65 +165,75 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const { 
     data: clusters = [],
     isLoading: isClustersLoading
-  } = useAllUpClusters((e) => ({
-    ...e,
-    dataCenterId: e?.dataCenterVo?.id,
-    dataCenterName: e?.dataCenterVo?.name,
-  }));
+  } = useAllUpClusters((e) => ({...e,}));
   
   // 템플릿 가져오기
   const {
     data: templates = [],
     isLoading: isTemplatesLoading
   } = useAllTemplates((e) => ({...e,}));
-
   
   // 운영 시스템
   const osSystemList = [
-    { value: 'debian_7', label: 'Debian 7+' },
-    { value: 'debian_9', label: 'Debian 9+' },
-    { value: 'freebsd_9_2', label: 'FreeBSD 9.2' },
-    { value: 'freebsd_9_2_x64', label: 'FreeBSD 9.2 x64' },
-    { value: 'Linux', label: 'Linux' },
-    { value: 'other_linux_kernel_4', label: 'Other Linux(kernel 4.x)' },
-    { value: 'other_os', label: 'Other OS' },
-    { value: 'red_hat_atomic_7_x64', label: 'Red Hat Atomic 7.x x64' },
-    { value: 'red_hat_enterprise_linux_3', label: 'Red Hat Enterprise Linux 3.x' },
-    { value: 'red_hat_enterprise_linux_3_x64', label: 'Red Hat Enterprise Linux 3.x x64' },
-    { value: 'red_hat_enterprise_linux_4', label: 'Red Hat Enterprise Linux 4.x' },
-    { value: 'red_hat_enterprise_linux_4_x64', label: 'Red Hat Enterprise Linux 4.x x64' },
-    { value: 'red_hat_enterprise_linux_5', label: 'Red Hat Enterprise Linux 5.x' },
-    { value: 'red_hat_enterprise_linux_5_x64', label: 'Red Hat Enterprise Linux 5.x x64' },
-    { value: 'red_hat_enterprise_linux_6', label: 'Red Hat Enterprise Linux 6.x' },
-    { value: 'red_hat_enterprise_linux_6_x64', label: 'Red Hat Enterprise Linux 6.x x64' },
-    { value: 'red_hat_enterprise_linux_7_x64', label: 'Red Hat Enterprise Linux 7.x x64' },
-    { value: 'red_hat_enterprise_linux_8_x64', label: 'Red Hat Enterprise Linux 8.x x64' },
-    { value: 'red_hat_enterprise_linux_9_x64', label: 'Red Hat Enterprise Linux 9.x x64' },
-    { value: 'red_hat_enterprise_linux_coreos', label: 'Red Hat Enterprise Linux CoreOS' },
-    { value: 'suse_linux_enterprise_server_11', label: 'SUSE Linux Enterprise Server 11+' },
-    { value: 'ubuntu_bionic_beaver_lts', label: 'Ubuntu Bionic Beaver LTS+' },
-    { value: 'ubuntu_precise_pangolin_lts', label: 'Ubuntu Precise Pangolin LTS' },
-    { value: 'ubuntu_quantal_quetzal', label: 'Ubuntu Quantal Quetzal' },
-    { value: 'ubuntu_raring_ringtail', label: 'Ubuntu Raring Ringtail' },
-    { value: 'ubuntu_saucy_salamander', label: 'Ubuntu Saucy Salamander' },
-    { value: 'ubuntu_trusty_tahr_lts', label: 'Ubuntu Trusty Tahr LTS+' },
-    { value: 'windows_10', label: 'Windows 10' },
-    { value: 'windows_10_x64', label: 'Windows 10 x64' },
-    { value: 'windows_11', label: 'Windows 11' },
-    { value: 'windows_2003', label: 'Windows 2003' },
-    { value: 'windows_2003_x64', label: 'Windows 2003 x64' },
-    { value: 'windows_2008', label: 'Windows 2008' },
-    { value: 'windows_2008_r2_x64', label: 'Windows 2008 R2 x64' },
-    { value: 'windows_2012_x64', label: 'Windows 2012 x64' },
-    { value: 'windows_2012r2_x64', label: 'Windows 2012R2 x64' },
-    { value: 'windows_2016_x64', label: 'Windows 2016 x64' },
-    { value: 'windows_2019_x64', label: 'Windows 2019 x64' },
-    { value: 'windows_2022', label: 'Windows 2022' },
-    { value: 'windows_7', label: 'Windows 7' },
-    { value: 'windows_7_x64', label: 'Windows 7 x64' },
-    { value: 'windows_8', label: 'Windows 8' },
-    { value: 'windows_8_x64', label: 'Windows 8 x64' },
     { value: 'windows_xp', label: 'Windows XP' },
+    { value: 'windows_2003', label: 'Windows 2003' },
+    { value: 'windows_2008', label: 'Windows 2008' },
+    { value: 'other_linux', label: 'Linux' },
+    { value: 'rhel_5', label: 'Red Hat Enterprise Linux 5.x' },
+    { value: 'rhel_4', label: 'Red Hat Enterprise Linux 4.x' },
+    { value: 'rhel_3', label: 'Red Hat Enterprise Linux 3.x' },
+    { value: 'windows_2003x64', label: 'Windows 2003 x64' },
+    { value: 'windows_7', label: 'Windows 7' },
+    { value: 'windows_7x64', label: 'Windows 7 x64' },
+    { value: 'rhel_5x64', label: 'Red Hat Enterprise Linux 5.x x64' },
+    { value: 'rhel_4x64', label: 'Red Hat Enterprise Linux 4.x x64' },
+    { value: 'rhel_3x64', label: 'Red Hat Enterprise Linux 3.x x64' },
+    { value: 'windows_2008x64', label: 'Windows 2008 x64' },
+    { value: 'windows_2008R2x64', label: 'Windows 2008 R2 x64' },
+    { value: 'rhel_6', label: 'Red Hat Enterprise Linux 6.x' },
+    { value: 'rhel_6x64', label: 'Red Hat Enterprise Linux 6.x x64' },
+    { value: 'debian_7', label: 'Debian 7+' },
+    { value: 'windows_8', label: 'Windows 8' },
+    { value: 'debian_9', label: 'Debian 9+' },
+    { value: 'windows_8x64', label: 'Windows 8 x64' },
+    { value: 'windows_2012x64', label: 'Windows 2012 x64' },
+    { value: 'rhel_7x64', label: 'Red Hat Enterprise Linux 7.x x64' },
+    { value: 'windows_2012R2x64', label: 'Windows 2012R2 x64' },
+    { value: 'windows_10', label: 'Windows 10' },
+    { value: 'windows_10x64', label: 'Windows 10 x64' },
+    { value: 'rhel_atomic7x64', label: 'Red Hat Atomic 7.x x64' },
+    { value: 'windows_2016x64', label: 'Windows 2016 x64' },
+    { value: 'rhel_8x64', label: 'Red Hat Enterprise Linux 8.x x64' },
+    { value: 'windows_2019x64', label: 'Windows 2019 x64' },
+    { value: 'other_linux_kernel_4', label: 'Other Linux (kernel 4.x)' },
+    { value: 'rhel_9x64', label: 'Red Hat Enterprise Linux 9.x x64' },
+    { value: 'rhcos_x64', label: 'Red Hat Enterprise Linux CoreOS' },
+    { value: 'windows_11', label: 'Windows 11' },
+    { value: 'windows_2022', label: 'Windows 2022' },
+    { value: 'sles_11', label: 'SUSE Linux Enterprise Server 11+' },
+    { value: 'other_s390x', label: 'Other OS' },
+    { value: 'other_linux_s390x', label: 'Linux' },
+    { value: 'rhel_7_s390x', label: 'Red Hat Enterprise Linux 7.x' },
+    { value: 'sles_12_s390x', label: 'SUSE Linux Enterprise Server 12' },
+    { value: 'ubuntu_16_04_s390x', label: 'Ubuntu Xenial Xerus LTS+' },
+    { value: 'freebsd', label: 'FreeBSD 9.2' },
+    { value: 'freebsdx64', label: 'FreeBSD 9.2 x64' },
+    { value: 'ubuntu_12_04', label: 'Ubuntu Precise Pangolin LTS' },
+    { value: 'ubuntu_12_10', label: 'Ubuntu Quantal Quetzal' },
+    { value: 'ubuntu_13_04', label: 'Ubuntu Raring Ringtails' },
+    { value: 'ubuntu_13_10', label: 'Ubuntu Saucy Salamander' },
+    { value: 'ubuntu_14_04', label: 'Ubuntu Trusty Tahr LTS+' },
+    { value: 'other_ppc64', label: 'Other OS' },
+    { value: 'ubuntu_18_04', label: 'Ubuntu Bionic Beaver LTS+' },
+    { value: 'other_linux_ppc64', label: 'Linux' },
+    { value: 'rhel_6_ppc64', label: 'Red Hat Enterprise Linux up to 6.8' },
+    { value: 'sles_11_ppc64', label: 'SUSE Linux Enterprise Server 11' },
+    { value: 'ubuntu_14_04_ppc64', label: 'Ubuntu Trusty Tahr LTS+' },
+    { value: 'rhel_7_ppc64', label: 'Red Hat Enterprise Linux 7.x' },
+    { value: 'rhel_6_9_plus_ppc64', label: 'Red Hat Enterprise Linux 6.9+' },
+    { value: 'rhel_8_ppc64', label: 'Red Hat Enterprise Linux 8.x' },
+    { value: 'rhel_9_ppc64', label: 'Red Hat Enterprise Linux 9.x' },
+    { value: 'other', label: 'Other OS   ' },
   ];
 
   // 칩셋 옵션
@@ -180,93 +253,137 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
 
   useEffect(() => {
     if (!isOpen) {
-      resetForm(); // 모달이 닫힐 때 상태를 초기화
-      setSelectedModalTab("common"); // 탭상태 초기화
+      resetForm(); // 모달이 닫힐 때만 초기화
+      setSelectedModalTab('common'); // 탭 상태 초기화
     }
   }, [isOpen]);
+  
 
+  // 초기값 설정
   useEffect(() => {
     if (editMode && vm) {
-      setState((prev) => ({
-        ...prev,
-        formInfo: {
-          id: vm?.id || '',
-          name: vm?.name || '',
-          comment: vm?.comment || '',
-          description: vm?.description || '',
-          stateless: vm?.stateless || false,
-          startPaused: vm?.startPaused || false,
-          deleteProtected: vm?.deleteProtected || false,
-          diskVoList: vm?.diskVoList || [],
-          nicVoList: vm?.nicVoList || [],
-        },
-        formSystem: {
-          memorySize: vm?.memorySize / (1024 * 1024),
-          maxMemory: vm?.memoryMax / (1024 * 1024),
-          allocatedMemory: vm?.memoryActual / (1024 * 1024),
-          cpuTopologyCnt: vm?.cpuTopologyCnt || 1,
-          cpuTopologyCore: vm?.cpuTopologyCore || 1,
-          cpuTopologySocket: vm?.cpuTopologySocket || 1,
-          cpuTopologyThread: vm?.cpuTopologyThread || 1,
-        },
-        formCloudInit: {
-          cloudInit: vm?.cloudInit || false,
-          script: vm?.setScript || '',
-        },
-        formHost: {
-          isSpecificHostSelected: false,
-          hostVoList: vm?.hostVoList || [],
-          migrationMode: vm?.migrationMode || 'migratable',
-          migrationEncryption: vm?.migrationEncrypt || 'inherit',
-        },
-        formHa: {
-          ha: vm?.ha || false,
-          priority: vm?.priority || 1,
-          domainVoId: vm?.domainVoId || '',
-        },
-        formBoot: {
-          firstDevice: vm?.firstDevice || 'hd',
-          secDevice: vm?.secDevice || '',
-          bootingMenu: vm?.bootingMenu || false,
-          cdConn: '',
-        },        
-        clusterVoId: vm?.clusterVo?.id || '',
-        templateVoId: vm?.templateVo?.id || '',
-        osSystem: vm?.osSystem || 'other_os',
-        chipsetOption: vm?.chipsetFirmwareType || 'Q35_OVMF',
-        optimizeOption: vm?.optimizeOption || 'SERVER',
-      }));
+      setFormInfoState({
+        id:vm?.id || '',
+        name: vm?.name || '',
+        comment: vm?.comment || '',
+        description: vm?.description || '',
+        stateless: vm?.stateless || false,
+        startPaused: vm?.startPaused || false,
+        deleteProtected: vm?.deleteProtected || false,
+        diskVoList: vm?.diskImageVo || [],
+        nicVoList: vm?.nicVos || [],
+      });
+      setFormSystemState({
+        memorySize: vm?.memorySize / (1024 * 1024), // 입력된 값는 mb, 보낼 단위는 byte
+        memoryMax: vm?.memoryMax / (1024 * 1024),
+        memoryActual: vm?.memoryActual / (1024 * 1024),
+        cpuTopologyCnt: vm?.cpuTopologyCnt || 1,
+        cpuTopologyCore: vm?.cpuTopologyCore || 1,
+        cpuTopologySocket: vm?.cpuTopologySocket || 1,
+        cpuTopologyThread: vm?.cpuTopologyThread || 1
+      });
+      setFormCloudInitState({
+        cloudInit: vm?.cloudInit || false,
+        script: vm?.setScript || ''
+      });
+      setFormHostState({
+        hostInCluster: vm?.hostInCluster || true,
+        hostVos: vm?.hostVos || [],
+        migrationMode: vm?.migrationMode || 'migratable',
+        migrationEncrypt: vm?.migrationEncrypt || 'INHERIT',
+        // migrationPolicy: vm?.migrationPolicy || 'minimal_downtime',
+      });
+      setFormHaState({
+        ha: vm?.ha || false,
+        priority: vm?.priority || 1,
+        domainVoId: vm?.storageDomainVo?.id || '',
+      });
+      setFormBootState({
+        firstDevice: vm?.firstDevice || 'hd',
+        secDevice: vm?.secDevice || '',
+        bootingMenu: vm?.bootingMenu || false
+      });
+      setClusterVoId(vm?.clusterVo?.id || ''); 
+      setTemplateVoId(vm?.templateVo?.id || '');
+      setOsSystem(vm?.osSystem || 'other_os');
+      setChipsetOption(vm?.chipsetFirmwareType || 'Q35_OVMF');
+      setOptimizeOption(vm?.optimizeOption || 'SERVER');
+    } else if (!editMode && !isClustersLoading) {
+      resetForm();
     }
   }, [editMode, vm]);
   
-   
+  
   useEffect(() => {
     if (!editMode && clusters.length > 0) {
-      setState((prev) => ({
-        ...prev,
-        clusterVoId: clusters[0].id,
-        dataCenterId: clusters[0].dataCenterId,
-      }));
+      setClusterVoId(clusters[0].id); // 첫 번째 클러스터로 초기화
+      setDataCenterId(clusters[0]?.dataCenterVo?.id);
     }
   }, [clusters, editMode]);
   
+  
   useEffect(() => {
     if (!editMode && templates.length > 0) {
-      setState((prev) => ({
-        ...prev,
-        templateVoId: templates[0].id,
-      }));
+      setTemplateVoId(templates[0].id);
     }
   }, [templates, editMode]);
 
 
+
   const validateForm = () => {
-    const { formInfo, formSystem, clusterVoId } = state;
-    if (!formInfo.name) return '이름을 입력해주세요.';
+    if (!formInfoState.name) return '이름을 입력해주세요.';
     if (!clusterVoId) return '클러스터를 선택해주세요.';
-    if (formSystem.memorySize > 9223372036854775807) return '메모리 크기가 너무 큽니다.';
+    if (formSystemState.memorySize > '9223372036854775807') return '메모리 크기가 너무 큽니다.';
     return null;
   };
+
+  const dataToSubmit = {
+    // VmInfo
+    clusterVo: { id: clusterVoId },
+    templateVo: { id: templateVoId },
+    name: formInfoState.name,
+    description: formInfoState.description,
+    comment: formInfoState.comment,
+    stateless: formInfoState.stateless,
+    startPaused: formInfoState.startPaused,
+    deleteProtected: formInfoState.deleteProtected,
+    chipsetFirmwareType: chipsetOption,
+    optimizeOption: optimizeOption,
+  
+    // VmSystem
+    memorySize: formSystemState.memorySize * 1024 * 1024,
+    memoryMax: formSystemState.memoryMax * 1024 * 1024,
+    memoryActual: formSystemState.memoryActual * 1024 * 1024,
+    cpuTopologyCore: formSystemState.cpuTopologyCore,
+    cpuTopologySocket: formSystemState.cpuTopologySocket,
+    cpuTopologyThread: formSystemState.cpuTopologyThread,
+  
+    // VmInit
+    cloudInit: formCloudInitState.cloudInit,
+    script: formCloudInitState.script,
+    // hostName: '',
+    timeStandard: 'Asia/Seoul',
+  
+    // VmHost
+    hostInCluster: formHostState.hostInCluster,
+    hostVos: formHostState.hostVos.map((host) => ({ id: host.id })),
+    migrationMode: formHostState.migrationMode,
+    migrationEncrypt: formHostState.migrationEncrypt,
+  
+    // VmHa
+    ha: formHaState.ha,
+    priority: formHaState.priority,
+    storageDomainVo: { id: formHaState.storageDomainVo },
+  
+    // VmBoot
+    firstDevice: formBootState.firstDevice,
+    secDevice: formBootState.secDevice,
+    osSystem: osSystem,
+    connVo: { id: formBootState.cdConn },
+
+    vnicProfileVos: formInfoState.nicVoList.map((vnic) => ({ id: vnic.id }))
+  };
+  
 
   const handleFormSubmit = () => { // 디스크  연결은 id값 보내기 생성은 객체로 보내기
     const error = validateForm();
@@ -275,24 +392,11 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       return;
     }
 
-    const sizeToBytes = (data) => parseInt(data, 10) * 1024 * 1024; // MB -> Bytes 변환
-
-    const dataToSubmit = {
-      clusterVo: clusters.find((c) => c.id === state.clusterVoId) || {},
-      templateVo: templates.find((t) => t.id === state.templateVoId) || {},
-      ...state.formInfo,
-      ...state.formSystem,
-      ...state.formCloudInit,
-      ...state.formHost,
-      ...state.formHa,
-      ...state.formBoot,
-    };
-
     console.log('가상머신 데이터 확인:', dataToSubmit); 
 
     if (editMode) {
       editVM(
-        { vmId: state.formInfo.id, vmdata: dataToSubmit },
+        { vmId: vmId, vmdata: dataToSubmit },
         {
           onSuccess: () => {
             onClose();
@@ -321,6 +425,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     { id: "boot_option_tab", value: "boot_outer", label: "부트 옵션" },
   ];
 
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -367,8 +472,8 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                 <label htmlFor="cluster">클러스터</label>
                 <select
                   id="cluster"
-                  value={state.clusterVoId}
-                  onChange={(e) => setState((prev) => ({ ...prev, clusterVoId: e.target.value }))}
+                  value={clusterVoId}
+                  onChange={(e) => setClusterVoId(e.target.value) }
                 >
                   {isClustersLoading ? (
                     <option>로딩중~</option>
@@ -380,14 +485,15 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                     ))
                   )}
                 </select>
+                <span>{clusterVoId}</span>
               </div>
 
               <div>
                 <label htmlFor="template" style={{ color: 'gray' }}>템플릿</label>
                 <select
                   id="template"
-                  value={state.templateVoId}
-                  onChange={(e) => setState((prev) => ({ ...prev, templateVoId: e.target.value }))}
+                  value={templateVoId}
+                  onChange={(e) => setTemplateVoId(e.target.value) }
                   disabled={editMode} // 편집 모드일 경우 비활성화
                 >
                   {isTemplatesLoading ? (
@@ -404,69 +510,76 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
 
               <CustomSelect
                 label="운영 시스템"
-                value={state.osSystem}
-                onChange={(e) => (e.target.value)}
+                value={osSystem}
+                onChange={(e) => setOsSystem(e.target.value)}
                 options={osSystemList}
               /> 
               <CustomSelect
                 label="칩셋/펌웨어 유형"
-                value={state.chipsetOption}
-                onChange={(e) => setState((prev) => ({ ...prev, chipsetOption: e.target.value }))}
+                value={chipsetOption}
+                onChange={(e) => setChipsetOption(e.target.value)}
                 options={chipsetOptionList}
               />
               <CustomSelect
                 label="최적화 옵션"
-                value={state.optimizeOption}
-                onChange={(e) => setState((prev) => ({ ...prev, optimizeOption: e.target.value }))}
+                value={optimizeOption}
+                onChange={(e) => setOptimizeOption(e.target.value)}
                 options={optimizeOptionList}
               />
             </div>
             
-            {/* 일반 */}
+            
             {selectedModalTab === 'common' && (
               <VmCommon
                 editMode={editMode}
-                dataCenterId={state.dataCenterId}
-                formInfoState={state.formInfo}
-                setFormInfoState={(newState) => setState((prev) => ({ ...prev, formInfo: newState }))}
+                vmId={vmId}
+                clusterVoId={clusterVoId}
+                dataCenterId={dataCenterId}
+                formInfoState={formInfoState}
+                setFormInfoState={setFormInfoState}
               />
             )}
             {selectedModalTab === 'system' && (
               <VmSystem
                 editMode={editMode}
-                formSystemState={state.formSystem}
-                setFormSystemState={(newState) => setState((prev) => ({ ...prev, formSystem: newState }))}
+                vmId={vmId}
+                formSystemState={formSystemState}
+                setFormSystemState={setFormSystemState}
               />
             )}
             {selectedModalTab === 'beginning' && (
               <VmInit
                 editMode={editMode}
-                formCloudInitState={state.formCloudInit}
-                setFormCloudInitState={(newState) => setState((prev) => ({ ...prev, formCloudInit: newState }))}
+                vmId={vmId}
+                formCloudInitState={formCloudInitState}
+                setFormCloudInitState={setFormCloudInitState}
               />
             )}
             {selectedModalTab === 'host' && (
               <VmHost
                 editMode={editMode}
-                clusterVoId={state.clusterVoId}
-                formHostState={state.formHost}
-                setFormHostState={(newState) => setState((prev) => ({ ...prev, formHost: newState }))}
+                vmId={vmId}
+                clusterVoId={clusterVoId}
+                formHostState={formHostState}
+                setFormHostState={setFormHostState}
               />
             )}
             {selectedModalTab === 'ha_mode' && (
               <VmHa
                 editMode={editMode}
-                dataCenterId={state.dataCenterId}
-                formHaState={state.formHa}
-                setFormHaState={(newState) => setState((prev) => ({ ...prev, formHa: newState }))}
+                vmId={vmId}
+                dataCenterId={dataCenterId}
+                formHaState={formHaState}
+                setFormHaState={setFormHaState}
               />
             )}
             {selectedModalTab === 'boot_outer' && (
               <VmBoot
                 editMode={editMode}
-                dataCenterId={state.dataCenterId}
-                formBootState={state.formBoot}
-                setFormBootState={(newState) => setState((prev) => ({ ...prev, formBoot: newState }))}
+                vmId={vmId}
+                dataCenterId={dataCenterId}
+                formBootState={formBootState}
+                setFormBootState={setFormBootState}
               />
             )}
           </div>

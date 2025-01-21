@@ -1,9 +1,9 @@
+import { useEffect } from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCDFromDataCenter } from "../../../../../api/RQHook";
-import { useEffect } from "react";
 
-const VmBoot = ({ editMode, dataCenterId, formBootState, setFormBootState }) => {
+const VmBoot = ({ editMode, vmId, dataCenterId, formBootState, setFormBootState }) => {
   const {
     data: isos = [],
     isLoading: isIsoLoading
@@ -14,7 +14,7 @@ const VmBoot = ({ editMode, dataCenterId, formBootState, setFormBootState }) => 
     if (!editMode && isos.length > 0) {
       setFormBootState((prev) => ({
         ...prev,
-        conn: "", // 초기값을 빈 문자열로 설정
+        cdConn: "", // 초기값을 빈 문자열로 설정
       }));
     }
   }, [isos, editMode, setFormBootState]);
@@ -25,7 +25,7 @@ const VmBoot = ({ editMode, dataCenterId, formBootState, setFormBootState }) => 
     setFormBootState((prev) => ({
       ...prev,
       isCdDvdChecked: isChecked,
-      conn: isChecked ? prev.conn : "", // 체크 해제 시 선택값 초기화
+      cdConn: isChecked ? prev.conn : "", // 체크 해제 시 선택값 초기화
     }));
   };
   
@@ -46,6 +46,7 @@ const VmBoot = ({ editMode, dataCenterId, formBootState, setFormBootState }) => 
   return (
     <>
     <div className='boot_outer_content'>
+    <span>데이터센터ID: {dataCenterId}</span>
       <div className="cpu-res">
         <span style={{ fontWeight: 600 }}>부트순서:</span>
         <div className='cpu-res-box'>
@@ -95,11 +96,11 @@ const VmBoot = ({ editMode, dataCenterId, formBootState, setFormBootState }) => 
           <select
             id="cd_dvd_select"
             disabled={!formBootState.isCdDvdChecked || isos.length === 0} // 체크박스 상태와 ISO 목록 조건 추가
-            value={formBootState.conn || ""}
+            value={formBootState.cdConn || ""}
             onChange={(e) =>
               setFormBootState((prev) => ({
                 ...prev,
-                conn: e.target.value,
+                cdConn: e.target.value,
               }))
             }
           >

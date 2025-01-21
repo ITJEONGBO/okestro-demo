@@ -514,7 +514,7 @@ fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder): VmBuilder {
             MemoryPolicyBuilder()
                 .max(this@toVmSystemBuilder.memoryMax)
                 .guaranteed(this@toVmSystemBuilder.memoryActual)
-                .ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
+//                .ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
         )
         .cpu(
             CpuBuilder().topology(
@@ -637,22 +637,6 @@ fun VmVo.toVmBootBuilder(vmBuilder: VmBuilder): VmBuilder {
 }
 
 // endregion
-
-
-
-//fun VmVo.editVmBuilder(): VmBuilder {
-//    val vmBuilder = VmBuilder()
-//    this@toVmBuilder.toVmInfoBuilder(vmBuilder)
-//    this@toVmBuilder.toVmSystemBuilder(vmBuilder)
-//    this@toVmBuilder.toVmInitBuilder(vmBuilder)
-//    this@toVmBuilder.toVmHostBuilder(vmBuilder)
-////    this@toVmBuilder.toVmResourceBuilder(vmBuilder)
-//    this@toVmBuilder.toVmHaBuilder(vmBuilder)
-//    this@toVmBuilder.toVmBootBuilder(vmBuilder)
-//    log.info("vmvo: {}", this)
-//    return vmBuilder
-//}
-
 
 
 /**
