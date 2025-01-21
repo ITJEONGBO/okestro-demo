@@ -439,7 +439,7 @@ const TableColumnsInfo = {
     { header: '설명', accessor: 'description', clickable: false },
   ],
   VMS_FROM_DISK: [
-    { header: '', accessor: 'icon', clickable: false, width: '10%' },
+    { header: '', accessor: 'icon', clickable: false, width: '5%' },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
@@ -456,7 +456,7 @@ const TableColumnsInfo = {
     { header: '도메인 이름', accessor: 'name', clickable: false },
     { header: '도메인 유형', accessor: 'domainType', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '전체 공간', accessor: 'diskSize', clickable: false },
+    // { header: '전체 공간', accessor: 'diskSize', clickable: false },
     { header: '여유 공간', accessor: 'availableSize', clickable: false },
     { header: '사용된 공간', accessor: 'usedSize', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },

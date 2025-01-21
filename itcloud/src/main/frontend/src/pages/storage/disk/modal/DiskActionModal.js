@@ -6,6 +6,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { 
   useDiskById
 } from '../../../../api/RQHook';
+import { formatBytesToGBToFixedZero } from '../../../../utils/format';
 
 const FormGroup = ({ label, children }) => (
   <div className="img-input-box">
@@ -14,8 +15,14 @@ const FormGroup = ({ label, children }) => (
   </div>
 );
 
-const DiskActionModal = ({ isOpen, action, data, onClose }) => {
-
+const DiskActionModal = ({ isOpen, action, data=[], onClose }) => {
+  useEffect(() => {
+    if (data) {
+      console.log("Received data in DiskActionModal:", data);
+    } else {
+      console.log("No data provided to DiskActionModal.");
+    }
+  }, [data]);
   const handleFormSubmit = () => {
     // const error = validateForm();
     // if (error) {
@@ -77,8 +84,8 @@ const DiskActionModal = ({ isOpen, action, data, onClose }) => {
           </button>
         </div>
 
-        <div className="section-table-outer py-1">
-          <span>디스크 할당:</span>
+        <div className="section-table-outer p-0.5">
+          <span style={{fontWeight:'800'}}>디스크 할당:</span>
           <table>
             <thead>
               <tr>
@@ -90,24 +97,51 @@ const DiskActionModal = ({ isOpen, action, data, onClose }) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>he_sanlock</td>
-                <td>1 GiB</td>
-                <td>hosted_storage</td>
-                <td>
-                  <select>
-                    <option>NFS (499 GiB)</option>
-                    <option>Option 2</option>
-                  </select>
-                </td>
-                <td>
-                  <select>
-                    <option>NFS</option>
-                    <option>Option 2</option>
-                  </select>
-                </td>
-              </tr>
+              {Array.isArray(data) && data.length > 0 ? (
+                data.map((disk, index) => (
+                  <tr key={index}>
+                    <td>{disk.alias || "N/A"}</td>
+                    <td>{disk.virtualSize ? `${formatBytesToGBToFixedZero(disk.virtualSize)} GiB` : "N/A"}</td>
+                    <td>{disk.storageDomainVo.name || "N/A"}</td>
+                    <td>
+                      <select>
+                        {Array.isArray(disk.targets) ? (
+                          disk.targets.map((target, i) => (
+                            <option key={i} value={target.value || ""}>
+                              {target.label || "Unknown"}
+                            </option>
+                          ))
+                        ) : (
+                          <option value="">No targets available</option>
+                        )}
+                      </select>
+                    </td>
+                    <td>
+                      <select>
+                        {Array.isArray(disk.profiles) ? (
+                          disk.profiles.map((profile, i) => (
+                            <option key={i} value={profile.value || ""}>
+                              {profile.label || "Unknown"}
+                            </option>
+                          ))
+                        ) : (
+                          <option value="">No profiles available</option>
+                        )}
+                      </select>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    데이터가 없습니다.
+                  </td>
+                </tr>
+              )}
             </tbody>
+
+
+
           </table>
         </div>
 

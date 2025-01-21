@@ -91,22 +91,29 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
   }, [isOpen]);
 
   useEffect(() => {
-    if (editMode && vnic) {
-      setFormState({
-        id: vnic?.id || '',
-        name: vnic?.name || '',
-        description: vnic?.description || '',
-        // passthrough: vnic.passThrough !== 'DISABLED',
-        migration: vnic.migration || false, 
-        portMirroring: vnic.portMirroring || false,
-        // networkFilter: vnic?.networkFilterVo?.id || ''
-      });
-      setDataCenterVoId(vnic?.dataCenterVo?.id || '');
-      setNetworkVoId(vnic?.networkVo?.id || '');        
-    } else if (!editMode && !isDataCentersLoading) {        
-      resetForm();
+    if (isOpen && !isVnicLoading && !isDataCentersLoading && !isNetworksLoading) {
+      if (editMode && vnic) {
+        setFormState({
+          id: vnic?.id || '',
+          name: vnic?.name || '',
+          description: vnic?.description || '',
+          migration: vnic?.migration || false,
+          portMirroring: vnic?.portMirroring || false,
+        });
+        setDataCenterVoId(vnic?.dataCenterVo?.id || '');
+        setNetworkVoId(vnic?.networkVo?.id || '');
+      } else if (!editMode && datacenters.length > 0) {
+        resetForm();
+        setDataCenterVoId(datacenters[0].id);
+        if (networkId) {
+          setNetworkVoId(networkId);
+        } else if (networks.length > 0) {
+          setNetworkVoId(networks[0].id);
+        }
+      }
     }
-  }, [editMode, vnic]);
+  }, [isOpen, editMode, vnic, datacenters, networks, isVnicLoading, isDataCentersLoading, isNetworksLoading]);
+  
 
   useEffect(() => {
     if (!editMode && datacenters.length > 0) {
@@ -274,7 +281,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
             {/* 페일오버 vNIC 프로파일 */}
             <div className="vnic-new-box">
               <label htmlFor="failover_vnic_profile">페일오버 vNIC 프로파일</label>
-              <select id="failover_vnic_profile"   disabled={!formState.migration}>
+              <select id="failover_vnic_profile"   disabled={!formState.migration || !formState.passthrough} >
                 <option value="none">없음</option>
               </select>
             </div>

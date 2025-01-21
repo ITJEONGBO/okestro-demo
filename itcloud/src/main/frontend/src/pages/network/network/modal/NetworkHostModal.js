@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowsAltH, faBan, faCheck, faCrown, faDesktop, faExclamationTriangle, faFan, faPencilAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faArrowsAltH, faBan, faCheck, faCrown, faDesktop, faExclamationTriangle, faFan, faPencilAlt, faPlay, faTimes } from "@fortawesome/free-solid-svg-icons";
 import "../css/MNetwork.css";
 import { useHost, useNetworkFromCluster } from "../../../../api/RQHook";
 import NewBondingModal from "./NewBondingModal";
@@ -341,13 +341,20 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
         onDragStart={(e) => dragStart(e, net, "unassigned")}
    
       >
-        {net.name}
+        <div className="flex items-center justify-center">
+          <FontAwesomeIcon
+            icon={net.status === "UP" ? faPlay : faPlay}
+            style={{ color: net.status === "UP" ? "red" : "green",  fontSize: '0.3rem', transform: 'rotate(270deg)', marginRight:'0.3rem'}}
+          />
+          {net.name}
+        </div>
+        
+        
       </div>
     ));
   };
   
-  
-  
+
   return (
     <Modal
       isOpen={isOpen}
@@ -398,12 +405,12 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
 
             {/* Unassigned Networks */}
             <div
-  className="network_separation_right"
-  onDragOver={(e) => e.preventDefault()}
-  onDrop={() => drop(null, "unassigned")}
->
-  {renderUnassignedNetworks()}
-</div>
+              className="network_separation_right"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => drop(null, "unassigned")}
+            >
+              {renderUnassignedNetworks()}
+            </div>
 
 
           </div>

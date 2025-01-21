@@ -46,7 +46,7 @@ const DiskDupl = ({ disks = [], columns = [], type = 'disk' }) => {
                   {d?.connectVm?.name || d?.connectTemplate?.name}
                 </TableRowClick>
               ),
-              virtualSize: formatBytesToGBToFixedZero(d?.virtualSize),
+              virtualSize: formatBytesToGBToFixedZero(d?.virtualSize) + " GiB",
               actualSize: formatBytesToGBToFixedZero(d?.actualSize),
             };
           } else if (type === 'vm') {

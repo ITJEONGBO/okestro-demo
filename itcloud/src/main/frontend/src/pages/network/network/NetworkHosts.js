@@ -47,12 +47,14 @@ const NetworkHosts = ({ networkId }) => {
 
   const { data: nics = [] } = useNetworkInterfaceFromHost(selectedHostId, (e) => ({ ...e,}));
   useEffect(() => {
-    if (nics.length > 0) {
-      console.log("NIC 데이터:", nics);
-    } else {
-      console.log("NIC 데이터가 없습니다.");
+    if (isModalOpen) {
+      if (nics.length > 0) {
+        console.log("NIC 데이터:", nics);
+      } else {
+        console.log("NIC 데이터가 없습니다.");
+      }
     }
-  }, [nics]);
+  }, [nics, isModalOpen]);
 
   const renderModals = () => {
     if (isModalOpen) {

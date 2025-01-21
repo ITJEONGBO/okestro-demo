@@ -8,7 +8,10 @@ import TablesOuter from '../../../components/table/TablesOuter';
 const DiskDomains = ({ diskId }) => {
   const {
     data: domains = [],
-  } = useAllStorageDomainFromDisk(diskId, (e) => ({ ...e }));
+  } = useAllStorageDomainFromDisk(diskId, (e) => ({ 
+    ...e,
+    status: e.status === 'ACTIVE' ? '활성화' : '비활성화',
+   }));
 
   const sizeCheck = (size) => {
     if (size === 0) {

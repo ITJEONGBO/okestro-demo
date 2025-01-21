@@ -8,7 +8,7 @@ const DiskGeneral = ({ diskId }) => {
     { label: "별칭", value: disk?.alias },
     { label: "ID", value: disk?.id },
     { label: "설명", value: disk?.description },
-    { label: "디스크 프로파일", value: disk?.diskProfileVo?.name },
+    { label: "디스크 프로파일", value: disk?.storageDomainVo?.name },
     { label: "가상 크기", value: formatBytesToGBToFixedZero(disk?.virtualSize) + ' GB' },
     { label: "실제 크기", value: formatBytesToGBToFixedZero(disk?.actualSize) + ' GB' },
   ];

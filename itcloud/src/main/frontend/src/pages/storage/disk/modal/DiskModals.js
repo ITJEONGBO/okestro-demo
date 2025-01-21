@@ -3,6 +3,7 @@ import DiskModal from "./DiskModal";
 import DiskDeleteModal from "./DiskDeleteModal";
 import DiskUploadModal from "./DiskUploadModal";
 import DiskActionModal from "./DiskActionModal";
+import '../css/MDisk.css'
 
 const DiskModals = ({ activeModal, disk, selectedDisks = [], vmId, onClose }) => {
   const modals = {

@@ -164,19 +164,19 @@ const HostNics = ({ hostId }) => {
                 <div className="host-network-hiddenbox flex">
                   <div className="h-network-change-table">
                   <button
-      onClick={() => switchTable(index, "NETWORK_FROM_HOST")}
-      className={`h-icon-btn ${
-        activeButton[index] === "NETWORK_FROM_HOST"
-          ? "bg-blue-500 text-white"
-          : "bg-gray-200"
-      }`}
-    >
-      <FontAwesomeIcon
-        icon={faCrown}
-        fixedWidth
-        style={{ fontSize: "0.3rem" }}
-      />
-    </button>
+                    onClick={() => switchTable(index, "NETWORK_FROM_HOST")}
+                    className={`h-icon-btn ${
+                      activeButton[index] === "NETWORK_FROM_HOST"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    <FontAwesomeIcon
+                      icon={faCrown}
+                      fixedWidth
+                      style={{ fontSize: "0.3rem" }}
+                    />
+                  </button>
 
 
                     {data.bondingVo?.slaves && data.bondingVo.slaves.length > 0 && (

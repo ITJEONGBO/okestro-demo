@@ -37,7 +37,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
   });
   const [dataCenterVoId, setDataCenterVoId] = useState(dcId || '');
   const [clusterVoList, setClusterVoList] = useState([]);
-  
+  const [dnsEnabled, setDnsEnabled] = useState(false);
   const resetForm = () => {
     setFormState({
       id: '',
@@ -221,14 +221,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                 autoFocus
                 onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
               />
-              {/* <FontAwesomeIcon
-                icon={faInfoCircle}
-                style={{ color: 'rgb(83, 163, 255)', marginLeft: '5px' }}
-                data-tooltip-id="network-name-tooltip"
-              />
-              <Tooltip id="network-name-tooltip" className="icon_tooltip" place="top" effect="solid" >
-                네트워크 이름에 공백이 있거나 15자를 초과하는 경우에는 호스트에서 UUID로 대체합니다.
-              </Tooltip> */}
+    
             </FormGroup>
           
             <FormGroup label="설명">
@@ -348,25 +341,46 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
 
          
             
-            {/* <FormGroup>
-              <input 
-                type="checkbox" 
-                id="dns_settings" 
-                name="dns_settings" 
-              />
-              <label style={{ 'font-size': "13px" }}>DNS 설정</label>
-              
-              <label style={{ 'font-size': "13px" }}>DNS서버</label>
-              <input 
-                type="text" 
-                id="dns_server" 
-                disabled 
-              />
-              <div className='plusbtns' style={{ 'font-size': "13px", height: '32px' }}>
-                <button class="border-r border-gray-500">+</button>
-                <button>-</button>
+            <FormGroup>
+              <div className="network-checkbox-only">
+                <input 
+                  type="checkbox" 
+                  id="dns_settings" 
+                  name="dns_settings" 
+                  checked={dnsEnabled}
+                  onChange={(e) => setDnsEnabled(e.target.checked)} 
+                />
+                <label style={{fontSize: "0.32rem" }}>DNS 설정</label>
               </div>
-            </FormGroup> */}
+            </FormGroup>
+
+            <div style={{fontSize: "0.32rem",padding:'0 1.4em',fontWeight:'800' }}>DNS 서버</div>
+            <FormGroup>
+              <div className='network-form-group p-0'>
+                  <input 
+                    type="text" 
+                    id="dns_server" 
+                    disabled={!dnsEnabled} 
+                  />
+                <div className='plusbtns' style={{ 'font-size': "13px", height: '32px' }}>
+                  <button 
+                   type="button"
+                   className="border-r border-gray-500"
+                   onClick={() => console.log("Add DNS Server")}
+                   disabled={!dnsEnabled} // 버튼도 비활성화
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => console.log("Remove DNS Server")}
+                    disabled={!dnsEnabled} 
+                  >
+                    -
+                  </button>
+                </div>
+              </div>
+            </FormGroup>
             
             {!editMode &&
               <div className="network-new-cluster-form">
