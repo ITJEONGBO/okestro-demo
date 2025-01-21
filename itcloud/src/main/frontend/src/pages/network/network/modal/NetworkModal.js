@@ -348,7 +348,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
 
          
             
-           <FormGroup>
+            {/* <FormGroup>
               <input 
                 type="checkbox" 
                 id="dns_settings" 
@@ -362,8 +362,6 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                 id="dns_server" 
                 disabled 
               />
-               </FormGroup> 
-                {/*
               <div className='plusbtns' style={{ 'font-size': "13px", height: '32px' }}>
                 <button class="border-r border-gray-500">+</button>
                 <button>-</button>
