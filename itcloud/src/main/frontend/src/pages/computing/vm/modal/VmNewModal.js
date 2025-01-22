@@ -21,19 +21,8 @@ import VmInit from './vmCreate/VmInit';
 import VmHost from './vmCreate/VmHost';
 import VmHa from './vmCreate/VmHa';
 import VmBoot from './vmCreate/VmBoot';
+import CustomSelect from '../../../../utils/CustomSelect';
 
-const CustomSelect = ({ label, value, onChange, options }) => (
-  <div>
-    <label>{label}</label>
-    <select value={value} onChange={onChange}>
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
-  </div>
-);
 
 const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const { mutate: addVM } = useAddVm();
@@ -104,6 +93,10 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const [osSystem, setOsSystem] = useState('other_linux'); // 운영 시스템
   const [chipsetOption, setChipsetOption] = useState('Q35_OVMF'); // 칩셋
   const [optimizeOption, setOptimizeOption] = useState('SERVER'); // 최적화옵션
+
+  const [nicState, setNicState] = useState([
+    { id: '', name: 'nic1', vnicProfileVo: { id: '' } },
+  ]);
   
   const resetForm = () => {
     setFormInfoState({
@@ -155,6 +148,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     setOsSystem('other_linux');
     setChipsetOption('Q35_OVMF');
     setOptimizeOption('SERVER');
+    setNicState([{ id: '', name: 'nic1', vnicProfileVo: { id: '' } }]);
   };  
 
 
@@ -193,7 +187,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     isLoading: isHostsLoading
   } = useHostFromCluster(clusterVoId, (e) => ({...e}));
 
-  
   const {
     data: isos = [],
     isLoading: isIsoLoading,
@@ -212,65 +205,65 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   
   // 운영 시스템
   const osSystemList = [
-    { value: 'windows_xp', label: 'Windows XP' },
-    { value: 'windows_2003', label: 'Windows 2003' },
-    { value: 'windows_2008', label: 'Windows 2008' },
-    { value: 'other_linux', label: 'Linux' },
-    { value: 'rhel_5', label: 'Red Hat Enterprise Linux 5.x' },
-    { value: 'rhel_4', label: 'Red Hat Enterprise Linux 4.x' },
-    { value: 'rhel_3', label: 'Red Hat Enterprise Linux 3.x' },
-    { value: 'windows_2003x64', label: 'Windows 2003 x64' },
-    { value: 'windows_7', label: 'Windows 7' },
-    { value: 'windows_7x64', label: 'Windows 7 x64' },
-    { value: 'rhel_5x64', label: 'Red Hat Enterprise Linux 5.x x64' },
-    { value: 'rhel_4x64', label: 'Red Hat Enterprise Linux 4.x x64' },
-    { value: 'rhel_3x64', label: 'Red Hat Enterprise Linux 3.x x64' },
-    { value: 'windows_2008x64', label: 'Windows 2008 x64' },
-    { value: 'windows_2008R2x64', label: 'Windows 2008 R2 x64' },
-    { value: 'rhel_6', label: 'Red Hat Enterprise Linux 6.x' },
-    { value: 'rhel_6x64', label: 'Red Hat Enterprise Linux 6.x x64' },
     { value: 'debian_7', label: 'Debian 7+' },
-    { value: 'windows_8', label: 'Windows 8' },
-    { value: 'debian_9', label: 'Debian 9+' },
-    { value: 'windows_8x64', label: 'Windows 8 x64' },
-    { value: 'windows_2012x64', label: 'Windows 2012 x64' },
-    { value: 'rhel_7x64', label: 'Red Hat Enterprise Linux 7.x x64' },
-    { value: 'windows_2012R2x64', label: 'Windows 2012R2 x64' },
-    { value: 'windows_10', label: 'Windows 10' },
-    { value: 'windows_10x64', label: 'Windows 10 x64' },
-    { value: 'rhel_atomic7x64', label: 'Red Hat Atomic 7.x x64' },
-    { value: 'windows_2016x64', label: 'Windows 2016 x64' },
-    { value: 'rhel_8x64', label: 'Red Hat Enterprise Linux 8.x x64' },
-    { value: 'windows_2019x64', label: 'Windows 2019 x64' },
-    { value: 'other_linux_kernel_4', label: 'Other Linux (kernel 4.x)' },
-    { value: 'rhel_9x64', label: 'Red Hat Enterprise Linux 9.x x64' },
-    { value: 'rhcos_x64', label: 'Red Hat Enterprise Linux CoreOS' },
-    { value: 'windows_11', label: 'Windows 11' },
-    { value: 'windows_2022', label: 'Windows 2022' },
-    { value: 'sles_11', label: 'SUSE Linux Enterprise Server 11+' },
-    { value: 'other_s390x', label: 'Other OS' },
-    { value: 'other_linux_s390x', label: 'Linux' },
-    { value: 'rhel_7_s390x', label: 'Red Hat Enterprise Linux 7.x' },
-    { value: 'sles_12_s390x', label: 'SUSE Linux Enterprise Server 12' },
-    { value: 'ubuntu_16_04_s390x', label: 'Ubuntu Xenial Xerus LTS+' },
+    { value: 'debian_9', label: 'Debian 9+' },    
     { value: 'freebsd', label: 'FreeBSD 9.2' },
     { value: 'freebsdx64', label: 'FreeBSD 9.2 x64' },
+    { value: 'other_linux', label: 'Linux' },  
+    // { value: 'other_linux_s390x', label: 'Linux' },
+    // { value: 'other_linux_ppc64', label: 'Linux' },
+    { value: 'other', label: 'Other OS' },
+    // { value: 'other_s390x', label: 'Other OS' },
+    // { value: 'other_ppc64', label: 'Other OS' },
+    { value: 'other_linux_kernel_4', label: 'Other Linux (kernel 4.x)' },
+    { value: 'windows_xp', label: 'Windows XP' },
+    { value: 'windows_2003', label: 'Windows 2003' },
+    { value: 'windows_2003x64', label: 'Windows 2003 x64' },
+    { value: 'windows_2008x64', label: 'Windows 2008 x64' },
+    { value: 'windows_2008R2x64', label: 'Windows 2008 R2 x64' },
+    { value: 'windows_2008', label: 'Windows 2008' },
+    { value: 'windows_2012x64', label: 'Windows 2012 x64' },
+    { value: 'windows_2012R2x64', label: 'Windows 2012R2 x64' },
+    { value: 'windows_2016x64', label: 'Windows 2016 x64' },
+    { value: 'windows_2019x64', label: 'Windows 2019 x64' },
+    { value: 'windows_2022', label: 'Windows 2022' },
+    { value: 'windows_7', label: 'Windows 7' },
+    { value: 'windows_7x64', label: 'Windows 7 x64' },
+    { value: 'windows_8', label: 'Windows 8' },
+    { value: 'windows_8x64', label: 'Windows 8 x64' },
+    { value: 'windows_10', label: 'Windows 10' },
+    { value: 'windows_10x64', label: 'Windows 10 x64' },
+    { value: 'windows_11', label: 'Windows 11' },
+    { value: 'rhel_atomic7x64', label: 'Red Hat Atomic 7.x x64' },
+    { value: 'rhel_3', label: 'Red Hat Enterprise Linux 3.x' },
+    { value: 'rhel_3x64', label: 'Red Hat Enterprise Linux 3.x x64' },
+    { value: 'rhel_4', label: 'Red Hat Enterprise Linux 4.x' },
+    { value: 'rhel_4x64', label: 'Red Hat Enterprise Linux 4.x x64' },
+    { value: 'rhel_5', label: 'Red Hat Enterprise Linux 5.x' },
+    { value: 'rhel_5x64', label: 'Red Hat Enterprise Linux 5.x x64' },
+    { value: 'rhel_6', label: 'Red Hat Enterprise Linux 6.x' },
+    { value: 'rhel_6x64', label: 'Red Hat Enterprise Linux 6.x x64' },
+    { value: 'rhel_6_ppc64', label: 'Red Hat Enterprise Linux up to 6.8' },
+    { value: 'rhel_6_9_plus_ppc64', label: 'Red Hat Enterprise Linux 6.9+' },
+    { value: 'rhel_7_s390x', label: 'Red Hat Enterprise Linux 7.x' },
+    { value: 'rhel_7x64', label: 'Red Hat Enterprise Linux 7.x x64' },
+    { value: 'rhel_7_ppc64', label: 'Red Hat Enterprise Linux 7.x' },
+    { value: 'rhel_8x64', label: 'Red Hat Enterprise Linux 8.x x64' },
+    { value: 'rhel_8_ppc64', label: 'Red Hat Enterprise Linux 8.x' },
+    { value: 'rhel_9x64', label: 'Red Hat Enterprise Linux 9.x x64' },
+    { value: 'rhel_9_ppc64', label: 'Red Hat Enterprise Linux 9.x' },
+    { value: 'rhcos_x64', label: 'Red Hat Enterprise Linux CoreOS' },
+    { value: 'sles_11', label: 'SUSE Linux Enterprise Server 11+' },
+    { value: 'sles_11_ppc64', label: 'SUSE Linux Enterprise Server 11' },
+    { value: 'sles_12_s390x', label: 'SUSE Linux Enterprise Server 12' },
     { value: 'ubuntu_12_04', label: 'Ubuntu Precise Pangolin LTS' },
     { value: 'ubuntu_12_10', label: 'Ubuntu Quantal Quetzal' },
     { value: 'ubuntu_13_04', label: 'Ubuntu Raring Ringtails' },
     { value: 'ubuntu_13_10', label: 'Ubuntu Saucy Salamander' },
     { value: 'ubuntu_14_04', label: 'Ubuntu Trusty Tahr LTS+' },
-    { value: 'other_ppc64', label: 'Other OS' },
-    { value: 'ubuntu_18_04', label: 'Ubuntu Bionic Beaver LTS+' },
-    { value: 'other_linux_ppc64', label: 'Linux' },
-    { value: 'rhel_6_ppc64', label: 'Red Hat Enterprise Linux up to 6.8' },
-    { value: 'sles_11_ppc64', label: 'SUSE Linux Enterprise Server 11' },
     { value: 'ubuntu_14_04_ppc64', label: 'Ubuntu Trusty Tahr LTS+' },
-    { value: 'rhel_7_ppc64', label: 'Red Hat Enterprise Linux 7.x' },
-    { value: 'rhel_6_9_plus_ppc64', label: 'Red Hat Enterprise Linux 6.9+' },
-    { value: 'rhel_8_ppc64', label: 'Red Hat Enterprise Linux 8.x' },
-    { value: 'rhel_9_ppc64', label: 'Red Hat Enterprise Linux 9.x' },
-    { value: 'other', label: 'Other OS   ' },
+    { value: 'ubuntu_16_04_s390x', label: 'Ubuntu Xenial Xerus LTS+' },
+    { value: 'ubuntu_18_04', label: 'Ubuntu Bionic Beaver LTS+' },
   ];
 
   // 칩셋 옵션
@@ -354,8 +347,8 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   }, [editMode, vm]);
   
   
+  // 클러스터 변경에 따른 결과
   useEffect(() => {
-    // 클러스터가 선택되면 datacenterId와 datacenterName을 설정
     if (clusterVoId) {
       const selectedCluster = clusters.find((c) => c.id === clusterVoId);
       if (selectedCluster) {
@@ -365,6 +358,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     }
   }, [clusterVoId, clusters]);
   
+  // 초기화 작업
   useEffect(() => {
     if (!editMode && clusters.length > 0) {
       const firstCluster = clusters[0];
@@ -373,13 +367,12 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       setDataCenterName(firstCluster.dataCenterVo?.name || '');
     }
   }, [isOpen, clusters, editMode]);
-  
-  
+    
   useEffect(() => {
     if (!editMode && templates.length > 0) {
       setTemplateVoId(templates[0].id);
     }
-  }, [templates, editMode]);
+  }, [isOpen, templates, editMode]);
 
 
   const dataToSubmit = {
@@ -528,7 +521,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                     ))
                   )}
                 </select>
-
                 <span>DC:{dataCenterName}</span>
               </div>
 
@@ -579,9 +571,10 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                 vmId={vmId}
                 dataCenterId={dataCenterId}
                 nics={nics}
-                disks={disks}
                 formInfoState={formInfoState}
                 setFormInfoState={setFormInfoState}
+                nicState={nicState} // Pass nicState to VmCommon
+                setNicState={setNicState} // Pass setNicState to VmCommon
               />
             )}
             {selectedModalTab === 'system' && (

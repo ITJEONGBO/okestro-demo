@@ -15,16 +15,10 @@ const DivInput = ({ label, id, value, onChange }) => (
   </div>
 );
 
-const VmCommon = ({ editMode, vmId, dataCenterId, nics, disks, formInfoState, setFormInfoState }) => {
+const VmCommon = ({ editMode, vmId, dataCenterId, nics, disks, formInfoState, setFormInfoState, nicState, setNicState }) => {
   const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false);
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
 
-  // NIC 상태 초기화
-  const [nicState, setNicState] = useState([
-    { id: '', name: 'nic1', vnicProfileVo: { id: '' } }, // 초기 nic1
-  ]);
-
-  // NIC 변경 처리
   const handleNicChange = (index, value) => {
     const updatedNics = [...nicState];
     updatedNics[index] = {
@@ -33,28 +27,27 @@ const VmCommon = ({ editMode, vmId, dataCenterId, nics, disks, formInfoState, se
     };
     setNicState(updatedNics);
 
-    // 부모 상태 업데이트
     setFormInfoState((prev) => ({
       ...prev,
-      nicVoList: updatedNics.filter((nic) => nic.vnicProfileVo.id), // 선택된 NIC만 포함
+      nicVoList: updatedNics.filter((nic) => nic.vnicProfileVo.id),
     }));
   };
 
-  // NIC 추가
-  const handleAddNic = () => {
+  const handleAddNic = (index) => {
+    const selectedNic = nicState[index];
+    if (!selectedNic.vnicProfileVo.id) return; // Don't add if no value selected
+
     const newNicNumber = nicState.length + 1;
     setNicState([
       ...nicState,
-      { id: '', name: `nic${newNicNumber}`, vnicProfileVo: { id: '' } }, // 새 NIC 추가
+      { id: '', name: `nic${newNicNumber}`, vnicProfileVo: { id: '' } },
     ]);
   };
 
-  // NIC 제거
   const handleRemoveNic = (index) => {
     const updatedNics = nicState.filter((_, i) => i !== index);
     setNicState(updatedNics);
 
-    // 부모 상태 업데이트
     setFormInfoState((prev) => ({
       ...prev,
       nicVoList: updatedNics.filter((nic) => nic.vnicProfileVo.id),
@@ -140,36 +133,45 @@ const VmCommon = ({ editMode, vmId, dataCenterId, nics, disks, formInfoState, se
           <div
             key={index}
             className="edit_fourth_content_row"
-            style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '10px',
+            }}
           >
-            <div className="edit_fourth_content_select" style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-              <label htmlFor={`network_adapter_${index}`} style={{ marginRight: '10px', width: '100px' }}>
-                {nic.name}
-              </label>
-              <select
-                id={`network_adapter_${index}`}
-                style={{ flex: 1 }}
-                value={nic.vnicProfileVo?.id || ''}
-                onChange={(e) => handleNicChange(index, e.target.value)}
+            <label style={{ marginRight: '10px', width: '100px' }}>
+              {nic.name}
+            </label>
+            <select
+              style={{ flex: 1 }}
+              value={nic.vnicProfileVo.id}
+              onChange={(e) => handleNicChange(index, e.target.value)}
+            >
+              <option value="">항목을 선택하십시오...</option>
+              {nics.map((profile) => (
+                <option key={profile.id} value={profile.id}>
+                  {profile.name} / {profile.networkVo?.name || ''}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => handleAddNic(index)}
+              disabled={!nic.vnicProfileVo.id} // Disable if no value selected
+              style={{ marginLeft: '10px' }}
+            >
+              +
+            </button>
+            {nicState.length > 1 && (
+              <button
+                onClick={() => handleRemoveNic(index)}
+                style={{ marginLeft: '5px' }}
               >
-                <option value="">항목을 선택하십시오...</option>
-                {nics.map((profile) => (
-                  <option key={profile.id} value={profile.id}>
-                    {profile.name} / {profile.networkVo?.name || ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div style={{ display: 'flex', marginLeft: '10px' }}>
-              {index === nicState.length - 1 && !!nic.vnicProfileVo.id && (
-                <button onClick={handleAddNic} style={{ marginRight: '5px' }}>+</button>
-              )}
-              {nicState.length > 1 && <button onClick={() => handleRemoveNic(index)}>-</button>}
-            </div>
+                -
+              </button>
+            )}
           </div>
         ))}
       </div>
-
     </>
   );
 };

@@ -1,35 +1,25 @@
 import React, { useEffect } from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import CustomSelect from "../../../../../utils/CustomSelect";
 
 const VmBoot = ({ editMode, isos, formBootState, setFormBootState }) => {
+
   useEffect(() => {
-    // editMode에서만 isCdDvdChecked를 설정
-    if (editMode && formBootState.cdConn && !formBootState.isCdDvdChecked) {
+    // Keep `isCdDvdChecked` consistent with `cdConn`
+    if (formBootState.cdConn && !formBootState.isCdDvdChecked) {
       setFormBootState((prev) => ({
         ...prev,
         isCdDvdChecked: true,
       }));
-    }
-
-    // 새로 생성 모드에서만 초기화
-    if (!editMode && !formBootState.cdConn) {
+    } else if (!formBootState.cdConn && formBootState.isCdDvdChecked) {
       setFormBootState((prev) => ({
         ...prev,
         isCdDvdChecked: false,
-        cdConn: "",
       }));
     }
-  }, [editMode]);
+  }, [formBootState.cdConn]);
 
-  const handleCdDvdCheckboxChange = (e) => {
-    const isChecked = e.target.checked;
-    setFormBootState((prev) => ({
-      ...prev,
-      isCdDvdChecked: isChecked,
-      cdConn: isChecked ? prev.cdConn : "", // 체크 해제 시 선택값 초기화
-    }));
-  };
 
   const firstDeviceOptionList = [
     { value: "hd", label: "하드 디스크" },
@@ -47,45 +37,31 @@ const VmBoot = ({ editMode, isos, formBootState, setFormBootState }) => {
     <div className="boot_outer_content">
       <div className="cpu-res">
         <span style={{ fontWeight: 600 }}>부트순서:</span>
-        <div className="cpu-res-box">
-          <span>첫 번째 장치</span>
-          <select
-            id="first_boot_device"
-            value={formBootState.firstDevice}
-            onChange={(e) =>
-              setFormBootState((prev) => ({
-                ...prev,
-                firstDevice: e.target.value,
-              }))
-            }
-          >
-            {firstDeviceOptionList.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
 
-        <div className="cpu-res-box">
-          <span>두 번째 장치</span>
-          <select
-            id="second_boot_device"
-            value={formBootState.secDevice}
+        <CustomSelect
+          className="cpu-res-box"
+          label="첫 번째 장치"
+          value={formBootState.firstDevice}
+          onChange={(e) =>
+            setFormBootState((prev) => ({
+              ...prev,
+              firstDevice: e.target.value,
+            }))
+          }
+          options={firstDeviceOptionList}
+        /> 
+        <CustomSelect
+          className="cpu-res-box"
+          label="두 번째 장치"
+          value={formBootState.secDevice}
             onChange={(e) =>
               setFormBootState((prev) => ({
                 ...prev,
                 secDevice: e.target.value,
               }))
             }
-          >
-            {secDeviceOptionList.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+          options={secDeviceOptionList}
+        /> 
       </div>
 
       <div className="boot-checkboxs">
@@ -96,10 +72,18 @@ const VmBoot = ({ editMode, isos, formBootState, setFormBootState }) => {
               id="connectCdDvd"
               name="connectCdDvd"
               checked={formBootState.isCdDvdChecked}
-              onChange={handleCdDvdCheckboxChange}
+              onChange={(e) => {
+                const isChecked = e.target.checked;
+                setFormBootState((prev) => ({
+                  ...prev,
+                  isCdDvdChecked: isChecked,
+                  cdConn: isChecked ? (prev.cdConn || (isos[0]?.id || "")) : "",
+                }));
+              }}
             />
             <label htmlFor="connectCdDvd">CD/DVD 연결</label>
           </div>
+
           <div className="text_icon_box">
             <select
               id="cd_dvd_select"
@@ -112,20 +96,16 @@ const VmBoot = ({ editMode, isos, formBootState, setFormBootState }) => {
                 }))
               }
             >
-              <option value="">CD/DVD 선택...</option>
               {isos.map((cd) => (
                 <option key={cd.id} value={cd.id}>
                   {cd.name}
                 </option>
               ))}
             </select>
-            <FontAwesomeIcon
-              icon={faInfoCircle}
-              style={{ color: "rgb(83, 163, 255)" }}
-              fixedWidth
-            />
+            <FontAwesomeIcon icon={faInfoCircle} style={{ color: "rgb(83, 163, 255)" }} fixedWidth />
           </div>
         </div>
+
         <div className="checkbox_group mb-1.5">
           <input
             className="check_input"
