@@ -1,6 +1,3 @@
-import { useEffect } from "react";
-import { useHostFromCluster } from "../../../../../api/RQHook";
-
 const CustomSelect = ({ label, value, onChange, options }) => (
   <div>
     <label>{label}</label>
@@ -14,12 +11,8 @@ const CustomSelect = ({ label, value, onChange, options }) => (
   </div>
 );
 
-const VmHost = ({ editMode, vmId, clusterVoId, formHostState, setFormHostState }) => {  
-  const { 
-    data: hosts = [],
-    isLoading: isHostsLoading
-  } = useHostFromCluster(clusterVoId, (e) => ({...e}));
-
+const VmHost = ({ editMode, hosts, formHostState, setFormHostState }) => {  
+  
   const handleHostSelectionChange = (hostInCluster) => {
     setFormHostState((prev) => ({
       ...prev,
@@ -27,16 +20,6 @@ const VmHost = ({ editMode, vmId, clusterVoId, formHostState, setFormHostState }
       hostVos: hostInCluster ? [] : prev.hostVos,
     }));
   };
-  
-  // useEffect(() => {
-  //   if (clusterVoId && !isHostsLoading && hosts.length > 0) {
-  //     setFormHostState((prev) => ({
-  //       ...prev,
-  //       hostVos: hosts.map((host) => ({ id: host.id, name: host.name })), 
-  //     }));
-  //   }
-  // }, [clusterVoId, hosts, isHostsLoading]);
-
 
   // 마이그레이션 모드
   const migrationModeOptionList = [
@@ -77,7 +60,6 @@ const VmHost = ({ editMode, vmId, clusterVoId, formHostState, setFormHostState }
           <label className="form-check-label" htmlFor="clusterHost">
             클러스터 내의 호스트
           </label>
-          <span>hi: {clusterVoId}</span>
         </div>
 
         {/* 특정 호스트 선택 */}
@@ -114,15 +96,11 @@ const VmHost = ({ editMode, vmId, clusterVoId, formHostState, setFormHostState }
             disabled={formHostState.hostInCluster}
             style={{ height: "100px" }}
           >
-            {isHostsLoading ? (
-              <option>호스트를 불러오는 중...</option>
-            ) : (
-              hosts.map((opt) => (
-                <option key={opt.id} value={opt.id}>
-                  {opt.name}
-                </option>
-              ))
-            )}
+            {hosts.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                {opt.name}
+              </option>
+            ))}
           </select>
           <div style={{ marginTop: "10px" }}>
             <label>선택된 호스트:</label>

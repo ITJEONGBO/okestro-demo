@@ -16,7 +16,7 @@ const InfoTooltip = ({ tooltipId, message }) => (
   </>
 );
 
-const VmSystem = ({ editMode, vmId, formSystemState, setFormSystemState }) => {
+const VmSystem = ({ editMode, formSystemState, setFormSystemState }) => {
   
   // 총 cpu 계산
   const calculateFactors = (num) => {

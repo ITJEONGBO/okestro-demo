@@ -1,4 +1,4 @@
-import React, { useState,useEffect, useMemo } from 'react';
+import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,8 +10,10 @@ import {
   useEditVm, 
   useAllUpClusters, 
   useAllTemplates,
+  useCDFromDataCenter,
   useDisksFromVM,
-  useAllnicFromVM, 
+  useAllnicFromVM,
+  useHostFromCluster,
 } from '../../../../api/RQHook';
 import VmCommon from './vmCreate/VmCommon';
 import VmSystem from './vmCreate/VmSystem';
@@ -19,7 +21,6 @@ import VmInit from './vmCreate/VmInit';
 import VmHost from './vmCreate/VmHost';
 import VmHa from './vmCreate/VmHa';
 import VmBoot from './vmCreate/VmBoot';
-
 
 const CustomSelect = ({ label, value, onChange, options }) => (
   <div>
@@ -39,7 +40,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const { mutate: editVM } = useEditVm();
   
   const [selectedModalTab, setSelectedModalTab] = useState('common');
-  
 
   // 일반
   const [formInfoState, setFormInfoState] = useState({
@@ -50,8 +50,8 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     stateless: false,// 무상태
     startPaused: false, // 일시중지상태로시작
     deleteProtected: false, //삭제보호
-    diskVoList: [], // 
-    nicVoList: [],  //
+    diskVoList: [], // 디스크 목록
+    nicVoList: [],  // vnicprofile 목록
   });
 
   //시스템
@@ -92,10 +92,12 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const [formBootState, setFormBootState] = useState({
     firstDevice: 'hd', // 첫번째 장치
     secDevice: '', // 두번째 장치
+    isCdDvdChecked: false, // cd/dvd 연결 체크박스
+    cdConn: '', // iso 파일
     bootingMenu: false,// 부팅메뉴 활성화
-    cdConn: '',
   });
 
+  const [dataCenterName, setDataCenterName] = useState('');
   const [dataCenterId, setDataCenterId] = useState('');
   const [clusterVoId, setClusterVoId] = useState('');
   const [templateVoId, setTemplateVoId] = useState('');
@@ -146,6 +148,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       bootingMenu: false,
       cdConn: '',
     });
+    setDataCenterName('');
     setDataCenterId('');
     setClusterVoId('');
     setTemplateVoId('');
@@ -172,6 +175,40 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     data: templates = [],
     isLoading: isTemplatesLoading
   } = useAllTemplates((e) => ({...e,}));
+
+  // 클러스터가 가지고 있는 nic 목록 가져오기
+  const { 
+    data: nics = [],
+    isLoading: isNicsLoading
+  } = useAllnicFromVM(clusterVoId, (e) => ({ ...e }));
+
+  // 편집: 가상머신이 가지고 있는 디스크 목록 가져오기
+  const { 
+    data: disks = [],
+    isLoading: isDisksLoading
+  } = useDisksFromVM(vmId, (e) => ({ ...e }));
+
+  const { 
+    data: hosts = [],
+    isLoading: isHostsLoading
+  } = useHostFromCluster(clusterVoId, (e) => ({...e}));
+
+  
+  const {
+    data: isos = [],
+    isLoading: isIsoLoading,
+  } = useCDFromDataCenter(dataCenterId, (e) => ({ ...e }));
+  
+
+  // 탭 메뉴
+  const tabs = [
+    { id: "common_tab", value: "common", label: "일반" },
+    { id: "system_tab", value: "system", label: "시스템" },
+    { id: "beginning_tab", value: "beginning", label: "초기 실행" },
+    { id: "host_tab", value: "host", label: "호스트" },
+    { id: "ha_mode_tab", value: "ha_mode", label: "고가용성" },
+    { id: "boot_option_tab", value: "boot_outer", label: "부트 옵션" },
+  ];
   
   // 운영 시스템
   const osSystemList = [
@@ -301,25 +338,41 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       setFormBootState({
         firstDevice: vm?.firstDevice || 'hd',
         secDevice: vm?.secDevice || '',
-        bootingMenu: vm?.bootingMenu || false
+        bootingMenu: vm?.bootingMenu || false,
+        cdConn: vm?.connVo?.id,
       });
-      setClusterVoId(vm?.clusterVo?.id || ''); 
+      setDataCenterName(vm?.dataCenterVo?.name); 
+      setDataCenterId(vm?.dataCenterVo?.id); 
+      setClusterVoId(vm?.clusterVo?.id); 
       setTemplateVoId(vm?.templateVo?.id || '');
       setOsSystem(vm?.osSystem || 'other_linux');
       setChipsetOption(vm?.chipsetFirmwareType || 'Q35_OVMF');
       setOptimizeOption(vm?.optimizeOption || 'SERVER');
-    } else if (!editMode && !isClustersLoading) {
+    } else if (!editMode) {
       resetForm();
     }
   }, [editMode, vm]);
   
   
   useEffect(() => {
-    if (!editMode && clusters.length > 0) {
-      setClusterVoId(clusters[0]?.id); // 첫 번째 클러스터로 초기화
-      setDataCenterId(clusters[0]?.dataCenterVo?.id);
+    // 클러스터가 선택되면 datacenterId와 datacenterName을 설정
+    if (clusterVoId) {
+      const selectedCluster = clusters.find((c) => c.id === clusterVoId);
+      if (selectedCluster) {
+        setDataCenterId(selectedCluster.dataCenterVo?.id || '');
+        setDataCenterName(selectedCluster.dataCenterVo?.name || '');
+      }
     }
-  }, [clusters, editMode]);
+  }, [clusterVoId, clusters]);
+  
+  useEffect(() => {
+    if (!editMode && clusters.length > 0) {
+      const firstCluster = clusters[0];
+      setClusterVoId(firstCluster.id);
+      setDataCenterId(firstCluster.dataCenterVo?.id || '');
+      setDataCenterName(firstCluster.dataCenterVo?.name || '');
+    }
+  }, [isOpen, clusters, editMode]);
   
   
   useEffect(() => {
@@ -328,14 +381,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     }
   }, [templates, editMode]);
 
-
-
-  const validateForm = () => {
-    if (!formInfoState.name) return '이름을 입력해주세요.';
-    if (!clusterVoId) return '클러스터를 선택해주세요.';
-    if (formSystemState.memorySize > '9223372036854775807') return '메모리 크기가 너무 큽니다.';
-    return null;
-  };
 
   const dataToSubmit = {
     // VmInfo
@@ -381,9 +426,17 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     osSystem: osSystem,
     connVo: { id: formBootState.cdConn },
 
-    vnicProfileVos: formInfoState.nicVoList.map((vnic) => ({ id: vnic.id }))
+
+    vnicProfileVos: formInfoState.nicVoList.map((vnic) => ({ id: vnic.id })),
+    diskAttachmentVos: formInfoState.diskVoList.map((disk) => ({ id: disk.id })),
   };
   
+  const validateForm = () => {
+    if (!formInfoState.name) return '이름을 입력해주세요.';
+    if (!clusterVoId) return '클러스터를 선택해주세요.';
+    if (formSystemState.memorySize > '9223372036854775807') return '메모리 크기가 너무 큽니다.';
+    return null;
+  };
 
   const handleFormSubmit = () => { // 디스크  연결은 id값 보내기 생성은 객체로 보내기
     const error = validateForm();
@@ -391,7 +444,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       toast.error(error);
       return;
     }
-
     console.log('가상머신 데이터 확인:', dataToSubmit); 
 
     if (editMode) {
@@ -415,15 +467,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       });
     }
   };
-
-  const tabs = [
-    { id: "common_tab", value: "common", label: "일반" },
-    { id: "system_tab", value: "system", label: "시스템" },
-    { id: "beginning_tab", value: "beginning", label: "초기 실행" },
-    { id: "host_tab", value: "host", label: "호스트" },
-    { id: "ha_mode_tab", value: "ha_mode", label: "고가용성" },
-    { id: "boot_option_tab", value: "boot_outer", label: "부트 옵션" },
-  ];
 
   
   return (
@@ -473,19 +516,20 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                 <select
                   id="cluster"
                   value={clusterVoId}
-                  onChange={(e) => setClusterVoId(e.target.value) }
+                  onChange={(e) => setClusterVoId(e.target.value)}
                 >
                   {isClustersLoading ? (
                     <option>로딩중~</option>
                   ) : (
                     clusters && clusters.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.name}: {c.id} - 데이터센터: {c.dataCenterVo.name}
+                        {c.name}: {c.id}
                       </option>
                     ))
                   )}
                 </select>
-                <span>{clusterVoId}</span>
+
+                <span>DC:{dataCenterName}</span>
               </div>
 
               <div>
@@ -533,8 +577,9 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
               <VmCommon
                 editMode={editMode}
                 vmId={vmId}
-                clusterVoId={clusterVoId}
                 dataCenterId={dataCenterId}
+                nics={nics}
+                disks={disks}
                 formInfoState={formInfoState}
                 setFormInfoState={setFormInfoState}
               />
@@ -542,7 +587,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
             {selectedModalTab === 'system' && (
               <VmSystem
                 editMode={editMode}
-                vmId={vmId}
                 formSystemState={formSystemState}
                 setFormSystemState={setFormSystemState}
               />
@@ -550,7 +594,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
             {selectedModalTab === 'beginning' && (
               <VmInit
                 editMode={editMode}
-                vmId={vmId}
                 formCloudInitState={formCloudInitState}
                 setFormCloudInitState={setFormCloudInitState}
               />
@@ -558,8 +601,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
             {selectedModalTab === 'host' && (
               <VmHost
                 editMode={editMode}
-                vmId={vmId}
-                clusterVoId={clusterVoId}
+                hosts={hosts}
                 formHostState={formHostState}
                 setFormHostState={setFormHostState}
               />
@@ -567,7 +609,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
             {selectedModalTab === 'ha_mode' && (
               <VmHa
                 editMode={editMode}
-                vmId={vmId}
                 dataCenterId={dataCenterId}
                 formHaState={formHaState}
                 setFormHaState={setFormHaState}
@@ -576,8 +617,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
             {selectedModalTab === 'boot_outer' && (
               <VmBoot
                 editMode={editMode}
-                vmId={vmId}
-                dataCenterId={dataCenterId}
+                isos={isos}
                 formBootState={formBootState}
                 setFormBootState={setFormBootState}
               />

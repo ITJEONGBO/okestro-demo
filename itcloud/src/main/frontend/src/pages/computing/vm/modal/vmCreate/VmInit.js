@@ -2,7 +2,7 @@ import { useState } from "react";
 import { faChevronCircleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const VmInit = ({ editMode, vmId, formCloudInitState, setFormCloudInitState }) => {
+const VmInit = ({ editMode, formCloudInitState, setFormCloudInitState }) => {
 
   // 새로만들기->초기실행 화살표 누르면 밑에열리기
   const [isDomainHiddenBoxVisible, setDomainHiddenBoxVisible] = useState(false);

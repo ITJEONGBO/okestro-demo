@@ -3,7 +3,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAllActiveDomainFromDataCenter } from "../../../../../api/RQHook";
 
-const VmHa = ({ editMode, vmId, dataCenterId, formHaState, setFormHaState }) => {
+const VmHa = ({ editMode, dataCenterId, formHaState, setFormHaState }) => {
   const {
     data: domains = [],
     isLoading: isDomainsLoading
@@ -32,7 +32,6 @@ const VmHa = ({ editMode, vmId, dataCenterId, formHaState, setFormHaState }) => 
   return (
     <>
     <div className="ha-mode-second-content">
-    <span>데이터센터ID: {dataCenterId}</span>
       <div className="checkbox_group">
         <input
           className="check_input"

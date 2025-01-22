@@ -349,6 +349,7 @@ export const useCDFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
     const res = await ApiManager.findAllISOFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
+  enabled: !!dataCenterId, 
 });
 
 

@@ -25,7 +25,7 @@ const VmModals = ({ activeModal, vm, selectedVms = [], onClose }) => {
       //   onClose={onClose}
       // />
       <VmNewModal
-      editMode
+        editMode
         isOpen={activeModal === 'edit'} 
         vmId={vm?.id}
         onClose={onClose} 
