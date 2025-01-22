@@ -32,8 +32,8 @@ const Tables = ({
     if (onContextMenuItems) {
       const menuItems = onContextMenuItems(rowData);
       setContextMenu({
-        mouseX: e.clientX - 320,
-        mouseY: e.clientY - 47,
+        mouseX: e.clientX-260,
+        mouseY: e.clientY-50,
         menuItems,
       });
     } else {

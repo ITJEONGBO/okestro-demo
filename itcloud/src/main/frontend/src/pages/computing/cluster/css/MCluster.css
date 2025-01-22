@@ -23,7 +23,7 @@
 .cluster_new_content>div{
     display: flex;
     justify-content: space-between;
-    padding: 2% 2%;
+    padding: 0.2rem 0.24rem;
 }
 
 .cluster_new_content select,

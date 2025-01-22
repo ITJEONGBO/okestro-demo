@@ -24,28 +24,36 @@ const VnicProfileDeleteModal = ({ isOpen, onClose, data }) => {
     }
   }, [data]);
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     if (!ids.length) {
       toast.error('삭제할 vnicProfile ID가 없습니다.');
       return;
     }
   
-    ids.forEach((vnicId, index) => {
-      deleteVnicProfile(vnicId, {
-        onSuccess: () => {
-          if (ids.length === 1 || index === ids.length - 1) { // 마지막 vnicProfile 삭제 후 이동
-            onClose(); // Modal 닫기
-            toast.success("vnic profile 삭제 성공")
-            // navigate('/vnicProfiles');
-          }
-        },
-        onError: (error) => {
-          onClose();
-          toast.error(`vnicProfile 삭제 오류:`, error);
-        },
-      });
-    });
+    const deletePromises = ids.map((vnicId, index) =>
+      new Promise((resolve, reject) => {
+        deleteVnicProfile(vnicId, {
+          onSuccess: () => {
+            toast.success(`vnicProfile ID ${vnicId} 삭제 성공`);
+            resolve(); // 성공 시 resolve
+          },
+          onError: (error) => {
+            toast.error(`vnicProfile ID ${vnicId} 삭제 오류: ${error.message || '알 수 없는 오류'}`);
+            reject(error); // 에러 시 reject
+          },
+        });
+      })
+    );
+  
+    try {
+      await Promise.all(deletePromises); // 모든 삭제 요청 완료
+      onClose(); // Modal 닫기
+      navigate('/vnicProfiles'); // 성공 시 페이지 이동
+    } catch (error) {
+      console.error('삭제 중 오류 발생:', error); // 상세 에러 로그
+    }
   };
+  
 
   return (
     <Modal

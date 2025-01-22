@@ -409,22 +409,25 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
             </select>
           </FormGroup>
 
-          <FormGroup label="복구 정책">
-            {errorHandlingOptions.map((option) => (
-              <div key={option.value} className="host_text_radio_box px-1.5 py-0.5">
-                <input
-                  type="radio"
-                  name="recovery_policy"
-                  value={option.value}
-                  checked={formState.errorHandling === option.value}
-                  onChange={(e) =>
-                    setFormState((prev) => ({ ...prev, errorHandling: e.target.value }))
-                  }
-                />
-                <label htmlFor={option.value}>{option.label}</label>
-              </div>
-            ))}
-          </FormGroup>
+          <div className='recovery-policy'>
+            <FormGroup>
+                <div className='font-bold mb-0.5'>복구정책</div>
+                  {errorHandlingOptions.map((option) => (
+                    <div key={option.value} className="host_text_radio_box mb-0.5">
+                      <input
+                        type="radio"
+                        name="recovery_policy"
+                        value={option.value}
+                        checked={formState.errorHandling === option.value}
+                        onChange={(e) =>
+                          setFormState((prev) => ({ ...prev, errorHandling: e.target.value }))
+                        }
+                      />
+                      <label htmlFor={option.value}>{option.label}</label>
+                    </div>
+                  ))}
+            </FormGroup>
+          </div>
 
         </div>
 

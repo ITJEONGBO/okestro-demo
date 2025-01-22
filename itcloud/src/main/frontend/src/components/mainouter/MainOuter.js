@@ -635,6 +635,12 @@ const MainOuter = ({ children,asideVisible  }) => {
                                                 setSelectedDiv(domain.id);
                                                 navigate(`/storages/domains/${domain.id}`);
                                             }}
+                                            onContextMenu={(e) => {
+                                                e.preventDefault(); // 기본 컨텍스트 메뉴 비활성화
+                                                setContextMenuVisible(true);
+                                                setContextMenuPosition({ x: e.pageX, y: e.pageY });
+                                                setContextMenuTarget(domain.id); // 우클릭한 요소의 ID 저장
+                                            }}
                                         >
                                             {hasDisks && (
                                                 <FontAwesomeIcon
