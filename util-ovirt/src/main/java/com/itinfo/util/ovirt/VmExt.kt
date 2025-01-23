@@ -216,9 +216,8 @@ fun Connection.updateVm(
 		throw ErrorPattern.VM_NOT_FOUND.toError()
 	}
 
-	val vmUpdated: Vm =
-		this.srvVm(vm.id()).update().vm(vm).send().vm()
-			?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	val vmUpdated: Vm = this.srvVm(vm.id()).update().vm(vm).send().vm()
+		?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
 	this.addMultipleDiskAttachmentsToVm(vmUpdated.id(), addDiskAttachments)
 //	this.removeDiskAttachmentToVm(vmUpdated.id(), deleteDiskAttachments)

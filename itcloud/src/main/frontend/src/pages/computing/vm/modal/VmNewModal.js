@@ -583,7 +583,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                   diskState={diskState}
                   setDiskState={setDiskState}
                   disks={disks}
-                  setFormInfoState={setFormInfoState}
                 />
                 <VmNic
                   nicsState={nicsState}

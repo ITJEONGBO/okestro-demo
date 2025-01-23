@@ -3,7 +3,7 @@ import React, { lazy, Suspense, useState } from 'react';
 const VmDiskModal = lazy(() => import('../VmDiskModal'));
 const VmDiskConnectionModal = lazy(() => import('../VmDiskConnectionModal'));
 
-const VmDisk = ({ editMode, dataCenterId, diskState, setDiskState, disks, setFormInfoState }) => {
+const VmDisk = ({ editMode, dataCenterId, diskState, setDiskState }) => {
   const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 디스크 연결
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 디스크 생성
 
@@ -12,7 +12,7 @@ const VmDisk = ({ editMode, dataCenterId, diskState, setDiskState, disks, setFor
     setDiskState(updatedDisks);
   };
 
-
+  
   return (
     <>
     <div className="px-1 font-bold">인스턴스 이미지</div>

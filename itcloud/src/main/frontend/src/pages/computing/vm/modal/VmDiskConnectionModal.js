@@ -27,7 +27,6 @@ const VmDiskConnectionModal = ({ isOpen, editMode, vmId, dataCenterId, onSelectD
   const [selectedDiskId, setSelectedDiskId] = useState(null);
   const [selectedInterface, setSelectedInterface] = useState("VIRTIO"); // 초기 interface 값
 
-
   const {
     data: disks = [], isLoading
   } = useFindDiskListFromDataCenter(dataCenterId, (e) => ({...e,}));
@@ -111,49 +110,28 @@ const VmDiskConnectionModal = ({ isOpen, editMode, vmId, dataCenterId, onSelectD
                     onChange={() => setSelectedDiskId(e.id)}
                   />
                 ),
-                // interface: (
-                //   <select
-                //     value={e?.interface}
-                //     onChange={(e) => f(e.target.value)}
-                //     disabled={editMode}
-                //   >
-                //     {isDatacentersLoading ? (
-                //       <option>로딩중~</option>
-                //     ) : (
-                //       datacenters && datacenters.map((dc) => (
-                //         <option key={dc.id} value={dc.id}>
-                //           {dc.name}: {dc.id}
-                //         </option>
-                //       ))
-                //     )}
-                //   </select>
-                // )
+                interface: (
+                  <select
+                    id="interface-select"
+                    value={selectedInterface}
+                    onChange={(e) => setSelectedInterface(e.target.value)}
+                  >
+                    {interfaceList.map((iface) => (
+                      <option key={iface.value} value={iface.value}>
+                        {iface.label}
+                      </option>
+                    ))}
+                  </select>
+                )
               }))}
               onRowClick={(selectRow) => {
                 const clickedDiskId = selectRow[0]?.id;
                 setSelectedDiskId(clickedDiskId);
               }}
             />
-            <div style={{ marginTop: "1rem" }}>
-              <label htmlFor="interface-select" style={{ marginRight: "1rem" }}>
-                인터페이스:
-              </label>
-              <select
-                id="interface-select"
-                value={selectedInterface}
-                onChange={(e) => setSelectedInterface(e.target.value)}
-              >
-                {interfaceList.map((iface) => (
-                  <option key={iface.value} value={iface.value}>
-                    {iface.label}
-                  </option>
-                ))}
-              </select>
-            </div>
           </>
         )}
         
-       
         <span>선택된 디스크 ID: {selectedDiskId || "없음"}</span>
         <div className="edit-footer">
           <button onClick={handleOkClick}>OK</button>
