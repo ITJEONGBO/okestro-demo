@@ -14,6 +14,8 @@ import {
   useDisksFromVM,
   useAllnicFromVM,
   useHostFromCluster,
+  useAllActiveDomainFromDataCenter,
+  
 } from '../../../../api/RQHook';
 import VmCommon from './vmCreate/VmCommon';
 import VmSystem from './vmCreate/VmSystem';
@@ -21,7 +23,10 @@ import VmInit from './vmCreate/VmInit';
 import VmHost from './vmCreate/VmHost';
 import VmHa from './vmCreate/VmHa';
 import VmBoot from './vmCreate/VmBoot';
-import CustomSelect from '../../../../utils/CustomSelect';
+import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
+import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
+import VmNic from './vmCreate/VmNic';
+import VmDisk from './vmCreate/VmDisk';
 
 
 const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
@@ -39,8 +44,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     stateless: false,// 무상태
     startPaused: false, // 일시중지상태로시작
     deleteProtected: false, //삭제보호
-    diskVoList: [], // 디스크 목록
-    nicVoList: [],  // vnicprofile 목록
   });
 
   //시스템
@@ -65,7 +68,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     hostInCluster: true,// 클러스터 내 호스트 버튼
     hostVos: [],
     migrationMode: 'migratable', // 마이그레이션 모드
-    migrationEncrypt: 'INHERIT',  // 암호화
+    // migrationEncrypt: 'INHERIT',  // 암호화
     // migrationPolicy: 'minimal_downtime',// 마이그레이션 정책
 
   });
@@ -94,9 +97,11 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const [chipsetOption, setChipsetOption] = useState('Q35_OVMF'); // 칩셋
   const [optimizeOption, setOptimizeOption] = useState('SERVER'); // 최적화옵션
 
-  const [nicState, setNicState] = useState([
+  const [nicsState, setNicsState] = useState([
     { id: '', name: 'nic1', vnicProfileVo: { id: '' } },
   ]);
+  const [diskState, setDiskState] = useState([]);
+  
   
   const resetForm = () => {
     setFormInfoState({
@@ -107,8 +112,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       stateless : false,
       startPaused : false,
       deleteProtected : false,
-      diskVoList: [],
-      nicVoList: [],
     });
     setFormSystemState({
       memorySize: 1024,
@@ -128,7 +131,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       hostVos: [],
       migrationMode: 'migratable',
       // migrationPolicy: 'minimal_downtime',
-      migrationEncrypt: 'INHERIT',
+      // migrationEncrypt: 'INHERIT',
     });
     setFormHaState({
       ha: false,
@@ -148,7 +151,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     setOsSystem('other_linux');
     setChipsetOption('Q35_OVMF');
     setOptimizeOption('SERVER');
-    setNicState([{ id: '', name: 'nic1', vnicProfileVo: { id: '' } }]);
+    setNicsState([{ id: '', name: 'nic1', vnicProfileVo: { id: '' } }]);
   };  
 
 
@@ -186,6 +189,11 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     data: hosts = [],
     isLoading: isHostsLoading
   } = useHostFromCluster(clusterVoId, (e) => ({...e}));
+
+  const {
+    data: domains = [],
+    isLoading: isDomainsLoading
+  } = useAllActiveDomainFromDataCenter(dataCenterId, (e) => ({...e,}));
 
   const {
     data: isos = [],
@@ -300,8 +308,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
         stateless: vm?.stateless || false,
         startPaused: vm?.startPaused || false,
         deleteProtected: vm?.deleteProtected || false,
-        diskVoList: vm?.diskImageVo || [],
-        nicVoList: vm?.nicVos || [],
       });
       setFormSystemState({
         memorySize: vm?.memorySize / (1024 * 1024), // 입력된 값는 mb, 보낼 단위는 byte
@@ -320,7 +326,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
         hostInCluster: vm?.hostInCluster || true,
         hostVos: vm?.hostVos || [],
         migrationMode: vm?.migrationMode || 'migratable',
-        migrationEncrypt: vm?.migrationEncrypt || 'INHERIT',
         // migrationPolicy: vm?.migrationPolicy || 'minimal_downtime',
       });
       setFormHaState({
@@ -345,8 +350,31 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       resetForm();
     }
   }, [editMode, vm]);
+
+  // nic
+  useEffect(() => {
+    if (editMode) {
+      // 편집 모드에서 NIC 데이터 초기화
+      const initialNicState = vm?.nicVos?.length ? vm?.nicVos?.map((nic, index) => ({
+          id: nic.id || '',
+          name: nic.name || `nic${index + 1}`,
+          vnicProfileVo: {
+            id: nic.vnicProfileVo?.id || '',
+            name: nic.vnicProfileVo?.name || '',
+          },
+          networkVo: {
+            id: nic.networkVo?.id || '',
+            name: nic.networkVo?.name || '',
+          },
+        }))
+      : [{ id: '', name: 'nic1', vnicProfileVo: { id: '' }, networkVo: { id: '', name: '' } }];
+      setNicsState(initialNicState);
+    } else if (!editMode) {
+      setNicsState([{ id: '', name: 'nic1', vnicProfileVo: { id: '' }, networkVo: { id: '', name: '' } }]);
+    }
+  }, [editMode, vm]);
   
-  
+    
   // 클러스터 변경에 따른 결과
   useEffect(() => {
     if (clusterVoId) {
@@ -406,7 +434,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     hostInCluster: formHostState.hostInCluster,
     hostVos: formHostState.hostVos.map((host) => ({ id: host.id })),
     migrationMode: formHostState.migrationMode,
-    migrationEncrypt: formHostState.migrationEncrypt,
+    // migrationEncrypt: formHostState.migrationEncrypt,
   
     // VmHa
     ha: formHaState.ha,
@@ -420,9 +448,10 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     connVo: { id: formBootState.cdConn },
 
 
-    vnicProfileVos: formInfoState.nicVoList.map((vnic) => ({ id: vnic.vnicProfileVo.id })),
-    diskAttachmentVos: formInfoState.diskVoList.map((disk) => ({ id: disk.id })),
+    vnicProfileVos: nicsState.map((vnic) => ({ id: vnic.vnicProfileVo.id })),
+    diskAttachmentVos: diskState.map((disk) => ({ id: disk.id })),
   };
+  // diskAttachmentVos: formInfoState.diskVoList.map((disk) => ({ id: disk.id })),
   
   const validateForm = () => {
     if (!formInfoState.name) return '이름을 입력해주세요.';
@@ -503,83 +532,68 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
 
           <div className="vm_edit_select_tab">
             <div className="edit-first-content">
+              <LabelSelectOptionsID
+                label="클러스터"
+                value={clusterVoId}
+                onChange={(e) => setClusterVoId(e.target.value)}
+                disabled={editMode} // 편집 모드일 경우 비활성화
+                loading={isClustersLoading}
+                options={clusters}
+              /> 
+              
+              <LabelSelectOptionsID
+                label="템플릿"
+                value={templateVoId}
+                onChange={(e) => setTemplateVoId(e.target.value)}
+                disabled={editMode} // 편집 모드일 경우 비활성화
+                loading={isTemplatesLoading}
+                options={templates}
+              /> 
 
-              <div>
-                <label htmlFor="cluster">클러스터</label>
-                <select
-                  id="cluster"
-                  value={clusterVoId}
-                  onChange={(e) => setClusterVoId(e.target.value)}
-                >
-                  {isClustersLoading ? (
-                    <option>로딩중~</option>
-                  ) : (
-                    clusters && clusters.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}: {c.id}
-                      </option>
-                    ))
-                  )}
-                </select>
-                <span>DC:{dataCenterName}</span>
-              </div>
-
-              <div>
-                <label htmlFor="template" style={{ color: 'gray' }}>템플릿</label>
-                <select
-                  id="template"
-                  value={templateVoId}
-                  onChange={(e) => setTemplateVoId(e.target.value) }
-                  disabled={editMode} // 편집 모드일 경우 비활성화
-                >
-                  {isTemplatesLoading ? (
-                    <option>로딩중~</option>
-                  ) : (
-                    templates && templates.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}: {t.id}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </div>
-
-              <CustomSelect
+              <LabelSelectOptions
                 label="운영 시스템"
                 value={osSystem}
                 onChange={(e) => setOsSystem(e.target.value)}
                 options={osSystemList}
               /> 
-              <CustomSelect
+              <LabelSelectOptions
                 label="칩셋/펌웨어 유형"
                 value={chipsetOption}
                 onChange={(e) => setChipsetOption(e.target.value)}
                 options={chipsetOptionList}
               />
-              <CustomSelect
+              <LabelSelectOptions
                 label="최적화 옵션"
                 value={optimizeOption}
                 onChange={(e) => setOptimizeOption(e.target.value)}
                 options={optimizeOptionList}
               />
             </div>
-            
-            
+          
+        
             {selectedModalTab === 'common' && (
-              <VmCommon
-                editMode={editMode}
-                vmId={vmId}
-                dataCenterId={dataCenterId}
-                nics={nics}
-                formInfoState={formInfoState}
-                setFormInfoState={setFormInfoState}
-                nicState={nicState} // Pass nicState to VmCommon
-                setNicState={setNicState} // Pass setNicState to VmCommon
-              />
+              <>
+                <VmCommon
+                  formInfoState={formInfoState}
+                  setFormInfoState={setFormInfoState}
+                />
+                <VmDisk
+                  editMode={editMode}
+                  dataCenterId={dataCenterId}
+                  diskState={diskState}
+                  setDiskState={setDiskState}
+                  disks={disks}
+                  setFormInfoState={setFormInfoState}
+                />
+                <VmNic
+                  nicsState={nicsState}
+                  setNicsState={setNicsState}
+                  nics={nics}
+                />
+              </>
             )}
             {selectedModalTab === 'system' && (
               <VmSystem
-                editMode={editMode}
                 formSystemState={formSystemState}
                 setFormSystemState={setFormSystemState}
               />
@@ -602,7 +616,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
             {selectedModalTab === 'ha_mode' && (
               <VmHa
                 editMode={editMode}
-                dataCenterId={dataCenterId}
+                domains={domains}
                 formHaState={formHaState}
                 setFormHaState={setFormHaState}
               />

@@ -127,6 +127,26 @@ fun List<Nic>.toNicIdNames(): List<NicVo> =
 	this@toNicIdNames.map { it.toNicIdName() }
 
 
+fun Nic.toVmNic(conn: Connection, vmId: String): NicVo {
+	val nic = this@toVmNic
+	val vm :Vm = conn.findVm(vmId)
+		.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+	val vnicProfile: VnicProfile = conn.findVnicProfile(nic.vnicProfile().id())
+		.getOrNull() ?: throw ErrorPattern.VNIC_PROFILE_NOT_FOUND.toException()
+	val network: Network = conn.findNetwork(vnicProfile.network().id())
+		.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+
+	return NicVo.builder {
+		id { nic.id() }
+		name { nic.name() }
+		networkVo { network.fromNetworkToIdentifiedVo() }
+		vnicProfileVo { vnicProfile.fromVnicProfileToIdentifiedVo() }
+	}
+}
+fun List<Nic>.toVmNics(conn: Connection, vmId: String): List<NicVo> =
+	this@toVmNics.map { it.toVmNic(conn, vmId) }
+
+
 fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
 	val vm :Vm = conn.findVm(vmId)
 		.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()

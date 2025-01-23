@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CustomSelect from "../../../../../utils/CustomSelect";
+import LabelSelectOptions from "../../../../../utils/LabelSelectOptions";
+import LabelSelectOptionsID from "../../../../../utils/LabelSelectOptionsID";
 
 const VmBoot = ({ editMode, isos, formBootState, setFormBootState }) => {
 
@@ -20,7 +19,6 @@ const VmBoot = ({ editMode, isos, formBootState, setFormBootState }) => {
     }
   }, [formBootState.cdConn]);
 
-
   const firstDeviceOptionList = [
     { value: "hd", label: "하드 디스크" },
     { value: "cdrom", label: "CD-ROM" },
@@ -38,28 +36,18 @@ const VmBoot = ({ editMode, isos, formBootState, setFormBootState }) => {
       <div className="cpu-res">
         <span style={{ fontWeight: 600 }}>부트순서:</span>
 
-        <CustomSelect
+        <LabelSelectOptions
           className="cpu-res-box"
           label="첫 번째 장치"
           value={formBootState.firstDevice}
-          onChange={(e) =>
-            setFormBootState((prev) => ({
-              ...prev,
-              firstDevice: e.target.value,
-            }))
-          }
+          onChange={(e) => setFormBootState((prev) => ({ ...prev, firstDevice: e.target.value, }))}
           options={firstDeviceOptionList}
         /> 
-        <CustomSelect
+        <LabelSelectOptions
           className="cpu-res-box"
           label="두 번째 장치"
           value={formBootState.secDevice}
-            onChange={(e) =>
-              setFormBootState((prev) => ({
-                ...prev,
-                secDevice: e.target.value,
-              }))
-            }
+          onChange={(e) => setFormBootState((prev) => ({ ...prev, secDevice: e.target.value })) }
           options={secDeviceOptionList}
         /> 
       </div>
@@ -84,40 +72,21 @@ const VmBoot = ({ editMode, isos, formBootState, setFormBootState }) => {
             <label htmlFor="connectCdDvd">CD/DVD 연결</label>
           </div>
 
-          <div className="text_icon_box">
-            <select
-              id="cd_dvd_select"
-              disabled={!formBootState.isCdDvdChecked || isos.length === 0}
-              value={formBootState.cdConn}
-              onChange={(e) =>
-                setFormBootState((prev) => ({
-                  ...prev,
-                  cdConn: e.target.value,
-                }))
-              }
-            >
-              {isos.map((cd) => (
-                <option key={cd.id} value={cd.id}>
-                  {cd.name}
-                </option>
-              ))}
-            </select>
-            <FontAwesomeIcon icon={faInfoCircle} style={{ color: "rgb(83, 163, 255)" }} fixedWidth />
-          </div>
+          <LabelSelectOptionsID
+            // className="text_icon_box"
+            disabled={!formBootState.isCdDvdChecked || isos.length === 0}
+            value={formBootState.cdConn}
+            onChange={(e) => setFormBootState((prev) => ({ ...prev,cdConn: e.target.value }))}
+            options={isos}
+          />
         </div>
-
         <div className="checkbox_group mb-1.5">
           <input
             className="check_input"
             type="checkbox"
             id="enableBootMenu"
             checked={formBootState.bootingMenu}
-            onChange={(e) =>
-              setFormBootState((prev) => ({
-                ...prev,
-                bootingMenu: e.target.checked,
-              }))
-            }
+            onChange={(e) => setFormBootState((prev) => ({ ...prev, bootingMenu: e.target.checked, }))}
           />
           <label className="check_label" htmlFor="enableBootMenu">
             부팅 메뉴를 활성화

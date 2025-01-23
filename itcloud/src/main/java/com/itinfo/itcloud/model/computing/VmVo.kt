@@ -581,8 +581,7 @@ fun VmVo.toVmHostBuilder(vmBuilder: VmBuilder): VmBuilder {
 	vmBuilder
 		.placementPolicy(placementBuilder.affinity(VmAffinity.fromValue(this@toVmHostBuilder.migrationMode)))
         // 정책은 찾을 수가 없음, parallel Migrations 안보임, 암호화
-
-		.migration(MigrationOptionsBuilder().encrypted(this@toVmHostBuilder.migrationEncrypt).build())
+//		.migration(MigrationOptionsBuilder().encrypted(this@toVmHostBuilder.migrationEncrypt).build()) // 암호화
 	return vmBuilder
 }
 
@@ -898,7 +897,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
 //        placement { this@toVmVo. }
         hostVo { host?.fromHostToIdentifiedVo() }
 //        snapshotVos { this@toVmVo. }
-        nicVos { nics.toNicIdNames() }
+        nicVos { nics.toVmNics(conn, this@toVmVo.id()) }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         templateVo { template?.fromTemplateToIdentifiedVo() }

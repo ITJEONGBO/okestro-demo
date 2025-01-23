@@ -1,15 +1,4 @@
-const CustomSelect = ({ label, value, onChange, options }) => (
-  <div>
-    <label>{label}</label>
-    <select value={value} onChange={onChange}>
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
-  </div>
-);
+import LabelSelectOptions from "../../../../../utils/LabelSelectOptions";
 
 const VmHost = ({ editMode, hosts, formHostState, setFormHostState }) => {  
   
@@ -36,12 +25,6 @@ const VmHost = ({ editMode, hosts, formHostState, setFormHostState }) => {
     { value: 'very_large_vms', label: 'Very large VMs' },
   ];
 
-  // 마이그레이션 암호화 사용
-  const migrationEncryptionOptionList = [
-    { value: 'INHERIT', label: '클러스터 기본값(암호화하지 마십시오)' },
-    { value: 'FALSE', label: '암호화하지 마십시오' },
-    { value: 'TRUE', label: '암호화' },
-  ];
 
   return (
   <>
@@ -116,39 +99,19 @@ const VmHost = ({ editMode, hosts, formHostState, setFormHostState }) => {
 
       <div className="host-third-content">
         <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
+          <LabelSelectOptions
+            label={'마이그레이션 모드'}
+            value={formHostState.migrationMode}
+            onChange={(e) => setFormHostState((prev) => ({ ...prev, migrationMode: e.target.value }))}
+            options={migrationModeOptionList}
+          />  
 
-        <CustomSelect
-          label={'마이그레이션 모드'}
-          value={formHostState.migrationMode}
-          onChange={(e) => setFormHostState((prev) => ({ ...prev, migrationMode: e.target.value }))}
-          options={migrationModeOptionList}
-        />
-
-        {/* <CustomSelect
-          label={'마이그레이션 정책'}
-          value={formHostState.migrationPolicy}
-          onChange={(e) => setFormHostState((prev) => ({ ...prev, migrationPolicy: e.target.value }))}
-          options={migrationPolicyOptionList}
-        />       */}
-
-        <CustomSelect
-          label={'마이그레이션 암호화 사용'}
-          value={formHostState.migrationEncrypt}
-          onChange={(e) => setFormHostState((prev) => ({ ...prev, migrationEncrypt: e.target.value }))}
-          options={migrationEncryptionOptionList}
-        />      
-
-        {/* <CustomSelect
-          label={'Parallel Migrations'}
-          value={formHostState.migrationEncryption}
-          onChange={(e) => setFormHostState((prev) => ({ ...prev, migrationPolicy: e.target.value }))}
-          options={migrationEncryptionOptionList}
-        />      
-
-        <div className='network_checkbox_type1 disabled'>
-          <label htmlFor="memory_size">Parallel Migrations</label>
-          <input type="text" id="memory_size" value="" readOnly disabled/>
-        </div> */}
+          {/* <CustomSelect
+            label={'마이그레이션 정책'}
+            value={formHostState.migrationPolicy}
+            onChange={(e) => setFormHostState((prev) => ({ ...prev, migrationPolicy: e.target.value }))}
+            options={migrationPolicyOptionList}
+          />       */}
       </div>
     </div>
   </>

@@ -25,6 +25,8 @@ const Tab = ({ tabs, activeTab, onTabClick }) => (
 const VmDiskConnectionModal = ({ isOpen, editMode, vmId, dataCenterId, onSelectDisk = () => {}, onRequestClose, }) => {
   const [activeTab, setActiveTab] = useState("img");
   const [selectedDiskId, setSelectedDiskId] = useState(null);
+  const [selectedInterface, setSelectedInterface] = useState("VIRTIO"); // 초기 interface 값
+
 
   const {
     data: disks = [], isLoading
@@ -37,22 +39,21 @@ const VmDiskConnectionModal = ({ isOpen, editMode, vmId, dataCenterId, onSelectD
     { id: "directlun", label: "직접 LUN"}, // 직접 LUN 데이터 추가 필요
   ];
 
-  // const interfaceList = [
-  //   { value: "VIRTIO_SCSI", label: "VirtIO-SCSI" },
-  //   { value: "VIRTIO", label: "VirtIO" },
-  //   { value: "SATA", label: "SATA" },
-  // ];
-
-  // useEffect(() => {
-  //   if (!editMode && interfaceList.length > 0) {
-  //     setInterface_(interfaceList[0].value);
-  //   }
-  // }, [interfaceList, editMode]);
+  const interfaceList = [
+    { value: "VIRTIO_SCSI", label: "VirtIO-SCSI" },
+    { value: "VIRTIO", label: "VirtIO" },
+    { value: "SATA", label: "SATA" },
+  ];
 
   const handleOkClick = () => {
     if (selectedDiskId) {
-      const selectedDiskDetails = disks.find((disk) => disk.id === selectedDiskId);
-      onSelectDisk(selectedDiskId, selectedDiskDetails);
+      const selectedDiskDetails = disks.find(
+        (disk) => disk.id === selectedDiskId
+      );
+      onSelectDisk(selectedDiskId, {
+        ...selectedDiskDetails,
+        interface_: selectedInterface, // 선택된 인터페이스 추가
+      });
       onRequestClose();
     } else {
       toast.error("디스크를 선택하세요!");
@@ -83,32 +84,37 @@ const VmDiskConnectionModal = ({ isOpen, editMode, vmId, dataCenterId, onSelectD
           onTabClick={setActiveTab} 
         />
         {isLoading ? (
-            <div>로딩중</div>
-          ): (
-            <>
+          <div>로딩중</div>
+        ) : (
+          <>
             <TablesOuter
-              columns={activeTab === "img" ? 
-                TableColumnsInfo.VIRTUAL_DISK : TableColumnsInfo.VMS_STOP
+              columns={
+                activeTab === "img"
+                  ? TableColumnsInfo.VIRTUAL_DISK
+                  : TableColumnsInfo.VMS_STOP
               }
               data={disks.map((e) => ({
                 ...e,
                 virtualSize: (e?.virtualSize / Math.pow(1024, 3)) + " GB",
                 actualSize: (e?.actualSize / Math.pow(1024, 3)) + " GB",
                 storageDomain: e?.storageDomainVo?.name,
-                status: e?.status === "UNINITIALIZED" ? "초기화되지 않음" : "UP",
+                status:
+                  e?.status === "UNINITIALIZED"
+                    ? "초기화되지 않음"
+                    : "UP",
                 radio: (
                   <input
                     type="radio"
                     name="diskSelection"
                     value={e.id}
-                    checked={selectedDiskId === e.id} // 선택된 항목의 ID와 비교
-                    onChange={() => setSelectedDiskId(e.id)} // 수동 변경도 지원
+                    checked={selectedDiskId === e.id}
+                    onChange={() => setSelectedDiskId(e.id)}
                   />
                 ),
                 // interface: (
                 //   <select
                 //     value={e?.interface}
-                //     onChange={(e) => setDataCenterVoId(e.target.value)}
+                //     onChange={(e) => f(e.target.value)}
                 //     disabled={editMode}
                 //   >
                 //     {isDatacentersLoading ? (
@@ -124,13 +130,28 @@ const VmDiskConnectionModal = ({ isOpen, editMode, vmId, dataCenterId, onSelectD
                 // )
               }))}
               onRowClick={(selectRow) => {
-                const clickedDiskId = selectRow[0]?.id; // 클릭한 행의 ID 가져오기
-                setSelectedDiskId(clickedDiskId); // 상태 업데이트
+                const clickedDiskId = selectRow[0]?.id;
+                setSelectedDiskId(clickedDiskId);
               }}
             />
-            </>
-          )
-        }
+            <div style={{ marginTop: "1rem" }}>
+              <label htmlFor="interface-select" style={{ marginRight: "1rem" }}>
+                인터페이스:
+              </label>
+              <select
+                id="interface-select"
+                value={selectedInterface}
+                onChange={(e) => setSelectedInterface(e.target.value)}
+              >
+                {interfaceList.map((iface) => (
+                  <option key={iface.value} value={iface.value}>
+                    {iface.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        )}
         
        
         <span>선택된 디스크 ID: {selectedDiskId || "없음"}</span>

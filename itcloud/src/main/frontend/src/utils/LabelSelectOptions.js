@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CustomSelect = ({ className, label, value, onChange, disabled, options }) => (
+const LabelSelectOptions = ({ className, label, value, onChange, disabled, options }) => (
   <div className={className}>
     <label>{label}</label>
     <select value={value} onChange={onChange} disabled={disabled}>
@@ -13,4 +13,4 @@ const CustomSelect = ({ className, label, value, onChange, disabled, options }) 
   </div>
 );
 
-export default CustomSelect;
+export default LabelSelectOptions;
