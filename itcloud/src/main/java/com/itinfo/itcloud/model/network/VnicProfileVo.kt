@@ -135,15 +135,16 @@ fun VnicProfileVo.toVnicProfileBuilder(): VnicProfileBuilder {
 			.passThrough(VnicPassThroughBuilder().mode(VnicPassThroughMode.fromValue(vnic.passThrough.toString())))
 			.migratable(vnic.migration)
 			.failover(VnicProfileBuilder().id(vnic.failOVer.id))
+	}else{
+		builder
+			.networkFilter(NetworkFilterBuilder().id(vnic.networkFilterVo.id))
+			.portMirroring(vnic.portMirroring)
 	}
 
 	return builder
 		.name(vnic.name)
 		.network(NetworkBuilder().id(vnic.networkVo.id))
 		.description(vnic.description)
-		.portMirroring(vnic.portMirroring)
-		.networkFilter(NetworkFilterBuilder().id(vnic.networkFilterVo.id))
-
 }
 
 /**
