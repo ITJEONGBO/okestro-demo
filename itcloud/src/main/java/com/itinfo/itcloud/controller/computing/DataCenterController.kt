@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.computing.ItDataCenterService
@@ -314,6 +315,9 @@ class DataCenterController: BaseController() {
 		value="가상머신 생성창 - 디스크 연결 목록(데이터센터Id 기반)",
 		notes="해당 데이터센터 내에 있는 디스크 연결 목록을 조회한다"
 	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
@@ -334,6 +338,9 @@ class DataCenterController: BaseController() {
 		value="가상머신 생성창 - ISO 목록(데이터센터Id 기반)",
 		notes="해당 데이터센터 내에 있는 ISO 목록(CD/DVD 연결)을 조회한다"
 	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
@@ -349,7 +356,28 @@ class DataCenterController: BaseController() {
 		return ResponseEntity.ok(iDataCenter.findAllISOFromDataCenter(dataCenterId))
 	}
 
-
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - vnicProfile 목록",
+		notes="가상머신 생성시에 필요한 vnicProfile 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/vnicProfiles")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun vnicProfiles(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<VnicProfileVo>?> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/vnicProfiles ... 가상머신 생성창 - vnicProfiles 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllVnicProfilesFromDataCenter(dataCenterId))
+	}
 
 
 

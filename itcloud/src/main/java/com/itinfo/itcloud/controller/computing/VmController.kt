@@ -66,29 +66,6 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVm.findOne(vmId))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 생성창 - nic 목록",
-		notes="가상머신 생성시에 필요한 vnicProfile 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/nic/{clusterId}")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun vnicProfiles(
-		@PathVariable clusterId: String? = null,
-	): ResponseEntity<List<VnicProfileVo>?> {
-		if (clusterId.isNullOrEmpty())
-			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("/computing/vms/nic/{} ... 가상머신 생성창 - nic 목록", clusterId)
-		return ResponseEntity.ok(iVm.findAllVnicProfilesFromCluster(clusterId))
-	}
-
 
 
 	@ApiOperation(

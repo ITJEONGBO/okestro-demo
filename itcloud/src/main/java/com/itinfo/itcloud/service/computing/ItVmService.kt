@@ -39,23 +39,6 @@ interface ItVmService {
 	@Throws(Error::class)
 	fun findOne(vmId: String): VmVo?
 
-	// 가상머신 생성창
-	// 		클러스터 목록		[ItClusterService.findAll]
-	// 		템플릿 목록			[ItTemplateService.findAll]
-	// 		호스트 목록 			[ItClusterService.findAllHostsFromCluster] (vo 다름)
-	// 		스토리지 도메인 목록 [ItStorageService.findAllDomainsFromDataCenter] (vo 다름)
-	// 		디스크 프로파일 목록 [ItStorageService.findAllDiskProfilesFromStorageDomain]
-
-	/**
-	 * [ItVmService.findAllVnicProfilesFromCluster]
-	 * 가상머신 생성 -  vNic-vnicprofile 목록 출력 (가상머신 생성, 네트워크 인터페이스 생성)
-	 *
-	 * @param clusterId [String] 클러스터 Id
-	 * @return List<[VnicProfileVo]> VnicProfile 목록
-	 */
-	@Throws(Error::class)
-	fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo>
-
 	/**
 	 * [ItVmService.add]
 	 * 가상머신 생성
@@ -149,23 +132,6 @@ class VmServiceImpl(
 		log.info("findOne ... vmId : {}", vmId)
 		val res: Vm? = conn.findVm(vmId).getOrNull()
 		return res?.toVmVo(conn)
-	}
-
-
-	@Throws(Error::class)
-	override fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo> {
-		log.info("findAllVnicProfilesFromCluster ... clusterId: {}", clusterId)
-		val cluster: Cluster = conn.findCluster(clusterId)
-			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
-
-		val res: List<VnicProfile> = conn.findAllNetworks()
-			.getOrDefault(listOf())
-			.filter { it.dataCenter().id() == cluster.dataCenter().id() }
-			.flatMap { network -> conn.findAllVnicProfilesFromNetwork(network.id())
-				.getOrDefault(listOf())
-				.filter { it.network().id() == network.id() }
-			}
-		return res.toVnicProfileToVmVos(conn)
 	}
 
 

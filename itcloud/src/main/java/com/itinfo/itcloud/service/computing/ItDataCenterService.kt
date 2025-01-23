@@ -6,7 +6,9 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.fromDisksToIdentifiedVos
 import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.network.toNetworkVos
+import com.itinfo.itcloud.model.network.toVnicProfileToVmVos
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
@@ -167,7 +169,15 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllISOFromDataCenter(dataCenterId: String): List<IdentifiedVo>
-
+	/**
+	 * [ItDataCenterService.findAllVnicProfilesFromDataCenter]
+	 * 가상머신 생성 -  vnicprofile 목록 출력 (가상머신 생성, 네트워크 인터페이스 생성)
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[VnicProfileVo]> VnicProfile 목록
+	 */
+	@Throws(Error::class)
+	fun findAllVnicProfilesFromDataCenter(dataCenterId: String): List<VnicProfileVo>
 
 
 	/**
@@ -365,7 +375,6 @@ class DataCenterServiceImpl(
 		return res.toDisksInfo(conn)
 	}
 
-
 	@Throws(Error::class)
 	override fun findAllISOFromDataCenter(dataCenterId: String): List<IdentifiedVo> {
 		log.info("findAllISOFromDataCenter ... ")
@@ -376,6 +385,19 @@ class DataCenterServiceImpl(
 			.map { it }
 			.filter { it.contentType() == DiskContentType.ISO && it.status() == DiskStatus.OK }
 		return res.fromDisksToIdentifiedVos()
+	}
+
+	@Throws(Error::class)
+	override fun findAllVnicProfilesFromDataCenter(dataCenterId: String): List<VnicProfileVo> {
+		log.info("findAllVnicProfilesFromDataCenter ... dataCenterId: {}", dataCenterId)
+		val res: List<VnicProfile> = conn.findAllNetworks()
+			.getOrDefault(listOf())
+			.filter { it.dataCenter().id() == dataCenterId }
+			.flatMap { network -> conn.findAllVnicProfilesFromNetwork(network.id())
+				.getOrDefault(listOf())
+				.filter { it.network().id() == network.id() }
+			}
+		return res.toVnicProfileToVmVos(conn)
 	}
 
 
