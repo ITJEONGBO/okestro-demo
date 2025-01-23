@@ -1,15 +1,18 @@
 package com.itinfo.itcloud.service.network
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.TemplateVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.toTemplateIdNames
 import com.itinfo.itcloud.model.computing.toVmsIdName
+import com.itinfo.itcloud.model.fromNetworkFiltersToIdentifiedVos
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.computing.HostOperationServiceImpl
 import com.itinfo.itcloud.service.computing.HostOperationServiceImpl.Companion
 import com.itinfo.util.ovirt.*
+import org.ovirt.engine.sdk4.types.NetworkFilter
 import org.ovirt.engine.sdk4.types.Template
 import org.ovirt.engine.sdk4.types.Vm
 import org.ovirt.engine.sdk4.types.VnicProfile
@@ -42,6 +45,7 @@ interface ItVnicProfileService{
      */
     @Throws(Error::class)
     fun findOne(vnicProfileId: String): VnicProfileVo?
+
     /**
      * [ItVnicProfileService.add]
      * 네트워크 - vNIC Profile 생성
@@ -98,6 +102,14 @@ interface ItVnicProfileService{
     @Throws(Error::class)
     fun findAllTemplatesFromVnicProfile(vnicProfileId: String): List<TemplateVo>
 
+    /**
+     * [ItVnicProfileService.findAllNetworkFilters]
+     * vNIC Profile 생성 시 필요한 네트워크 필터 목록
+     *
+     * @return List<[IdentifiedVo]>
+     */
+    @Throws(Error::class)
+    fun findAllNetworkFilters(): List<IdentifiedVo>
 }
 @Service
 class VnicProfileServiceImpl(
@@ -127,6 +139,7 @@ class VnicProfileServiceImpl(
             .getOrNull()
         return res?.toVnicProfileVo(conn)
     }
+
 
     @Throws(Error::class)
     override fun add(vnicProfileVo: VnicProfileVo): VnicProfileVo? {
@@ -200,6 +213,13 @@ class VnicProfileServiceImpl(
         return res.toTemplateIdNames()
     }
 
+    @Throws(Error::class)
+    override fun findAllNetworkFilters(): List<IdentifiedVo> {
+        log.info("findAllNetworkFilters ... ")
+        val res: List<NetworkFilter> = conn.findAllNetworkFilters()
+            .getOrDefault(listOf())
+        return res.fromNetworkFiltersToIdentifiedVos()
+    }
 
     companion object {
         private val log by LoggerDelegate()

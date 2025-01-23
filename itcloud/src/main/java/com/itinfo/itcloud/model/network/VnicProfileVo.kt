@@ -6,6 +6,8 @@ import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.NetworkBuilder
+import org.ovirt.engine.sdk4.builders.NetworkFilterBuilder
+import org.ovirt.engine.sdk4.builders.VnicPassThroughBuilder
 import org.ovirt.engine.sdk4.builders.VnicProfileBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
@@ -40,6 +42,7 @@ class VnicProfileVo(
 	val passThrough: VnicPassThroughMode = VnicPassThroughMode.DISABLED,
 	val migration: Boolean = false,
 	val portMirroring: Boolean = false,
+	val failOVer: IdentifiedVo = IdentifiedVo(),  // vnicprofile이 들어감
 	val networkFilterVo: IdentifiedVo =  IdentifiedVo(),
 	val dataCenterVo: IdentifiedVo = IdentifiedVo(),
 	val networkVo: IdentifiedVo = IdentifiedVo(),
@@ -54,6 +57,7 @@ class VnicProfileVo(
 		private var bPassThrough: VnicPassThroughMode = VnicPassThroughMode.DISABLED;fun passThrough(block: () -> VnicPassThroughMode) { bPassThrough = block() ?: VnicPassThroughMode.DISABLED }
 		private var bMigration: Boolean = false;fun migration(block: () -> Boolean?) { bMigration = block() ?: false }
 		private var bPortMirroring: Boolean = false;fun portMirroring(block: () -> Boolean?) { bPortMirroring = block() ?: false }
+		private var bFailOver: IdentifiedVo = IdentifiedVo();fun failOVer(block: () -> IdentifiedVo?) { bFailOver = block() ?: IdentifiedVo() }
 		private var bNetworkFilterVo: IdentifiedVo = IdentifiedVo();fun networkFilterVo(block: () -> IdentifiedVo?) { bNetworkFilterVo = block() ?: IdentifiedVo() }
 		private var bDataCenterVo: IdentifiedVo = IdentifiedVo();fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
 		private var bNetworkVo: IdentifiedVo = IdentifiedVo();fun networkVo(block: () -> IdentifiedVo?) { bNetworkVo = block() ?: IdentifiedVo() }
@@ -122,13 +126,24 @@ fun List<VnicProfile>.toVnicProfileVos(conn: Connection): List<VnicProfileVo> =
  * vnicProfile 빌더
  */
 fun VnicProfileVo.toVnicProfileBuilder(): VnicProfileBuilder {
-//	log.info(this@toVnicProfileBuilder.)
-	return VnicProfileBuilder()
-		.name(this@toVnicProfileBuilder.name)
-		.network(NetworkBuilder().id(this@toVnicProfileBuilder.networkVo.id))
-		.description(this@toVnicProfileBuilder.description)
-//		.networkFilter()
-//		.migratable(this@toVnicProfileBuilder.migration)
+	// 통과가 true 라면 마이그레이션 가능과 페일오버 vnic 기능 활성화,
+	// 반대로 네트워크 필터는
+	val vnic = this@toVnicProfileBuilder
+	val builder = VnicProfileBuilder()
+	if(vnic.passThrough == VnicPassThroughMode.ENABLED){
+		builder
+			.passThrough(VnicPassThroughBuilder().mode(VnicPassThroughMode.fromValue(vnic.passThrough.toString())))
+			.migratable(vnic.migration)
+			.failover(VnicProfileBuilder().id(vnic.failOVer.id))
+	}
+
+	return builder
+		.name(vnic.name)
+		.network(NetworkBuilder().id(vnic.networkVo.id))
+		.description(vnic.description)
+		.portMirroring(vnic.portMirroring)
+		.networkFilter(NetworkFilterBuilder().id(vnic.networkFilterVo.id))
+
 }
 
 /**

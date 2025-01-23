@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
 import com.itinfo.itcloud.controller.network.NetworkController.Companion
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.TemplateVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.network.NetworkVo
@@ -203,6 +204,22 @@ class VnicProfileController: BaseController() {
             throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
         log.info("/vnicProfiles/{}/vms ... 템플릿 목록", vnicProfileId)
         return ResponseEntity.ok(iVnic.findAllTemplatesFromVnicProfile(vnicProfileId))
+    }
+
+    @ApiOperation(
+        httpMethod="GET",
+        value="네트워크 필터 목록",
+        notes="네트워크 필터 목록을 조회한다"
+    )
+    @ApiResponses(
+        ApiResponse(code = 200, message = "OK")
+    )
+    @GetMapping("/networkFilters")
+    @ResponseBody
+    fun networkFilters(
+    ): ResponseEntity<List<IdentifiedVo>> {
+        log.info("/networkFilters ... 네트워크 필터 목록")
+        return ResponseEntity.ok(iVnic.findAllNetworkFilters())
     }
 
 

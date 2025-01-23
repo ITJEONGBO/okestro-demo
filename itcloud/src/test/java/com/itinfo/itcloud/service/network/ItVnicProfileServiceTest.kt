@@ -4,7 +4,6 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.TemplateVo
 import com.itinfo.itcloud.model.computing.VmVo
-import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.VnicProfileVo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
@@ -73,7 +72,7 @@ class ItVnicProfileServiceTest {
     }
 
     /**
-     * [should_findVnicProfile]
+     * [should_findOne]
      * [ItVnicProfileService.findOne]에 대한 단위테스트
      *
      * @see ItVnicProfileService.findOne
@@ -87,6 +86,23 @@ class ItVnicProfileServiceTest {
         assertThat(result, `is`(not(nullValue())))
         println(result)
         assertThat(result?.name, `is`("ovirtmgmt"))
+    }
+
+    /**
+     * [should_findAllNetworkFilters]
+     * [ItVnicProfileService.findAllNetworkFilters]에 대한 단위테스트
+     *
+     * @see ItVnicProfileService.findAllNetworkFilters
+     */
+    @Test
+    fun should_findAllNetworkFilters() {
+        log.debug("findAllNetworkFilters ... ")
+        val result: List<IdentifiedVo> =
+            service.findAllNetworkFilters()
+
+        assertThat(result, `is`(not(nullValue())))
+        result.forEach { println(it) }
+//        assertThat(result.size, `is`(9))
     }
 
     /**
