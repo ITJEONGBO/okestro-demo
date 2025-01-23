@@ -21,6 +21,7 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
       <NetworkActionButtons
         openModal={openModal}
         isEditDisabled={selectedNetworks.length !== 1}
+        isDeleteDisabled={selectedNetworks.length === 0}
       />
       <span>ID: {selectedIds}</span>
 
@@ -50,7 +51,7 @@ const NetworkDupl = ({ networks = [], columns = [] }) => {
       {/* 네트워크 모달창 */}
       <NetworkModals
         activeModal={activeModal}
-        network={selectedNetworks[0]}
+        network={activeModal === 'edit' ? selectedNetworks[0] : null}
         selectedNetworks={selectedNetworks}
         onClose={closeModal}
       />

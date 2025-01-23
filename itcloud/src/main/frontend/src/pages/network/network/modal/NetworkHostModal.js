@@ -25,6 +25,13 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
   });
   const clusterId = host?.clusterVo?.id;
 
+  useEffect(() => {
+    if (!hostId) {
+      console.error("hostId가 없습니다. 요청을 건너뜁니다.");
+    } else {
+      console.log("hostId:", hostId);
+    }
+  }, [hostId]);
 
   useEffect(() => {
     if (!clusterId) {

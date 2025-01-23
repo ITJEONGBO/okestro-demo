@@ -101,7 +101,7 @@ const DiskActionModal = ({ isOpen, action, data=[], onClose }) => {
                 data.map((disk, index) => (
                   <tr key={index}>
                     <td>{disk.alias || "N/A"}</td>
-                    <td>{disk.virtualSize ? `${formatBytesToGBToFixedZero(disk.virtualSize)} GiB` : "N/A"}</td>
+                    <td>{disk?.virtualSize}</td>
                     <td>{disk.storageDomainVo.name || "N/A"}</td>
                     <td>
                       <select>

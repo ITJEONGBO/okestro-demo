@@ -48,7 +48,7 @@ const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
       {/* 데이터센터 모달창 */}
       <DataCenterModals
         activeModal={activeModal}
-        dataCenter={selectedDataCenters[0]}
+        dataCenter={activeModal === 'edit' ? selectedDataCenters[0] : null}
         selectedDataCenters={selectedDataCenters}
         onClose={closeModal}
       />

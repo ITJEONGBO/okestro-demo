@@ -122,6 +122,7 @@ fun List<VnicProfile>.toVnicProfileVos(conn: Connection): List<VnicProfileVo> =
  * vnicProfile 빌더
  */
 fun VnicProfileVo.toVnicProfileBuilder(): VnicProfileBuilder {
+//	log.info(this@toVnicProfileBuilder.)
 	return VnicProfileBuilder()
 		.name(this@toVnicProfileBuilder.name)
 		.network(NetworkBuilder().id(this@toVnicProfileBuilder.networkVo.id))

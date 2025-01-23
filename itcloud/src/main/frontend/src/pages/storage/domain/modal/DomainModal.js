@@ -605,7 +605,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
                     onRowClick={handleRowClick}
                     // shouldHighlight1stCol={true}
                   />
-           
+            
                 // ): importMode ? (
                 //   <>
                 //     <label className='label_font_name'>대상 검색</label>

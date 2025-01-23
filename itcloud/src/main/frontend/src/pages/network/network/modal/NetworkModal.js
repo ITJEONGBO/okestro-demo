@@ -310,34 +310,35 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
             </FormGroup>
 
             <FormGroup label="MTU" className="mtu-form">
-              <div className='mtu-input-outer'>
-                <div className='mtu-radio-input'>
-                    <div style={{fontSize:'0.32rem'}}>
-                      <input 
-                        type='radio'
-                        checked={formState.mtu === '0'} // 기본값 상태 체크
-                        onChange={() => setFormState((prev) => ({ ...prev, mtu: '0' }))}
-                      />
-                      <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
-                    </div>
-                    <div style={{fontSize:'0.32rem'}}>
-                      <input 
-                        type='radio'
-                        checked={formState.mtu === '0'} // 기본값 상태 체크
-                        onChange={() => setFormState((prev) => ({ ...prev, mtu: '0' }))}
-                      />
-                      <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
-                    </div>
+              <div className="mtu-input-outer">
+                <div className="mtu-radio-input">
+                  <div style={{ fontSize: "0.32rem" }}>
+                    <input
+                      type="radio"
+                      checked={formState.mtu === "0"} // 기본값 상태 체크
+                      onChange={() => setFormState((prev) => ({ ...prev, mtu: "0" }))}
+                    />
+                    <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
+                  </div>
+                  <div style={{ fontSize: "0.32rem" }}>
+                    <input
+                      type="radio"
+                      checked={formState.mtu === "custom"} // 사용자 정의 상태 체크
+                      onChange={() => setFormState((prev) => ({ ...prev, mtu: "custom" }))}
+                    />
+                    <label style={{ fontSize: "0.32rem" }}>사용자 정의</label>
+                  </div>
                 </div>
-                <div className='mtu-text-input' style={{fontSize:'10px'}}>
+                <div className="mtu-text-input" style={{ fontSize: "10px" }}>
                   <input 
-                        type='text'
+                    type="text" 
+                    style={{width:'100%'}}
+                    disabled={formState.mtu !== "custom"} // 사용자 정의 라디오 선택 시만 활성화
                   />
                 </div>
               </div>
-      
-
             </FormGroup>
+
 
          
             
@@ -354,9 +355,9 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
               </div>
             </FormGroup>
 
-            <div style={{fontSize: "0.32rem",padding:'0 1.4em',fontWeight:'800' }}>DNS 서버</div>
+            <div style={{fontSize: "0.32rem",padding:'0 1em',fontWeight:'800' }}>DNS 서버</div>
             <FormGroup>
-              <div className='network-form-group p-0'>
+              <div className='network-form-group' style={{width:'100%',padding:0}}>
                   <input 
                     type="text" 
                     id="dns_server" 

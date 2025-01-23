@@ -51,7 +51,7 @@ const VnicProfileDupl = ({ vnicProfiles = [], columns = [], networkId }) => {
       {/* vnicProfile 모달창 */}
       <VnicProfileModals
         activeModal={activeModal}
-        vnicProfile={selectedVnicProfiles[0]}
+        vnicProfile={activeModal === 'edit' ? selectedVnicProfiles[0] : null}
         selectedVnicProfiles={selectedVnicProfiles}
         networkId={networkId}
         onClose={closeModal}

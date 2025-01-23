@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DiskActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status}) => {
+const DiskActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status,type = 'default'}) => {
   const isOk = status === "OK"
 
   const basicActions = [
@@ -12,10 +12,11 @@ const DiskActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status
     { type: 'upload', label: '업로드' },
   ];
 
+  const wrapperClass = type === 'context' ? 'right-click-menu-box' : 'header-right-btns';
   return (
-    <div className="header-right-btns">
+    <div className={wrapperClass}>
       {basicActions.map(({ type, label, disabled }) => (
-        <button key={type} onClick={() => openModal(type)} disabled={disabled}>
+        <button key={type} className='right-click-menu-btn' onClick={() => openModal(type)} disabled={disabled}>
           {label}
         </button>
       ))}

@@ -6,6 +6,7 @@ import '../css/MVnic.css';
 import { 
   useAddVnicProfile, 
   useAllDataCenters, 
+  useAllnicFromVM, 
   useEditVnicProfile, 
   useNetworksFromDataCenter, 
   useVnicProfile
@@ -63,7 +64,16 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     isLoading: isNetworksLoading
   } = useNetworksFromDataCenter(dataCenterVoId || undefined, (e) => ({...e,}));
   
-  const nFilters = [ 
+  //페일오버버
+  // const { 
+  //   data: failoverNics = [], 
+  //   isLoading: isFailoverNicsLoading 
+  // } = useAllnicFromVM(dataCenterVoId, (e) => ({
+  //   id: e?.id,
+  //   name: e?.name,
+  // }));
+
+  const nFilters = [  // api로 들어감
     { value: "vdsm-no-mac-spoofing", label: "vdsm-no-mac-spoofing" },
     { value: "allow-arp", label: "allow-arp" },
     { value: "allow-dhcp", label: "allow-dhcp" },
@@ -279,12 +289,21 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
             </div>
             
             {/* 페일오버 vNIC 프로파일 */}
-            <div className="vnic-new-box">
+            {/* <div className="vnic-new-box">
               <label htmlFor="failover_vnic_profile">페일오버 vNIC 프로파일</label>
-              <select id="failover_vnic_profile"   disabled={!formState.migration || !formState.passthrough} >
+              <select
+                id="failover_vnic_profile"
+                disabled={!formState.migration || !formState.passthrough}
+              >
                 <option value="none">없음</option>
+                {!isFailoverNicsLoading &&
+                  failoverNics.map((nic) => (
+                    <option key={nic.id} value={nic.id}>
+                      {nic.name}
+                    </option>
+                  ))}
               </select>
-            </div>
+            </div> */}
 
 
             <div className="vnic-new-checkbox">
@@ -306,8 +325,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
                 <input 
                   type="checkbox" 
                   id="allow_all_users" 
-                  checked={allowAllUsers} 
-                  onChange={() => setAllowAllUsers(!allowAllUsers)} 
+                  checked
                 />
                 <label htmlFor="allow_all_users">모든 사용자가 이 프로파일을 사용하도록 허용</label>
               </div>
