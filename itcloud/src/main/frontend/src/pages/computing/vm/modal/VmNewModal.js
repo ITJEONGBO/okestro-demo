@@ -420,7 +420,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     connVo: { id: formBootState.cdConn },
 
 
-    vnicProfileVos: formInfoState.nicVoList.map((vnic) => ({ id: vnic.id })),
+    vnicProfileVos: formInfoState.nicVoList.map((vnic) => ({ id: vnic.vnicProfileVo.id })),
     diskAttachmentVos: formInfoState.diskVoList.map((disk) => ({ id: disk.id })),
   };
   

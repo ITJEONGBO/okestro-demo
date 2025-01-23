@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 
 const VmDiskModal = lazy(() => import('../VmDiskModal'));
 const VmDiskConnectionModal = lazy(() => import('../VmDiskConnectionModal'));
@@ -26,33 +26,36 @@ const VmCommon = ({ editMode, vmId, dataCenterId, nics, disks, formInfoState, se
       vnicProfileVo: { id: value },
     };
     setNicState(updatedNics);
-
+  
+    // Update nicVoList in formInfoState
     setFormInfoState((prev) => ({
       ...prev,
       nicVoList: updatedNics.filter((nic) => nic.vnicProfileVo.id),
     }));
   };
-
-  const handleAddNic = (index) => {
-    const selectedNic = nicState[index];
-    if (!selectedNic.vnicProfileVo.id) return; // Don't add if no value selected
-
+  
+  const handleAddNic = () => {
     const newNicNumber = nicState.length + 1;
-    setNicState([
+    const updatedNics = [
       ...nicState,
       { id: '', name: `nic${newNicNumber}`, vnicProfileVo: { id: '' } },
-    ]);
+    ];
+    setNicState(updatedNics);
+  
+    // No change to nicVoList as new NIC does not have an ID yet
   };
-
+  
   const handleRemoveNic = (index) => {
     const updatedNics = nicState.filter((_, i) => i !== index);
     setNicState(updatedNics);
-
+  
+    // Update nicVoList in formInfoState
     setFormInfoState((prev) => ({
       ...prev,
       nicVoList: updatedNics.filter((nic) => nic.vnicProfileVo.id),
     }));
   };
+  
 
   // NIC 목록 업데이트 (디스크 초기화와 비슷한 로직)
   // useEffect(() => {
@@ -86,12 +89,7 @@ const VmCommon = ({ editMode, vmId, dataCenterId, nics, disks, formInfoState, se
       {editMode &&
         <div>
           <label htmlFor="vmId">가상머신 ID</label>
-          <input
-            type="text"
-            id="vmId"
-            value={vmId}
-            disabled
-          />
+          <input type="text" value={vmId} disabled />
         </div>
       }
     </div>
@@ -156,7 +154,7 @@ const VmCommon = ({ editMode, vmId, dataCenterId, nics, disks, formInfoState, se
             </select>
             <button
               onClick={() => handleAddNic(index)}
-              disabled={!nic.vnicProfileVo.id} // Disable if no value selected
+              disabled={!nic.vnicProfileVo.id} 
               style={{ marginLeft: '10px' }}
             >
               +
