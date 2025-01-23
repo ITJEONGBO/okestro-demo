@@ -160,6 +160,8 @@ export const useDashboardMetricStorage = (mapPredicate) => useQuery({
  * @description 데이터센터 목록조회 useQuery훅
  *
  * @param {function} mapPredicate 객체 변형 처리
+ * 
+ * @see ApiManager.findAllDataCenters
  */
 export const useAllDataCenters = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -176,17 +178,17 @@ export const useAllDataCenters = (mapPredicate) => useQuery({
  * @description 데이터센터 정보 useQuery훅
  *
  * @param {function} mapPredicate 객체 변형 처리
+ * @see ApiManager.findDataCenter
  */
 export const useDataCenter = (dataCenterId) => useQuery({
   refetchOnWindowFocus: true,  // 윈도우가 포커스될 때마다 데이터 리프레시
   queryKey: ['dataCenter', dataCenterId],  // queryKey에 dataCenterId를 포함시켜 dataCenterId가 변경되면 다시 요청
   queryFn: async () => {
     console.log(`useDataCenter ...`);
-    if (!dataCenterId) return {};  // dataCenterId가 없는 경우 빈 객체 반환
     const res = await ApiManager.findDataCenter(dataCenterId);  // dataCenterId에 따라 API 호출
     return res ?? {};  // 데이터를 반환, 없는 경우 빈 객체 반환
   },
-
+  enabled: !!dataCenterId, 
 });
 
 /**
@@ -207,7 +209,6 @@ export const useClustersFromDataCenter = (dataCenterId, mapPredicate) => useQuer
     const res = await ApiManager.findAllClustersFromDataCenter(dataCenterId); 
     return res?.map(mapPredicate) ?? []; // 데이터 가공
   },
-
   enabled: !!dataCenterId, // dataCenterId가 있을 때만 쿼리를 실행
 });
 
@@ -225,11 +226,12 @@ export const useHostsFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['hostsFromDataCenter', dataCenterId], 
   queryFn: async () => {
-    if(dataCenterId === '') return [];
+    // if(dataCenterId === '') return [];
     console.log(`hostsFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findAllHostsFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!dataCenterId, 
 });
 /**
  * @name useVMsFromDataCenter
@@ -290,7 +292,8 @@ export const useNetworksFromDataCenter = (dataCenterId, mapPredicate) => useQuer
     console.log(`networksFromDataCenter ... ${dataCenterId}`);
     const res = await ApiManager.findAllNetworksFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!dataCenterId, 
 });
 /**
  * @name useEventsFromDataCenter
@@ -320,7 +323,7 @@ export const useEventsFromDataCenter = (dataCenterId, mapPredicate) => useQuery(
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findDisksFromVM
+ * @see ApiManager.findDiskListFromDataCenter
  */
 export const useFindDiskListFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -330,6 +333,7 @@ export const useFindDiskListFromDataCenter = (dataCenterId, mapPredicate) => use
     const res = await ApiManager.findDiskListFromDataCenter(dataCenterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
+  enabled: !!dataCenterId, 
 });
 /**
  * @name useCDFromDataCenter
@@ -339,7 +343,7 @@ export const useFindDiskListFromDataCenter = (dataCenterId, mapPredicate) => use
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findAllISO
+ * @see ApiManager.findAllISOFromDataCenter
  */
 export const useCDFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -359,6 +363,7 @@ export const useCDFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
  * @description 데이터센터 생성 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.addDataCenter
  */
 export const useAddDataCenter = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -377,6 +382,7 @@ export const useAddDataCenter = () => {
  * @description 데이터센터 수정 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.editDataCenter
  */
 export const useEditDataCenter = () => {
   const queryClient = useQueryClient();  
@@ -395,6 +401,7 @@ export const useEditDataCenter = () => {
  * @description 데이터센터 삭제 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.deleteDataCenter
  */
 export const useDeleteDataCenter = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -418,6 +425,7 @@ export const useDeleteDataCenter = () => {
  * @description 클러스터 목록조회 useQuery훅
  * 
  * @param {function} mapPredicate 객체 변형 처리
+ * @see ApiManager.findAllClusters
  */
 export const useAllClusters = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -434,6 +442,7 @@ export const useAllClusters = (mapPredicate) => useQuery({
  * @description 클러스터 (dc status=up) 목록조회 useQuery훅
  * 
  * @param {function} mapPredicate 객체 변형 처리
+ * @see ApiManager.findAllUpClusters
  */
 export const useAllUpClusters = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -450,16 +459,19 @@ export const useAllUpClusters = (mapPredicate) => useQuery({
  * 
  * @param {string} clusterId 클러스터 ID
  * @returns useQuery 훅
+ * 
+ * @see ApiManager.findCluster
  */
 export const useCluster = (clusterId) => useQuery({
   refetchOnWindowFocus: true,  // 윈도우 포커스 시 데이터 리프레시
   queryKey: ['cluster', clusterId],  // queryKey에 clusterId를 포함시켜 clusterId가 변경되면 다시 요청
   queryFn: async () => {
-    if (!clusterId) return {};  // clusterId가 없을 때 빈 객체 반환
+    // if (!clusterId) return {};  // clusterId가 없을 때 빈 객체 반환
     console.log(`useCluster ... ${clusterId}`);
     const res = await ApiManager.findCluster(clusterId);  // clusterId에 따라 API 호출
     return res ?? {};  // 반환값이 없으면 빈 객체 반환
   },
+  enabled: !!clusterId, 
   staleTime: 0,  // 항상 최신 데이터를 유지
   cacheTime: 0,  // 캐시를 유지하지 않고 매번 새로운 데이터를 요청
 });
@@ -471,7 +483,7 @@ export const useCluster = (clusterId) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useNetworkFromCluster
+ * @see ApiManager.findNetworksFromCluster
  */
 export const useNetworkFromCluster = (clusterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -480,7 +492,8 @@ export const useNetworkFromCluster = (clusterId, mapPredicate) => useQuery({
     console.log(`테스트해보기useNetworkFromCluster ... ${clusterId}`);
     const res = await ApiManager.findNetworksFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!clusterId, 
 })
 /**
  * @name useHostFromCluster
@@ -490,7 +503,7 @@ export const useNetworkFromCluster = (clusterId, mapPredicate) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useHostFromCluster
+ * @see ApiManager.findHostsFromCluster
  */
 export const useHostFromCluster = (clusterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -513,7 +526,7 @@ export const useHostFromCluster = (clusterId, mapPredicate) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useVMFromCluster
+ * @see ApiManager.findVMsFromCluster
  */
 export const useVMFromCluster = (clusterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -524,25 +537,25 @@ export const useVMFromCluster = (clusterId, mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   }
 })
-/**
- * @name usePermissionFromCluster
- * @description 클러스터 내 권한 목록조회 useQuery훅
- * 
- * @param {string} clusterId 클러스터ID
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.usePermissionFromCluster
- */
-export const usePermissionFromCluster = (clusterId, mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['permissionsFromCluster', clusterId], 
-  queryFn: async () => {
-    console.log(`usePermissionromCluster ... ${clusterId}`);
-    const res = await ApiManager.findPermissionsFromCluster(clusterId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
-})
+// /**
+//  * @name usePermissionFromCluster
+//  * @description 클러스터 내 권한 목록조회 useQuery훅
+//  * 
+//  * @param {string} clusterId 클러스터ID
+//  * @param {function} mapPredicate 목록객체 변형 처리
+//  * @returns useQuery훅
+//  * 
+//  * @see ApiManager.findPermissionsFromCluster
+//  */
+// export const usePermissionFromCluster = (clusterId, mapPredicate) => useQuery({
+//   refetchOnWindowFocus: true,
+//   queryKey: ['permissionsFromCluster', clusterId], 
+//   queryFn: async () => {
+//     console.log(`usePermissionromCluster ... ${clusterId}`);
+//     const res = await ApiManager.findPermissionsFromCluster(clusterId); 
+//     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+//   }
+// })
 
 /**
  * @name useCpuProfilesFromCluster
@@ -552,7 +565,7 @@ export const usePermissionFromCluster = (clusterId, mapPredicate) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useHostFromCluster
+ * @see ApiManager.findCpuProfilesFromCluster
  */
 export const useCpuProfilesFromCluster = (clusterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -575,7 +588,7 @@ export const useCpuProfilesFromCluster = (clusterId, mapPredicate) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useEventFromCluster
+ * @see ApiManager.findEventsFromCluster
  */
 export const useEventFromCluster = (clusterId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -584,7 +597,8 @@ export const useEventFromCluster = (clusterId, mapPredicate) => useQuery({
     console.log(`useEventFromCluster ... ${clusterId}`);
     const res = await ApiManager.findEventsFromCluster(clusterId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!clusterId, 
 })
 
 /**
@@ -592,6 +606,7 @@ export const useEventFromCluster = (clusterId, mapPredicate) => useQuery({
  * @description 클러스터 생성 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.addCluster
  */
 export const useAddCluster = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -610,6 +625,7 @@ export const useAddCluster = () => {
  * @description 클러스터 수정 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.editCluster
  */
 export const useEditCluster = () => {
   const queryClient = useQueryClient();  
@@ -628,6 +644,7 @@ export const useEditCluster = () => {
  * @description 클러스터 삭제 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.deleteCluster
  */
 export const useDeleteCluster = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -649,6 +666,7 @@ export const useDeleteCluster = () => {
  * @description 호스트 목록조회 useQuery훅
  * 
  * @param {function} mapPredicate 객체 변형 처리
+ * @see ApiManager.findAllHosts
  */
 export const useAllHosts = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -665,6 +683,8 @@ export const useAllHosts = (mapPredicate) => useQuery({
  * 
  * @param {string} hostId 호스트ID
  * @returns useQuery훅
+ * 
+ * @see ApiManager.findHost
  */
 export const useHost = (hostId) => useQuery({
   refetchOnWindowFocus: true,
@@ -675,12 +695,13 @@ export const useHost = (hostId) => useQuery({
     const res = await ApiManager.findHost(hostId)
     return res ?? {}
   },
-  onSuccess: (data) => {
-    console.log('host data:', data);
-  },
-  onError: (error) => {
-    console.error('API 에러:', error.message);
-  },
+  enabled: !!hostId
+  // onSuccess: (data) => {
+  //   console.log('host data:', data);
+  // },
+  // onError: (error) => {
+  //   console.error('API 에러:', error.message);
+  // },
 })
 
 
@@ -701,18 +722,19 @@ export const useVmFromHost = (hostId, mapPredicate) => useQuery({
     console.log(`useVmFromHost ... ${hostId}`);
     const res = await ApiManager.findVmsFromHost(hostId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!hostId
 })
 
 /**
- * @name useVmFromHost
+ * @name useNetworkInterfaceFromHost
  * @description 호스트 내 네트워크인터페이스 목록조회 useQuery훅
  * 
  * @param {string} hostId
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findVmsFromHost
+ * @see ApiManager.findHostNicsFromHost
  */
 export const useNetworkInterfaceFromHost = (hostId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -721,7 +743,8 @@ export const useNetworkInterfaceFromHost = (hostId, mapPredicate) => useQuery({
     console.log(`useNetworkInterfaceFromHost ... ${hostId}`);
     const res = await ApiManager.findHostNicsFromHost(hostId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!hostId
 })
 
 /**
@@ -732,7 +755,7 @@ export const useNetworkInterfaceFromHost = (hostId, mapPredicate) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findHostNicsFromHost
+ * @see ApiManager.findHostdevicesFromHost
  */
 export const useHostdeviceFromHost = (hostId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -741,17 +764,18 @@ export const useHostdeviceFromHost = (hostId, mapPredicate) => useQuery({
     console.log(`useHostdeviceFromHost ... ${hostId}`);
     const res = await ApiManager.findHostdevicesFromHost(hostId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!hostId
 })
 /**
- * @name useHostFromCluster
+ * @name useEventFromHost
  * @description 호스트 내 이벤트 목록조회 useQuery훅
  * 
  * @param {string} clusterId 클러스터ID
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useHostFromCluster
+ * @see ApiManager.findEventsFromHost
  */
 export const useEventFromHost = (hostId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -760,28 +784,29 @@ export const useEventFromHost = (hostId, mapPredicate) => useQuery({
     console.log(`EventFromHost ... ${hostId}`);
     const res = await ApiManager.findEventsFromHost(hostId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!hostId
 })
 
-/**
- * @name usePermissionFromCluster
- * @description 클러스터 내 권한 목록조회 useQuery훅
- * 
- * @param {string} clusterId 클러스터ID
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.usePermissionFromCluster
- */
-export const usePermissionFromHost = (hostId, mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['PermissionFromHost', hostId], 
-  queryFn: async () => {
-    console.log(`usePermissionFromHost ... ${hostId}`);
-    const res = await ApiManager.findPermissionsFromHost(hostId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
-})
+// /**
+//  * @name usePermissionFromHost
+//  * @description 클러스터 내 권한 목록조회 useQuery훅
+//  * 
+//  * @param {string} clusterId 클러스터ID
+//  * @param {function} mapPredicate 목록객체 변형 처리
+//  * @returns useQuery훅
+//  * 
+//  * @see ApiManager.usePermissionFromHost
+//  */
+// export const usePermissionFromHost = (hostId, mapPredicate) => useQuery({
+//   refetchOnWindowFocus: true,
+//   queryKey: ['PermissionFromHost', hostId], 
+//   queryFn: async () => {
+//     console.log(`usePermissionFromHost ... ${hostId}`);
+//     const res = await ApiManager.findPermissionsFromHost(hostId); 
+//     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+//   }
+// })
 
 
 /**
@@ -798,13 +823,14 @@ export const useIscsiFromHost = (hostId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['IscsiFromHost', hostId], 
   queryFn: async () => {
-    if(hostId === null) return [];
+    // if(hostId === null) return [];
     console.log(`IscsiFromHost ... ${hostId}`);
     const res = await ApiManager.findAllIscsiFromHost(hostId); 
     const processedData = res?.map((e) => mapPredicate(e)) ?? [];
     console.log('Processed iSCSI data:', processedData);
     return processedData; // 데이터 가공 후 반환
   },
+  enabled: !!hostId,
   onSuccess: (data) => {
     console.log('iSCSI data:', data);
   },
@@ -831,6 +857,7 @@ export const useFibreFromHost = (hostId, mapPredicate) => useQuery({
     console.log('Processed Fibre data:', processedData);
     return processedData; // 데이터 가공 후 반환
   },
+  enabled: !!hostId,
   onSuccess: (data) => {
     console.log('Fibre data:', data);
   },
@@ -868,7 +895,7 @@ export const useImportIscsiFromHost = () => {
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findImportIscsiFromHost
+ * @see ApiManager.findImportFcpFromHost
  */
 export const useImportFcpFromHost = () => {
   // const queryClient = useQueryClient();
@@ -892,7 +919,7 @@ export const useImportFcpFromHost = () => {
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findImportIscsiFromHost
+ * @see ApiManager.findLoginIscsiFromHost
  */
 export const useLoginIscsiFromHost = () => {
   // const queryClient = useQueryClient();
@@ -914,6 +941,7 @@ export const useLoginIscsiFromHost = () => {
  * @description 호스트 생성 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.addHost
  */
 export const useAddHost = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -932,6 +960,7 @@ export const useAddHost = () => {
  * @description Host 수정 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.editHost
  */
 export const useEditHost = () => {
   const queryClient = useQueryClient();  
@@ -950,6 +979,7 @@ export const useEditHost = () => {
  * @description Host 삭제 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.deleteHost
  */
 export const useDeleteHost = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -969,6 +999,7 @@ export const useDeleteHost = () => {
  * @description 호스트 유지보수 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.deactivateHost
  */
 export const useDeactivateHost = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -989,6 +1020,7 @@ export const useDeactivateHost = () => {
  * @description 호스트 활성 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.activateHost
  */
 export const useActivateHost = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -1008,6 +1040,7 @@ export const useActivateHost = () => {
  * @description 호스트 재시작 useMutation 훅
  * 
  * @returns useMutation 훅
+ * @see ApiManager.restartHost
  */
 export const useRestartHost = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
@@ -1030,6 +1063,7 @@ export const useRestartHost = () => {
  * @description 가상머신 목록조회 useQuery훅
  * 
  * @param {function} mapPredicate 객체 변형 처리
+ * @see ApiManager.findAllVMs
  */
 export const useAllVMs = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -1046,6 +1080,7 @@ export const useAllVMs = (mapPredicate) => useQuery({
  * 
  * @param {string} vmId 가상머신 ID
  * @returns useQuery 훅
+ * @see ApiManager.findVM
  */
 export const useVmById = (vmId) => useQuery({
   queryKey: ['VmById', vmId],
@@ -1055,16 +1090,17 @@ export const useVmById = (vmId) => useQuery({
     const res = await ApiManager.findVM(vmId);
     return res ?? {};
   },
-
+  enabled: !!vmId
 });
 
-
+// 둘중에 하나 지워야함
 /**
  * @name useVm
  * @description 가상머신 상세조회 useQuery 훅
  * 
  * @param {string} vmId 가상머신 ID
  * @returns useQuery 훅
+ * * @see ApiManager.findVM
  */
 export const useVm = (vmId) => useQuery({
   queryKey: ['VmById', vmId],
@@ -1074,7 +1110,7 @@ export const useVm = (vmId) => useQuery({
     const res = await ApiManager.findVM(vmId);
     return res ?? {};
   },
-
+  enabled: !!vmId
 });
 
 
@@ -1143,6 +1179,7 @@ export const useSnapshotDetailFromVM = (vmId, snapshotId) => useQuery({
     const res = await ApiManager.findSnapshotFromVm(vmId, snapshotId); 
     return res ?? {}; 
   },
+  enabled: !!vmId
 });
 
 
@@ -1170,7 +1207,7 @@ export const useAddSnapshotFromVM = () => {
 };
 
 /**
- * @name useDeleteNetwork
+ * @name useDeleteSnapshot
  * @description 가상머신 스냅샷 삭제 useMutation 훅
  * 
  * @returns useMutation 훅
@@ -1191,7 +1228,6 @@ export const useDeleteSnapshot = () => {
     },
   });
 };
-
 
 
 
@@ -1226,13 +1262,13 @@ export const useHostdevicesFromVM = (vmId, mapPredicate) => useQuery({
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.findHostdevicesFromVM
+ * @see ApiManager.findNicsFromVM
  */
 export const useNetworkInterfaceFromVM = (vmId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['NetworkInterfaceFromVM', vmId], 
   queryFn: async () => {
-    console.log(`useNetworkInterfaceFromVM ㅇㄻㄴㄴㅇㅁㄹㄴㄹ... ${vmId}`);
+    console.log(`useNetworkInterfaceFromVM... ${vmId}`);
     const res = await ApiManager.findNicsFromVM(vmId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
@@ -1305,7 +1341,8 @@ export const useAllEventFromVM = (vmId, mapPredicate) => useQuery({
     console.log(`useAllEventFromDomain ... ${vmId}`);
     const res = await ApiManager.findEventsFromVM(vmId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
+  },
+  enabled: !!vmId
 })
 /**
  * @name useAllnicFromVM
@@ -1347,7 +1384,7 @@ export const useVmConsole = () => {
     },
     onError: (error) => {
       console.error('Error console vm:', error);
-    },  
+    },      
   });
 };
 
@@ -1370,7 +1407,6 @@ export const useAddVm = () => {
   });
 };
 
-
 /**
  * @name useEditVm
  * @description 가상머신 수정 
@@ -1391,8 +1427,6 @@ export const useEditVm = () => {
     },
   });
 };
-
-
 
 /**
  * @name useDeleteVm
@@ -1534,14 +1568,14 @@ export const useResetVM = () => {
 };
 
 /**
- * @name useAllVmsFromTemplate
+ * @name useHostsForMigration
  * @description 가상머신 마이그레이션 호스트목록  useQuery훅
  * 
  * @param {string} vmId vmid
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  * 
- * @see ApiManager.useHostsForMigration
+ * @see ApiManager.migrateHostsFromVM
  */
 export const useHostsForMigration = (vmId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -1550,11 +1584,12 @@ export const useHostsForMigration = (vmId, mapPredicate) => useQuery({
     console.log(`useAllVmsFromTemplate ... ${vmId}`);
     const res = await ApiManager.migrateHostsFromVM(vmId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!vmId
 })
 
 /**
- * @name useRebootVM
+ * @name useMigration
  * @description 가상머신 마이그레이션 훅
  * 
  * @returns useMutation 훅
@@ -1594,7 +1629,7 @@ export const useExportVM = () => {
 };
 
 /**
- * @name useAddDataCenter
+ * @name useAddNicFromVM
  * @description 가상머신 네트워크 인터페이스 생성 useMutation 훅
  * 
  * @returns useMutation 훅
@@ -1640,7 +1675,7 @@ export const useEditNicFromVM = () => {
 };
 
 /**
- * @name useNetworkInterface
+ * @name useDeleteNetworkInterface
  * @description 가상머신 네트워크 인터페이스 삭제 useMutation 훅
  * 
  * @returns useMutation 훅
@@ -1664,7 +1699,7 @@ export const useDeleteNetworkInterface = () => {
 };
 
 /**
- * @name useAddDataCenter
+ * @name useAddDiskFromVM
  * @description 가상머신 디스크 생성 useMutation 훅
  * 
  * @returns useMutation 훅
@@ -1673,8 +1708,7 @@ export const useAddDiskFromVM = () => {
   const queryClient = useQueryClient(); // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
     mutationFn: async ({ vmId, diskData }) => {
-      console.log('가상머신 ...3 vmId:', vmId); // vmId 출력
-      console.log('가상머신생성 디스크데이터 diskData:', diskData); // nicData 출력
+      console.log('가상머신 생성 디스크데이터 diskData:', diskData); // nicData 출력
       return await ApiManager.addDiskFromVM(vmId, diskData);
     },
     onSuccess: () => {
@@ -1687,7 +1721,7 @@ export const useAddDiskFromVM = () => {
 };
 
 /**
- * @name useDeleteNetwork
+ * @name useDeleteDiskFromVM
  * @description 가상머신 디스크 삭제 useMutation 훅
  * 
  * @returns useMutation 훅
@@ -1712,11 +1746,12 @@ export const useDeleteDiskFromVM = () => {
 
 
 /**
- * @name useAddDataCenter
+ * @name useAddDisksFromVM
  * @description 가상머신 디스크 연결 useMutation 훅
  * 
  * @returns useMutation 훅
  */
+// TODO 이상함
 export const useAddDisksFromVM = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
@@ -1794,6 +1829,7 @@ export const useTemplate = (tId) => useQuery({
     const res = await ApiManager.findTemplate(tId);
     return res ?? {};
   },
+  enabled: !!tId,
   staleTime: 0,
   cacheTime: 0,
 });
@@ -1815,7 +1851,8 @@ export const useAllVmsFromTemplate = (tId, mapPredicate) => useQuery({
     console.log(`useAllVmsFromTemplate ... ${tId}`);
     const res = await ApiManager.findVMsFromTemplate(tId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!tId,
 })
 
 /**
@@ -1905,7 +1942,8 @@ export const useAllEventFromTemplate = (tId, mapPredicate) => useQuery({
     console.log(`useAllEventFromTemplate ... ${tId}`);
     const res = await ApiManager.findEventsFromTemplate(tId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
+  },
+  enabled: !!tId,
 })
 
 /**
@@ -1990,7 +2028,7 @@ export const useAddNicFromTemplate = () => {
   });
 };
 /**
- * @name useEditNetwork
+ * @name useEditNicFromTemplate
  * @description 템플릿 네트워크 수정 useMutation 훅
  * 
  * @returns useMutation 훅
@@ -2010,7 +2048,7 @@ export const useEditNicFromTemplate = () => {
 };
 
 /**
- * @name useNetworkInterface
+ * @name useDeleteNetworkFromTemplate
  * @description 템플릿 네트워크 삭제 useMutation 훅
  * 
  * @returns useMutation 훅
@@ -2040,7 +2078,7 @@ export const useDeleteNetworkFromTemplate = () => {
 //region: Network -----------------네트워크---------------------
 /**
  * @name useAllNetworks
- * @description 네트워크 목로조회 useQuery훅
+ * @description 네트워크 목록조회 useQuery훅
  * 
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
@@ -2069,6 +2107,7 @@ export const useNetworkById = (networkId) => useQuery({
     const res = await ApiManager.findNetwork(networkId);
     return res ?? {};
   },
+  enabled: !!networkId,
   staleTime: 0,
   cacheTime: 0,
 });
@@ -2089,7 +2128,8 @@ export const useAllClustersFromNetwork = (networkId, mapPredicate) => useQuery({
     console.log(`useAllClustersFromNetwork ... ${networkId}`);
     const res = await ApiManager.findAllClustersFromNetwork(networkId);  // 클러스터 목록을 가져오는 API 호출
     return res?.map((e) => mapPredicate(e)) ?? [];
-  }
+  },
+  enabled: !!networkId,
 })
 /**
  * @name useConnectedHostsFromNetwork
@@ -2156,7 +2196,8 @@ export const useAllVmsFromNetwork = (networkId, mapPredicate) => useQuery({
     console.log(`useAllVmsFromNetwork ... ${networkId}`);
     const res = await ApiManager.findAllVmsFromNetwork(networkId); 
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
-  }
+  },
+  enabled: !!networkId,
 })
 /**
  * @name useAllTemplatesFromNetwork
@@ -2180,6 +2221,7 @@ export const useAllTemplatesFromNetwork = (networkId, mapPredicate) => useQuery(
     console.log('API Response:', res); // API 응답 확인
     return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
+  enabled: !!networkId,
 })
 
 /**
@@ -2225,7 +2267,6 @@ export const useAddNetwork = () => {
     },  
   });
 };
-
 
 /**
  * @name useEditNetwork
@@ -2301,6 +2342,7 @@ export const useVnicProfile = (vnicId) => useQuery({
     const res = await ApiManager.findVnicProfile( vnicId);
     return res ?? {};
   },
+  enabled: !!vnicId,
   staleTime: 0,
   cacheTime: 0,
 });
@@ -2327,7 +2369,7 @@ export const useAllVmsFromVnicProfiles = (vnicProfileId, mapPredicate) => useQue
 });
 
 /**
- * @name useAllNicsFromTemplate
+ * @name useAllTemplatesFromVnicProfiles
  * @description vnic내 템플릿 목록조회 useQuery훅
  * 
  * @param {string} vnicProfileId vnic아이디
@@ -2442,6 +2484,7 @@ export const useDomainById = (storageDomainId) => useQuery({
     const res = await ApiManager.findDomain(storageDomainId);
     return res ?? {};
   },
+  enabled: !!storageDomainId,
   staleTime: 0,
   cacheTime: 0,
 });
@@ -2493,6 +2536,7 @@ export const useAllDataCenterFromDomain = (storageDomainId) => useQuery({
     // console.log('API Response:', res);
     // return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
   },
+  enabled: !!storageDomainId,
 })
 
 /**
@@ -2535,7 +2579,8 @@ export const useAllDiskFromDomain = (storageDomainId, mapPredicate) => useQuery(
     console.log(`useAllDiskFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllDisksFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
+  },
+  enabled: !!storageDomainId,
 })
 /**
  * @name useAllDiskProfileFromDomain
@@ -2602,7 +2647,8 @@ export const useAllTemplateFromDomain = (storageDomainId, mapPredicate) => useQu
     console.log(`useAllTemplateFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllTemplatesFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
+  },
+  enabled: !!storageDomainId,
 })
 /**
  * @name useAllEventFromDomain
@@ -2622,7 +2668,8 @@ export const useAllEventFromDomain = (storageDomainId, mapPredicate) => useQuery
     console.log(`useAllEventFromDomain ... ${storageDomainId}`);
     const res = await ApiManager.findAllEventsFromDomain(storageDomainId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
+  },
+  enabled: !!storageDomainId,
 })
 /**
  * @name useAllActiveDataCenters
@@ -2725,7 +2772,7 @@ export const useDeleteDomain = () => {
 };
 
 /**
- * @name useActivateDomain
+ * @name useDestroyDomain
  * @description 도메인파괴 useMutation 훅
  * 
  * @returns useMutation 훅
@@ -2851,6 +2898,7 @@ export const useDiskById = (diskId) => useQuery({
     const res = await ApiManager.findDisk(diskId);
     return res ?? {};
   },
+  enabled: !!diskId,
   staleTime: 0,
   cacheTime: 0,
 });
@@ -2871,7 +2919,8 @@ export const useAllVmsFromDisk = (diskId, mapPredicate) => useQuery({
     console.log(`useAllVmsFromDisk ... ${diskId}`);
     const res = await ApiManager.findAllVmsFromDisk(diskId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
+  },
+  enabled: !!diskId,
 })
 
 /**
@@ -2891,7 +2940,8 @@ export const useAllStorageDomainFromDisk = (diskId, mapPredicate) => useQuery({
     console.log(`useAllStorageDomainFromDisk ... ${diskId}`);
     const res = await ApiManager.findAllStorageDomainsFromDisk(diskId); 
     return res?.map((e) => mapPredicate(e)) ?? []; 
-  }
+  },
+  enabled: !!diskId,
 })
 
 /**
