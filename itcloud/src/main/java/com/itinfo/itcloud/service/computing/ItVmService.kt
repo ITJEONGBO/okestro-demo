@@ -145,9 +145,9 @@ class VmServiceImpl(
 
 		val res: Vm? = conn.addVm(
 			vmVo.toAddVmBuilder(),
-			vmVo.diskAttachmentVos.toAddDiskAttachmentList(),
-			vmVo.vnicProfileVos.map { it.id },  // nic는 생성될때 vnic id만 있으면 되는듯
-			vmVo.connVo?.id  // iso
+			vmVo.diskAttachmentVos.takeIf { it.isNotEmpty() }?.toAddDiskAttachmentList(),
+			vmVo.vnicProfileVos.map { it.id }.takeIf { it.isNotEmpty() }, // NIC가 있는 경우만 전달
+			vmVo.connVo.id.takeIf { it.isNotEmpty() }  // ISO 설정이 있는 경우만 전달
 		).getOrNull()
 		return res?.toVmVo(conn)
 	}

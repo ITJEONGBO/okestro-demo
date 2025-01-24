@@ -1092,7 +1092,8 @@ export const useAllVMs = (mapPredicate) => useQuery({
     const res = await ApiManager.findAllVMs()
     // setShouldRefresh(prevValue => false)
     return res?.map((e) => mapPredicate(e)) ?? []
-  }
+  },
+  staleTime: 2000, // 2초 동안 데이터 재요청 방지
 })
 /**
  * @name useVmById

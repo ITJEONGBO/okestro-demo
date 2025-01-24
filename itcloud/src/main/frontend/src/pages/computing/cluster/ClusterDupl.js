@@ -7,7 +7,6 @@ import ClusterModals from './modal/ClusterModals';
 
 const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
   const navigate = useNavigate();
-
   const [activeModal, setActiveModal] = useState(null);
   const [selectedClusters, setSelectedClusters] = useState([]);
   const selectedIds = (Array.isArray(selectedClusters) ? selectedClusters : []).map(cluster => cluster.id).join(', ');

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDisksFromVM } from '../../../api/RQHook';
 import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
-import DiskDupl from '../../storage/disk/DiskDupl';
+import VmDiskDupl from './VmDiskDupl';
 
 const VmDisks = ({ vmId }) => {
   const { 
@@ -31,15 +31,15 @@ const VmDisks = ({ vmId }) => {
         </div>
       </div>
 
-      <DiskDupl 
-        disks={activeDiskType === 'all' ? disks
+      <VmDiskDupl
+        vmDisks={activeDiskType === 'all' ? disks
           : disks.filter((disk) => disk.diskImageVo?.storageType?.toLowerCase() === activeDiskType)
         } 
         columns={activeDiskType === 'all' ? TableColumnsInfo.DISKS_FROM_VM
           : activeDiskType === 'image' ? TableColumnsInfo.DISK_IMAGES_FROM_VM
           : TableColumnsInfo.DISK_LUN_FROM_VM
-        } 
-        type="vm" 
+        }
+        vmId={vmId}
       />
     </div>
   );

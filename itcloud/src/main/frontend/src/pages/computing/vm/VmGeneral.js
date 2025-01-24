@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComputer, faDatabase, faEarthAmericas, faNetworkWired, faPlus, faServer, faSitemap, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faComputer, faEarthAmericas, faPlus, faServer, faUser } from "@fortawesome/free-solid-svg-icons";
 import VmGeneralChart from "./VmGeneralChart";
 import { useVmById } from "../../../api/RQHook";
 import { formatBytesToMB } from "../../../utils/format";

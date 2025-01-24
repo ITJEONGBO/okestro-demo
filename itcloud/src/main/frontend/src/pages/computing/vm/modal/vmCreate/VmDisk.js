@@ -11,7 +11,6 @@ const VmDisk = ({ editMode, dataCenterId, diskState, setDiskState }) => {
     const updatedDisks = diskState.filter((_, i) => i !== index);
     setDiskState(updatedDisks);
   };
-
   
   return (
     <>

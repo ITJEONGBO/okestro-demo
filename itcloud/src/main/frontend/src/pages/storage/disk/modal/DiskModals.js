@@ -5,12 +5,11 @@ import DiskUploadModal from "./DiskUploadModal";
 import DiskActionModal from "./DiskActionModal";
 import '../css/MDisk.css'
 
-const DiskModals = ({ activeModal, disk, selectedDisks = [], vmId, onClose }) => {
+const DiskModals = ({ activeModal, disk, selectedDisks = [], onClose }) => {
   const modals = {
     create: 
       <DiskModal
         isOpen={activeModal === 'create'} 
-        // datacenterId={datacenterId}
         onClose={onClose} 
       />,
     edit: (

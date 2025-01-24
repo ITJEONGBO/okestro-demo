@@ -164,26 +164,27 @@ fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
 
 fun Connection.addVm(
 	vm: Vm,
-	diskAttachments: List<DiskAttachment>,
-	vnicIds: List<String>,
+	diskAttachments: List<DiskAttachment>?,
+	vnicIds: List<String>?,
 	connId: String?,
 ): Result<Vm?> = runCatching {
-	if (this.findAllVms()
-			.getOrDefault(listOf())
-			.nameDuplicateVm(vm.name())) {
+	if (this.findAllVms().getOrDefault(listOf()).nameDuplicateVm(vm.name())) {
 		return FailureType.DUPLICATE.toResult(Term.VM.desc)
 	}
 
 	val vmAdded: Vm = this.srvVms().add().vm(vm).send().vm()
 		?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
-	if(diskAttachments.isNotEmpty()) {
+	// 디스크 연결 조건 확인 및 실행
+	if (!diskAttachments.isNullOrEmpty()) {
 		this.addMultipleDiskAttachmentsToVm(vmAdded.id(), diskAttachments)
 	}
-	if(vnicIds.isNotEmpty()) {
+	// NIC 추가 조건 확인 및 실행
+	if (!vnicIds.isNullOrEmpty()) {
 		this.addMultipleNicsFromVm(vmAdded.id(), vnicIds)
 	}
-	if(connId != null) {
+	// ISO 설정 조건 확인 및 실행
+	if (!connId.isNullOrEmpty()) {
 		this.selectCdromFromVm(vmAdded.id(), connId)
 	}
 

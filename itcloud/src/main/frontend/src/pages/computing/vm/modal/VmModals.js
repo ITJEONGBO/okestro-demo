@@ -1,5 +1,4 @@
 import React from 'react';
-import VmModal from './VmModal';
 import VmDeleteModal from './VmDeleteModal';
 import VmActionModal from './VmActionModal';
 import VmSnapshotModal from './VmSnapshotModal';

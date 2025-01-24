@@ -65,7 +65,7 @@ const DiskDupl = ({ disks = [], columns = [], type = 'disk' }) => {
         clickableColumnIndex={[0]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true}
-        onContextMenuItems={(row) => [
+        onContextMenuItems={(row) => [ // 마우스 버튼
           <DiskActionButtons
             openModal={openModal}
             isEditDisabled={!row} 

@@ -1,7 +1,8 @@
 import React from "react";
 import TemplateEditModal from './TemplateEditModal';
 import TemplateDeleteModal from './TemplateDeleteModal';
-import VmModal from "../../vm/modal/VmModal";
+// import VmModal from "../../vm/modal/VmModal";
+import VmNewModal from "../../vm/modal/VmNewModal";
 
 const TemplateModals = ({ activeModal, template, selectedTemplates = [], onClose }) => {
   const modals = {
@@ -24,11 +25,15 @@ const TemplateModals = ({ activeModal, template, selectedTemplates = [], onClose
       />
     ),
     addVm: (
-      <VmModal
-        isOpen={activeModal === 'addVm' }
-        data={selectedTemplates}
-        onClose={onClose}
+      <VmNewModal
+        isOpen={activeModal === 'create'} 
+        onClose={onClose} 
       />
+      // <VmModal
+      //   isOpen={activeModal === 'addVm' }
+      //   data={selectedTemplates}
+      //   onClose={onClose}
+      // />
     )
   };
 

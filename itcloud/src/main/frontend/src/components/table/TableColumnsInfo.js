@@ -463,7 +463,7 @@ const TableColumnsInfo = {
   ],
 
   VIRTUAL_DISK:  [
-    { header: '', accessor: 'radio', clickable: false, width: '5%'  },
+    { header: '', accessor: 'check', clickable: false, width: '5%'  },
     { header: '별칭', accessor: 'alias', clickable: true },
     { header: '설명', accessor: 'description', clickable: false },
     { header: 'ID', accessor: 'id', clickable: false },
