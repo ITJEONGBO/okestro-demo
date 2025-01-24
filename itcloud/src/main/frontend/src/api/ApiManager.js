@@ -1287,15 +1287,15 @@ const ApiManager = {
   }),
 
   /**
-   * @name ApiManager.findNicFromVM
+   * @name ApiManager.findVNicFromDataCenter
    * @description iso 목록
    * 
    * @returns 
    **/
-  findNicFromVMClusterId : async (clusterId) => makeAPICall({
+  findVNicFromDataCenter : async (dataCenterId) => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_NICS_FROM_CLUSTER(clusterId), 
-    defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_CLUSTER
+    url: ENDPOINTS.FIND_VNICPROFILES_FROM_DATA_CENTER(dataCenterId), 
+    // defaultValues: DEFAULT_VALUES.FIND_NICS_FROM_CLUSTER
   }),
 
   /**

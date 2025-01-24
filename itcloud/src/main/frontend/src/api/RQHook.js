@@ -355,7 +355,27 @@ export const useCDFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
   },
   enabled: !!dataCenterId, 
 });
-
+/**
+ * @name useAllvnicFromDataCenter
+ * @description  가상머신 생성창-nic목록 목록조회 useQuery훅
+ * 
+ * @param {string} dataCenterId 데이터센터 id
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findVNicFromDataCenter
+ */
+export const useAllvnicFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['AllnicFromVM', dataCenterId], 
+  queryFn: async () => {
+    const res = await ApiManager.findVNicFromDataCenter(dataCenterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; 
+  },
+  enabled: !!dataCenterId, 
+  staleTime: 0,
+  cacheTime: 0,
+})
 
 
 /**
@@ -1344,29 +1364,6 @@ export const useAllEventFromVM = (vmId, mapPredicate) => useQuery({
   },
   enabled: !!vmId
 })
-/**
- * @name useAllnicFromVM
- * @description  가상머신 생성창-nic목록 목록조회 useQuery훅
- * 
- * @param {string} clusterId 클러스터ID
- * @param {function} mapPredicate 목록객체 변형 처리
- * @returns useQuery훅
- * 
- * @see ApiManager.findNicFromVMClusterId
- */
-export const useAllnicFromVM = (clusterId, mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['AllnicFromVM', clusterId], 
-  queryFn: async () => {
-    // console.log(`useAllnicFromVM ... ${clusterId}`);
-    const res = await ApiManager.findNicFromVMClusterId(clusterId); 
-    return res?.map((e) => mapPredicate(e)) ?? []; 
-  },
-  enabled: !!clusterId, 
-  staleTime: 0,
-  cacheTime: 0,
-})
-
 
 
 /**

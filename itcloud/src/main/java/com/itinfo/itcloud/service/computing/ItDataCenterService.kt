@@ -395,7 +395,6 @@ class DataCenterServiceImpl(
 			.filter { it.dataCenter().id() == dataCenterId }
 			.flatMap { network -> conn.findAllVnicProfilesFromNetwork(network.id())
 				.getOrDefault(listOf())
-				.filter { it.network().id() == network.id() }
 			}
 		return res.toVnicProfileToVmVos(conn)
 	}

@@ -36,6 +36,7 @@ const ENDPOINTS = {
   FIND_EVENTS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/events`,
   FIND_ATTACH_DISK_LIST_FROM_DATA_CENTER:(dataCenterId) =>  `/api/v1/computing/datacenters/${dataCenterId}/attachDisks`, 
   FIND_ISOS_FROM_DATA_CENTER:(dataCenterId) =>  `/api/v1/computing/datacenters/${dataCenterId}/iso`, 
+  FIND_VNICPROFILES_FROM_DATA_CENTER:(dataCenterId) =>  `/api/v1/computing/datacenters/${dataCenterId}/vnicProfiles`, 
 
   ADD_DATA_CENTER: () => `/api/v1/computing/datacenters`,
   EDIT_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}`, 
@@ -123,7 +124,7 @@ const ENDPOINTS = {
   FIND_HOST_DEVICES_FROM_VM:(vmId) =>  `/api/v1/computing/vms/${vmId}/hostDevices`, 
   FIND_EVENTS_FROM_VM:(vmId) =>  `/api/v1/computing/vms/${vmId}/events`, 
 
-  FIND_NICS_FROM_CLUSTER:(clusterId) =>  `/api/v1/computing/vms/nic/${clusterId}`, 
+   
 
   ADD_VM: () => `/api/v1/computing/vms`,
   EDIT_VM: (vmId) => `/api/v1/computing/vms/${vmId}`, 

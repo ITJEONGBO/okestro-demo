@@ -12,9 +12,9 @@ import {
   useAllTemplates,
   useCDFromDataCenter,
   useDisksFromVM,
-  useAllnicFromVM,
   useHostFromCluster,
   useAllActiveDomainFromDataCenter,
+  useAllvnicFromDataCenter,
   
 } from '../../../../api/RQHook';
 import VmCommon from './vmCreate/VmCommon';
@@ -177,7 +177,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   const { 
     data: nics = [],
     isLoading: isNicsLoading
-  } = useAllnicFromVM(clusterVoId, (e) => ({ ...e }));
+  } = useAllvnicFromDataCenter(dataCenterId, (e) => ({ ...e }));
 
   // 편집: 가상머신이 가지고 있는 디스크 목록 가져오기
   const { 

@@ -32,8 +32,7 @@ private val log = LoggerFactory.getLogger(VnicProfileVo::class.java)
  * @property portMirroring [Boolean]
  * @property networkFilterVo [NetworkFilterVo] 네트워크 필터 값을 입력해서 넣는방식인거 같음 (참고, NetworkFilter, NetworkFilterParameter)
  * @property dataCenterVo [DataCenterVo]
- * @property networkVo [NetworkVo]
- *
+ * @property networkVo [IdentifiedVo]
  */
 class VnicProfileVo(
 	val id: String = "",
@@ -62,7 +61,7 @@ class VnicProfileVo(
 		private var bDataCenterVo: IdentifiedVo = IdentifiedVo();fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
 		private var bNetworkVo: IdentifiedVo = IdentifiedVo();fun networkVo(block: () -> IdentifiedVo?) { bNetworkVo = block() ?: IdentifiedVo() }
 
-		fun build(): VnicProfileVo = VnicProfileVo(bId, bName, bDescription, bPassThrough, bMigration, bPortMirroring, bNetworkFilterVo, bDataCenterVo, bNetworkVo)
+		fun build(): VnicProfileVo = VnicProfileVo(bId, bName, bDescription, bPassThrough, bMigration, bPortMirroring, bFailOver, bNetworkFilterVo, bDataCenterVo, bNetworkVo)
 	}
 
 	companion object {
@@ -79,10 +78,8 @@ fun List<VnicProfile>.toVnicProfilesIdName(): List<VnicProfileVo> =
 
 
 fun VnicProfile.toVnicProfileToVmVo(conn: Connection): VnicProfileVo {
-	val network: Network? =
-		conn.findNetwork(this@toVnicProfileToVmVo.network().id())
-			.getOrNull()
-
+	val network: Network? = conn.findNetwork(this@toVnicProfileToVmVo.network().id())
+		.getOrNull()
 	return VnicProfileVo.builder {
 		id { this@toVnicProfileToVmVo.id() }
 		name { this@toVnicProfileToVmVo.name() }

@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
@@ -281,6 +282,23 @@ class ItDataCenterServiceTest {
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
 		println(result.size)
+    }
+
+    /**
+     * [should_findAllVnicProfilesFromDataCenter]
+     * [ItDataCenterService.findAllVnicProfilesFromDataCenter]에 대한 단위테스트
+     *
+     * @see ItDataCenterService.findAllVnicProfilesFromDataCenter
+     **/
+    @Test
+    fun should_findAllVnicProfilesFromDataCenter() {
+        log.debug("should_findAllVnicProfilesFromDataCenter ... ")
+        val result: List<VnicProfileVo> =
+            service.findAllVnicProfilesFromDataCenter(dataCenterId)
+
+        assertThat(result, `is`(not(nullValue())))
+        result.forEach { println(it) }
+//		println(result.size)
     }
 
 	companion object {
