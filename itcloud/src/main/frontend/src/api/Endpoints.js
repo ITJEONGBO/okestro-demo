@@ -191,6 +191,7 @@ const ENDPOINTS = {
   ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/vnicProfiles`,
   EDIT_VNIC_PROFILE_FROM_NETWORK: (vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
   DELETE_VNIC_PROFILE_FROM_NETWORK: (vnicProfileId) =>  `/api/v1/vnicProfiles/${vnicProfileId}`,
+  FIND_ALL_NETWORKFILTERS: () =>  `/api/v1/vnicProfiles/networkFilters`,
   //endregion: VnicProfile
 
   //region: StorageDomain

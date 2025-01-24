@@ -2026,6 +2026,19 @@ migrateHostsFromVM: async (vmId) => {
       data: vnicProfileId,
     });
   },
+
+    /**
+   * @name ApiManager.findAllNetworkFilters
+   * @description 네트워크 필터 목록
+   * 
+   *
+   * @returns {Promise<Object>} API 응답 결과
+   */
+    findAllNetworkFilters : async () => makeAPICall({
+      method: "GET", 
+      url: ENDPOINTS.FIND_ALL_NETWORKFILTERS(),
+    }),
+
   // endregion: vnicprofile
 
 

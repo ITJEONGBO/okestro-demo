@@ -120,7 +120,6 @@ button[disabled],select[disabled],input[disabled]{
 
 #section{
     background-color: #ffffff;
-    border-radius: 5px;
     width: 100%;
     position: relative;
 }

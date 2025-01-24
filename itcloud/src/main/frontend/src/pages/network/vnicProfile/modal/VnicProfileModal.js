@@ -8,6 +8,7 @@ import {
   useAllDataCenters, 
   useAllnicFromVM, 
   useEditVnicProfile, 
+  useNetworkFilters, 
   useNetworksFromDataCenter, 
   useVnicProfile
 } from '../../../../api/RQHook';
@@ -31,6 +32,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     // passthrough: '',
     portMirroring: false,
     migration: true,
+    networkFilter: null,
   });
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [networkVoId, setNetworkVoId] = useState(networkId || '');  
@@ -44,6 +46,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       // passthrough: '',
       portMirroring: false,
       migration: true,
+       networkFilter: nFilters[0]?.id || "",
     });
     setDataCenterVoId('');
     setNetworkVoId(networkId || '');
@@ -64,7 +67,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     isLoading: isNetworksLoading
   } = useNetworksFromDataCenter(dataCenterVoId || undefined, (e) => ({...e,}));
   
-  //페일오버버
+  //페일오버
   // const { 
   //   data: failoverNics = [], 
   //   isLoading: isFailoverNicsLoading 
@@ -72,27 +75,37 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
   //   id: e?.id,
   //   name: e?.name,
   // }));
-
-  const nFilters = [  // api로 들어감
-    { value: "vdsm-no-mac-spoofing", label: "vdsm-no-mac-spoofing" },
-    { value: "allow-arp", label: "allow-arp" },
-    { value: "allow-dhcp", label: "allow-dhcp" },
-    { value: "allow-incoming-ipv4", label: "allow-incoming-ipv4" },
-    { value: "allow-ipv4", label: "allow-ipv4" },
-    { value: "clean-traffic", label: "clean-traffic" },
-    { value: "no-arp-ip-spoofing", label: "no-arp-ip-spoofing" },
-    { value: "no-arp-spoofing", label: "no-arp-spoofing" },
-    { value: "no-ip-multicast", label: "no-ip-multicast" },
-    { value: "no-ip-spoofing", label: "no-ip-spoofing" },
-    { value: "no-mac-broadcast", label: "no-mac-broadcast" },
-    { value: "no-mac-spoofing", label: "no-mac-spoofing" },
-    { value: "no-other-l2-traffic", label: "no-other-l2-traffic" },
-    { value: "no-other-rarp-traffic", label: "no-other-rarp-traffic" },
-    { value: "qemu-announce-self", label: "qemu-announce-self" },
-    { value: "qemu-announce-self-rarp", label: "qemu-announce-self-rarp" },
-    { value: "clean-traffic-gateway", label: "clean-traffic-gateway" },
-    { value: "", label: "No Network Filter" },
-  ];
+  const {
+    data: nFilters = [],
+    isLoading: isNFiltersLoading
+  } = useNetworkFilters((e) => ({...e,}));
+  useEffect(() => {
+    if (isNFiltersLoading) {
+      console.log("Filters are loading...");
+    } else {
+      console.log("Filters loaded: ", nFilters);
+    }
+  }, [nFilters, isNFiltersLoading]);
+  // const nFilters = [ 
+  //   { value: "vdsm-no-mac-spoofing", label: "vdsm-no-mac-spoofing" },
+  //   { value: "allow-arp", label: "allow-arp" },
+  //   { value: "allow-dhcp", label: "allow-dhcp" },
+  //   { value: "allow-incoming-ipv4", label: "allow-incoming-ipv4" },
+  //   { value: "allow-ipv4", label: "allow-ipv4" },
+  //   { value: "clean-traffic", label: "clean-traffic" },
+  //   { value: "no-arp-ip-spoofing", label: "no-arp-ip-spoofing" },
+  //   { value: "no-arp-spoofing", label: "no-arp-spoofing" },
+  //   { value: "no-ip-multicast", label: "no-ip-multicast" },
+  //   { value: "no-ip-spoofing", label: "no-ip-spoofing" },
+  //   { value: "no-mac-broadcast", label: "no-mac-broadcast" },
+  //   { value: "no-mac-spoofing", label: "no-mac-spoofing" },
+  //   { value: "no-other-l2-traffic", label: "no-other-l2-traffic" },
+  //   { value: "no-other-rarp-traffic", label: "no-other-rarp-traffic" },
+  //   { value: "qemu-announce-self", label: "qemu-announce-self" },
+  //   { value: "qemu-announce-self-rarp", label: "qemu-announce-self-rarp" },
+  //   { value: "clean-traffic-gateway", label: "clean-traffic-gateway" },
+  //   { value: "", label: "No Network Filter" },
+  // ];
 
   useEffect(() => {
     if (!isOpen) {
@@ -145,31 +158,54 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
   }, [editMode, networkId, networks]);
 
   const handleFormSubmit = () => {
-    if (!formState.name) return toast.error('이름을 입력해주세요.');
-
-    const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
-    const selectedNetwork = networks.find((n) => n.id === networkVoId);    
-
+    // 이름 유효성 검사
+    if (!formState.name) {
+      return toast.error("이름을 입력해주세요.");
+    }
+  
+    // 네트워크 유효성 검사
+    const selectedNetwork = networks.find((n) => n.id === networkVoId);
+    if (!selectedNetwork) {
+      return toast.error("유효한 네트워크를 선택해주세요.");
+    }
+  
+    // 네트워크 필터 유효성 검사
+    if (!formState.networkFilter) {
+      return toast.error("유효한 네트워크 필터를 선택해주세요.");
+    }
+  
+    // API에 전달할 데이터 구성
     const dataToSubmit = {
-      networkVo: { id: selectedNetwork.id, name: selectedNetwork.name},
+      networkVo: { id: selectedNetwork.id, name: selectedNetwork.name },
+      networkFilter: { id: formState.networkFilter.id, name: formState.networkFilter.name }, // 필터 정보 추가
       ...formState,
     };
-    console.log('dataToSubmit:', dataToSubmit); 
-
+  
+    console.log("dataToSubmit:", dataToSubmit);
+  
+    // API 요청
     const mutation = editMode ? editVnicProfile : addVnicProfile;
     mutation(
       editMode ? { vnicId: formState.id, vnicData: dataToSubmit } : dataToSubmit,
       {
         onSuccess: () => {
-          toast.success(editMode ? 'vNIC 프로파일이 성공적으로 편집되었습니다.' : 'vNIC 프로파일이 성공적으로 추가되었습니다.');
+          toast.success(
+            editMode
+              ? "vNIC 프로파일이 성공적으로 편집되었습니다."
+              : "vNIC 프로파일이 성공적으로 추가되었습니다."
+          );
           onClose();
         },
         onError: (error) => {
-          toast.error(`vNIC 프로파일 ${editMode ? '편집' : '추가'} 중 오류 발생: ${error}`);
+          toast.error(
+            `vNIC 프로파일 ${editMode ? "편집" : "추가"} 중 오류 발생: ${error}`
+          );
         },
       }
     );
   };
+  
+  
 
   return (
     <Modal
@@ -245,18 +281,41 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
             </FormGroup>
                       
             <FormGroup label="네트워크 필터">
-              <select
-                id="networkFilter"
-                value={formState.networkFilter}
-                onChange={(e) => setFormState((prev) => ({ ...prev, networkFilter: e.target.value }))}
-              >
-                {nFilters.map((f) => (
-                  <option key={f.value} value={f.value}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <select
+                  id="networkFilter"
+                  value={formState.networkFilter?.id || ""} // 객체의 ID를 드롭다운 값으로 사용
+                  onChange={(e) => {
+                    const selectedFilter = nFilters.find((filter) => filter.id === e.target.value);
+                    setFormState((prev) => ({
+                      ...prev,
+                      networkFilter: selectedFilter || null, // 선택한 필터 객체를 저장, 없으면 null
+                    }));
+                  }}
+                >
+                  <option value="">필터 선택 없음</option>
+                  {isNFiltersLoading ? (
+                    <option>로딩중...</option>
+                  ) : (
+                    nFilters.map((filter) => (
+                      <option key={filter.id} value={filter.id}>
+                        {filter.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+                <span style={{ marginLeft: "1rem" }}>
+                  {formState.networkFilter
+                    ? `ID: ${formState.networkFilter.id}, Name: ${formState.networkFilter.name}`
+                    : "필터를 선택해주세요."}
+                </span>
+              </div>
             </FormGroup>
+
+
+
+
+
 
 
             <div className="vnic-new-checkbox">

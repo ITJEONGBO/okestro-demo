@@ -2449,7 +2449,23 @@ export const useDeleteVnicProfile = () => {
   });
 };
 
-
+/**
+ * @name useNetworkFilters
+ * @description 네트워크 필터 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.findAllNetworkFilters
+ */
+export const useNetworkFilters = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allNetworkFilters'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllNetworkFilters()
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
 //region: storage -----------------스토리지---------------------
 
 /**
