@@ -78,10 +78,8 @@ fun DiskAttachment.toDiskAttachMenu(conn: Connection): DiskAttachmentVo {
 
 
 fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
-	val disk: Disk? = conn.findDisk(this@toDiskAttachmentVo.disk().id())
-		.getOrNull()
-	val vm: Vm? = conn.findVm(this@toDiskAttachmentVo.vm().id())
-		.getOrNull()
+	val disk: Disk? = conn.findDisk(this@toDiskAttachmentVo.disk().id()).getOrNull()
+	val vm: Vm? = conn.findVm(this@toDiskAttachmentVo.vm().id()).getOrNull()
 	return DiskAttachmentVo.builder {
 		id { this@toDiskAttachmentVo.id() }
 		active { this@toDiskAttachmentVo.active() }
@@ -90,7 +88,6 @@ fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
 		passDiscard { this@toDiskAttachmentVo.passDiscard() }
 		interface_ { this@toDiskAttachmentVo.interface_() }
 		logicalName { this@toDiskAttachmentVo.logicalName() }
-//		diskImageVo { disk?.toDiskImageVo(conn) }
 		diskImageVo { disk?.toDiskInfo(conn) }
 		vmVo { vm?.fromVmToIdentifiedVo() }
 	}

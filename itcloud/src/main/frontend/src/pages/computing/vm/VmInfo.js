@@ -14,8 +14,8 @@ import VmApplications from './VmApplications';
 import VmSnapshots from './VmSnapshots';
 import VmNics from './VmNics';
 import VmDisks from './VmDisks';
-import { renderVmStatus } from '../../../utils/format';
 import VmModals from './modal/VmModals';
+import { renderVmStatus } from '../../../utils/Icon';
 
 const VmInfo = () => {
   const navigate = useNavigate();

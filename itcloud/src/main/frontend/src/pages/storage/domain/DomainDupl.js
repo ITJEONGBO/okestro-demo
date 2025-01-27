@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DomainActionButtons from './button/DomainActionButtons';
-import { formatBytesToGBToFixedZero, renderDomainStatus, renderDomainStatusIcon } from '../../../utils/format';
 import TablesOuter from '../../../components/table/TablesOuter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import DomainModals from './modal/DomainModals';
+import { renderDomainStatus, renderDomainStatusIcon } from '../../../utils/Icon';
+import { formatBytesToGBToFixedZero } from '../../../utils/format';
 
 const DomainDupl = ({ domains = [], columns = [], actionType = 'domain', datacenterId }) => {
   const navigate = useNavigate();

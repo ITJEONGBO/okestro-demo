@@ -172,29 +172,29 @@ fun List<Disk>.toDiskMenus(conn: Connection, /*vmId: String*/): List<DiskImageVo
 	this@toDiskMenus.map { it.toDiskMenu(conn, /*vmId*/) }
 
 fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
+	val disk = this@toDiskInfo
 	val diskProfile: DiskProfile? =
-		if(this@toDiskInfo.diskProfilePresent()) conn.findDiskProfile(this@toDiskInfo.diskProfile().id()).getOrNull()
+		if(disk.diskProfilePresent()) conn.findDiskProfile(disk.diskProfile().id()).getOrNull()
 		else null
-	val storageDomain: StorageDomain? = conn.findStorageDomain(this.storageDomains().first().id())
-			.getOrNull()
+	val storageDomain: StorageDomain? = conn.findStorageDomain(this.storageDomains().first().id()).getOrNull()
 	val dataCenter: DataCenter? = storageDomain?.dataCenters()?.first()?.let {
-		conn.findDataCenter(it.id())
-			.getOrNull()
+		conn.findDataCenter(it.id()).getOrNull()
 	}
 
 	return DiskImageVo.builder {
-		id { this@toDiskInfo.id() }
-		alias { this@toDiskInfo.alias() }
-		description { this@toDiskInfo.description() }
-		sparse { this@toDiskInfo.sparse() } // 할당정책
+		id { disk.id() }
+		alias { disk.alias() }
+		description { disk.description() }
+		status { disk.status() }
+		sparse { disk.sparse() } // 할당정책
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
 		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
-		virtualSize { this@toDiskInfo.provisionedSize() }
-		actualSize { this@toDiskInfo.actualSize() }
-		wipeAfterDelete { this@toDiskInfo.wipeAfterDelete() }
-		sharable { this@toDiskInfo.shareable() }
-		backup { this@toDiskInfo.backup() == DiskBackup.INCREMENTAL }
+		virtualSize { disk.provisionedSize() }
+		actualSize { disk.totalSize() }
+		wipeAfterDelete { disk.wipeAfterDelete() }
+		sharable { disk.shareable() }
+		backup { disk.backup() == DiskBackup.INCREMENTAL }
 	}
 }
 fun List<Disk>.toDisksInfo(conn: Connection): List<DiskImageVo> =

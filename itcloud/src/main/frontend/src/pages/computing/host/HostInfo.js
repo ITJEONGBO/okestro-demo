@@ -12,8 +12,8 @@ import HostVms from './HostVms'
 import HostNics from './HostNics'
 import HostDevices from './HostDevices';
 import HostEvents from './HostEvents'
-import { renderHostStatus } from '../../../utils/format';
 import HostModals from './modal/HostModals';
+import { renderHostStatus } from '../../../utils/Icon';
 
 const HostInfo = () => {
   const navigate = useNavigate();

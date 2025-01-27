@@ -5,7 +5,7 @@ import TablesOuter from '../../../../components/table/TablesOuter';
 import TableColumnsInfo from '../../../../components/table/TableColumnsInfo';
 import { faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useAllClustersFromNetwork } from '../../../../api/RQHook';
-import { renderStatusClusterIcon } from '../../../../utils/format';
+import { renderStatusClusterIcon } from '../../../../utils/Icon';
 
 const NetworkClusterModal = ({ isOpen, onRequestClose, networkId }) => {
   const { 

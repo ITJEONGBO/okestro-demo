@@ -153,9 +153,8 @@ class VmDiskService(
 	@Throws(Error::class)
 	override fun findOneFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo? {
 		log.info("findOneFromVm ... vmId: {}", vmId)
-		val res: DiskAttachment? =
-			conn.findDiskAttachmentFromVm(vmId, diskAttachmentId)
-				.getOrNull()
+		val res: DiskAttachment? = conn.findDiskAttachmentFromVm(vmId, diskAttachmentId)
+			.getOrNull()
 		return res?.toDiskAttachmentVo(conn)
 	}
 

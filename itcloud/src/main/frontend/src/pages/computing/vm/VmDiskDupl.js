@@ -4,7 +4,8 @@ import TablesOuter from '../../../components/table/TablesOuter';
 import TableRowClick from '../../../components/table/TableRowClick';
 import VmDiskActionButtons from './button/VmDiskActionButtons';
 import VmDiskModals from './modal/VmDIskModals';
-import { icon } from '@fortawesome/fontawesome-svg-core';
+import { icon } from '../../../utils/Icon';
+import { formatBytesToGBToFixedZero } from '../../../utils/format';
 
 const VmDiskDupl = ({ vmDisks = [], columns = [], vmId }) => {
   const navigate = useNavigate();
@@ -34,15 +35,25 @@ const VmDiskDupl = ({ vmDisks = [], columns = [], vmId }) => {
         data={vmDisks.map((d) => {
           return {
             ...d,
-            alias: d?.alias || d?.diskImageVo?.alias,
-            icon: icon(d.status),
+            icon: icon(d?.diskImageVo?.status),
+            alias: <TableRowClick type="disks" id={d?.diskImageVo?.id}>{d?.diskImageVo?.alias}</TableRowClick>,
+            description: d?.diskImageVo?.description,
+            bootable: d?.bootable ? '예' : '',
+            readOnly: d?.readOnly ? '예' : '',
+            sharable: d?.diskImageVo?.sharable ? '예' : '',
+            status: d?.diskImageVo?.status,
+            interface: d?.interface_,
+            storageType: d?.diskImageVo?.storageType,
+            sparse: d?.diskImageVo?.sparse ? '씬 프로비저닝' : '사전 할당',
+            virtualSize: formatBytesToGBToFixedZero(d?.diskImageVo?.virtualSize) + " GB",
+            actualSize: formatBytesToGBToFixedZero(d?.diskImageVo?.actualSize) + " GB",
             storageDomain: <TableRowClick type="domains" id={d?.diskImageVo?.storageDomainVo?.id}>{d?.diskImageVo?.storageDomainVo?.name}</TableRowClick>,
             storageType: d?.diskImageVo?.storageType,
           };
         })}
         shouldHighlight1stCol={true}
         onRowClick={(selectedRows) => setSelectedDisks(selectedRows)}
-        clickableColumnIndex={[0]}
+        // clickableColumnIndex={[0]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true}
         // onContextMenuItems={(row) => [ // 마우스 버튼

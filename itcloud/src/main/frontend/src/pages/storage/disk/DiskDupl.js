@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DiskActionButtons from './button/DiskActionButtons';
 import TablesOuter from '../../../components/table/TablesOuter';
-import { formatBytesToGBToFixedZero, icon } from '../../../utils/format';
+import { icon } from '../../../utils/Icon';
+import { formatBytesToGBToFixedZero } from '../../../utils/format';
 import TableRowClick from '../../../components/table/TableRowClick';
 import DiskModals from './modal/DiskModals';
 

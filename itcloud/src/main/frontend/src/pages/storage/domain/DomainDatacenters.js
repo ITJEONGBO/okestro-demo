@@ -4,7 +4,7 @@ import TablesOuter from '../../../components/table/TablesOuter';
 import TableRowClick from '../../../components/table/TableRowClick';
 import TableColumnsInfo from '../../../components/table/TableColumnsInfo';
 import DomainActionButtons from './button/DomainActionButtons';
-import { renderDataCenterStatusIcon } from '../../../utils/format';
+import { renderDataCenterStatusIcon } from '../../../utils/Icon';
 
 const DomainActionModal = React.lazy(() => import('./modal/DomainActionModal'));
 

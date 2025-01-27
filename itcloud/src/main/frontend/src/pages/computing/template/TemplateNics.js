@@ -3,11 +3,10 @@ import { useAllNicsFromTemplate } from "../../../api/RQHook";
 import TablesOuter from "../../../components/table/TablesOuter";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TableRowClick from "../../../components/table/TableRowClick";
-import { renderUpDownStatusIcon } from "../../../utils/format";
 import TemplateNeworkNewInterModal from './modal/TemplateNeworkNewInterModal';
-import TemplateDeleteModal from "./modal/TemplateDeleteModal";
 import DeleteModal from "../../../components/DeleteModal";
 import NicActionButtons from "../../network/nic/NicActionButton"
+import { renderUpDownStatusIcon } from "../../../utils/Icon";
 
 const TemplateNics = ({ templateId }) => {
   const { 
@@ -35,23 +34,23 @@ const TemplateNics = ({ templateId }) => {
         />
       )}
       {activeModal === 'edit' && (
-           <TemplateNeworkNewInterModal
-           isOpen={true}
-           onRequestClose={closeModal}
-           editMode={true}
-           templateId={templateId}
-           nicData={selectedVnicProfiles[0]} // 수정 시 첫 번째 항목 전달
-         />
+        <TemplateNeworkNewInterModal
+          isOpen={true}
+          onRequestClose={closeModal}
+          editMode={true}
+          templateId={templateId}
+          nicData={selectedVnicProfiles[0]} // 수정 시 첫 번째 항목 전달
+        />
       )}
       
       {activeModal === 'delete' && (
         <DeleteModal
-        isOpen={true}
-        onRequestClose={closeModal}
-        type="NetworkInterfaceFromTemplate" // 전달되는 타입
-        templateId={templateId} // 템플릿 ID 전달
-        data={selectedVnicProfiles} // 선택된 NIC 데이터 전달
-        contentLabel="NIC 삭제"
+          isOpen={true}
+          onRequestClose={closeModal}
+          type="NetworkInterfaceFromTemplate" // 전달되는 타입
+          templateId={templateId} // 템플릿 ID 전달
+          data={selectedVnicProfiles} // 선택된 NIC 데이터 전달
+          contentLabel="NIC 삭제"
         />
       )}
     </Suspense>

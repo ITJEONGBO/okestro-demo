@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TablesOuter from '../../../components/table/TablesOuter';
 import HostActionButtons from './button/HostActionButtons'
-import { renderHostStatusIcon } from '../../../utils/format';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import TableRowClick from '../../../components/table/TableRowClick';
 import HostModals from './modal/HostModals';
+import { renderHostStatusIcon } from '../../../utils/Icon';
 
 const HostDupl = ({ hosts = [], columns, clusterId }) => {
   const navigate = useNavigate();

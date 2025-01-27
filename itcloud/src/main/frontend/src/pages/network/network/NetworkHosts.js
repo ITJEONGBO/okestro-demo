@@ -2,7 +2,8 @@ import React, { Suspense, useEffect, useState } from 'react';
 import TablesOuter from "../../../components/table/TablesOuter";
 import TableRowClick from '../../../components/table/TableRowClick';
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
-import { formatBytesToMB, renderHostStatusIcon, renderUpDownStatusIcon } from '../../../utils/format';
+import { renderHostStatusIcon, renderUpDownStatusIcon } from '../../../utils/Icon';
+import { formatBytesToMB } from '../../../utils/format';
 import { 
   useConnectedHostsFromNetwork, 
   useDisconnectedHostsFromNetwork, 

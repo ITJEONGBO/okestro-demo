@@ -2,7 +2,7 @@ import React, { Suspense, useState } from 'react';
 import { useAllClustersFromNetwork} from "../../../api/RQHook";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TablesOuter from "../../../components/table/TablesOuter";
-import { renderStatusClusterIcon } from '../../../utils/format';
+import { renderStatusClusterIcon } from '../../../utils/Icon';
 
 const NetworkClusterModal = React.lazy(() => import('./modal/NetworkClusterModal'));
 

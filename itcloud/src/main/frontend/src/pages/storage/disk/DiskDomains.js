@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAllStorageDomainFromDisk } from "../../../api/RQHook";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
-import { formatBytesToGBToFixedZero, renderDomainStatusIcon } from '../../../utils/format';
+import { renderDomainStatusIcon } from '../../../utils/Icon';
+import { formatBytesToGBToFixedZero } from '../../../utils/format';
 import TablesOuter from '../../../components/table/TablesOuter';
 
 

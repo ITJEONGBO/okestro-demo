@@ -3,7 +3,8 @@ import { useAllVmsFromNetwork } from "../../../api/RQHook";
 import TablesOuter from "../../../components/table/TablesOuter";
 import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TableRowClick from "../../../components/table/TableRowClick";
-import { formatBytesToMB, renderUpDownStatusIcon, renderVmStatusIcon } from "../../../utils/format";
+import { renderUpDownStatusIcon, renderVmStatusIcon } from "../../../utils/Icon";
+import { formatBytesToMB } from '../../../utils/format';
 import VmDeleteModal from '../../computing/vm/modal/VmDeleteModal';
 
 // const 

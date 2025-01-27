@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import VmActionButtons from './button/VmActionButtons';
 import TablesOuter from '../../../components/table/TablesOuter';
 import TableRowClick from '../../../components/table/TableRowClick';
-import { renderVmStatusIcon } from '../../../utils/format';
 import VmModals from './modal/VmModals';
+import { renderVmStatusIcon } from '../../../utils/Icon';
 
 const VmDupl = ({ vms = [], columns =[], actionType, status }) => {
   const navigate = useNavigate();

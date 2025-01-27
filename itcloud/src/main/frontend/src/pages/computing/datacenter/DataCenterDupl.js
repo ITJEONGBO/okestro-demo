@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TablesOuter from '../../../components/table/TablesOuter';
 import DataCenterActionButtons from './button/DataCenterActionButtons';
-import { renderDataCenterStatus, renderDatacenterStatusIcon } from '../../../utils/format';
 import DataCenterModals from './modal/DataCenterModals';
+import { renderDataCenterStatus, renderDatacenterStatusIcon } from '../../../utils/Icon';
 
 // Modal.setAppElement('#root');
 
