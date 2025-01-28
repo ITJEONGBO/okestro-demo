@@ -2,22 +2,24 @@ import React from "react";
 import VmDiskConnectionModal from "./VmDiskConnectionModal";
 import VmDiskModal from "./VmDiskModal";
 import { useVmById } from "../../../../api/RQHook";
+import VmDiskActionModal from "./VmDiskActionModal";
 
-const VmDiskModals = ({ activeModal, disk, selectedDisks = [], vmId, onClose }) => {
+const VmDiskModals = ({ activeModal, vmId, disk, selectedDisks = [], onClose }) => {
   const { data: vm } = useVmById(vmId);
 
   const modals = {
     create: 
       <VmDiskModal
         isOpen={activeModal === 'create'} 
-        // datacenterId={datacenterId}
+        vm={vm}
         onClose={onClose} 
       />,
     edit: (
       <VmDiskModal
         editMode
         isOpen={activeModal === 'edit'}
-        diskId={disk?.id}
+        vm={vm}
+        diskAttachment={disk}
         onClose={onClose}
     />
     ),    
@@ -32,11 +34,31 @@ const VmDiskModals = ({ activeModal, disk, selectedDisks = [], vmId, onClose }) 
     connect: (
       <VmDiskConnectionModal
         isOpen={activeModal === 'connect'}
-        vmId={vmId}
-        dataCenterId={vm?.dataCenterVo?.id}
+        vm={vm}
         onClose={onClose}
       />
     ), 
+    activate: (
+      <VmDiskActionModal
+        isOpen={activeModal === 'activate'}
+        action={'activate'}
+        onClose={onClose}
+        vm={vm}
+        data={selectedDisks}
+      />
+    ),
+    deactivate: (
+      <VmDiskActionModal
+        isOpen={activeModal === 'deactivate'}
+        action={'deactivate'}
+        onClose={onClose}
+        vm={vm}
+        data={selectedDisks}
+      />
+    ),
+    move: (
+      <></>
+    ),
   };
 
   return (

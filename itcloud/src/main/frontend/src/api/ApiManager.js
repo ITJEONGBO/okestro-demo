@@ -2,6 +2,7 @@ import ENDPOINTS from "./Endpoints"
 import DEFAULT_VALUES from "./DefaultValues"
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { data } from "jquery";
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -846,7 +847,7 @@ const ApiManager = {
     // defaultValues: DEFAULT_VALUES.FIND_DISKS_FROM_VM
   }),
   /**
-   * @name ApiManager.findDiskFromVM
+   * @name ApiManager.findDiskattachmentFromVM
    * @description 디스크
    *
    * @param {string} vmId
@@ -855,7 +856,7 @@ const ApiManager = {
    * 
    * @see
    */
-  findDiskFromVM : async (vmId, diskAttachmentId) => makeAPICall({
+  findDiskattachmentFromVM : async (vmId, diskAttachmentId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_DISK_FROM_VM(vmId, diskAttachmentId), 
     // defaultValues: DEFAULT_VALUES.FIND_DISK_FROM_VM
@@ -881,15 +882,15 @@ const ApiManager = {
    * @description 가상머신 디스크 편집
    * 
    * @param {string} vmId
+   * @param {string} diskAttachmentId
    * @param {Object} diskData - 추가할 디스크 정보
    * @returns {Promise<Object>} API 응답 결과
    */
-  editDiskFromVM: async (hostId, diskData) => {
+  editDiskFromVM: async (vmId, diskAttachmentId, diskData) => {
     return makeAPICall({
       method: "PUT",
-      url: ENDPOINTS.EDIT_DISK_FROM_VM(hostId),
+      url: ENDPOINTS.EDIT_DISK_FROM_VM(vmId, diskAttachmentId),
       data: diskData, // PUT 요청 시 전송할 데이터
-      // defaultValues: DEFAULT_VALUES.EDIT_DISK_FROM_VM
     });
   },
   /**
@@ -963,12 +964,12 @@ const ApiManager = {
    * @param {Object} List<string> diskAttachmentIds
    * @returns {Promise<Object>} API 응답 결과
    */
-  activateDisksFromVM: async (vmId, diskData) => {
+  activateDisksFromVM: async (vmId, diskAttachmentId) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.ACTIVATE_DISKS_FROM_VM(vmId), 
-      data: diskData,
+      url: ENDPOINTS.ACTIVATE_DISK_FROM_VM(vmId, diskAttachmentId), 
       // defaultValues: DEFAULT_VALUES.ACTIVATE_DISKS_FROM_VM
+      data:diskAttachmentId
     });
   },
   /**
@@ -979,12 +980,12 @@ const ApiManager = {
    * @param {Object} List<string> diskAttachmentIds
    * @returns {Promise<Object>} API 응답 결과
    */
-  deactivateDisksFromVM: async (vmId, diskData) => {
+  deactivateDisksFromVM: async (vmId, diskAttachmentId) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.DEACTIVATE_DISKS_FROM_VM(vmId), 
-      data: diskData,
+      url: ENDPOINTS.DEACTIVATE_DISK_FROM_VM(vmId, diskAttachmentId), 
       // defaultValues: DEFAULT_VALUES.DEACTIVATE_DISKS_FROM_VM
+      data:diskAttachmentId
     });
   },
   /**

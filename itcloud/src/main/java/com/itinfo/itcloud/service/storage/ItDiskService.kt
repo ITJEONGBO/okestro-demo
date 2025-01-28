@@ -244,45 +244,42 @@ class DiskServiceImpl(
     @Throws(Error::class)
     override fun findOne(diskId: String): DiskImageVo? {
         log.info("findOne ... diskId: $diskId")
-        val res: Disk? = conn.findDisk(diskId)
-            .getOrNull()
+        val res: Disk? = conn.findDisk(diskId).getOrNull()
         return res?.toDiskInfo(conn)
     }
 
     @Throws(Error::class)
     override fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
         log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: $dataCenterId")
-        val res: List<StorageDomain> =
-            conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf())
-                .filter { it.status() == StorageDomainStatus.ACTIVE }
+        val res: List<StorageDomain> = conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
+            .getOrDefault(listOf())
+            .filter { it.status() == StorageDomainStatus.ACTIVE }
         return res.toStorageDomainSizes()
     }
 
     @Throws(Error::class)
     override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {
         log.info("findAllDiskProfilesFromStorageDomain ... domainId: $storageDomainId")
-        val res: List<DiskProfile> =
-            conn.findAllDiskProfilesFromStorageDomain(storageDomainId).getOrDefault(listOf())
+        val res: List<DiskProfile> = conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
+            .getOrDefault(listOf())
         return res.toDiskProfileVos()
     }
 
     @Throws(Error::class)
     override fun add(image: DiskImageVo): DiskImageVo? {
         log.info("addDisk ... image: $image")
-        val res: Disk? =
-            conn.addDisk(
-                image.toAddDiskBuilder()
-            ).getOrNull()
+        val res: Disk? = conn.addDisk(
+            image.toAddDiskBuilder()
+        ).getOrNull()
         return res?.toDiskIdName()
     }
 
     @Throws(Error::class)
     override fun update(image: DiskImageVo): DiskImageVo? {
         log.info("updateDisk ... image: $image")
-        val res: Disk? =
-            conn.updateDisk(
-                image.toEditDiskBuilder()
-            ).getOrNull()
+        val res: Disk? = conn.updateDisk(
+            image.toEditDiskBuilder()
+        ).getOrNull()
         return res?.toDiskIdName()
     }
 

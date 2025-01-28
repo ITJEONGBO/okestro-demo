@@ -1697,6 +1697,25 @@ export const useDeleteNetworkInterface = () => {
 };
 
 /**
+ * @name useDiskAttachmentFromVm
+ * @description 가상머신 상세조회 useQuery 훅
+ * 
+ * @param {string} vmId 가상머신 ID
+ * @param {string} diskAttachmentId diskAtachment ID
+ * @returns useQuery 훅
+ * * @see ApiManager.findDiskattachmentFromVM
+ */
+export const useDiskAttachmentFromVm = (vmId, diskAttachmentId) => useQuery({
+  queryKey: ['DiskAttachmentFromVm', vmId],
+  queryFn: async () => {
+    const res = await ApiManager.findDiskattachmentFromVM(vmId, diskAttachmentId);
+    return res ?? {};
+  },
+  enabled: !!vmId
+});
+
+
+/**
  * @name useAddDiskFromVM
  * @description 가상머신 디스크 생성 useMutation 훅
  * 
@@ -1714,6 +1733,28 @@ export const useAddDiskFromVM = () => {
     },
     onError: (error) => {
       console.error('Error adding disk:', error);
+    },
+  });
+};
+
+/**
+ * @name useEditDiskFromVM
+ * @description 가상머신 디스크 수정 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ */
+export const useEditDiskFromVM = () => {
+  const queryClient = useQueryClient(); // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({ vmId, diskAttachmentId, diskAttachment }) => {
+      console.log('가상머신 수정 디스크데이터:', diskAttachment); // nicData 출력
+      return await ApiManager.editDiskFromVM(vmId, diskAttachmentId, diskAttachment);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries('DisksFromVM');
+    },
+    onError: (error) => {
+      console.error('Error edit disk:', error);
     },
   });
 };
@@ -1744,24 +1785,64 @@ export const useDeleteDiskFromVM = () => {
 
 
 /**
- * @name useAddDisksFromVM
+ * @name useConnDisksFromVM
  * @description 가상머신 디스크 연결 useMutation 훅
  * 
  * @returns useMutation 훅
  */
 // TODO 이상함
-export const useAddDisksFromVM = () => {
+export const useConnDisksFromVM = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async ({ vmId, diskData }) => {
-      return await ApiManager.findDiskFromVM(vmId, diskData);
+    mutationFn: async ({ vmId, diskAttachmentId }) => {
+      return await ApiManager.activateDisksFromVM(vmId, diskAttachmentId);
     },
     onSuccess: () => {
-      // 'DisksFromVM' 키를 배열로 수정
       queryClient.invalidateQueries(['DisksFromVM']); 
     },
     onError: (error) => {
       console.error('Error attaching disks to VM:', error);
+    },  
+  });
+};
+
+/**
+ * @name useDeactivateDiskFromVm
+ * @description 가상머신 디스크 비활성화 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ * @see ApiManager.deactivateHost
+ */
+export const useDeactivateDiskFromVm = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({vmId, diskAttachmentId}) => await ApiManager.deactivateDisksFromVM(vmId, diskAttachmentId),
+    onSuccess: () => {
+      console.log(`useDeactivateDiskFromVm ... `);
+      queryClient.invalidateQueries('allDisksFromVm');
+    },
+    onError: (error) => {
+      console.error('Error deactivate disk vm:', error);
+    },  
+  });
+};
+
+/**
+ * @name useActivateDiskFromVm
+ * @description 가상머신 디스크 활성 useMutation 훅
+ * 
+ * @returns useMutation 훅
+ * @see ApiManager.activateHost
+ */
+export const useActivateDiskFromVm  = () => {
+  const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
+  return useMutation({
+    mutationFn: async ({vmId, diskAttachmentId}) => await ApiManager.activateDisksFromVM(vmId, diskAttachmentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries('allDisksFromVm');
+    },
+    onError: (error) => {
+      console.error('Error deactivate disk vm:', error);
     },  
   });
 };

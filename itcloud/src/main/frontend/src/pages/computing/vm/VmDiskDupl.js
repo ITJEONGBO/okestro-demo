@@ -4,7 +4,7 @@ import TablesOuter from '../../../components/table/TablesOuter';
 import TableRowClick from '../../../components/table/TableRowClick';
 import VmDiskActionButtons from './button/VmDiskActionButtons';
 import VmDiskModals from './modal/VmDIskModals';
-import { icon } from '../../../utils/Icon';
+import { renderTFStatusIcon } from '../../../utils/Icon';
 import { formatBytesToGBToFixedZero } from '../../../utils/format';
 
 const VmDiskDupl = ({ vmDisks = [], columns = [], vmId }) => {
@@ -26,7 +26,8 @@ const VmDiskDupl = ({ vmDisks = [], columns = [], vmId }) => {
         openModal={openModal}
         isEditDisabled={selectedDisks?.length !== 1}
         isDeleteDisabled={selectedDisks?.length === 0}
-        status={selectedDisks[0]?.status}
+        status={selectedDisks[0]?.active ? 'active' : 'deactive'}
+        selectedDisks={selectedDisks}
       />
       <span>ID: {selectedIds || ''}</span>
 
@@ -35,7 +36,7 @@ const VmDiskDupl = ({ vmDisks = [], columns = [], vmId }) => {
         data={vmDisks.map((d) => {
           return {
             ...d,
-            icon: icon(d?.diskImageVo?.status),
+            icon: renderTFStatusIcon(d?.active),
             alias: <TableRowClick type="disks" id={d?.diskImageVo?.id}>{d?.diskImageVo?.alias}</TableRowClick>,
             description: d?.diskImageVo?.description,
             bootable: d?.bootable ? '예' : '',
@@ -53,7 +54,6 @@ const VmDiskDupl = ({ vmDisks = [], columns = [], vmId }) => {
         })}
         shouldHighlight1stCol={true}
         onRowClick={(selectedRows) => setSelectedDisks(selectedRows)}
-        // clickableColumnIndex={[0]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true}
         // onContextMenuItems={(row) => [ // 마우스 버튼

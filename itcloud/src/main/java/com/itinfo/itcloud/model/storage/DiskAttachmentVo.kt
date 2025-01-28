@@ -121,7 +121,6 @@ fun List<DiskAttachment>.toDiskAttachmentsToTemplate(conn: Connection): List<Dis
  * DiskAttachmentBuilder
  */
 fun DiskAttachmentVo.toDiskAttachment(): DiskAttachmentBuilder {
-	log.info("interface ${this@toDiskAttachment.interface_}")
 	return DiskAttachmentBuilder()
 		.active(this@toDiskAttachment.active)
 		.bootable(this@toDiskAttachment.bootable)
@@ -153,7 +152,7 @@ fun DiskAttachmentVo.toAttachDisk(): DiskAttachment =
 /**
  * DiskAttachmentBuilder 에서 디스크 편집
  */
-fun DiskAttachmentVo.toEditDiskAttachment(): DiskAttachment =
+fun DiskAttachmentVo.toEditDiskAttachment(): DiskAttachment=
 	this@toEditDiskAttachment.toDiskAttachment()
 		.id(this@toEditDiskAttachment.id)
 		.disk(this@toEditDiskAttachment.diskImageVo.toEditDiskBuilder())

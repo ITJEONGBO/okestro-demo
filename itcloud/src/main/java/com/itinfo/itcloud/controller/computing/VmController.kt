@@ -886,25 +886,25 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="diskAttachments", value="디스크 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+		ApiImplicitParam(name="diskAttachmentId", value="디스크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED"),
 		ApiResponse(code = 404, message = "NOT_FOUND")
 	)
-	@PostMapping("/{vmId}/disks/activate")
+	@PostMapping("/{vmId}/disks/{diskAttachmentId}/activate")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun activateDisk(
 		@PathVariable vmId: String? = null,
-		@RequestBody diskAttachments: List<String>? = null,
+		@PathVariable diskAttachmentId: String? = null,
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		if (diskAttachments == null)
-			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
-		log.info("/computing/vms/{}/disks/activate ... 가상머신 디스크 활성화", vmId)
-		return ResponseEntity.ok(iVmDisk.activeMultiFromVm(vmId, diskAttachments))
+		if (diskAttachmentId == null)
+			throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/disks/{}/activate ... 가상머신 디스크 활성화", vmId, diskAttachmentId)
+		return ResponseEntity.ok(iVmDisk.activeFromVm(vmId, diskAttachmentId))
 	}
 
 	@ApiOperation(
@@ -914,27 +914,84 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="diskAttachments", value="디스크 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+		ApiImplicitParam(name="diskAttachmentId", value="디스크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED"),
 		ApiResponse(code = 404, message = "NOT_FOUND")
 	)
-	@PostMapping("/{vmId}/disks/deactivate")
+	@PostMapping("/{vmId}/disks/{diskAttachmentId}/deactivate")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun deactivateDisk(
 		@PathVariable vmId: String? = null,
-		@RequestBody diskAttachments: List<String>? = null,
+		@PathVariable diskAttachmentId: String? = null,
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		if (diskAttachments == null)
-			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
-		log.info("/computing/vms/{}/disks/deactivate ... 가상머신 디스크 활성화", vmId)
-		return ResponseEntity.ok(iVmDisk.deactivateMultiFromVm(vmId, diskAttachments))
+		if (diskAttachmentId == null)
+			throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/disks/{}/deactivate ... 가상머신 디스크 비활성화", vmId, diskAttachmentId)
+		return ResponseEntity.ok(iVmDisk.deactivateFromVm(vmId, diskAttachmentId))
 	}
 
+
+//	@ApiOperation(
+//		httpMethod="POST",
+//		value="가상머신 디스크 활성화",
+//		notes="선택된 가상머신의 디스크 활성화한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//		ApiImplicitParam(name="diskAttachments", value="디스크 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 201, message = "CREATED"),
+//		ApiResponse(code = 404, message = "NOT_FOUND")
+//	)
+//	@PostMapping("/{vmId}/disks/activate")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.CREATED)
+//	fun activateDisk(
+//		@PathVariable vmId: String? = null,
+//		@RequestBody diskAttachments: List<String>? = null,
+//	): ResponseEntity<Boolean> {
+//		if (vmId.isNullOrEmpty())
+//			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+//		if (diskAttachments == null)
+//			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
+//		log.info("/computing/vms/{}/disks/activate ... 가상머신 디스크 활성화", vmId)
+//		return ResponseEntity.ok(iVmDisk.activeMultiFromVm(vmId, diskAttachments))
+//	}
+//
+//	@ApiOperation(
+//		httpMethod="POST",
+//		value="가상머신 디스크 비활성화",
+//		notes="선택된 가상머신의 디스크 비활성화한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//		ApiImplicitParam(name="diskAttachments", value="디스크 ID 목록", dataTypeClass=Array<String>::class, required=true, paramType="body"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 201, message = "CREATED"),
+//		ApiResponse(code = 404, message = "NOT_FOUND")
+//	)
+//	@PostMapping("/{vmId}/disks/deactivate")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.CREATED)
+//	fun deactivateDisk(
+//		@PathVariable vmId: String? = null,
+//		@RequestBody diskAttachments: List<String>? = null,
+//	): ResponseEntity<Boolean> {
+//		if (vmId.isNullOrEmpty())
+//			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+//		if (diskAttachments == null)
+//			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
+//		log.info("/computing/vms/{}/disks/deactivate ... 가상머신 디스크 활성화", vmId)
+//		return ResponseEntity.ok(iVmDisk.deactivateMultiFromVm(vmId, diskAttachments))
+//	}
+//
 
 	@ApiOperation(
 		httpMethod="GET",

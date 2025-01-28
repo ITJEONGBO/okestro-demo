@@ -9,7 +9,6 @@ import {
   useEditCluster, 
   useCluster,
   useAllDataCenters, 
-  useDataCenter,
   useNetworksFromDataCenter
 } from '../../../../api/RQHook';
 import { CheckKorenName, CheckName } from '../../../../utils/CheckName';

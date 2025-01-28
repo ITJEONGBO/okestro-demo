@@ -289,7 +289,7 @@ fun DiskImageVo.toDiskBuilder(): DiskBuilder {
 		.backup(if (this@toDiskBuilder.backup) DiskBackup.INCREMENTAL else DiskBackup.NONE)
 		.format(if (this@toDiskBuilder.backup) DiskFormat.COW else DiskFormat.RAW)
 		.sparse(this@toDiskBuilder.sparse)
-		.diskProfile(DiskProfileBuilder().id(this@toDiskBuilder.diskProfileVo.id))
+		.diskProfile(DiskProfileBuilder().id(this@toDiskBuilder.diskProfileVo.id).build())
 }
 
 fun DiskImageVo.toAddDiskBuilder(): Disk =
@@ -303,6 +303,7 @@ fun DiskImageVo.toEditDiskBuilder(): Disk =
 		.id(this@toEditDiskBuilder.id)
 		.provisionedSize(this@toEditDiskBuilder.size.add(this@toEditDiskBuilder.appendSize))
 		.build()
+
 
 /**
  * 디스크 업로드

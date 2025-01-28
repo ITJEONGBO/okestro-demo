@@ -23,14 +23,14 @@ const Tab = ({ tabs, activeTab, onTabClick }) => (
   </div>
 );
 
-const VmDiskConnectionModal = ({ isOpen, editMode, vmId, dataCenterId, onSelectDisk = () => {}, onClose, }) => {
+const VmDiskConnectionModal = ({ isOpen, editMode, vm, onSelectDisk = () => {}, onClose, }) => {
   const [activeTab, setActiveTab] = useState("img");
   const [selectedDiskIds, setSelectedDiskIds] = useState([]); // 중복 선택을 위한 배열
   const [selectedInterfaces, setSelectedInterfaces] = useState({}); 
 
   const {
     data: disks = [], isLoading
-  } = useFindDiskListFromDataCenter(dataCenterId, (e) => ({...e,}));
+  } = useFindDiskListFromDataCenter(vm?.dataCenterVo?.id, (e) => ({...e,}));
   
   const tabs = [
     { id: "img", label: "이미지"},

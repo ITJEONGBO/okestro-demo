@@ -162,6 +162,14 @@ export const renderUpDownStatusIcon = (status) => {
   return status;
 };
 
+export const renderTFStatusIcon = (status) => {
+  if (status) {
+    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'green', fontSize: '0.3rem', transform: 'rotate(270deg)' }} />;
+  } else {
+    return <FontAwesomeIcon icon={faPlay} fixedWidth style={{ color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' }} />;
+  }
+};
+
 export const renderVmStatusIcon = (status) => {
   return icon(status);
 };

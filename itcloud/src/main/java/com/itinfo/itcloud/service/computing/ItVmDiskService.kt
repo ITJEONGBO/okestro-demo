@@ -65,7 +65,7 @@ interface ItVmDiskService {
 	 *
 	 * @param vmId [String] 가상머신 Id
 	 * @param diskAttachmentVo [DiskAttachmentVo]
-	 * @return [DiskAttachmentVo]?
+	 * @return [DiskImageVo]?
 	 */
 	@Throws(Error::class)
 	fun updateFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
@@ -80,36 +80,47 @@ interface ItVmDiskService {
 	 */
 	@Throws(Error::class)
 	fun removeFromVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean): Boolean
+
 	/**
-	 * [ItVmDiskService.removeMultiFromVm]
-	 * 가상머신 디스크 삭제 (다중)
-	 *
-	 * @param vmId [String] 가상머신 Id
-	 * @param diskAttachmentVos List<[DiskAttachmentVo]>
-	 * @return [Boolean]
-	 */
-	@Throws(Error::class)
-	fun removeMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean
-	/**
-	 * [ItVmDiskService.activeMultiFromVm]
+	 * [ItVmDiskService.activeFromVm]
 	 * 가상머신 디스크 활성화
 	 *
 	 * @param vmId [String] 가상머신 Id
-	 * @param diskAttachmentIds List<[String]> 디스크 목록
+	 * @param diskAttachmentId [String] 디스크
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun activeMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
+	fun activeFromVm(vmId: String, diskAttachmentId: String): Boolean
 	/**
-	 * [ItVmDiskService.deactivateMultiFromVm]
+	 * [ItVmDiskService.deactivateFromVm]
 	 * 가상머신 디스크 비활성화
 	 *
 	 * @param vmId [String] 가상머신 Id
-	 * @param diskAttachmentIds List<[String]> 디스크 목록
+	 * @param diskAttachmentId [String] 디스크
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun deactivateMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
+	fun deactivateFromVm(vmId: String, diskAttachmentId: String): Boolean
+//	/**
+//	 * [ItVmDiskService.activeMultiFromVm]
+//	 * 가상머신 디스크 활성화
+//	 *
+//	 * @param vmId [String] 가상머신 Id
+//	 * @param diskAttachmentIds List<[String]> 디스크 목록
+//	 * @return [Boolean]
+//	 */
+//	@Throws(Error::class)
+//	fun activeMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
+//	/**
+//	 * [ItVmDiskService.deactivateMultiFromVm]
+//	 * 가상머신 디스크 비활성화
+//	 *
+//	 * @param vmId [String] 가상머신 Id
+//	 * @param diskAttachmentIds List<[String]> 디스크 목록
+//	 * @return [Boolean]
+//	 */
+//	@Throws(Error::class)
+//	fun deactivateMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
 	/**
 	 * [ItVmDiskService.findAllStorageDomains]
 	 * 보류:[ItStorageService.findAllFromDataCenter] 와 다른점은 내가 가지고 있는 도메인은 제외하고 출력
@@ -144,9 +155,8 @@ class VmDiskService(
 	@Throws(Error::class)
 	override fun findAllFromVm(vmId: String): List<DiskAttachmentVo> {
 		log.info("findAllFromVm ... vmId: {}", vmId)
-		val res: List<DiskAttachment> =
-			conn.findAllDiskAttachmentsFromVm(vmId)
-				.getOrDefault(listOf())
+		val res: List<DiskAttachment> = conn.findAllDiskAttachmentsFromVm(vmId)
+			.getOrDefault(listOf())
 		return res.toDiskAttachmentVos(conn)
 	}
 
@@ -161,107 +171,94 @@ class VmDiskService(
 	@Throws(Error::class)
 	override fun addFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
 		log.info("addFromVm ... vmId: {}", vmId)
-		val res: DiskAttachment? =
-			conn.addDiskAttachmentToVm(
-				vmId,
-				diskAttachmentVo.toAddDiskAttachment()
-			).getOrNull()
+		val res: DiskAttachment? = conn.addDiskAttachmentToVm(
+			vmId,
+			diskAttachmentVo.toAddDiskAttachment()
+		).getOrNull()
 		return res?.toDiskAttachmentVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun attachMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
 		log.info("attachMultiFromVm ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.addMultipleDiskAttachmentsToVm(
-				vmId,
-				diskAttachmentVos.toAttachDiskList()
-			)
+		val res: Result<Boolean> = conn.addMultipleDiskAttachmentsToVm(
+			vmId,
+			diskAttachmentVos.toAttachDiskList()
+		)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun updateFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
 		log.info("updateFromVm ... vmId: {}", vmId)
-		val res: DiskAttachment? =
-			conn.updateDiskAttachmentToVm(
-				vmId,
-				diskAttachmentVo.toEditDiskAttachment()
-			).getOrNull()
+		log.info("diskAttachmentVo: {}", diskAttachmentVo)
+
+		// 실패: 가상머신 내 디스크 붙이기 ... 3faeda93-8ab9-4bce-9651-dc7651c45a78,
+		// 이유: Fault reason is "Operation Failed". Fault detail is "[User is not authorized to perform this action.]". HTTP response code is "403". HTTP response message is "Forbidden".
+		val res: DiskAttachment? = conn.updateDiskAttachmentToVm(
+			vmId,
+			diskAttachmentVo.toEditDiskAttachment()
+		).getOrNull()
 		return res?.toDiskAttachmentVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun removeFromVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean): Boolean {
 		log.info("removeFromVm ... vmId: $vmId, diskAttachmentId: $diskAttachmentId, detachOnly: $detachOnly")
-		val res: Result<Boolean> =
-			conn.removeDiskAttachmentToVm(vmId, diskAttachmentId, detachOnly)
+		val res: Result<Boolean> = conn.removeDiskAttachmentToVm(vmId, diskAttachmentId, detachOnly)
+		return res.isSuccess
+	}
+
+
+	@Throws(Error::class)
+	override fun activeFromVm(vmId: String, diskAttachmentId: String): Boolean {
+		log.info("activeFromVm ... vmId: {}, diskAttachmentId: {}", vmId, diskAttachmentId)
+		val res: Result<Boolean> = conn.activeDiskAttachmentToVm(vmId, diskAttachmentId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
-	override fun removeMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
-		log.info("removeMultiFromVm ...")
-		// 상태가 deactivate 상태인지
-//		val res: Result<Boolean> =
-//			diskAttachmentVos.forEach { diskAttachmentVo ->
-//				conn.removeDiskAttachmentToVm(
-//					diskAttachmentVo.vmVo.id,
-//					diskAttachmentVo.id,
-//					diskAttachmentVo.detachOnly
-//				)
-//			}
+	override fun deactivateFromVm(vmId: String, diskAttachmentId: String): Boolean {
+		log.info("deactivateFromVm ... vmId: {}, diskAttachmentId: {}", vmId, diskAttachmentId)
+		val res: Result<Boolean> = conn.deactivateDiskAttachmentToVm(vmId, diskAttachmentId)
+		return res.isSuccess
+	}
+
+//	@Throws(Error::class)
+//	override fun activeMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean {
+//		log.info("activeMultiFromVm ... vmId: {}", vmId)
+//		val res: Result<Boolean> = conn.activeDiskAttachmentsToVm(vmId, diskAttachmentIds)
 //		return res.isSuccess
-		TODO()
-	}
-
-	@Throws(Error::class)
-	override fun activeMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean {
-		log.info("activeMultiFromVm ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.activeDiskAttachmentsToVm(
-				vmId,
-				diskAttachmentIds
-			)
-		return res.isSuccess
-	}
-
-	@Throws(Error::class)
-	override fun deactivateMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean {
-		log.info("deactivateMultiFromVm ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.deactivateDiskAttachmentsToVm(
-				vmId,
-				diskAttachmentIds
-			)
-		return res.isSuccess
-	}
+//	}
+//
+//	@Throws(Error::class)
+//	override fun deactivateMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean {
+//		log.info("deactivateMultiFromVm ... vmId: {}", vmId)
+//		val res: Result<Boolean> = conn.deactivateDiskAttachmentsToVm(vmId, diskAttachmentIds)
+//		return res.isSuccess
+//	}
 
 	@Throws(Error::class)
 	override fun findAllStorageDomains(vmId: String, diskAttachmentId: String): List<StorageDomainVo> {
 		log.info("findAllStorageDomains ... diskAttachmentId: {}", diskAttachmentId)
-		val diskAttachment: DiskAttachment =
-			conn.findDiskAttachmentFromVm(vmId, diskAttachmentId)
-				.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toException()
-		val disk: Disk =
-			conn.findDisk(diskAttachment.disk().id())
-				.getOrNull() ?:throw ErrorPattern.DISK_NOT_FOUND.toException()
+		val diskAttachment: DiskAttachment = conn.findDiskAttachmentFromVm(vmId, diskAttachmentId)
+			.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toException()
+		val disk: Disk = conn.findDisk(diskAttachment.disk().id())
+			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
 
-		val res: List<StorageDomain> =
-			conn.findAllStorageDomains()
-				.getOrDefault(listOf())
-				.filter { it.id() != disk.storageDomains().first().id() && it.status() != StorageDomainStatus.UNATTACHED }
+		val res: List<StorageDomain> = conn.findAllStorageDomains()
+			.getOrDefault(listOf())
+			.filter { it.id() != disk.storageDomains().first().id() && it.status() != StorageDomainStatus.UNATTACHED }
 		return res.toStorageDomainsMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun moveFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): Boolean {
 		log.info("moveFromVm ... diskAttachmentVo: {}", diskAttachmentVo.id)
-		val res: Result<Boolean> =
-			conn.moveDisk(
-				diskAttachmentVo.diskImageVo.id,
-				diskAttachmentVo.diskImageVo.storageDomainVo.id
-			)
+		val res: Result<Boolean> = conn.moveDisk(
+			diskAttachmentVo.diskImageVo.id,
+			diskAttachmentVo.diskImageVo.storageDomainVo.id
+		)
 		return res.isSuccess
 	}
 
