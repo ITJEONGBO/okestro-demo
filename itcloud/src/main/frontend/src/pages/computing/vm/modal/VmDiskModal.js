@@ -16,7 +16,7 @@ import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
 import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
 import LabelCheckbox from '../../../../utils/LabelCheckbox';
 
-const VmDiskModal = ({ isOpen, editMode = false, vm, diskAttachment, onClose }) => {
+const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachment, onClose }) => {
   const { mutate: addDiskVm } = useAddDiskFromVM();
   const { mutate: editDiskVm } = useEditDiskFromVM();
   const { mutate: editDisk } = useEditDisk();
@@ -79,7 +79,7 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, diskAttachment, onClose }) 
     refetch: refetchDomains,
     isLoading: isDomainsLoading,
   } = useAllActiveDomainFromDataCenter(
-    vm?.dataCenterVo?.id, (e) => ({...e,})
+    dataCenterId, (e) => ({...e,})
   );
 
   // 선택한 도메인이 가진 디스크 프로파일 가져오기
