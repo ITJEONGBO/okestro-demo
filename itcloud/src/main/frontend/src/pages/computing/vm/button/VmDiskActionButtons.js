@@ -8,7 +8,7 @@ const VmDiskActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, stat
     { type: 'create', label: '생성' },
     { type: 'connect', label: '연결' },
     { type: 'edit', label: '편집', disabled: isEditDisabled },
-    { type: 'delete', label: '삭제', disabled: isDeleteDisabled },
+    { type: 'delete', label: '삭제', disabled: isActive },
   // ];
 
   // const activeActions = [

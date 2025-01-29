@@ -3,7 +3,8 @@ import React, { lazy, Suspense, useState } from 'react';
 const VmDiskModal = lazy(() => import('../VmDiskModal'));
 const VmDiskConnectionModal = lazy(() => import('../VmDiskConnectionModal'));
 
-const VmDisk = ({ editMode, dataCenterId, diskState, setDiskState }) => {
+const VmDisk = ({ editMode, vm, dataCenterId, diskState, setDiskState, disks }) => {
+  // props의 disks는 vmid가 가지고 있는 디스크목록
   const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 디스크 연결
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 디스크 생성
 
@@ -26,10 +27,11 @@ const VmDisk = ({ editMode, dataCenterId, diskState, setDiskState }) => {
           {/* 디스크 연결버튼 */}
           {isConnectionPopupOpen && (
             <VmDiskConnectionModal
-              editMode={editMode}
               isOpen={isConnectionPopupOpen}
+              editMode={editMode}
+              vm={vm}
               dataCenterId={dataCenterId}
-              onRequestClose={() => setIsConnectionPopupOpen(false)}
+              onClose={() => setIsConnectionPopupOpen(false)}
             />
           )}
           {/* 디스크 생성버튼 */}
@@ -37,7 +39,7 @@ const VmDisk = ({ editMode, dataCenterId, diskState, setDiskState }) => {
             <VmDiskModal
               editMode={editMode}
               isOpen={isCreatePopupOpen}
-              dataCenterId={dataCenterId}
+              dataCenterId={vm?.dataCenterVo?.id}
               onClose={() => setIsCreatePopupOpen(false)}
             />
           )}

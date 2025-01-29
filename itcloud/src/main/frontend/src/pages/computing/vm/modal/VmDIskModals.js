@@ -1,8 +1,9 @@
 import React from "react";
+import { useVmById } from "../../../../api/RQHook";
 import VmDiskConnectionModal from "./VmDiskConnectionModal";
 import VmDiskModal from "./VmDiskModal";
-import { useVmById } from "../../../../api/RQHook";
 import VmDiskActionModal from "./VmDiskActionModal";
+import VmDiskDeleteModal from "./VmDiskDeleteModal";
 
 const VmDiskModals = ({ activeModal, vmId, disk, selectedDisks = [], onClose }) => {
   const { data: vm } = useVmById(vmId);
@@ -24,12 +25,12 @@ const VmDiskModals = ({ activeModal, vmId, disk, selectedDisks = [], onClose }) 
     />
     ),    
     delete: (
-    //   <DiskDeleteModal
-    //     isOpen={activeModal === 'delete' }
-    //     data={selectedDisks}
-    //     onClose={onClose}
-    //   />
-        <></>
+      <VmDiskDeleteModal
+        isOpen={activeModal === 'delete' }
+        vmId={vmId}
+        data={selectedDisks}
+        onClose={onClose}
+      />
     ), 
     connect: (
       <VmDiskConnectionModal

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import "./../css/MVm.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useDeleteDiskFromVM, useDeleteVm, useDisksFromVM } from '../../../../api/RQHook';
@@ -82,9 +83,7 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
         <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span>
-            선택한 가상머신을 삭제하시겠습니까?
-          </span>
+            <span>선택한 가상머신을 삭제하시겠습니까?</span>
           </div>
 
           {/* <div className='disk-delete-checkbox'> */}

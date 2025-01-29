@@ -23,14 +23,14 @@ const Tab = ({ tabs, activeTab, onTabClick }) => (
   </div>
 );
 
-const VmDiskConnectionModal = ({ isOpen, editMode, vm, onSelectDisk = () => {}, onClose, }) => {
+const VmDiskConnectionModal = ({ isOpen, editMode=false, vm, dataCenterId, onSelectDisk = () => {}, onClose }) => {
   const [activeTab, setActiveTab] = useState("img");
   const [selectedDiskIds, setSelectedDiskIds] = useState([]); // 중복 선택을 위한 배열
   const [selectedInterfaces, setSelectedInterfaces] = useState({}); 
 
   const {
     data: disks = [], isLoading
-  } = useFindDiskListFromDataCenter(vm?.dataCenterVo?.id, (e) => ({...e,}));
+  } = useFindDiskListFromDataCenter(dataCenterId, (e) => ({...e,}));
   
   const tabs = [
     { id: "img", label: "이미지"},
@@ -97,7 +97,7 @@ const VmDiskConnectionModal = ({ isOpen, editMode, vm, onSelectDisk = () => {}, 
     >
       <div className="storage_disk_new_popup">
         <div className="popup-header">
-          <h1>가상 디스크 연결</h1>
+          <h1>가상 디스크 연결 ㅇ{vm?.dataCenterVo?.id}</h1>
           <button onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} fixedWidth />
           </button>

@@ -395,53 +395,6 @@ class DiskController: BaseController() {
 		return ResponseEntity.ok(iDisk.findAllStorageDomainsFromDisk(diskId))
 	}
 
-
-
-//	@ApiOperation(
-//		httpMethod="GET",
-//		value="/{dataCenterId}/networks",
-//		notes="Network(s) 목록")
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//	)
-//	@ApiResponses(
-//		ApiResponse(code = 200, message = "OK")
-//	)
-//	@GetMapping("/{dataCenterId}/networks")
-//	@ResponseStatus(HttpStatus.OK)
-//	@ResponseBody
-//	fun networks(
-//		@PathVariable dataCenterId: String? = null,
-//	): ResponseEntity<List<NetworkVo>> {
-//		if (dataCenterId.isNullOrEmpty())
-//			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-//		log.info("/storages/{}/networks ... Network(s) 목록", dataCenterId)
-//		return ResponseEntity.ok(iStorage.findAllNetworksFromDataCenter(dataCenterId))
-//	}
-
-//	@ApiOperation(
-//		httpMethod="GET",
-//		value="/{dataCenterId}/clusters",
-//		notes="Cluster(s) 목록"
-//	)
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//	)
-//	@ApiResponses(
-//		ApiResponse(code = 200, message = "OK")
-//	)
-//	@GetMapping("/{dataCenterId}/clusters")
-//	@ResponseStatus(HttpStatus.OK)
-//	@ResponseBody
-//	fun clusters(
-//		@PathVariable("dataCenterId") dataCenterId: String? = null,
-//	): ResponseEntity<List<ClusterVo>> {
-//		if (dataCenterId.isNullOrEmpty())
-//			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-//		log.info("/storages/{}/clusters ... Cluster(s) 목록", dataCenterId)
-//		return ResponseEntity.ok(iStorage.findAllClustersFromDataCenter(dataCenterId))
-//	}
-
 	
 	companion object {
 		private val log by LoggerDelegate()

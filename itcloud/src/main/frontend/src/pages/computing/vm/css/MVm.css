@@ -403,8 +403,8 @@
     background-color: #ebebeb;;
     border-radius: 3px;
 }
-/*삭제모달창*/
-.vm-delete-popup{
+/* 삭제모달창 */
+/* .vm-delete-popup{
     border: 1px solid #dfdddd;
     position: absolute;
     box-sizing: border-box;
@@ -412,12 +412,16 @@
     
     background: #fff;
     top: 50%;
-    max-height: 90%; /* Prevent it from growing too large */
+    max-height: 90%; 
     overflow-y: auto;
     width: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+} */
+.vm-delete-popup {
+    display: flex;
+    flex-direction: column;
 }
 .disk-delete-checkbox{
     display:flex;

@@ -1747,7 +1747,7 @@ export const useEditDiskFromVM = () => {
   const queryClient = useQueryClient(); // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
     mutationFn: async ({ vmId, diskAttachmentId, diskAttachment }) => {
-      console.log('가상머신 수정 디스크데이터:', diskAttachment); // nicData 출력
+      console.log('가상머신 수정 디스크데이터:', diskAttachment);
       return await ApiManager.editDiskFromVM(vmId, diskAttachmentId, diskAttachment);
     },
     onSuccess: () => {
@@ -1768,11 +1768,10 @@ export const useEditDiskFromVM = () => {
 export const useDeleteDiskFromVM = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async ({ vmId,diskAttachmentId}) => {
+    mutationFn: async ({ vmId, diskAttachmentId, detachOnly }) => {
       // ID들이 제대로 전달되는지 확인하기 위해 로그 추가
-      console.log('vmId:', vmId);
-      console.log('diskAttachmentId:', diskAttachmentId);
-      return await ApiManager.deleteDiskFromVM(vmId,diskAttachmentId);
+      console.log(`vmId: ${vmId}, diskAttachmentId: ${diskAttachmentId}, detachOnly: ${detachOnly}`);
+      await ApiManager.deleteDiskFromVM(vmId, diskAttachmentId, detachOnly);
     },
     onSuccess: () => {
       queryClient.invalidateQueries('DisksFromVM');
@@ -2851,7 +2850,6 @@ export const useEditDomain = () => {
  */
 export const useDeleteDomain = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
-
   return useMutation({ 
     mutationFn: async ({domainId, format, hostName}) => {
       console.log(` domainId: ${domainId}, format: ${format}, host: ${hostName}`);

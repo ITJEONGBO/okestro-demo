@@ -175,10 +175,12 @@ class VmDiskService(
 			vmId,
 			diskAttachmentVo.toAddDiskAttachment()
 		).getOrNull()
+
 		return res?.toDiskAttachmentVo(conn)
 	}
 
 	@Throws(Error::class)
+	// 연결
 	override fun attachMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
 		log.info("attachMultiFromVm ... vmId: {}", vmId)
 		val res: Result<Boolean> = conn.addMultipleDiskAttachmentsToVm(

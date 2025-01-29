@@ -96,8 +96,8 @@ const ENDPOINTS = {
   FIND_DISK_FROM_VM: (vmId, diskAttachmentId) =>  `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}`,
   ADD_DISK_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/disks`, 
   EDIT_DISK_FROM_VM: (vmId, diskAttachmentId) =>  `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}`,
+  DELETE_DISK_FROM_VM:(vmId, diskAttachmentId, detachOnly) => `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}?detachOnly=${detachOnly}`,
   DELETE_DISKS_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/disks`, 
-  DELETE_DISK_FROM_VM:(vmId, diskAttachmentId) => `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}`, //디스크한개
   ATTACH_DISKS_FROM_VM: (vmId) =>  `/api/v1/computing/vms/${vmId}/disks/attach`, 
   FIND_STORAGE_DOMAINS_FROM_VM: (vmId, diskAttachmentId) =>  `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}/storageDomains`,
   ACTIVATE_DISK_FROM_VM: (vmId, diskAttachmentId) =>  `/api/v1/computing/vms/${vmId}/disks/${diskAttachmentId}/activate`, 

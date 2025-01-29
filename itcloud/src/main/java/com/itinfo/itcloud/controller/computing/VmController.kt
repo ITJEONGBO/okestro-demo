@@ -854,7 +854,7 @@ class VmController: BaseController() {
 	@ApiOperation(
 		httpMethod="DELETE",
 		value="가상머신 디스크 삭제",
-		notes="선택된 가상머신의 디스크를 삭제한다"
+		notes="선택된 가상머신의 디스크를 삭제한다 detachOnly=false가 완전삭제"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),

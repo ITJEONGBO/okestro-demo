@@ -886,11 +886,11 @@ const ApiManager = {
    * @param {Object} diskData - 추가할 디스크 정보
    * @returns {Promise<Object>} API 응답 결과
    */
-  editDiskFromVM: async (vmId, diskAttachmentId, diskData) => {
+  editDiskFromVM: async (vmId, diskAttachmentId, diskAttachment) => {
     return makeAPICall({
       method: "PUT",
       url: ENDPOINTS.EDIT_DISK_FROM_VM(vmId, diskAttachmentId),
-      data: diskData, // PUT 요청 시 전송할 데이터
+      data: diskAttachment, // PUT 요청 시 전송할 데이터
     });
   },
   /**
@@ -917,10 +917,10 @@ const ApiManager = {
    * @param {Object} List
    * @returns {Promise<Object>} API 응답 결과
    */
-    deleteDiskFromVM: async (vmId, diskAttachmentId) => {
+    deleteDiskFromVM: async (vmId, diskAttachmentId, detachOnly) => {
       return makeAPICall({
         method: "DELETE",
-        url: ENDPOINTS.DELETE_DISK_FROM_VM(vmId,diskAttachmentId), 
+        url: ENDPOINTS.DELETE_DISK_FROM_VM(vmId, diskAttachmentId, detachOnly), 
         data: diskAttachmentId, 
         // defaultValues: DEFAULT_VALUES.DELETE_SNAPSHOTS_FROM_VM
       });

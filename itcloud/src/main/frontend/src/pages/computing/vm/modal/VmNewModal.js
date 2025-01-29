@@ -579,7 +579,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                 />
                 <VmDisk
                   editMode={editMode}
-                  dataCenterId={dataCenterId}
+                  dataCenterId={dataCenterId}  // 생성때는 datacenterId 필요
                   diskState={diskState}
                   setDiskState={setDiskState}
                   disks={disks}

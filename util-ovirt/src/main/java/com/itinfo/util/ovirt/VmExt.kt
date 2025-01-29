@@ -578,6 +578,11 @@ fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachmen
 	val diskAttachAdded: DiskAttachment? =
 		this.srvAllDiskAttachmentsFromVm(vmId).add().attachment(diskAttachment).send().attachment()
 
+	// 생성되고 자동 활성화
+	if (diskAttachAdded != null) {
+		this.activeDiskAttachmentToVm(vmId, diskAttachAdded.id())
+	}
+
 	diskAttachAdded ?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "붙이기", vmId)
