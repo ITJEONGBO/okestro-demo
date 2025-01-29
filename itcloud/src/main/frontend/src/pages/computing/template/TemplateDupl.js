@@ -20,7 +20,7 @@ const TemplateDupl = ({ templates = [], columns = [], type }) => {
     <>
       <TemplateActionButtons
         openModal={openModal}
-        isEditDisabled={selectedTemplates.length !== 1}
+        isEditDisabled={selectedTemplates.length !== 1} 
         isDeleteDisabled={selectedTemplates.length === 0}
         // status={selectedTemplates[0]?.status}
       />

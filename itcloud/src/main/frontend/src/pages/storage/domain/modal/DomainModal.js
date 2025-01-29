@@ -421,7 +421,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_domain_administer_popup">
+      <div className="storage-domain-administer-popup">
         <div className="popup-header">
           <h1>
           {
@@ -433,7 +433,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
           <button onClick={onClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
 
-        <div className="storage_domain_new_first">
+        <div className="storage-domain-new-first">
           <div className="domain_new_left">
 
           <FormGroup label="데이터 센터">

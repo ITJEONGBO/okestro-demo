@@ -83,7 +83,7 @@ const DomainVms = ({ domainId }) => {
   if (isError) return <div>Error loading VMs data.</div>;
 
   return (
-    <div className="host_empty_outer">
+    <div className="host-empty-outer">
       <div className="section-table-outer">
         <table>
           <thead>

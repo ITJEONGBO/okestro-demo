@@ -22,7 +22,7 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
       overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="network_backup_edit">
+      <div className="network-backup-edit">
         <div className="popup-header">
           <h1>관리 네트워크 인터페이스 수정: ovirtmgmt</h1>
           <button onClick={onClose}>

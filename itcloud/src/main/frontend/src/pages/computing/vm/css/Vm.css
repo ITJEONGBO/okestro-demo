@@ -81,50 +81,6 @@
 .disk-bar{
     height:90%;
 }
-/*스냅샷*/
-.snapshot-content{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.34rem;
-    border-bottom: 1px solid rgb(226, 226, 226);
-    padding: 1% 0;
-    cursor: pointer;
-}
-.snapshot-content:hover{
-    background-color: #ebececd8;
-    border-left: 2px solid rgb(161, 161, 161);
-}
-.snapshot-content-left{
-    color: #4F4F4F;
-    width: 20%;
-    display: flex;
-}
-.snapshot-content-left>div{
-    border-radius: 50%;
-    padding: 3%;
-    background-color: #dbdbdb;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    margin-right: 10%;
-}
-.snapshot-content-left span{
-    font-weight: 600;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.snapshot-content-left i{
-  margin-top: 1px;
-}
-.snapshot-content-right{
-    color: #4F4F4F;
-    display: flex; 
-    justify-content: right;
-    width: 60%;
-}
-
 /*네트워크 인터페이스*/
 .network_content{
     width: 100%;
@@ -234,89 +190,7 @@
 #disk_managed_block_left>span{
     color: red;
 }
-.disk_new_img_right,#disk_managed_block_right {
-    display: flex;
-    flex-direction: column;
-    padding-left: 2%;
-}
-.disk_new_img_right div,#disk_managed_block_right div {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    margin-bottom: 0.13rem;
-}
-.disk_new_img_right label , #disk_managed_block_right label{
-    margin-left: 0.2rem;
-}
 
-#disk_managed_block_right label{
-    color: gray;
-}
-.target_search{
-    padding: 0 0.35rem;
-    font-size: 0.33rem;
-}
-.target_buttons{
-    display: flex;
-}
-.target_buttons>div{
-    padding: 0.07rem;
-    cursor: pointer;
-    border: 1px solid black;
-    border-radius: 3px;
-    margin-left: 0.1rem;
-}
-.target_info{
-    display: flex;
-    padding: 0.3rem 0;
-}
-.target_info>div{
-    width: 50%;
-    padding: 0 0.3rem;
-}
-.target_info>div:first-child>div{
-    display: flex;
-    justify-content: space-between;
-}
-.target_info>div:first-child input[type="text"]{
-    width: 70%;
-    height: 3vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-}
-.target_info>div:first-child{
-    border-right: 1px solid black;
-}
-.target_input_text{
-    display: flex;
-    justify-content: space-between;
-}
-.target_info>div:nth-child(2) input[type="text"]{
-    width: 30%;
-    border-radius: 3px;
-}
-.target_table table{
-    border-collapse: collapse;
-    width: 100%
-}
-.target_table th,.target_table td{
-    border: 1px solid black;
-}
-.disk_search_btn{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.1rem;
-}
-.disk_search_btn>div{
-    border: 1px solid black;
-    padding: 0.07rem;
-    text-align: center;
-    border-radius: 3px;
-    cursor: pointer;
-}
 
 /*스냅샷*/
 

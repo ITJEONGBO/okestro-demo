@@ -13,7 +13,7 @@ import {
 import toast from 'react-hot-toast';
 
 const FormGroup = ({ label, children }) => (
-  <div className="img_input_box">
+  <div className="img-input-box">
     <label>{label}</label>
     {children}
   </div>
@@ -166,14 +166,14 @@ const DiskUploadModal = ({ isOpen, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-    <div className="storage_disk_upload_popup">
+    <div className="storage-disk-upload-popup">
       <div className="popup-header">
         <h1>이미지 업로드</h1>
         <button onClick={onClose}>
           <FontAwesomeIcon icon={faTimes} fixedWidth />
         </button>
       </div>
-      <div className="storage_upload_first">
+      <div className="storage-upload-first">
         <input 
           type="file" 
           id="file"
@@ -191,9 +191,9 @@ const DiskUploadModal = ({ isOpen, onClose }) => {
       </div>
 
       <div className="storage_upload_second">
-        <div className="disk_option">디스크 옵션</div>
-          <div className="disk_new_img" style={{ paddingTop: '0.4rem' }}>
-            <div className="disk_new_img_left">
+        <div className="disk-option">디스크 옵션</div>
+          <div className="disk-new-img" style={{ paddingTop: '0.4rem' }}>
+            <div className="disk-new-img-left">
 
               <FormGroup label="크기(GB)">
                 <input
@@ -282,7 +282,7 @@ const DiskUploadModal = ({ isOpen, onClose }) => {
               </FormGroup>
             </div>
 
-            <div className="disk_new_img_right">
+            <div className="disk-new-img-right">
               <div>
                 <input
                   type="checkbox"

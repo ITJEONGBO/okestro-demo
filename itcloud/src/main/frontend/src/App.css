@@ -363,23 +363,7 @@ width: 100%;
 }
 
 
-.disk_new_nav{
-    padding: 0.2rem;
-    width: 50%;
-    font-size: 0.3rem;
-    display: flex;
-}
-.disk_new_nav>div{
-    padding: 10px;
-    margin-right: 2%;
-    cursor: pointer;
-}
 
-.disk_new_nav .active {
-    color: rgb(35, 132, 243); 
-    font-weight: 600;
-    border-bottom: 2px solid rgb(35, 132, 243);
-}
 .select-box-outer{
     width: 100%;
     padding: 1% 0.3rem;
@@ -400,7 +384,7 @@ width: 100%;
     font-size: 0.29rem; 
     outline: none;
 }
-.img_input_box input, .img_select_box select{
+.img-input-box input, .img_select_box select{
     width: 55%;
     height: 3.5vh;
     border: 1px solid #8b8989;
@@ -409,11 +393,11 @@ width: 100%;
     font-size: 0.29rem; 
     outline: none;
 }
-.img_input_box,.img_select_box{
+.img-input-box,.img_select_box{
     padding-bottom: 0.3rem;
 }
 
-.img_input_box span,.img_select_box label{
+.img-input-box span,.img_select_box label{
     display: flex; /* Flexbox 설정 추가 */
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
@@ -633,11 +617,14 @@ width: 100%;
     display: flex;
     width: 6%;
 } */
-
-
+ 
 input[type="checkbox"],input[type="radio"]{
     margin-right:0.1rem;
     cursor:pointer;
+    width:0.3rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
 }
 input[type="text"],select{
     border: 1px solid rgb(206, 206, 206);
@@ -848,7 +835,7 @@ textarea{
     align-items: center; /* 수직 가운데 정렬 */
 }
 
-.host_empty_outer{
+.host-empty-outer{
     width: 100%;
     padding:  0.3rem 0;
 }
@@ -878,7 +865,7 @@ textarea{
     font-size:0.35rem;
 }
 /*팝업 왼쪽nav*/
-.network_backup_edit{
+.network-backup-edit{
     border: 1px solid #dfdddd;
     position: absolute;
     box-sizing: border-box;
@@ -1570,115 +1557,7 @@ textarea{
     font-size: 0.3rem;
     padding: 0.03rem 0.2rem 0.03rem 0.2rem;
 }
-.table_outer{
-    border: 1px solid black;
-    height: 50%;
-}
 
-.table_outer tbody span{
-    display: block;
-    width: 100%;
-    text-align: center;
-    border: none;
-}
-
-.disk_new_img,#managed_block_outer,#storage_lun_first,#directlun_outer>div:first-child{
-    display: flex;
-    padding: 0 0.35rem;
-    font-size: 0.33rem;
-}
-#storage_managed_outer{
-    font-size: 0.3rem;
-    padding-left: 0.35rem;
-}
-
-
-#disk_managed_block_left>span{
-    color: red;
-}
-.disk_new_img_right,#disk_managed_block_right {
-    display: flex;
-    flex-direction: column;
-    padding-left: 2%;
-}
-.disk_new_img_right div,#disk_managed_block_right div {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    margin-bottom: 0.13rem;
-}
-.disk_new_img_right label , #disk_managed_block_right label{
-    margin-left: 0.2rem;
-}
-
-#disk_managed_block_right label{
-    color: gray;
-}
-.target_search{
-    padding: 0 0.35rem;
-    font-size: 0.33rem;
-}
-.target_buttons{
-    display: flex;
-}
-.target_buttons>div{
-    padding: 0.07rem;
-    cursor: pointer;
-    border: 1px solid black;
-    border-radius: 3px;
-    margin-left: 0.1rem;
-}
-.target_info{
-    display: flex;
-    padding: 0.3rem 0;
-}
-.target_info>div{
-    width: 50%;
-    padding: 0 0.3rem;
-}
-.target_info>div:first-child>div{
-    display: flex;
-    justify-content: space-between;
-}
-.target_info>div:first-child input[type="text"]{
-    width: 70%;
-    height: 3vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-}
-.target_info>div:first-child{
-    border-right: 1px solid black;
-}
-.target_input_text{
-    display: flex;
-    justify-content: space-between;
-}
-.target_info>div:nth-child(2) input[type="text"]{
-    width: 30%;
-    border-radius: 3px;
-}
-.target_table table{
-    border-collapse: collapse;
-    width: 100%
-}
-.target_table th,.target_table td{
-    border: 1px solid black;
-}
-.disk_search_btn{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.1rem;
-}
-.disk_search_btn>div{
-    border: 1px solid black;
-    padding: 0.07rem;
-    text-align: center;
-    border-radius: 3px;
-    cursor: pointer;
-}
 
     /*연결*/
 /* 기존 스타일 유지 */
@@ -1939,7 +1818,13 @@ textarea{
     display: flex;
    
 }
-
+.disk_new_img_left,#disk_managed_block_left{
+  width: 60%;
+}
+.disk_new_img_left>div, #disk_managed_block_left >div{
+  display: flex;
+  justify-content: space-between;
+}
 .pregroup_buttons_select select{
     width: 100%;
     height: 3.5vh;
@@ -1956,7 +1841,165 @@ textarea{
     font-weight: 800;
     cursor: pointer;
 }    
-    
+    .table_outer{
+    border: 1px solid black;
+    height: 50%;
+}
+
+.table_outer tbody span{
+    display: block;
+    width: 100%;
+    text-align: center;
+    border: none;
+}
+
+.domain_new_group{
+  font-size: 0.32rem;
+  padding: 0.2rem 0.3rem;
+  display: flex;
+  justify-content: space-between;
+}
+#storage_managed_outer{
+    font-size: 0.3rem;
+    padding-left: 0.35rem;
+}
+
+
+#disk_managed_block_left>span{
+    color: red;
+}
+
+
+#disk_managed_block_right label{
+    color: gray;
+}
+.target_search{
+    padding: 0 0.35rem;
+    font-size: 0.33rem;
+}
+.target_buttons{
+    display: flex;
+}
+.target_buttons>div{
+    padding: 0.07rem;
+    cursor: pointer;
+    border: 1px solid black;
+    border-radius: 3px;
+    margin-left: 0.1rem;
+}
+.target_info{
+    display: flex;
+    padding: 0.3rem 0;
+}
+.target_info>div{
+    width: 50%;
+    padding: 0 0.3rem;
+}
+.target_info>div:first-child>div{
+    display: flex;
+    justify-content: space-between;
+}
+.target_info>div:first-child input[type="text"]{
+    width: 70%;
+    height: 3vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+}
+.target_info>div:first-child{
+    border-right: 1px solid black;
+}
+.target_input_text{
+    display: flex;
+    justify-content: space-between;
+}
+.target_info>div:nth-child(2) input[type="text"]{
+    width: 30%;
+    border-radius: 3px;
+}
+.target_table table{
+    border-collapse: collapse;
+    width: 100%
+}
+.target_table th,.target_table td{
+    border: 1px solid black;
+}
+.disk_search_btn{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.1rem;
+}
+    .disk_new_img_right,#disk_managed_block_right {
+    display: flex;
+    flex-direction: column;
+}
+.disk_new_img_right div,#disk_managed_block_right div {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0.13rem;
+}
+.disk_new_img_right label , #disk_managed_block_right label{
+    margin-left: 0.2rem;
+}
+#storage_lun_first{
+    font-size: 0.33rem;
+    padding: 0 0.35rem;
+}
+
+.disk_search_btn>div{
+    border: 1px solid black;
+    padding: 0.07rem;
+    text-align: center;
+    border-radius: 3px;
+    cursor: pointer;
+}
+  스냅샷
+.snapshot-content{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.34rem;
+    border-bottom: 1px solid rgb(226, 226, 226);
+    padding: 1% 0;
+    cursor: pointer;
+}
+.snapshot-content:hover{
+    background-color: #ebececd8;
+    border-left: 2px solid rgb(161, 161, 161);
+}
+.snapshot-content-left{
+    color: #4F4F4F;
+    width: 20%;
+    display: flex;
+}
+.snapshot-content-left>div{
+    border-radius: 50%;
+    padding: 3%;
+    background-color: #dbdbdb;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    margin-right: 10%;
+}
+.snapshot-content-left span{
+    font-weight: 600;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+.snapshot-content-left i{
+  margin-top: 1px;
+}
+.snapshot-content-right{
+    color: #4F4F4F;
+    display: flex; 
+    justify-content: right;
+    width: 60%;
+}
+
 */
 
 /*스토리지 section*/

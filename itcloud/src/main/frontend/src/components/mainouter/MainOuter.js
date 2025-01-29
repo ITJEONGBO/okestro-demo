@@ -755,7 +755,6 @@ const MainOuter = ({ children,asideVisible  }) => {
                     {/*대시보드버튼 */}
                     <Link to='/' className="link-no-underline">
                         <div
-                            id="aside_popup_dashboard_btn"
                             className={getClassNames('dashboard')}
                             onClick={() => {
                                 handleClick('dashboard'); // 선택 상태 업데이트
@@ -769,7 +768,6 @@ const MainOuter = ({ children,asideVisible  }) => {
                     {/*가상머신 버튼 */}
                     <Link to='/computing/vms' className="link-no-underline">
                         <div
-                            id="aside_popup_machine_btn"
                             className={getClassNames('computing')}
                             onClick={() => {
                                 handleClick('computing');
@@ -783,7 +781,6 @@ const MainOuter = ({ children,asideVisible  }) => {
                     {/*네트워크 버튼 */}
                     <Link to='/networks' className="link-no-underline">
                         <div
-                            id="aside_popup_network_btn"
                             className={getClassNames('network')}
                             onClick={() => {
                                 handleClick('network');
@@ -797,7 +794,6 @@ const MainOuter = ({ children,asideVisible  }) => {
                     {/*스토리지 버튼 */}
                     <Link to='/storages/domains' className="link-no-underline">
                         <div
-                            id="aside_popup_storage_btn"
                             className={getClassNames('storage')}
                             onClick={() => {
                                 handleClick('storage');
@@ -811,7 +807,6 @@ const MainOuter = ({ children,asideVisible  }) => {
                     {/*이벤트 버튼 */}
                     <Link to='/events' className="link-no-underline">
                         <div
-                            id="aside_popup_storage_btn"
                             className={getClassNames('event')}
                             onClick={() => handleClick('event')}
                             style={{ backgroundColor: asidePopupBackgroundColor.event }}

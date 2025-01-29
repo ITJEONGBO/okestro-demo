@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
-import '../../domain/css/MDomain.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { 
@@ -14,7 +13,7 @@ import {
 } from '../../../../api/RQHook';
 
 const FormGroup = ({ label, children }) => (
-  <div className="img_input_box">
+  <div className="img-input-box">
     <label>{label}</label>
     {children}
   </div>
@@ -209,7 +208,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
       overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_disk_new_popup">
+      <div className="storage-disk-new-popup">
         <div className="popup-header">
           <h1>{editMode ? '디스크 편집' : '새 디스크 생성'}</h1>
           <button onClick={onClose}>
@@ -217,7 +216,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
           </button>
         </div>
 
-        <div className="disk_new_nav">
+        <div className="disk-new-nav">
           <div
             id="storage_img_btn"
             onClick={() => handleTabClick('img')}
@@ -236,8 +235,8 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
 
         {/*이미지*/}
         {activeTab === 'img' && (
-          <div className="disk_new_img">
-            <div className="disk_new_img_left">
+          <div className="disk-new-img">
+            <div className="disk-new-img-left">
 
               <FormGroup label="크기(GB)">
                 <input
@@ -334,7 +333,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
               </FormGroup>
               </div>
             
-            <div className="disk_new_img_right">
+            <div className="disk-new-img-right">
               <div>
                 <input
                   type="checkbox"
@@ -371,8 +370,8 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
         {/* 직접LUN */}
         { activeTab === 'directlun' && (
           <div id="storage_directlun_outer">
-            <div id="storage_lun_first">
-              <div className="disk_new_img_left">
+            <div className="storage-lun-first">
+              <div className="disk-new-img-left">
                 <FormGroup label="별칭">
                   <input type="text" />
                 </FormGroup>
@@ -398,7 +397,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
                   </select>
                 </div>
               </div>
-              <div className="disk_new_img_right">
+              <div className="disk-new-img-right" style={{paddingLeft:'0'}}>
                 <div>
                   <input type="checkbox" className="shareable" />
                   <label htmlFor="shareable">공유 가능</label>
