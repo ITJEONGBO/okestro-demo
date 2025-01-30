@@ -3,7 +3,7 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 const VmDiskModal = lazy(() => import('../VmDiskModal'));
 const VmDiskConnectionModal = lazy(() => import('../VmDiskConnectionModal'));
 
-const VmDisk = ({ editMode, vm, dataCenterId, diskState, setDiskState }) => {
+const VmDisk = ({ editMode, vm, dataCenterId, diskState, setDiskState, onCreateDisk }) => {
   const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false);
   const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
   
@@ -21,7 +21,7 @@ const VmDisk = ({ editMode, vm, dataCenterId, diskState, setDiskState }) => {
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center",}}>
         <div className="px-1 font-bold">인스턴스 이미지</div>
-        <div style={{ display: "flex", gap: "8px" }}> {/* 버튼 간격 추가 */}
+        <div style={{ display: "flex", gap: "8px" }}>
           <button onClick={() => setIsConnectionPopupOpen(true)}>연결</button>
           <button onClick={() => setIsCreatePopupOpen(true)}>생성</button>
         </div>
@@ -30,10 +30,10 @@ const VmDisk = ({ editMode, vm, dataCenterId, diskState, setDiskState }) => {
           {isConnectionPopupOpen && (
             <VmDiskConnectionModal
               isOpen={isConnectionPopupOpen}
-              editMode={editMode}
               vm={vm}
               dataCenterId={dataCenterId}
-              existingDisks={diskState.map((disk) => disk.id)} // ✅ 기존 연결된 디스크 전달
+              type="vm"
+              existingDisks={diskState.map((disk) => disk.id)} // 기존 연결된 디스크 전달
               onSelectDisk={(selectedDisks) => setDiskState(selectedDisks)}
               onClose={() => setIsConnectionPopupOpen(false)}
             />
@@ -43,23 +43,28 @@ const VmDisk = ({ editMode, vm, dataCenterId, diskState, setDiskState }) => {
               editMode={editMode}
               isOpen={isCreatePopupOpen}
               dataCenterId={dataCenterId}
+              type="vm"
+              onCreateDisk={(disk) => {
+                onCreateDisk(disk); // VmNewModal에 전달
+                setIsCreatePopupOpen(false);
+              }}
               onClose={() => setIsCreatePopupOpen(false)}
             />
           )}
         </Suspense>
       </div>
       <div className="disk-list-container" style={{ marginTop: "12px", borderBottom: "1px solid gray", paddingBottom: "8px" }}>
-          {diskState.length > 0 &&
-            diskState.map((disk, index) => (
-              <div key={index} className="disk-item">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{ marginRight: "10px" }}><strong>이름:</strong> {disk.alias} ({disk.virtualSize} GB)</span>
-                  <button onClick={() => handleRemoveDisk(index)}>삭제</button>
-                </div>
+        {diskState.length > 0 &&
+          diskState.map((disk, index) => (
+            <div key={index} className="disk-item">
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: "10px" }}><strong>이름:</strong> {disk.alias} ({disk.virtualSize || disk.size} GB)</span>
+                <button onClick={() => handleRemoveDisk(index)}>삭제</button>
               </div>
-            ))
-          }
-        </div> 
+            </div>
+          ))
+        }
+      </div> 
     </>
   );
 };

@@ -16,11 +16,11 @@ import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
 import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
 import LabelCheckbox from '../../../../utils/LabelCheckbox';
 
-const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachment, onClose }) => {
+// type은 vm이면 가상머신 생성할때 디스크 생성하는 창, disk면 가상머신 디스크 목록에서 생성하는
+const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachment, type="disk", onCreateDisk, onClose }) => {
   const { mutate: addDiskVm } = useAddDiskFromVM();
   const { mutate: editDiskVm } = useEditDiskFromVM();
   const { mutate: editDisk } = useEditDisk();
-
 
   const [activeTab, setActiveTab] = useState('img');
 
@@ -64,7 +64,6 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
     setDiskProfileVoId('');
   };
 
-  const handleTabClick = (tab) => { setActiveTab(tab); };
 
   // 디스크 데이터 가져오기
   // const {
@@ -155,6 +154,26 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
     return null;
   };
 
+  const handleOkClick = () => {
+    if (!formState.alias || !formState.size || !domainVoId || !diskProfileVoId) {
+      alert('필수 값을 입력하세요.');
+      return;
+    }
+
+    const newDisk = {
+      alias: formState.alias,
+      size: formState.size,
+      interface_: formState.interface_,
+      sparse: formState.sparse,
+      bootable: formState.bootable,
+      readOnly: formState.readOnly,
+      storageDomainVo: { id: domainVoId },
+      diskProfileVo: { id: diskProfileVoId },
+    };
+
+    onCreateDisk(newDisk);
+    onClose();
+  };
 
   const handleFormSubmit = () => {
     const error = validateForm();
@@ -225,7 +244,7 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
       overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_disk_new_popup">
+      <div className="storage-disk-new-popup">
         <div className="popup-header">
           <h1>{editMode ? '디스크 편집' : '새 디스크 생성'}</h1>
           <button onClick={onClose}>
@@ -233,17 +252,17 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
           </button>
         </div>
 
-        <div className="disk_new_nav">
+        <div className="disk-new-nav">
           <div
-            id="storage_img_btn"
-            onClick={() => handleTabClick('img')}
+            id="storage-img-btn"
+            onClick={() => setActiveTab('img')}
             className={activeTab === 'img' ? 'active' : ''}
           >
             이미지
           </div>
           <div
-            id="storage_directlun_btn"
-            onClick={() => handleTabClick('directlun')}
+            id="storage-directlun-btn"
+            onClick={() => setActiveTab('directlun')}
             className={activeTab === 'directlun' ? 'active' : ''}
           >
             직접 LUN
@@ -252,11 +271,11 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
 
         {/*이미지*/}
         {activeTab === 'img' && (
-          <div className="disk_new_img">
-            <div className="disk_new_img_left">
+          <div className="disk-new-img">
+            <div className="disk-new-img-left">
 
               <LabelInputNum
-                className="img_input_box"
+                className="img-input-box"
                 label="크기(GB)"
                 value={formState.size}
                 autoFocus={true}
@@ -266,27 +285,27 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
 
             {editMode && (
               <LabelInputNum
-                className="img_input_box"
+                className="img-input-box"
                 label="추가크기(GB)"
                 value={formState.appendSize}
                 onChange={(e) => setFormState((prev) => ({ ...prev, appendSize: e.target.value }))}
               />
-            )}              
+            )} 
 
               <LabelInput
-                className="img_input_box"
+                className="img-input-box"
                 label="별칭"
                 value={formState.alias}
                 onChange={(e) => setFormState((prev) => ({ ...prev, alias: e.target.value }))}
               />
               <LabelInput
-                className="img_input_box"
+                className="img-input-box"
                 label="설명"
                 value={formState.description}
                 onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
               />
               <LabelSelectOptions
-                className="img_input_box"
+                className="img-input-box"
                 label="인터페이스"
                 value={formState.interface_}
                 onChange={(e) =>setFormState((prev) => ({ ...prev, interface_: e.target.value }))}
@@ -294,7 +313,7 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
                 options={interfaceList}
               />
               <LabelSelectOptionsID
-                className="img_input_box"
+                className="img-input-box"
                 label="스토리지 도메인"
                 value={domainVoId}
                 onChange={(e) => setDomainVoId(e.target.value)}
@@ -304,7 +323,7 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
               />
               <span>{formState.sparse}</span>
               <LabelSelectOptions
-                className="img_input_box"
+                className="img-input-box"
                 label="할당 정책"
                 value={formState.sparse ? "true" : "false"}
                 onChange={(e) => setFormState((prev) => ({ ...prev, sparse: e.target.value === "true" }))}
@@ -312,7 +331,7 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
                 options={sparseList}
               />
               <LabelSelectOptionsID
-                className="img_input_box"
+                className="img-input-box"
                 label="디스크 프로파일"
                 value={diskProfileVoId}
                 onChange={(e) => setDiskProfileVoId(e.target.value)}
@@ -321,7 +340,7 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
               />
             </div>
             
-            <div className="disk_new_img_right">
+            <div className="disk-new-img-right">
             
             {!editMode && (
               <LabelCheckbox
@@ -376,37 +395,37 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
         )} 
         {/* 직접LUN */}
         {activeTab === 'directlun' && (
-          <div id="storage_directlun_outer">
-            <div id="storage_lun_first">
-              <div className="disk_new_img_left">
-                <div className="img_input_box">
+          <div id="storage-directlun-outer">
+            <div id="storage-lun-first">
+              <div className="disk-new-img-left">
+                <div className="img-input-box">
                   <span>별칭</span>
                   <input type="text" />
                 </div>
-                <div className="img_input_box">
+                <div className="img-input-box">
                   <span>설명</span>
                   <input type="text" />
                 </div>
-                <div className="img_select_box">
+                <div className="img-select-box">
                   <label htmlFor="os">데이터 센터</label>
                   <select id="os">
                     <option value="linux">Linux</option>
                   </select>
                 </div>
-                <div className="img_select_box">
+                <div className="img-select-box">
                   <label htmlFor="os">호스트</label>
                   <select id="os">
                     <option value="linux">Linux</option>
                   </select>
                 </div>
-                <div className="img_select_box">
+                <div className="img-select-box">
                   <label htmlFor="os">스토리지 타입</label>
                   <select id="os">
                     <option value="linux">Linux</option>
                   </select>
                 </div>
               </div>
-              <div className="disk_new_img_right">
+              <div className="disk-new-img-right">
                 <div>
                   <input type="checkbox" className="shareable" />
                   <label htmlFor="shareable">공유 가능</label>
@@ -416,7 +435,7 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
           </div>
         )}
         <div className="edit-footer">
-          <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
+          <button onClick={type==="disk" ? handleFormSubmit : handleOkClick}>{editMode ? '편집' : '생성'}</button>
           <button onClick={onClose}>취소</button>
         </div>
       </div>

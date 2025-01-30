@@ -1789,12 +1789,11 @@ export const useDeleteDiskFromVM = () => {
  * 
  * @returns useMutation 훅
  */
-// TODO 이상함
-export const useConnDisksFromVM = () => {
+export const useConnDiskFromVM = () => {
   const queryClient = useQueryClient();  // 캐싱된 데이터를 리패칭할 때 사용
   return useMutation({
-    mutationFn: async ({ vmId, diskAttachmentId }) => {
-      return await ApiManager.activateDisksFromVM(vmId, diskAttachmentId);
+    mutationFn: async ({ vmId, diskAttachment }) => {
+      return await ApiManager.attachDiskFromVM(vmId, diskAttachment);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['DisksFromVM']); 

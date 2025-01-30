@@ -772,7 +772,7 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="diskAttachment", value="디스크 ID 목록", dataTypeClass=Array<DiskAttachmentVo>::class, required=true, paramType="body"),
+		ApiImplicitParam(name="diskAttachment", value="디스크", dataTypeClass=DiskAttachmentVo::class, required=true, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED"),
@@ -783,13 +783,41 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.CREATED)
 	fun attachDisk(
 		@PathVariable vmId: String? = null,
+		@RequestBody diskAttachment: DiskAttachmentVo? = null,
+	): ResponseEntity<DiskAttachmentVo?> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (diskAttachment == null)
+			throw ErrorPattern.DISK_ATTACHMENT_VO_INVALID.toException()
+		log.info("/computing/vms/{}/disks/attach ... 가상머신 디스크 연결 ", vmId)
+		return ResponseEntity.ok(iVmDisk.attachFromVm(vmId, diskAttachment))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 디스크 연결(다중)",
+		notes="선택된 가상머신의 디스크를 연결한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="diskAttachment", value="디스크 ID 목록", dataTypeClass=Array<DiskAttachmentVo>::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/disks/attachs")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun attachDiskList(
+		@PathVariable vmId: String? = null,
 		@RequestBody diskAttachments: List<DiskAttachmentVo>? = null,
 	): ResponseEntity<Boolean?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (diskAttachments == null)
 			throw ErrorPattern.DISK_ATTACHMENT_VO_INVALID.toException()
-		log.info("/computing/vms/{}/disks/attach ... 가상머신 디스크 연결 ", vmId)
+		log.info("/computing/vms/{}/disks/attachs ... 가상머신 디스크 연결 ", vmId)
 		return ResponseEntity.ok(iVmDisk.attachMultiFromVm(vmId, diskAttachments))
 	}
 

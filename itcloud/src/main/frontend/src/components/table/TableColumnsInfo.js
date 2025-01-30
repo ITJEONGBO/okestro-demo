@@ -164,7 +164,7 @@ const TableColumnsInfo = {
   DISK_LUN_FROM_VM: [
     { header: '', accessor: 'status', clickable: false,width:'4%' },
     { header: '별칭', accessor: 'alias', clickable: true ,width:'10%'},
-    { header: '부팅가능', accessor: '', clickable: false,width:'4%' },
+    { header: '부팅가능', accessor: 'bootable', clickable: false,width:'4%' },
     { header: '공유가능', accessor: '', clickable: false,width:'4%' },
     { header: '읽기전용', accessor: '', clickable: false,width:'4%' },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
@@ -472,7 +472,7 @@ const TableColumnsInfo = {
     { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false, width: '15%'  },
     { header: '인터페이스', accessor: 'interface', clickable: false },
     { header: 'R/O', accessor: 'readonly', clickable: false, width: '5%'  },
-    { header: 'os', accessor: 'os', clickable: false, width: '5%'  },
+    { header: 'bootable', accessor: 'bootable', clickable: false, width: '5%'  },
     { header: 'i', accessor: 'b', clickable: false, width: '5%'  },
 
   ],

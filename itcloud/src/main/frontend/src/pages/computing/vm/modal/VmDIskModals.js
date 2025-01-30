@@ -13,6 +13,7 @@ const VmDiskModals = ({ activeModal, vmId, disk, selectedDisks = [], onClose }) 
       <VmDiskModal
         isOpen={activeModal === 'create'} 
         vm={vm}
+        dataCenterId={vm?.dataCenterVo?.id}
         onClose={onClose} 
       />,
     edit: (
@@ -36,6 +37,7 @@ const VmDiskModals = ({ activeModal, vmId, disk, selectedDisks = [], onClose }) 
       <VmDiskConnectionModal
         isOpen={activeModal === 'connect'}
         vm={vm}
+        dataCenterId={vm?.dataCenterVo?.id}
         onClose={onClose}
       />
     ), 

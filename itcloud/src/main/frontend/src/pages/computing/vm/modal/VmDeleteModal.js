@@ -86,24 +86,21 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
             <span>선택한 가상머신을 삭제하시겠습니까?</span>
           </div>
 
-          {/* <div className='disk-delete-checkbox'> */}
-            {ids.map((vmId, index) => (
-              <div key={vmId} className='disk_delete_checkbox'>
-                <strong className='mr-2'>{names[index]}</strong>
-                <input
-                  type="checkbox"
-                  id={`diskDelete-${vmId}`}
-                  checked={diskDeleteStates[vmId]}
-                  onChange={() => handleCheckboxChange(vmId)}
-                />
-                <label htmlFor={`diskDelete-${vmId}`}>디스크 삭제</label>
-              </div>
-            ))}
-          </div>
-        {/* </div> */}
-
+          {ids.map((vmId, index) => (
+            <div key={vmId} className='disk-delete-checkbox'>
+              <strong className='mr-2'>{names[index]}</strong>
+              <input
+                type="checkbox"
+                id={`diskDelete-${vmId}`}
+                checked={diskDeleteStates[vmId]}
+                onChange={() => handleCheckboxChange(vmId)}
+              />
+              <label htmlFor={`diskDelete-${vmId}`}>디스크 삭제</label>
+            </div>
+          ))}
+        </div>
         <div className="edit-footer">
-          <button style={{ display: 'none' }}></button>
+          {/* <button style={{ display: 'none' }}></button> */}
           <button onClick={ handleFormSubmit }>OK</button>
           <button onClick={ onClose }>취소</button>
         </div>

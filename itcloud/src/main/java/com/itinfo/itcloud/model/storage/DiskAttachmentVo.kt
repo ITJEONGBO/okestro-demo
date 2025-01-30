@@ -33,7 +33,7 @@ private val log = LoggerFactory.getLogger(DiskAttachmentVo::class.java)
  * @property vmVo [IdentifiedVo] 가상머신
  */
 class DiskAttachmentVo(
-	val id: String = "",
+	val id: String = "", // 지정된 디스크와 아이디가 같음
 	val active: Boolean = false,
 	val bootable: Boolean = false,
 	val readOnly: Boolean = false,
@@ -160,8 +160,7 @@ fun DiskAttachmentVo.toEditDiskAttachment(): DiskAttachment=
 /**
  * 생성과 연결될 DiskAttachment 를 목록으로 내보낸다
  */
-fun List<DiskAttachmentVo>.
-		toAddDiskAttachmentList(): List<DiskAttachment> {
+fun List<DiskAttachmentVo>.toAddDiskAttachmentList(): List<DiskAttachment> {
 	val diskAttachmentList = mutableListOf<DiskAttachment>()
 	this@toAddDiskAttachmentList.forEach { diskAttachmentVo ->
 		if (diskAttachmentVo.diskImageVo.id.isEmpty()) {

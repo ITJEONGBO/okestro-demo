@@ -48,7 +48,16 @@ interface ItVmDiskService {
 	 */
 	@Throws(Error::class)
 	fun addFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
-	//
+	/**
+	 * [ItVmDiskService.attachFromVm]
+	 * 가상머신 디스크 연결
+	 *
+	 * @param vmId [String] 가상머신 Id
+	 * @param diskAttachmentVo [DiskAttachmentVo]
+	 * @return [DiskAttachmentVo]?
+	 */
+	@Throws(Error::class)
+	fun attachFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	/**
 	 * [ItVmDiskService.attachMultiFromVm]
 	 * 가상머신 디스크 연결
@@ -175,10 +184,19 @@ class VmDiskService(
 			vmId,
 			diskAttachmentVo.toAddDiskAttachment()
 		).getOrNull()
-
 		return res?.toDiskAttachmentVo(conn)
 	}
 
+	@Throws(Error::class)
+	// 연결
+	override fun attachFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
+		log.info("attachFromVm ... vmId: {}, diskAttachmentVo: {}", vmId, diskAttachmentVo)
+		val res: DiskAttachment? = conn.addDiskAttachmentToVm(
+			vmId,
+			diskAttachmentVo.toAttachDisk()
+		).getOrNull()
+		return res?.toDiskAttachmentVo(conn)
+	}
 	@Throws(Error::class)
 	// 연결
 	override fun attachMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean {

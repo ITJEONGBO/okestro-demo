@@ -11,6 +11,11 @@ import {
   useAllActiveDomainFromDataCenter, 
   useAllDiskProfileFromDomain,
 } from '../../../../api/RQHook';
+import LabelInput from '../../../../utils/LabelInput';
+import LabelInputNum from '../../../../utils/LabelInputNum';
+import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
+import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
+import LabelCheckbox from '../../../../utils/LabelCheckbox';
 
 const FormGroup = ({ label, children }) => (
   <div className="img-input-box">
@@ -67,6 +72,10 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
     setDiskProfileVoId('');
   };
 
+  const sparseList = [
+    { value: "true", label: "씬 프로비저닝" },
+    { value: "false", label: "사전 할당" },
+  ];
 
   // 디스크 데이터 가져오기
   const {
@@ -211,9 +220,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
       <div className="storage-disk-new-popup">
         <div className="popup-header">
           <h1>{editMode ? '디스크 편집' : '새 디스크 생성'}</h1>
-          <button onClick={onClose}>
-            <FontAwesomeIcon icon={faTimes} fixedWidth/>
-          </button>
+          <button onClick={onClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
 
         <div className="disk-new-nav">
@@ -237,136 +244,99 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
         {activeTab === 'img' && (
           <div className="disk-new-img">
             <div className="disk-new-img-left">
+  
+              <LabelInputNum
+                className="img-input-box"
+                label="크기(GB)"
+                value={formState.size}
+                autoFocus={true}
+                onChange={(e) => setFormState((prev) => ({ ...prev, size: e.target.value }))}
+                disabled={editMode}
+              />
 
-              <FormGroup label="크기(GB)">
-                <input
-                  type="number"
-                  min="0"
-                  value={formState.size}
-                  autoFocus
-                  onChange={(e) => setFormState((prev) => ({ ...prev, size: e.target.value }))}
-                  disabled={editMode}
-                />
-              </FormGroup>
-
-            {editMode && (
-              <FormGroup label="추가크기(GB)">
-                <input
-                  type="number"
-                  min="0"
+              {editMode && (
+                <LabelInputNum
+                  className="img-input-box"
+                  label="추가크기(GB)"
                   value={formState.appendSize}
                   onChange={(e) => setFormState((prev) => ({ ...prev, appendSize: e.target.value }))}
                 />
-              </FormGroup>
-            )}              
+              )} 
 
-              <FormGroup label="별칭">
-                <input
-                  type="text"
-                  value={formState.alias}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, alias: e.target.value }))}
-                />
-              </FormGroup>
+              <LabelInput
+                className="img-input-box"
+                label="별칭"
+                value={formState.alias}
+                onChange={(e) => setFormState((prev) => ({ ...prev, alias: e.target.value }))}
+              />
+              <LabelInput
+                className="img-input-box"
+                label="설명"
+                value={formState.description}
+                onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
+              />
+              
+              <LabelSelectOptionsID
+                className="img-input-box"
+                label="데이터 센터"
+                value={dataCenterVoId}
+                onChange={(e) => setDataCenterVoId(e.target.value)}
+                disabled={editMode}
+                loading={isDatacentersLoading}
+                options={datacenters}
+              />
+              <LabelSelectOptionsID
+                className="img-input-box"
+                label="스토리지 도메인"
+                value={domainVoId}
+                onChange={(e) => setDomainVoId(e.target.value)}
+                disabled={editMode}
+                loading={isDomainsLoading}
+                options={domains}
+              />
 
-              <FormGroup label="설명">
-                <input
-                  type="text"
-                  value={formState.description}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
-                />
-              </FormGroup>
+              <LabelSelectOptions
+                className="img-input-box"
+                label="할당 정책"
+                value={formState.sparse ? "true" : "false"}
+                onChange={(e) => setFormState((prev) => ({ ...prev, sparse: e.target.value === "true" }))}
+                disabled={editMode}
+                options={sparseList}
+              />
+              <LabelSelectOptionsID
+                className="img-input-box"
+                label="디스크 프로파일"
+                value={diskProfileVoId}
+                onChange={(e) => setDiskProfileVoId(e.target.value)}
+                loading={isDiskProfilesLoading}
+                options={diskProfiles}
+              />
+            </div>
 
-              <FormGroup label="데이터 센터">
-                <select
-                  value={dataCenterVoId}
-                  onChange={(e) => setDataCenterVoId(e.target.value)}
-                  disabled={editMode}
-                >
-                  {isDatacentersLoading ? (
-                    <option>로딩중~</option>
-                  ) : (
-                    datacenters && datacenters.map((dc) => (
-                      <option key={dc.id} value={dc.id}>
-                        {dc.name}: {dc.id}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </FormGroup>
-
-              <FormGroup label="스토리지 도메인">
-                <select
-                  value={domainVoId}
-                  onChange={(e) => setDomainVoId(e.target.value)}
-                  disabled={editMode}
-                >
-                  {domains && domains.map((dm) => (
-                    <option key={dm.id} value={dm.id}>
-                      {dm.name}: {domainVoId}
-                    </option>
-                  ))}
-                </select>
-              </FormGroup>
-
-              <FormGroup label="할당 정책">
-                <select
-                  value={formState.sparse}
-                  onChange={(e) =>setFormState((prev) => ({ ...prev, sparse: e.target.value }))}
-                  disabled={editMode}
-                >
-                  <option value="true">씬 프로비저닝</option>
-                  <option value="false">사전 할당</option>
-                </select>
-              </FormGroup>
-            
-              <FormGroup label="디스크 프로파일">
-                <select
-                  value={diskProfileVoId}
-                  onChange={(e) => setDiskProfileVoId(e.target.value)}
-                >
-                  {diskProfiles && diskProfiles.map((dp) => (
-                    <option key={dp.id} value={dp.id}>
-                      {dp.name}: {diskProfileVoId}
-                    </option>
-                  ))}
-                </select>
-              </FormGroup>
-              </div>
-            
             <div className="disk-new-img-right">
-              <div>
-                <input
-                  type="checkbox"
-                  id="wipeAfterDelete"
-                  checked={formState.wipeAfterDelete}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, wipeAfterDelete: e.target.checked }))}
-                />
-                <label htmlFor="wipeAfterDelete">삭제 후 초기화</label>
-              </div>
- 
-              <div>
-                <input 
-                  type="checkbox" 
-                  className="sharable"
-                  checked={formState.sharable}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, sharable: e.target.checked }))}
-                />
-                <label htmlFor="sharable">공유 가능</label>
-              </div>
-
-              <div>
-                <input 
-                  type="checkbox" 
-                  id="backup" 
-                  checked={formState.backup}
-                  onChange={(e) => setFormState((prev) => ({ ...prev, backup: e.target.checked }))}
-                />
-                <label htmlFor="backup">중복 백업 사용</label>
-              </div>
-
+              <LabelCheckbox
+                label="삭제 후 초기화"
+                id="wipeAfterDelete"
+                checked={formState.wipeAfterDelete}
+                onChange={(e) => setFormState((prev) => ({ ...prev, wipeAfterDelete: e.target.checked }))}
+              />
+              <LabelCheckbox
+                label="공유 가능"
+                id="sharable"
+                checked={formState.sharable}
+                onChange={(e) => setFormState((prev) => ({ ...prev, sharable: e.target.checked }))}
+                disabled={editMode}
+              />
+              <LabelCheckbox
+                label="증분 백업 사용"
+                id="backup"
+                checked={formState.backup}
+                onChange={(e) => setFormState((prev) => ({ ...prev, backup: e.target.checked }))}
+              />
             </div>
           </div>
         )} 
+
         {/* 직접LUN */}
         { activeTab === 'directlun' && (
           <div id="storage_directlun_outer">

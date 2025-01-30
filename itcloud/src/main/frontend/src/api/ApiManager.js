@@ -926,6 +926,37 @@ const ApiManager = {
       });
     },
   /**
+   * @name ApiManager.attachDiskFromVM
+   * @description 가상머신 디스크 연결
+   * 
+   * @param {String} vmId
+   * @param {Object} diskAttachment
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  attachDiskFromVM: async (vmId, diskAttachment) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ATTACH_DISK_FROM_VM(vmId), 
+      data: diskAttachment, 
+    });
+  },
+  /**
+   * @name ApiManager.attachDisksFromVM
+   * @description 가상머신 디스크 연결(여러개)
+   * 
+   * @param {String} vmId
+   * @param {Object} List<string> diskAttachmentIds
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  attachDisksFromVM: async (vmId, diskData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ATTACH_DISKS_FROM_VM(vmId), 
+      data: diskData, // diskAttachmentId 목록
+      // defaultValues: DEFAULT_VALUES.ATTACH_DISKS_FROM_VM
+    });
+  },
+  /**
    * @name ApiManager.attachDisksFromVM
    * @description 가상머신 디스크 연결(여러개)
    * 
@@ -989,7 +1020,7 @@ const ApiManager = {
     });
   },
   /**
-   * @name ApiManager.deactivateDisksFromVM
+   * @name ApiManager.moveDisksFromVM
    * @description 가상머신 디스크 이동(여러개)
    * 
    * @param {String} vmId
