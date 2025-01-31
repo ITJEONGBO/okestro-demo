@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { faMinusCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAllDisksFromTemplate } from '../../../api/RQHook';
@@ -13,7 +13,25 @@ const TemplateDisks = ({ templateId }) => {
       [id]: !prev[id],
     }));
   };
-
+  // 테이블외부클릭 색빠지기기
+  const tableRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        tableRef.current &&
+        !tableRef.current.contains(event.target) &&
+        !event.target.closest('.header-right-btns button') &&
+        !event.target.closest('.Overlay')
+      ) {
+        setSelectedDiskId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
   const { 
     data: disks = [], // 기본값 설정
     isLoading, 
@@ -48,7 +66,7 @@ const TemplateDisks = ({ templateId }) => {
         <button disabled={!selectedDiskId}>복제</button>
       </div>
       <span>선택된 ID: {selectedDiskId || '없음'}</span>
-      <div className="section-table-outer">
+      <div ref={tableRef} className="section-table-outer">
         <table>
           <thead>
             <tr>
@@ -70,7 +88,7 @@ const TemplateDisks = ({ templateId }) => {
                   onClick={() => setSelectedDiskId(disk.id)} // 디스크 선택 처리
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: selectedDiskId === disk.id ? 'skyblue' : 'transparent', // 선택된 행 하이라이트
+                    backgroundColor: selectedDiskId === disk.id ? 'rgb(218, 236, 245)' : 'transparent', // 선택된 행 하이라이트
                   }}
                 >
                   <td onClick={() => toggleRow(disk.id)} style={{ cursor: 'pointer' }}>

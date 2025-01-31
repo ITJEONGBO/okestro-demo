@@ -2,7 +2,7 @@
 .vm-detail-general-boxs{
     display:flex;
     justify-content:space-between;
-    margin-bottom:0.3rem;
+    margin-bottom:0.2rem;
     border:1px solid #dedede;
 }
 .detail-general-box{
@@ -11,7 +11,7 @@
 }
 .detail_general_mini_box{
     width: 25%;
-    height: 38vh;
+    height: 33vh;
 }
 .detail_general_mini_box>div:first-child,
 .detail-general-box>div:first-child
@@ -62,7 +62,7 @@
 .vm-general-bottom-box{
     width: 33%;
     border: 1px solid #dedede;
-    height: 36vh;
+    height: 33vh;
 }
 .vm-add-snapshot-btn{
     display:flex;
@@ -82,7 +82,7 @@
     height:90%;
 }
 /*네트워크 인터페이스*/
-.network_content{
+.network-content{
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -90,43 +90,43 @@
     border-bottom: 1px solid rgb(226, 226, 226);
     cursor: pointer;
 }
-.network_content:hover{
+.network-content:hover{
     background-color: #ebececd8;
 }
-.network_content>div:first-child{
+.network-content>div:first-child{
     padding: 0.5rem 0.3rem;
 }
-.network_content i{
+.network-content i{
     color: #757575;
     padding: 0.05rem;
 }
-.network_content i:first-child{
+.network-content i:first-child{
     padding-right: 0.3rem;
     border-right: 1px solid #757575;
     font-size: 0.2rem;
 }
-.network_content>div:nth-child(n+2){
+.network-content>div:nth-child(n+2){
     text-align: center;
     padding-top: 0.4rem;
 }
-.network_content>div>div:nth-child(2){
+.network-content>div>div:nth-child(2){
     font-size: 0.27rem;
     color:#4F4F4F;
 }
 .network_interface_outer{
-    height: 68vh;
+    height: 66vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
-.network_content_detail>div{
+.network-content-detail>div{
     width: 50%;
     padding:0.2rem;
 }
-.network_content_detail_box>div{
+.network-content-detail-box>div{
     font-size:0.4rem;
     margin-bottom:0.2rem;
 }
-.network_content_detail_box .snap_table th{
+.network-content-detail-box .snap_table th{
     margin-right: 0.6rem;
     display: block;
 }
@@ -175,24 +175,50 @@
     width: 32%;
     justify-content: space-between;
 }
-#buttons{
-    width: 5%;
-    display: flex;
-    justify-content: space-between;
-}
-#buttons>button{
-    width: 50%;
-    font-size: 0.4rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#disk_managed_block_left>span{
-    color: red;
-}
-
 
 /*스냅샷*/
+.snapshot-content{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.34rem;
+    border-bottom: 1px solid rgb(226, 226, 226);
+    padding: 1% 0;
+    cursor: pointer;
+}
+.snapshot-content:hover{
+    background-color: #ebececd8;
+    border-left: 2px solid rgb(161, 161, 161);
+}
+.snapshot-content-left{
+    color: #4F4F4F;
+    width: 20%;
+    display: flex;
+}
+.snapshot-content-left>div{
+    border-radius: 50%;
+    padding: 3%;
+    background-color: #dbdbdb;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    margin-right: 10%;
+}
+.snapshot-content-left span{
+    font-weight: 600;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+.snapshot-content-left i{
+  margin-top: 1px;
+}
+.snapshot-content-right{
+    color: #4F4F4F;
+    display: flex; 
+    justify-content: right;
+    width: 60%;
+}
 
 .snap-hidden-content {
     display: none;

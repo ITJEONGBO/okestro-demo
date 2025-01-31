@@ -270,7 +270,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
 
           <div>
             <div>vGPU 배치</div>
-            <div>
+            <div className='flex'>
               <input 
                 type="radio" 
                 id="vgpu" 
@@ -279,7 +279,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
                 checked={formState.vgpu === 'consolidated'}
                 onChange={(e) => setFormState((prev) => ({ ...prev, vgpu: e.target.value }))}
               />
-              <label htmlFor="consolidated">통합</label>
+              <label htmlFor="consolidated" style={{marginRight:'0.2rem'}}>통합</label>
               <input 
                 type="radio" 
                 id="vgpu" 

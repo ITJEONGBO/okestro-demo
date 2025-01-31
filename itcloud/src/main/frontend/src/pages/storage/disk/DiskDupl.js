@@ -78,8 +78,8 @@ const DiskDupl = ({ disks = [], columns = [], type = 'disk' }) => {
       {/* 디스크 모달창 */}
       <DiskModals
         activeModal={activeModal}
-        disk={selectedDisks[0]}
         selectedDisks={selectedDisks}
+        disk={activeModal === 'edit' ? selectedDisks[0] : null}
         // datacenterId={datacenterId}
         onClose={closeModal}
       />

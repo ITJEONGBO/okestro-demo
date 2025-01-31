@@ -73,7 +73,7 @@ const VmSnapshotModal = ({ isOpen, data, vmId, onClose }) => {
         </div>
 
         <div className="p-1">
-          <div className="host_textbox mb-1">
+          <div className="host-textbox">
             <label htmlFor="description">설명</label>
             <input
               type="text"

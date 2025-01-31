@@ -1863,7 +1863,21 @@ textarea{
     font-size: 0.3rem;
     padding-left: 0.35rem;
 }
+#buttons{
+    width: 5%;
+    display: flex;
+    justify-content: space-between;
+}
+#buttons>button{
+    width: 50%;
+    font-size: 0.4rem;
+    font-weight: 600;
+    cursor: pointer;
+}
 
+#disk_managed_block_left>span{
+    color: red;
+}
 
 #disk_managed_block_left>span{
     color: red;
@@ -1955,49 +1969,6 @@ textarea{
     text-align: center;
     border-radius: 3px;
     cursor: pointer;
-}
-  스냅샷
-.snapshot-content{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.34rem;
-    border-bottom: 1px solid rgb(226, 226, 226);
-    padding: 1% 0;
-    cursor: pointer;
-}
-.snapshot-content:hover{
-    background-color: #ebececd8;
-    border-left: 2px solid rgb(161, 161, 161);
-}
-.snapshot-content-left{
-    color: #4F4F4F;
-    width: 20%;
-    display: flex;
-}
-.snapshot-content-left>div{
-    border-radius: 50%;
-    padding: 3%;
-    background-color: #dbdbdb;
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-    margin-right: 10%;
-}
-.snapshot-content-left span{
-    font-weight: 600;
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-}
-.snapshot-content-left i{
-  margin-top: 1px;
-}
-.snapshot-content-right{
-    color: #4F4F4F;
-    display: flex; 
-    justify-content: right;
-    width: 60%;
 }
 
 */

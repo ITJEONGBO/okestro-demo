@@ -312,7 +312,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
             <FormGroup label="MTU" className="mtu-form">
               <div className="mtu-input-outer">
                 <div className="mtu-radio-input">
-                  <div style={{ fontSize: "0.32rem" }}>
+                  <div style={{ fontSize: "0.32rem",display:'flex' }}>
                     <input
                       type="radio"
                       checked={formState.mtu === "0"} // 기본값 상태 체크
@@ -320,7 +320,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                     />
                     <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
                   </div>
-                  <div style={{ fontSize: "0.32rem" }}>
+                  <div style={{ fontSize: "0.32rem",display:'flex' }}>
                     <input
                       type="radio"
                       checked={formState.mtu === "custom"} // 사용자 정의 상태 체크

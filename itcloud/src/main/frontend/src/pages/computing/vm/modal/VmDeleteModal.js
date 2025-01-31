@@ -72,7 +72,7 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vm-delete-popup" style={{ height: 'auto' }}>
+      <div className="vm-delete-popup">
         <div className="popup-header">
           <h1>가상머신 삭제</h1>
           <button onClick={onClose}>

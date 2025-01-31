@@ -107,7 +107,7 @@ const VmNics = ({ vmId }) => {
             onClick={() => setSelectedNics(nic)} // NIC 선택 시 상태 업데이트
             key={nic.id}
           >
-            <div className="network_content">
+            <div className="network-content">
               <div>
                 <FontAwesomeIcon icon={faChevronRight} onClick={() => toggleDetails(nic.id)} fixedWidth />
                 <FontAwesomeIcon icon={faArrowCircleUp} style={{ color: '#21c50b', marginLeft: '0.3rem' }} fixedWidth />
@@ -131,8 +131,8 @@ const VmNics = ({ vmId }) => {
                 <div>{nic?.macAddress}</div>
               </div>
             </div>
-            <div className="network_content_detail" style={{ display: visibleDetails[nic.id] ? 'flex' : 'none' }}>
-              <div className="network_content_detail_box">
+            <div className="network-content-detail" style={{ display: visibleDetails[nic.id] ? 'flex' : 'none' }}>
+              <div className="network-content-detail-box">
                 <div>일반</div>
                   <table className="snap_table">
                     <tbody>
@@ -175,7 +175,7 @@ const VmNics = ({ vmId }) => {
                     </tbody>
                   </table>
                 </div>
-              <div className="network_content_detail_box">
+              <div className="network-content-detail-box">
                 <div>통계</div>
                   <table className="snap_table">
                     <tbody>
@@ -202,7 +202,7 @@ const VmNics = ({ vmId }) => {
                     </tbody>
                   </table>
                 </div>
-                <div className="network_content_detail_box">
+                <div className="network-content-detail-box">
                   <div>네트워크 필터 매개변수</div>
                     <table className="snap_table">
                       <tbody>

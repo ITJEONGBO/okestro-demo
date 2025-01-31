@@ -370,7 +370,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
         {/* 직접LUN */}
         { activeTab === 'directlun' && (
           <div id="storage_directlun_outer">
-            <div className="storage-lun-first">
+            <div className="disk-new-img">
               <div className="disk-new-img-left">
                 <FormGroup label="별칭">
                   <input type="text" />
@@ -397,7 +397,7 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
                   </select>
                 </div>
               </div>
-              <div className="disk-new-img-right" style={{paddingLeft:'0'}}>
+              <div className="disk-new-img-right">
                 <div>
                   <input type="checkbox" className="shareable" />
                   <label htmlFor="shareable">공유 가능</label>

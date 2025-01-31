@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { faMinusCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAllStoragesFromTemplate } from '../../../api/RQHook';
@@ -13,6 +13,27 @@ const TemplateStorage = ({ templateId }) => {
       [id]: !prev[id],
     }));
   };
+   
+  // 테이블외부클릭 색빠지기기
+  const tableRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        tableRef.current &&
+        !tableRef.current.contains(event.target) &&
+        !event.target.closest('.header-right-btns button') &&
+        !event.target.closest('.Overlay')
+      ) {
+        setSelectedStorageId(null); // 올바른 상태 변경
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
 
   const { 
     data: storages = [], // 기본값 설정
@@ -26,9 +47,9 @@ const TemplateStorage = ({ templateId }) => {
       name: storage.name || 'Unnamed Storage',
       status: storage.active ? '활성화' : '비활성화',
       domainType: storage.domainType || 'Unknown',
-      usedSize: (storage.usedSize / (1024 ** 3)).toFixed(2),   // 사용된 공간 GiB 변환
-      availableSize: (storage.availableSize / (1024 ** 3)).toFixed(2), // 가용 공간 GiB 변환
-      totalSize: ((storage.availableSize + storage.usedSize) / (1024 ** 3)).toFixed(2), // 총 공간 계산
+      usedSize: Math.floor(storage.usedSize / (1024 ** 3)),   
+      availableSize: Math.floor(storage.availableSize / (1024 ** 3)),
+      totalSize: Math.floor((storage.availableSize + storage.usedSize) / (1024 ** 3)),
       format: storage.format || 'Unknown',
       storageType: storage.storageType || 'Unknown',
     };
@@ -43,7 +64,7 @@ const TemplateStorage = ({ templateId }) => {
         <button disabled={!selectedStorageId}>삭제</button>
       </div>
       <span>선택된 ID: {selectedStorageId || '없음'}</span>
-      <div className="section-table-outer">
+      <div ref={tableRef} className="section-table-outer">
         <table>
           <thead>
             <tr>
