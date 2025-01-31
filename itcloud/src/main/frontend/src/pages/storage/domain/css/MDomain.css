@@ -4,7 +4,6 @@
   align-items: center; /* 수직 중앙 정렬 */
   gap: 10px; /* 버튼 간격 */
 }
-
 .tab_button {
   width: 100px;
   height: 32px;
@@ -14,7 +13,6 @@
   background-color: #f9f9f9;
   cursor: pointer;
 }
-
 .tab_button.active {
   background-color: #007bff;
   color: white;
@@ -194,7 +192,7 @@
   width: 100%;
   height: 100%;
 }
-.storage_domain_get_popup{
+.storage_domain_administer_popup{
   border: 1px solid #dfdddd;
   position: absolute;
   box-sizing: border-box;
@@ -219,7 +217,7 @@
 }
  
 /*도메인 삭제*/
-.domain_delete_popup{
+.domain-delete-popup{
   border: 1px solid #dfdddd;
   position: absolute;
   box-sizing: border-box;

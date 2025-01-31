@@ -508,15 +508,10 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
           </button>
         </div>
 
-        <div className='vm_edit_popup_content'>
-          <div className='vm_new_nav' style={{
-            fontSize: '0.33rem',
+        <div className='vm_edit_popup_content flex'>
+          <div className='vm-new-nav' style={{
             height: '71vh',
             width: '30%',
-            backgroundColor: '#FAFAFA',
-            borderRight: '1px solid #ddd',
-            boxShadow: '1px 0 5px rgba(0, 0, 0, 0.1)',
-            fontWeight: 800
           }}>
             {tabs.map((tab) => (
               <div
@@ -530,7 +525,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
             ))}
           </div>
 
-          <div className="vm_edit_select_tab">
+          <div className="vm-edit-select-tab">
             <div className="edit-first-content">
               <LabelSelectOptionsID
                 label="클러스터"

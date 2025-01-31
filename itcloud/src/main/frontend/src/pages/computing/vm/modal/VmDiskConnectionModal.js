@@ -9,7 +9,7 @@ import { useFindDiskListFromDataCenter } from "../../../../api/RQHook";
 import TablesOuter from "../../../../components/table/TablesOuter";
 
 const Tab = ({ tabs, activeTab, onTabClick }) => (
-  <div className="disk_new_nav">
+  <div className="disk-new-nav">
     {tabs.map(({ id, label }) => (
       <div
         key={id}
@@ -114,7 +114,7 @@ const VmDiskConnectionModal = ({ isOpen, editMode=false, vm, dataCenterId, exist
       className="Modal"
       overlayClassName="Overlay newRolePopupOverlay"
     >
-      <div className="storage_disk_new_popup">
+      <div className="storage-disk-new-popup">
         <div className="popup-header">
           <h1>가상 디스크 연결</h1>
           <button onClick={onClose}>
@@ -127,64 +127,64 @@ const VmDiskConnectionModal = ({ isOpen, editMode=false, vm, dataCenterId, exist
         ) : (
           <>
             <TablesOuter
-  columns={ activeTab === "img" ? TableColumnsInfo.VIRTUAL_DISK : TableColumnsInfo.VMS_STOP }
-  data={disks.map((e) => ({
-    ...e,
-    virtualSize: (e?.virtualSize / Math.pow(1024, 3)) + " GB",
-    actualSize: (e?.actualSize / Math.pow(1024, 3)) + " GB",
-    storageDomain: e?.storageDomainVo?.name,
-    status:
-      e?.status === "UNINITIALIZED" ? "초기화되지 않음" : "UP",
-    check: (
-      <input
-        type="checkbox"
-        checked={selectedDiskIds.includes(e.id)} 
-        onChange={() => handleCheckboxChange(e.id)} // ✅ 체크박스를 클릭해야 선택됨
-      />
-    ),
-    interface: (
-      <select
-        id={`interface-select-${e.id}`}
-        value={selectedInterfaces[e.id] || "VIRTIO_SCSI"} // ✅ 개별 디스크 상태 유지
-        onChange={(event) => {
-          handleInterfaceChange(e.id, event.target.value); // ✅ 디스크 ID를 전달
-        }}
-      >
-        {interfaceList.map((iface) => (
-          <option key={iface.value} value={iface.value}>
-            {iface.label}
-          </option>
-        ))}
-      </select>
-    ),
-    readonly: (
-      <input
-        type="checkbox"
-        id={`readonly-${e.id}`}
-        checked={selectedReadOnly[e.id] || false} // ✅ 개별 디스크 상태 유지
-        onChange={() => {
-          setSelectedReadOnly((prev) => ({
-            ...prev,
-            [e.id]: !prev[e.id],
-          }));
-        }}
-      />
-    ),
-    os: (
-      <input
-        type="checkbox"
-        id={`os-${e.id}`}
-        checked={selectedOs[e.id] || false} // ✅ 개별 디스크 상태 유지
-        onChange={() => {
-          setSelectedOs((prev) => ({
-            ...prev,
-            [e.id]: !prev[e.id],
-          }));
-        }}
-      />
-    ),
-  }))}
-/>
+              columns={ activeTab === "img" ? TableColumnsInfo.VIRTUAL_DISK : TableColumnsInfo.VMS_STOP }
+              data={disks.map((e) => ({
+                ...e,
+                virtualSize: (e?.virtualSize / Math.pow(1024, 3)) + " GB",
+                actualSize: (e?.actualSize / Math.pow(1024, 3)) + " GB",
+                storageDomain: e?.storageDomainVo?.name,
+                status:
+                  e?.status === "UNINITIALIZED" ? "초기화되지 않음" : "UP",
+                check: (
+                  <input
+                    type="checkbox"
+                    checked={selectedDiskIds.includes(e.id)} 
+                    onChange={() => handleCheckboxChange(e.id)} // ✅ 체크박스를 클릭해야 선택됨
+                  />
+                ),
+                interface: (
+                  <select
+                    id={`interface-select-${e.id}`}
+                    value={selectedInterfaces[e.id] || "VIRTIO_SCSI"} // ✅ 개별 디스크 상태 유지
+                    onChange={(event) => {
+                      handleInterfaceChange(e.id, event.target.value); // ✅ 디스크 ID를 전달
+                    }}
+                  >
+                    {interfaceList.map((iface) => (
+                      <option key={iface.value} value={iface.value}>
+                        {iface.label}
+                      </option>
+                    ))}
+                  </select>
+                ),
+                readonly: (
+                  <input
+                    type="checkbox"
+                    id={`readonly-${e.id}`}
+                    checked={selectedReadOnly[e.id] || false} // ✅ 개별 디스크 상태 유지
+                    onChange={() => {
+                      setSelectedReadOnly((prev) => ({
+                        ...prev,
+                        [e.id]: !prev[e.id],
+                      }));
+                    }}
+                  />
+                ),
+                os: (
+                  <input
+                    type="checkbox"
+                    id={`os-${e.id}`}
+                    checked={selectedOs[e.id] || false} // ✅ 개별 디스크 상태 유지
+                    onChange={() => {
+                      setSelectedOs((prev) => ({
+                        ...prev,
+                        [e.id]: !prev[e.id],
+                      }));
+                    }}
+                  />
+                ),
+              }))}
+            />
 
           </>
         )}

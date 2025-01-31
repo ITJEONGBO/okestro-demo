@@ -101,7 +101,7 @@ const VmNics = ({ vmId }) => {
       </div>
       <span>id = {selectedNics?.id || ''}</span>
       
-      <div className='network_interface_outer'>
+      <div className='network-interface-outer'>
         {nics?.map((nic, index) => (
           <div className={`network_content2 ${selectedNics?.id === nic.id ? 'selected' : ''}`}
             onClick={() => setSelectedNics(nic)} // NIC 선택 시 상태 업데이트
@@ -134,7 +134,7 @@ const VmNics = ({ vmId }) => {
             <div className="network-content-detail" style={{ display: visibleDetails[nic.id] ? 'flex' : 'none' }}>
               <div className="network-content-detail-box">
                 <div>일반</div>
-                  <table className="snap_table">
+                  <table className="snap-table">
                     <tbody>
                       <tr>
                         <th>연결됨</th>
@@ -177,7 +177,7 @@ const VmNics = ({ vmId }) => {
                 </div>
               <div className="network-content-detail-box">
                 <div>통계</div>
-                  <table className="snap_table">
+                  <table className="snap-table">
                     <tbody>
                       <tr>
                         <th>Rx 속도 (Mbps)</th>
@@ -204,7 +204,7 @@ const VmNics = ({ vmId }) => {
                 </div>
                 <div className="network-content-detail-box">
                   <div>네트워크 필터 매개변수</div>
-                    <table className="snap_table">
+                    <table className="snap-table">
                       <tbody>
                       
                       </tbody>

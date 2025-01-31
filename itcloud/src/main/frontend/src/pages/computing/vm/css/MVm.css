@@ -17,82 +17,61 @@
     justify-content: space-between;
     padding-bottom: 2%;
 }
-/*
-
-.edit_aside {
-    width: 30%;
-    height: 95%;
+/* 새로만들기(수정해야됨) */
+.vm-new-nav{
+    font-size: 0.33rem;
+    height: 48vh;
+    width: 60%;
     background-color: #FAFAFA;
     border-right: 1px solid #ddd;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     font-weight: 800;
-    text-align: center;
 }
-.edit_aside > div {
-    display: flex;
-    width: 100%;
-    text-align: left;
-    align-items: center;
-    padding-left: 0.2rem;
-    border-bottom: none;
-    cursor: pointer;
+.vm-new-nav>div {
     padding: 0.4rem 0.2rem;
-    outline: none;
-}
-
-.edit_aside > div span {
+    cursor: pointer;
+    width: 100%;
     font-size: 0.33rem;
 }
-.edit_header{
-    background-color: #ebebeb;
-    display: flex;
-    padding: 8px 13px;
-    justify-content: space-between;
-    font-size: 0.18rem;
-}
-.edit_header>h1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.edit_header>button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1px;
-    border: none;
-    padding: 11px;
-    border-radius: 50%;
-    font-size: 0.38rem;
-    cursor: pointer;
-    background-color: #ebebeb;
-}
-.edit_header>button:hover{
-    background-color: #DDDDDD;
-}
-    #host_outer,
-#ha_mode_outer,
-#res_alloc_outer,
-#common_outer,
-#console_outer {
-    height: 69vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-#common_outer {
-    height: 100%;
-    max-height: 69vh;
-    overflow-y: auto;
-}
-    .edit_body{
-    height: 80vh;
-    font-size: 0.36rem;
+
+.vm-edit-select-tab {
+    font-size: 0.33rem;
+    width: 86%;
+    height: 71vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 
-.edit_footer{
-    border-top: 1px solid gray;
+.datacenter_span{
+    position:absolute;
+    right: 21.5%;
+    top: 14%;
 }
-*/
+.text_icon_box{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.boot_outer_content{
+    padding:0.2rem;
+}
+.instance_image{
+    padding: 2.3% 2% 2% 2%;
+    margin-bottom:0.2rem;
+    border-bottom:1px solid gray;
+}
+.instance_image>div{
+
+    display:flex;
+    justify-content: space-between;
+}
+.instance_image button{
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
 .vm-plus-btn-outer{
     width:100%
 }

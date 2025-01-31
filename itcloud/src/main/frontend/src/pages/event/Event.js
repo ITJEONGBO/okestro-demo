@@ -23,8 +23,8 @@ const Event = () => {
         openModal={[]}
         togglePopup={() => {}}
       />
-      <div className="content_outer">
-        <div className="empty_nav_outer">
+      <div className="content-outer">
+        <div className="empty-nav-outer">
           <EventTable 
             events={events}
           />

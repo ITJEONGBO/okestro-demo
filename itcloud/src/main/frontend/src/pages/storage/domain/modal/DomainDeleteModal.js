@@ -90,7 +90,7 @@ const DomainDeleteModal = ({ isOpen, deleteMode = true, data, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="domain_delete_popup">
+      <div className="domain-delete-popup">
         <div className="popup-header">
           <h1>{`스토리지 도메인 ${deleteMode ? '삭제' : '파괴'}`}</h1>
           <button onClick={onClose}>
@@ -120,7 +120,7 @@ const DomainDeleteModal = ({ isOpen, deleteMode = true, data, onClose }) => {
               />
               <label htmlFor="format">포맷 하시겠습니까?</label>
             </div>
-            <div className="disk_delete_box">
+            <div className="disk-delete-box">
               <select
                 value={hostName}
                 onChange={(e) => setHostName(e.target.value)}

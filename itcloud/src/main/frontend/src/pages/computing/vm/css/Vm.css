@@ -82,6 +82,11 @@
     height:90%;
 }
 /*네트워크 인터페이스*/
+.network-interface-outer{
+    height: 66vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 .network-content{
     width: 100%;
     display: flex;
@@ -113,11 +118,7 @@
     font-size: 0.27rem;
     color:#4F4F4F;
 }
-.network_interface_outer{
-    height: 66vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
+
 .network-content-detail>div{
     width: 50%;
     padding:0.2rem;
@@ -126,54 +127,9 @@
     font-size:0.4rem;
     margin-bottom:0.2rem;
 }
-.network-content-detail-box .snap_table th{
+.network-content-detail-box .snap-table th{
     margin-right: 0.6rem;
     display: block;
-}
-.select_box select,
-.input_box input{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-}
-.select_box2>div:last-child,
-.plug_radio_btn>div{
-    width: 47%;
-}
-.select_box2 select{
-    width: 100%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-}
-
-.plug_radio_btn span{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.network_parameter_outer{
-    padding: 1% 2%;
-    font-size: 0.32rem;
-}
-.network_parameter_outer>span{
-    font-weight: 600;
-    display: block;
-    margin-bottom: 0.3rem;
-}
-.network_parameter_outer>div{
-    display: flex;
-    justify-content: space-between;
-}
-.network_parameter_outer>div>div:nth-child(-n+2){
-    display: flex;
-    width: 32%;
-    justify-content: space-between;
 }
 
 /*스냅샷*/
@@ -244,75 +200,3 @@
 .snap-table:last-child{
     margin-bottom: 0;
 }
-
-/* 새로만들기(수정해야됨) */
-.vm_new_nav{
-    font-size: 0.33rem;
-    height: 48vh;
-    width: 60%;
-    background-color: #FAFAFA;
-    border-right: 1px solid #ddd;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    font-weight: 800;
-}
-.vm_new_nav>div {
-    padding: 0.4rem 0.2rem;
-    cursor: pointer;
-    width: 100%;
-    font-size: 0.33rem;
-}
-
-.vm_edit_select_tab {
-    font-size: 0.33rem;
-    width: 86%;
-    height: 71vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-
-.backup_edit_radiobox {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 0.2rem;
-    height: 16vh;
-}
-
-.vm_edit_popup_content {
-    display: flex;
-
-}
-
-.datacenter_span{
-    position:absolute;
-    right: 21.5%;
-    top: 14%;
-}
-
-
-.text_icon_box{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.boot_outer_content{
-    padding:0.2rem;
-}
-.instance_image{
-    padding: 2.3% 2% 2% 2%;
-    margin-bottom:0.2rem;
-    border-bottom:1px solid gray;
-}
-.instance_image>div{
-
-    display:flex;
-    justify-content: space-between;
-}
-.instance_image button{
-    padding: 0.08rem 0.15rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/**/

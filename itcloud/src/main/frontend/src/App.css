@@ -208,8 +208,39 @@ button[disabled],select[disabled],input[disabled]{
 .right-click-menu-box .right-click-menu-btn:hover{
     background:rgb(236, 236, 236);
 }
+/*이미지,직접lun버튼*/
+.storage-disk-new-popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 74%;
+    width: 50%;
+    left: 50%;
+    z-index:99999;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+}
+.disk-new-nav{
+    padding: 0.2rem;
+    width: 50%;
+    font-size: 0.3rem;
+    display: flex;
+}
+.disk-new-nav>div{
+    padding: 10px;
+    margin-right: 2%;
+    cursor: pointer;
+}
 
-.empty_nav_outer{
+.disk-new-nav .active {
+    color: rgb(35, 132, 243); 
+    font-weight: 600;
+    border-bottom: 2px solid rgb(35, 132, 243);
+}
+.empty-nav-outer{
     width: 100%;
     padding: 0.6rem 0.3rem;
 }
@@ -242,8 +273,6 @@ button[disabled],select[disabled],input[disabled]{
     border-radius: 4px;
     font-weight: 600;
 }
-
-
 .edit-footer button:first-child,.edit-footer button:nth-child(3){
     background-color: rgb(218, 218, 218);
     border: 1px solid rgb(122, 122, 122);
@@ -252,9 +281,7 @@ button[disabled],select[disabled],input[disabled]{
     background-color:#6e9cd8;
     color: white;
     border: 1px solid #295b9c;
-
 }
-
 .storage_volume_snap_popup{
     border: 1px solid #dfdddd;
     position: absolute;
@@ -269,8 +296,8 @@ button[disabled],select[disabled],input[disabled]{
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 .volume_snap_first_content{
-font-size: 0.33rem;
-padding: 0.4rem;
+    font-size: 0.33rem;
+    padding: 0.4rem;
 }
 .volume_snap_first_content>h2{
 font-size: 0.4rem;
@@ -1446,10 +1473,6 @@ textarea{
     background-color: #ececec;
 }
 
-/*content_info*/
-
-/*네트워크 인터페이스*/
-
 .select_box select,
 .input_box input{
     width: 47%;
@@ -1516,47 +1539,7 @@ textarea{
    font-weight: 600;
    cursor: pointer;
 }
-/*디스크(disk_content)*/
-#disk_content {
-    width: 100%;
-    padding: 0.5rem 0.3rem;
-    overflow-x: auto;
-}
-.disk_content_header{
-    display: flex;
-    font-size:0.3rem;
-    padding-bottom: 0.3rem;
-}
-.disk_content_header span{
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    margin-right: 0.5%;
-    font-size: 0.35rem;
-}
-.disk_content_header button {
-    padding: 0.3%;
-    cursor: pointer;
-    font-size: 0.3rem;
-    border: 1px solid #14417c;
-    border-radius: 3px;
-    color: rgb(10, 55, 107);
-    background: white;
-}
 
-#disk_content table {
-    width: 100%;
-    border-collapse: collapse;
-}
-#disk_content thead>tr{
-    background-color: #d1e2eb;
-}
-#disk_content th, #disk_content td {
-    border: 1px solid #ccc;
-    text-align: left;
-    font-size: 0.3rem;
-    padding: 0.03rem 0.2rem 0.03rem 0.2rem;
-}
 
 
     /*연결*/
@@ -1874,7 +1857,51 @@ textarea{
     font-weight: 600;
     cursor: pointer;
 }
+.select_box select,
+.input_box input{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+}
+.select_box2>div:last-child,
+.plug_radio_btn>div{
+    width: 47%;
+}
+.select_box2 select{
+    width: 100%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+}
 
+.plug_radio_btn span{
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+}
+.network_parameter_outer{
+    padding: 1% 2%;
+    font-size: 0.32rem;
+}
+.network_parameter_outer>span{
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+.network_parameter_outer>div{
+    display: flex;
+    justify-content: space-between;
+}
+.network_parameter_outer>div>div:nth-child(-n+2){
+    display: flex;
+    width: 32%;
+    justify-content: space-between;
+}
 #disk_managed_block_left>span{
     color: red;
 }
@@ -1971,6 +1998,157 @@ textarea{
     cursor: pointer;
 }
 
+
+.edit_aside {
+    width: 30%;
+    height: 95%;
+    background-color: #FAFAFA;
+    border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    font-weight: 800;
+    text-align: center;
+}
+.edit_aside > div {
+    display: flex;
+    width: 100%;
+    text-align: left;
+    align-items: center;
+    padding-left: 0.2rem;
+    border-bottom: none;
+    cursor: pointer;
+    padding: 0.4rem 0.2rem;
+    outline: none;
+}
+
+.edit_aside > div span {
+    font-size: 0.33rem;
+}
+.edit_header{
+    background-color: #ebebeb;
+    display: flex;
+    padding: 8px 13px;
+    justify-content: space-between;
+    font-size: 0.18rem;
+}
+.edit_header>h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.edit_header>button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+    border: none;
+    padding: 11px;
+    border-radius: 50%;
+    font-size: 0.38rem;
+    cursor: pointer;
+    background-color: #ebebeb;
+}
+.edit_header>button:hover{
+    background-color: #DDDDDD;
+}
+    #host_outer,
+#ha_mode_outer,
+#res_alloc_outer,
+#common_outer,
+#console_outer {
+    height: 69vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#common_outer {
+    height: 100%;
+    max-height: 69vh;
+    overflow-y: auto;
+}
+    .edit_body{
+    height: 80vh;
+    font-size: 0.36rem;
+}
+
+.edit_footer{
+    border-top: 1px solid gray;
+}
+    .backup_edit_radiobox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.2rem;
+    height: 16vh;
+}
+    .datacenter_span{
+    position:absolute;
+    right: 21.5%;
+    top: 14%;
+}
+    .text_icon_box{
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+.boot_outer_content{
+    padding:0.2rem;
+}
+.instance_image{
+    padding: 2.3% 2% 2% 2%;
+    margin-bottom:0.2rem;
+    border-bottom:1px solid gray;
+}
+.instance_image>div{
+
+    display:flex;
+    justify-content: space-between;
+}
+.instance_image button{
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+  디스크(disk_content)
+#disk_content {
+    width: 100%;
+    padding: 0.5rem 0.3rem;
+    overflow-x: auto;
+}
+.disk_content_header{
+    display: flex;
+    font-size:0.3rem;
+    padding-bottom: 0.3rem;
+}
+.disk_content_header span{
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    margin-right: 0.5%;
+    font-size: 0.35rem;
+}
+.disk_content_header button {
+    padding: 0.3%;
+    cursor: pointer;
+    font-size: 0.3rem;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    background: white;
+}
+
+#disk_content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#disk_content thead>tr{
+    background-color: #d1e2eb;
+}
+#disk_content th, #disk_content td {
+    border: 1px solid #ccc;
+    text-align: left;
+    font-size: 0.3rem;
+    padding: 0.03rem 0.2rem 0.03rem 0.2rem;
+}
 */
 
 /*스토리지 section*/
@@ -1995,16 +2173,14 @@ textarea{
     margin-right: 0.4rem;
 }
 .section_option label{
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
+    justify-content: center;
+    align-items: center; 
 }
 .section_option select {
     height: 100%;
     cursor: pointer;
     font-size: 0.3rem;
 }
-
-
 /*논리 네트워크*/
 /*권한*/
 .storage_right_btns{
