@@ -24,7 +24,7 @@ import toast from 'react-hot-toast';
 Modal.setAppElement('#root');
 
 const FormGroup = ({ label, children }) => (
-  <div className="domain_new_select">
+  <div className="domain-new-select">
     <label>{label}</label>
     {children}
   </div>
@@ -425,19 +425,17 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage_domain_administer_popup">
+      <div className="storage-domain-administer-popup">
         <div className="popup-header">
           <h1>
           {
-          // importMode ? "도메인 가져오기":
-            editMode ? "도메인 편집"
-            : "새로운 도메인 생성"
+          "도메인 가져오기"
           }
           </h1>
           <button onClick={onClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
 
-        <div className="storage_domain_new_first">
+        <div className="storage-domain-new-first">
           <div className="domain_new_left">
 
           <FormGroup label="데이터 센터">
@@ -549,7 +547,7 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
       {isNfs && (
         <div className="storage_popup_iSCSI">
           <div className="tab_content">
-            <div className='domain_num_box'>
+            <div className='domain-num-box'>
               <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
               {editMode ? (
                 <input
@@ -756,7 +754,7 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
       <div className="tab_content">
         <div className="storage_specific_content">
           <FormGroup>
-            <div className='domain_num_box'>
+            <div className='domain-num-box'>
               <label className='label_font_body'>디스크 공간 부족 경고 표시(%)</label>
               <input
                 type="number"
@@ -767,7 +765,7 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
             </div>
           </FormGroup>
           <FormGroup>
-            <div className='domain_num_box'>
+            <div className='domain-num-box'>
               <label className='label_font_body'>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
               <input
                 type="number"

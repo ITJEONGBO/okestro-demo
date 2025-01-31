@@ -24,7 +24,7 @@ import {
 // Modal.setAppElement('#root');
 
 const FormGroup = ({ label, children }) => (
-  <div className="domain_new_select">
+  <div className="domain-new-select">
     <label>{label}</label>
     {children}
   </div>
@@ -545,7 +545,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
       {isNfs && (
         <div className="storage_popup_iSCSI">
           <div className="tab_content">
-            <div className='domain_num_box'>
+            <div className='domain-num-box'>
               <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
               {editMode ? (
                 <input
@@ -754,7 +754,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
       <div className="tab_content">
         <div className="storage_specific_content">
           <FormGroup>
-            <div className='domain_num_box'>
+            <div className='domain-num-box'>
               <label className='label_font_body'>디스크 공간 부족 경고 표시(%)</label>
               <input
                 type="number"
@@ -765,7 +765,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
             </div>
           </FormGroup>
           <FormGroup>
-            <div className='domain_num_box'>
+            <div className='domain-num-box'>
               <label className='label_font_body'>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
               <input
                 type="number"

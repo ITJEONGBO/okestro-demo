@@ -23,7 +23,7 @@ const DomainModals = ({ activeModal, domain, selectedDomains = [], datacenterId,
     ),
     import: (
       <DomainImportModal
-        isOpen={activeModal}
+        isOpen={activeModal === 'import'}
         domainId={domain?.id}
         onClose={onClose}
       />
