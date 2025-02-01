@@ -162,8 +162,8 @@ class VmServiceImpl(
 //			throw ErrorPattern.VM_VO_INVALID.toException()
 //		}
 
-		val existDiskAttachments: List<DiskAttachment> =
-			conn.findAllDiskAttachmentsFromVm(vmVo.id).getOrDefault(listOf())
+		val existDiskAttachments: List<DiskAttachment> = conn.findAllDiskAttachmentsFromVm(vmVo.id)
+			.getOrDefault(listOf())
 
 		val diskAttachmentListToAdd = mutableListOf<DiskAttachment>()
 		val diskAttachmentListToDelete = mutableListOf<DiskAttachment>()

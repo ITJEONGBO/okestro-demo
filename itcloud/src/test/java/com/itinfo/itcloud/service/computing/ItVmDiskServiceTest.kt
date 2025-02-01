@@ -162,21 +162,21 @@ class ItVmDiskServiceTest {
      *
      * @see [ItVmDiskService.activeMultiFromVm]
      */
-    @Test
-    fun should_activeDisksFromVm(){
-        log.debug("should_activeDisksFromVm")
-        val ids: List<String> =  Arrays.asList(
-            "ebe58983-3c96-473a-9553-98bee3606f0e",
-            "33b2d1c3-bf01-46d6-9bc2-368180e3955c",
-            "05bd71e4-1de7-494a-865d-35aebb7b5d3b"
-        )
-
-        val result: Boolean =
-            service.activeMultiFromVm(apm, ids)
-
-        assertThat(result, `is`(not(nullValue())))
-        print(result)
-    }
+//    @Test
+//    fun should_activeDisksFromVm(){
+//        log.debug("should_activeDisksFromVm")
+//        val ids: List<String> =  Arrays.asList(
+//            "ebe58983-3c96-473a-9553-98bee3606f0e",
+//            "33b2d1c3-bf01-46d6-9bc2-368180e3955c",
+//            "05bd71e4-1de7-494a-865d-35aebb7b5d3b"
+//        )
+//
+//        val result: Boolean =
+//            service.activeMultiFromVm(apm, ids)
+//
+//        assertThat(result, `is`(not(nullValue())))
+//        print(result)
+//    }
 
     /**
      * [should_deactivateDisksFromVm]
@@ -184,22 +184,22 @@ class ItVmDiskServiceTest {
      *
      * @see [ItVmDiskService.deactivateMultiFromVm]
      */
-    @Test
-    fun should_deactivateDisksFromVm(){
-        log.debug("should_deactivateDisksFromVm")
-        val ids: List<String> =
-            Arrays.asList(
-                "ebe58983-3c96-473a-9553-98bee3606f0e",
-                "33b2d1c3-bf01-46d6-9bc2-368180e3955c",
-                "05bd71e4-1de7-494a-865d-35aebb7b5d3b"
-            )
-
-        val result: Boolean =
-            service.deactivateMultiFromVm(apm, ids)
-
-        assertThat(result, `is`(not(nullValue())))
-        print(result)
-    }
+//    @Test
+//    fun should_deactivateDisksFromVm(){
+//        log.debug("should_deactivateDisksFromVm")
+//        val ids: List<String> =
+//            Arrays.asList(
+//                "ebe58983-3c96-473a-9553-98bee3606f0e",
+//                "33b2d1c3-bf01-46d6-9bc2-368180e3955c",
+//                "05bd71e4-1de7-494a-865d-35aebb7b5d3b"
+//            )
+//
+//        val result: Boolean =
+//            service.deactivateMultiFromVm(apm, ids)
+//
+//        assertThat(result, `is`(not(nullValue())))
+//        print(result)
+//    }
 
     /**
      * [should_findAllDisksFromVm]

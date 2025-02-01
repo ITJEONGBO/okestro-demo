@@ -373,7 +373,6 @@ fun Connection.selectCdromFromVm(vmId: String, bootId: String): Result<Cdrom> = 
 }.onFailure {
 	Term.VM.logFailWithin(Term.CD_ROM, "생성", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.updateCdromFromVm(vmId: String, cdromId: String, cdrom: Cdrom): Result<Cdrom?> = runCatching {

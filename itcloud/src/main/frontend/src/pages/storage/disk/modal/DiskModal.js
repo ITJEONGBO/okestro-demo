@@ -134,19 +134,19 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
   }, [editMode, disk]);
 
   useEffect(() => {
-    if (!editMode && datacenters && datacenters.length > 0) {
+    if (!editMode && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
     }
-  }, [datacenters, editMode]);
+  }, [isOpen, datacenters, editMode]);
 
   useEffect(() => {
-    if (!editMode && domains && domains.length > 0) {
+    if (!editMode && domains.length > 0) {
       setDomainVoId(domains[0].id);
     }
   }, [domains, editMode]);
 
   useEffect(() => {
-    if (!editMode && diskProfiles && diskProfiles.length > 0) {
+    if (!editMode && diskProfiles.length > 0) {
       setDiskProfileVoId(diskProfiles[0].id);
     }
   }, [diskProfiles, editMode]);

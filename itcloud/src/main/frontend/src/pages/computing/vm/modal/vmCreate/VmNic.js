@@ -1,6 +1,8 @@
 import React from 'react';
 
 const VmNic = ({ nicsState, setNicsState, nics }) => {
+
+  // 변경사항 업데이트
   const handleNicChange = (index, value) => {
     const updatedNics = [...nicsState];
     updatedNics[index] = {
@@ -10,6 +12,7 @@ const VmNic = ({ nicsState, setNicsState, nics }) => {
     setNicsState(updatedNics);
   };
 
+  // vnic 추가
   const handleAddNic = () => {
     const newNicNumber = nicsState.length + 1;
     const updatedNics = [
@@ -19,6 +22,7 @@ const VmNic = ({ nicsState, setNicsState, nics }) => {
     setNicsState(updatedNics);
   };
 
+  // vnic 삭제
   const handleRemoveNic = (index) => {
     const updatedNics = nicsState.filter((_, i) => i !== index);
     setNicsState(updatedNics);
@@ -27,6 +31,7 @@ const VmNic = ({ nicsState, setNicsState, nics }) => {
   return (
     <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
       <p>vNIC 프로파일을 선택하여 가상 머신 네트워크 인터페이스를 설정하세요.</p>
+      
       {nicsState.map((nic, index) => (
         <div
           key={index}

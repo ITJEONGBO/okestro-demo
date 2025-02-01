@@ -863,113 +863,120 @@ fun List<Statistic>.findNetworkListPercent(): List<Int>? {
  * vm 전부 모아둔것...
  */
 fun Vm.toVmVo(conn: Connection): VmVo {
-    val cluster: Cluster? = conn.findCluster(this@toVmVo.cluster().id()).getOrNull()
+    val vm = this@toVmVo
+    val cluster: Cluster? = conn.findCluster(vm.cluster().id()).getOrNull()
     val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
-    val nics: List<Nic> = conn.findAllNicsFromVm(this@toVmVo.id()).getOrDefault(listOf())
+    val nics: List<Nic> = conn.findAllNicsFromVm(vm.id()).getOrDefault(listOf())
     val host: Host? =
-        if (this@toVmVo.hostPresent())
-            conn.findHost(this@toVmVo.host().id()).getOrNull()
-        else if (!this@toVmVo.hostPresent() && this@toVmVo.placementPolicy().hostsPresent())
-            conn.findHost(this@toVmVo.placementPolicy().hosts().first().id()).getOrNull()
+        if (vm.hostPresent())
+            conn.findHost(vm.host().id()).getOrNull()
+        else if (!vm.hostPresent() && vm.placementPolicy().hostsPresent())
+            conn.findHost(vm.placementPolicy().hosts().first().id()).getOrNull()
         else
             null
-    val template: Template? = conn.findTemplate(this@toVmVo.template().id()).getOrNull()
-    val statistics: List<Statistic> = conn.findAllStatisticsFromVm(this@toVmVo.id())
-    val cdrom: Cdrom? = conn.findAllVmCdromsFromVm(this@toVmVo.id()).getOrNull()?.firstOrNull()
+    val template: Template? = conn.findTemplate(vm.template().id()).getOrNull()
+    val statistics: List<Statistic> = conn.findAllStatisticsFromVm(vm.id())
+    val cdrom: Cdrom? = conn.findAllVmCdromsFromVm(vm.id()).getOrNull()?.firstOrNull()
     val disk: Disk? = cdrom?.file()?.id()?.let { conn.findDisk(it).getOrNull() }
+    val diskAttachments: List<DiskAttachment> = conn.findAllDiskAttachmentsFromVm(vm.id()).getOrDefault(listOf())
 
+    diskAttachments.forEach {
+        println("disk: "+it.name())
+    }
+    println(diskAttachments.toDiskAttachmentVos(conn))
     return VmVo.builder {
-        id { this@toVmVo.id() }
-        name { this@toVmVo.name() }
-        status { this@toVmVo.status() }
+        id { vm.id() }
+        name { vm.name() }
+        status { vm.status() }
         upTime { statistics.findVmUptime() }
-        creationTime { ovirtDf.format(this@toVmVo.creationTime()) }
+        creationTime { ovirtDf.format(vm.creationTime()) }
         memoryInstalled { statistics.findMemory("memory.installed") }
         memoryUsed { statistics.findMemory("memory.used") }
         memoryBuffered { statistics.findMemory("memory.buffered") }
         memoryCached { statistics.findMemory("memory.cached") }
         memoryFree { statistics.findMemory("memory.free") }
         memoryUnused { statistics.findMemory("memory.unused") }
-        fqdn { this@toVmVo.fqdn() }
-        ipv4 { nics.findVmIpv4(conn, this@toVmVo.id()) }
-        ipv6 { nics.findVmIpv6(conn, this@toVmVo.id()) }
-        hostEngineVm { this@toVmVo.origin() == "managed_hosted_engine" } // 엔진여부
-//        placement { this@toVmVo. }
+        fqdn { vm.fqdn() }
+        ipv4 { nics.findVmIpv4(conn, vm.id()) }
+        ipv6 { nics.findVmIpv6(conn, vm.id()) }
+        hostEngineVm { vm.origin() == "managed_hosted_engine" } // 엔진여부
+//        placement { vm. }
         hostVo { host?.fromHostToIdentifiedVo() }
-//        snapshotVos { this@toVmVo. }
-        nicVos { nics.toVmNics(conn, this@toVmVo.id()) }
+//        snapshotVos { vm. }
+        nicVos { nics.toVmNics(conn, vm.id()) }
+//        diskAttachmentVos { diskAttachments.toDiskAttachmentVos(conn) }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         templateVo { template?.fromTemplateToIdentifiedVo() }
-        description { this@toVmVo.description() }
-        comment { this@toVmVo.comment() }
-        osSystem { this@toVmVo.os().type() }
-        chipsetFirmwareType { this@toVmVo.bios().type().toString() }
-        optimizeOption { this@toVmVo.type().toString() } //
-        stateless { this@toVmVo.stateless() }
-        startPaused { this@toVmVo.startPaused() }
-        deleteProtected { this@toVmVo.deleteProtected() }
-        diskAttachmentVos { this@toVmVo.diskAttachments().toDiskAttachmentVos(conn) }
-        vnicProfileVos { this@toVmVo.nics().toVnicProfileVosFromNic(conn) }
-        memorySize { this@toVmVo.memory() }
-        memoryMax { this@toVmVo.memoryPolicy().max() }
-        memoryActual { this@toVmVo.memoryPolicy().guaranteed() }
-        cpuArc { this@toVmVo.cpu().architecture() }
+        description { vm.description() }
+        comment { vm.comment() }
+        osSystem { vm.os().type() }
+        chipsetFirmwareType { vm.bios().type().toString() }
+        optimizeOption { vm.type().toString() } //
+        stateless { vm.stateless() }
+        startPaused { vm.startPaused() }
+        deleteProtected { vm.deleteProtected() }
+        diskAttachmentVos { vm.diskAttachments().toDiskAttachmentVos(conn) }
+        vnicProfileVos { vm.nics().toVnicProfileVosFromNic(conn) }
+        memorySize { vm.memory() }
+        memoryMax { vm.memoryPolicy().max() }
+        memoryActual { vm.memoryPolicy().guaranteed() }
+        cpuArc { vm.cpu().architecture() }
         cpuTopologyCnt {
-            this@toVmVo.cpu().topology().coresAsInteger() *
-                    this@toVmVo.cpu().topology().socketsAsInteger() *
-                    this@toVmVo.cpu().topology().threadsAsInteger()
+            vm.cpu().topology().coresAsInteger() *
+                    vm.cpu().topology().socketsAsInteger() *
+                    vm.cpu().topology().threadsAsInteger()
         }
-        cpuTopologyCore { this@toVmVo.cpu().topology().coresAsInteger() }
-        cpuTopologySocket { this@toVmVo.cpu().topology().socketsAsInteger() }
-        cpuTopologyThread { this@toVmVo.cpu().topology().threadsAsInteger() }
-//        userEmulation { this@toVmVo. }
-//        userCpu { this@toVmVo. }
-//        userVersion { this@toVmVo. }
-//        instanceType { this@toVmVo. }
-        timeOffset { this@toVmVo.timeZone().name() }
-        cloudInit { this@toVmVo.initializationPresent() }
-        hostName { if (this@toVmVo.initializationPresent()) this@toVmVo.initialization().hostName() else "" }
-//        timeStandard { this@toVmVo. }
-        script { if (this@toVmVo.initializationPresent()) this@toVmVo.initialization().customScript() else "" }
-        monitor { this@toVmVo.display().monitorsAsInteger() }
-        usb { this@toVmVo.usb().enabled() }
-        hostInCluster { !this@toVmVo.placementPolicy().hostsPresent() }
+        cpuTopologyCore { vm.cpu().topology().coresAsInteger() }
+        cpuTopologySocket { vm.cpu().topology().socketsAsInteger() }
+        cpuTopologyThread { vm.cpu().topology().threadsAsInteger() }
+//        userEmulation { vm. }
+//        userCpu { vm. }
+//        userVersion { vm. }
+//        instanceType { vm. }
+        timeOffset { vm.timeZone().name() }
+        cloudInit { vm.initializationPresent() }
+        hostName { if (vm.initializationPresent()) vm.initialization().hostName() else "" }
+//        timeStandard { vm. }
+        script { if (vm.initializationPresent()) vm.initialization().customScript() else "" }
+        monitor { vm.display().monitorsAsInteger() }
+        usb { vm.usb().enabled() }
+        hostInCluster { !vm.placementPolicy().hostsPresent() }
 //        hostVos {
-//            if (this@toVmVo.placementPolicy().hostsPresent()){
-//                this@toVmVo.placementPolicy().hosts().map { host ->
+//            if (vm.placementPolicy().hostsPresent()){
+//                vm.placementPolicy().hosts().map { host ->
 //                    conn.findHost(host.id()).getOrNull()?.toHostIdName()
 //                }
 //            }
 //            else listOf()
 //        }
-        migrationMode { this@toVmVo.placementPolicy().affinity().value() }
-//        migrationPolicy { this@toVmVo. }
-        migrationEncrypt { this@toVmVo.migration().encrypted() }
-//        parallelMigration { this@toVmVo. }
-        ha { this@toVmVo.highAvailability().enabled() }
-        storageDomainVo { if (this@toVmVo.leasePresent()) conn.findStorageDomain(this@toVmVo.lease().storageDomain().id()).getOrNull()?.fromStorageDomainToIdentifiedVo() else null }
-        resumeOperation { this@toVmVo.storageErrorResumeBehaviour().value() }
-        priority { this@toVmVo.highAvailability().priorityAsInteger() }
+        migrationMode { vm.placementPolicy().affinity().value() }
+//        migrationPolicy { vm. }
+        migrationEncrypt { vm.migration().encrypted() }
+//        parallelMigration { vm. }
+        ha { vm.highAvailability().enabled() }
+        storageDomainVo { if (vm.leasePresent()) conn.findStorageDomain(vm.lease().storageDomain().id()).getOrNull()?.fromStorageDomainToIdentifiedVo() else null }
+        resumeOperation { vm.storageErrorResumeBehaviour().value() }
+        priority { vm.highAvailability().priorityAsInteger() }
 //        watchDogModel { WatchdogAction.NONE }
         watchDogAction { WatchdogAction.NONE }
-        cpuProfileVo { conn.findCpuProfile(this@toVmVo.cpuProfile().id()).getOrNull()?.fromCpuProfileToIdentifiedVo() }
-        cpuShare { this@toVmVo.cpuSharesAsInteger() }
-        cpuPinningPolicy { this@toVmVo.cpuPinningPolicy().value() }
-        memoryBalloon { this@toVmVo.memoryPolicy().ballooning() }
-        ioThreadCnt  { if (this@toVmVo.io().threadsPresent()) this@toVmVo.io().threadsAsInteger() else 0 }
-        multiQue { this@toVmVo.multiQueuesEnabled() }
-//        virtIoCnt { this@toVmVo. }
-        firstDevice { this@toVmVo.os().boot().devices().first().value() }
+        cpuProfileVo { conn.findCpuProfile(vm.cpuProfile().id()).getOrNull()?.fromCpuProfileToIdentifiedVo() }
+        cpuShare { vm.cpuSharesAsInteger() }
+        cpuPinningPolicy { vm.cpuPinningPolicy().value() }
+        memoryBalloon { vm.memoryPolicy().ballooning() }
+        ioThreadCnt  { if (vm.io().threadsPresent()) vm.io().threadsAsInteger() else 0 }
+        multiQue { vm.multiQueuesEnabled() }
+//        virtIoCnt { vm. }
+        firstDevice { vm.os().boot().devices().first().value() }
         secDevice {
-            if (this@toVmVo.os().boot().devices().size > 1)
-                this@toVmVo.os().boot().devices()[1].value()
+            if (vm.os().boot().devices().size > 1)
+                vm.os().boot().devices()[1].value()
             else
                 null
         }
-//        deviceList { this@toVmVo. }
+//        deviceList { vm. }
         connVo { disk?.fromDiskToIdentifiedVo() } //?
-//        bootingMenu { this@toVmVo. }
+//        bootingMenu { vm. }
     }
 }
 fun List<Vm>.toVmVos(conn: Connection/*, graph: ItGraphService*/): List<VmVo> =

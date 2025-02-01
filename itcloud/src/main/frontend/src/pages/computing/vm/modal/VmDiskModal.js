@@ -154,9 +154,10 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
     return null;
   };
 
+    // vm disk에서 생성 (가상머신 생성x)
   const handleOkClick = () => {
     if (!formState.alias || !formState.size || !domainVoId || !diskProfileVoId) {
-      alert('필수 값을 입력하세요.');
+      toast.error('필수 값을 입력하세요.');
       return;
     }
 

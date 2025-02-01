@@ -17,7 +17,7 @@ const VmDiskConnectionModal = ({ isOpen, vm, dataCenterId, type="disk", existing
   const [selectedDiskIds, setSelectedDiskIds] = useState([]); // 디스크 아이디 목록
   const [selectedInterfaces, setSelectedInterfaces] = useState({}); // 인터페이스
   const [selectedReadOnly, setSelectedReadOnly] = useState({}); // 읽기전용
-  const [selectedOs, setSelectedOs] = useState({}); // 부팅가능
+  const [selectedBootable, setSelectedBootable] = useState({}); // 부팅가능
 
   // 데이터센터 밑에 잇는 디스크 목록 검색
   const {
@@ -41,23 +41,21 @@ const VmDiskConnectionModal = ({ isOpen, vm, dataCenterId, type="disk", existing
   
   const handleOkClick = () => {
     if (selectedDiskIds.length > 0) {
-      const selectedDisks = selectedDiskIds
-        .map((diskId) => {
-          const diskDetails = disks.find((disk) => disk.id === diskId);
+      const selectedDisks = selectedDiskIds.map((diskId) => {
+        const diskDetails = disks.find((disk) => disk?.id === diskId);
 
-          if (!diskDetails) return null; // 선택된 디스크가 존재할 경우에만 추가
-  
-          return {
-            id: diskId,
-            alias: diskDetails?.alias,
-            interface: selectedInterfaces[diskId] || "VIRTIO_SCSI",
-            readOnly: selectedReadOnly[diskId] || false,
-            os: selectedOs[diskId] || false,
-            virtualSize: formatBytesToGBToFixedZero(diskDetails?.virtualSize),
-            storageDomain: diskDetails?.storageDomainVo?.name ,
-          };
-        })
-        .filter(Boolean);
+        if (!diskDetails) return null; // 선택된 디스크가 존재할 경우에만 추가
+
+        return {
+          id: diskId,
+          alias: diskDetails?.alias,
+          interface_: selectedInterfaces[diskId] || "VIRTIO_SCSI",
+          readOnly: selectedReadOnly[diskId] || false,
+          bootable: selectedBootable[diskId] || false,
+          virtualSize: formatBytesToGBToFixedZero(diskDetails?.virtualSize),
+          storageDomain: diskDetails?.storageDomainVo?.name ,
+        };
+      }).filter(Boolean);
   
       onSelectDisk(selectedDisks);
       onClose();
@@ -66,25 +64,59 @@ const VmDiskConnectionModal = ({ isOpen, vm, dataCenterId, type="disk", existing
     }
   };  
 
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     setSelectedDiskIds(existingDisks);
+
+  //     // 기존 디스크의 인터페이스 및 설정 유지
+  //     const initialInterfaces = {};
+  //     const initialReadOnly = {};
+  //     const initialOs = {};
+  //     disks.forEach((disk) => {
+  //       initialInterfaces[disk.id] = "VIRTIO_SCSI";
+  //       initialReadOnly[disk.id] = false;
+  //       initialOs[disk.id] = false;
+  //     });
+
+  //     setSelectedInterfaces(initialInterfaces);
+  //     setSelectedReadOnly(initialReadOnly);
+  //     setSelectedBootable(initialOs);
+  //   }
+  // }, [isOpen, disks, existingDisks]);
   useEffect(() => {
     if (isOpen) {
-      setSelectedDiskIds(existingDisks); // ✅ 기존 선택된 디스크 적용
-
-      // 기존 디스크의 인터페이스 및 설정 유지
-      const initialInterfaces = {};
-      const initialReadOnly = {};
-      const initialOs = {};
-      disks.forEach((disk) => {
-        initialInterfaces[disk.id] = "VIRTIO_SCSI";
-        initialReadOnly[disk.id] = false;
-        initialOs[disk.id] = false;
+      // 기존 선택된 디스크 적용 (기존 데이터와 다를 경우만 설정)
+      setSelectedDiskIds((prev) => {
+        return JSON.stringify(prev) !== JSON.stringify(existingDisks) ? existingDisks : prev;
       });
-
-      setSelectedInterfaces(initialInterfaces);
-      setSelectedReadOnly(initialReadOnly);
-      setSelectedOs(initialOs);
+  
+      // 기존 디스크의 인터페이스 및 설정 유지 (초기 상태와 다를 경우만 설정)
+      setSelectedInterfaces((prev) => {
+        const newInterfaces = {};
+        disks.forEach((disk) => {
+          newInterfaces[disk.id] = "VIRTIO_SCSI";
+        });
+        return JSON.stringify(prev) !== JSON.stringify(newInterfaces) ? newInterfaces : prev;
+      });
+  
+      setSelectedReadOnly((prev) => {
+        const newReadOnly = {};
+        disks.forEach((disk) => {
+          newReadOnly[disk.id] = false;
+        });
+        return JSON.stringify(prev) !== JSON.stringify(newReadOnly) ? newReadOnly : prev;
+      });
+  
+      setSelectedBootable((prev) => {
+        const newBootable = {};
+        disks.forEach((disk) => {
+          newBootable[disk.id] = false;
+        });
+        return JSON.stringify(prev) !== JSON.stringify(newBootable) ? newBootable : prev;
+      });
     }
   }, [isOpen, disks, existingDisks]);
+
 
   const handleCheckboxChange = (diskId) => {
     setSelectedDiskIds((prev) =>
@@ -172,15 +204,16 @@ const VmDiskConnectionModal = ({ isOpen, vm, dataCenterId, type="disk", existing
                         [e.id]: !prev[e.id],
                       }));
                     }}
+                    disabled={selectedInterfaces[e.id] === "SATA"}
                   />
                 ),
-                os: (
+                bootable: (
                   <input
                     type="checkbox"
                     id={`os-${e.id}`}
-                    checked={selectedOs[e.id] || false} // ✅ 개별 디스크 상태 유지
+                    checked={selectedBootable[e.id] || false} // ✅ 개별 디스크 상태 유지
                     onChange={() => {
-                      setSelectedOs((prev) => ({
+                      setSelectedBootable((prev) => ({
                         ...prev,
                         [e.id]: !prev[e.id],
                       }));

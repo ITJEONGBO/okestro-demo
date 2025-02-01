@@ -17,6 +17,8 @@ import {
   useAllvnicFromDataCenter,  
 } from '../../../../api/RQHook';
 import VmCommon from './vmCreate/VmCommon';
+import VmNic from './vmCreate/VmNic';
+import VmDisk from './vmCreate/VmDisk';
 import VmSystem from './vmCreate/VmSystem';
 import VmInit from './vmCreate/VmInit';
 import VmHost from './vmCreate/VmHost';
@@ -24,8 +26,6 @@ import VmHa from './vmCreate/VmHa';
 import VmBoot from './vmCreate/VmBoot';
 import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
 import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
-import VmNic from './vmCreate/VmNic';
-import VmDisk from './vmCreate/VmDisk';
 
 
 const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
@@ -103,11 +103,7 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
   // 디스크 목록, 연결+생성 (배열)
   const [diskListState, setDiskListState] = useState([]);
 
-  // 디스크 추가
-  const handleCreateDisk = (newDisk) => {
-    setDiskListState((prevDisks) => [...prevDisks, newDisk]);
-  };
-  
+    
   // 초기화 코드
   const resetForm = () => {
     setFormInfoState({
@@ -353,12 +349,13 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
       setOsSystem(vm?.osSystem || 'other_linux');
       setChipsetOption(vm?.chipsetFirmwareType || 'Q35_OVMF');
       setOptimizeOption(vm?.optimizeOption || 'SERVER');
+
       const initialNicState = vm?.nicVos?.length ? vm?.nicVos?.map((nic, index) => ({
-        id: nic.id || '',
-        name: nic.name || `nic${index + 1}`,
+        id: nic?.id || '',
+        name: nic?.name || `nic${index + 1}`,
         vnicProfileVo: {
-          id: nic.vnicProfileVo?.id || '',
-          name: nic.vnicProfileVo?.name || '',
+          id: nic?.vnicProfileVo?.id || '',
+          name: nic?.vnicProfileVo?.name || '',
         },
         networkVo: {
           id: nic.networkVo?.id || '',
@@ -368,34 +365,22 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     : [{ id: '', name: 'nic1', vnicProfileVo: { id: '' }, networkVo: { id: '', name: '' } }];
     setNicListState(initialNicState);
 
+    const initialDiskState = vm?.diskAttachmentVos?.map((d) => ({
+      id: d?.id,
+      alias: d?.diskImageVo?.alias,
+      virtualSize: d?.diskImageVo?.size ? d?.diskImageVo?.size / (1024 * 1024 * 1024) : 0,
+      interface_: d?.interface_ || "VIRTIO_SCSI", 
+      readOnly: d?.readOnly || false, 
+      bootable: d?.bootable || false, 
+      storageDomainVo: { id: d?.diskImageVo?.storageDomainVo?.id || "" },
+    })) || [];
+
+    setDiskListState(initialDiskState);
+    
     } else if (!editMode) {
       resetForm();
     }
   }, [editMode, vm]);
-
-  // vnicprofile 값 설정
-  // useEffect(() => {
-  //   if (editMode) {
-  //     // 편집 모드에서 NIC 데이터 초기화
-  //     const initialNicState = vm?.nicVos?.length ? vm?.nicVos?.map((nic, index) => ({
-  //         id: nic.id || '',
-  //         name: nic.name || `nic${index + 1}`,
-  //         vnicProfileVo: {
-  //           id: nic.vnicProfileVo?.id || '',
-  //           name: nic.vnicProfileVo?.name || '',
-  //         },
-  //         networkVo: {
-  //           id: nic.networkVo?.id || '',
-  //           name: nic.networkVo?.name || '',
-  //         },
-  //       }))
-  //     : [{ id: '', name: 'nic1', vnicProfileVo: { id: '' }, networkVo: { id: '', name: '' } }];
-  //     setNicListState(initialNicState);
-  //   } else if (!editMode) {
-  //     // 생성일때는 
-  //     setNicListState([{ id: '', name: 'nic1', vnicProfileVo: { id: '' }, networkVo: { id: '', name: '' } }]);
-  //   }
-  // }, [editMode, vm]);
   
     
   // 클러스터 변경에 따른 결과
@@ -470,30 +455,30 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     osSystem: osSystem,
     connVo: { id: formBootState.cdConn },
 
-
+    // vnicProfile 목록
     vnicProfileVos: nicListState.map((vnic) => ({ id: vnic.vnicProfileVo.id })),
 
-    // 디스크 데이터 수정 (객체 형태 배열로 변환)
+    // 디스크 데이터 (객체 형태 배열로 변환)
     diskAttachmentVos: diskListState.map((disk) => ({
-      id: disk.id || "",
+      id: disk?.id || "",
       active: true,
-      bootable: disk.bootable,
-      readOnly: disk.readOnly,
+      bootable: disk?.bootable,
+      readOnly: disk?.readOnly,
       passDiscard: false,
-      interface_: disk.interface_,
+      interface_: disk?.interface_,
 
       diskImageVo: {
-        id: disk.id || "", // 기존 디스크 ID (새 디스크일 경우 빈 문자열)
-        size: disk.size * 1024 * 1024 * 1024, // GB → Bytes 변환
+        id: disk?.id || "", // 기존 디스크 ID (새 디스크일 경우 빈 문자열)
+        size: disk?.size * 1024 * 1024 * 1024, // GB → Bytes 변환
         appendSize: 0,
-        alias: disk.alias,
-        description: disk.description || "",
-        storageDomainVo: { id: disk.storageDomainVo.id || "" },
-        diskProfileVo: { id: disk.diskProfileVo.id || "" },
-        sparse: disk.sparse,
-        wipeAfterDelete: disk.wipeAfterDelete || false,
-        sharable: disk.sharable || false,
-        backup: disk.backup || false,
+        alias: disk?.alias,
+        description: disk?.description || "",
+        storageDomainVo: { id: disk?.storageDomainVo?.id || "" },
+        diskProfileVo: { id: disk?.diskProfileVo?.id || "" },
+        sparse: disk?.sparse,
+        wipeAfterDelete: disk?.wipeAfterDelete || false,
+        sharable: disk?.sharable || false,
+        backup: disk?.backup || false,
         // format: "RAW",
         // virtualSize: disk.size * 1024 * 1024 * 1024,
         // actualSize: disk.size * 1024 * 1024 * 1024, // 편집일때
@@ -625,11 +610,10 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                 />
                 <VmDisk
                   editMode={editMode}
-                  dataCenterId={dataCenterId}  // 생성때는 datacenterId 필요
-                  diskState={diskListState}
-                  setDiskState={setDiskListState}
-                  onCreateDisk={handleCreateDisk}
-                  // disks={disks}
+                  dataCenterId={dataCenterId}
+                  diskListState={diskListState}
+                  setDiskListState={setDiskListState}
+                  // onCreateDisk={handleAddDisk}
                 />
                 <VmNic
                   nicsState={nicListState}
