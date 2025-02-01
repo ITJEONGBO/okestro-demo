@@ -128,17 +128,17 @@ class GraphController {
 		return ResponseEntity.ok(graph.vmMemoryPerChart())
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="VM network Per 그래프",
-		notes="VM의 network Per 그래프"
-	)
-	@GetMapping("/vmNetworkPerList")
-	@ResponseBody
-	fun vmNetworkPerChart(): ResponseEntity<List<LineDto>> {
-		log.info("----- vmNetworkPerChart")
-		return ResponseEntity.ok(graph.vmNetworkPerChart())
-	}
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="VM network Per 그래프",
+//		notes="VM의 network Per 그래프"
+//	)
+//	@GetMapping("/vmNetworkPerList")
+//	@ResponseBody
+//	fun vmNetworkPerChart(): ResponseEntity<List<LineDto>> {
+//		log.info("----- vmNetworkPerChart")
+//		return ResponseEntity.ok(graph.vmNetworkPerChart())
+//	}
 
 
 	@ApiOperation(
