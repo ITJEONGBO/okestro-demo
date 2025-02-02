@@ -33,8 +33,8 @@ const VmModals = ({ activeModal, vm, selectedVms = [], onClose }) => {
     delete: (
       <VmDeleteModal
         isOpen={activeModal === 'delete'}
-        data={selectedVms}
         onClose={onClose}
+        data={selectedVms}
       />
     ),
     snapshot: (

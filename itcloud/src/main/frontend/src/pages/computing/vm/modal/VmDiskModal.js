@@ -170,6 +170,7 @@ const VmDiskModal = ({ isOpen, editMode = false, vm, dataCenterId, diskAttachmen
       readOnly: formState.readOnly,
       storageDomainVo: { id: domainVoId },
       diskProfileVo: { id: diskProfileVoId },
+      isCreated: true, // 🚀 생성된 디스크는 isCreated: true
     };
 
     onCreateDisk(newDisk);

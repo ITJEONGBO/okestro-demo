@@ -53,7 +53,7 @@ class  ItVmServiceTest {
 		hostVm = "d427e182-cfd7-44a8-8b63-ce3841fe7c47"
 //		apm = "fceb0fe4-2927-4340-a970-401fe55781e6"
 		storageDomain = "789b0566-39da-42c5-b5d2-bf6a6e3662cf"
-        vmid="76cabfe3-131d-4798-b98f-45802b62d1e1"
+        vmid="06d3509a-a463-4236-b122-a5f4293b4777"
 	}
 
 

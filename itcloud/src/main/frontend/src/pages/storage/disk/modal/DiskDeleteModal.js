@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteDisk } from '../../../../api/RQHook';
+import toast from 'react-hot-toast';
 
 const DiskDeleteModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
@@ -34,11 +35,13 @@ const DiskDeleteModal = ({ isOpen, onClose, data }) => {
         onSuccess: () => {
           if (ids.length === 1 || index === ids.length - 1) { // 마지막 디스크 삭제 후 이동
             onClose(); // Modal 닫기
+            toast.success('디스크 삭제 완료');
             navigate('/storages/disks');
           }
         },
         onError: (error) => {
-          console.error(`디스크 삭제 오류:`, error);
+          toast.success('디스크 삭제 오류:', error.message);
+          // console.error(`디스크 삭제 오류:`, error);
         },
       });
     });

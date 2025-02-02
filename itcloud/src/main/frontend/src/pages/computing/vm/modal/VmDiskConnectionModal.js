@@ -54,6 +54,7 @@ const VmDiskConnectionModal = ({ isOpen, vm, dataCenterId, type="disk", existing
           bootable: selectedBootable[diskId] || false,
           virtualSize: formatBytesToGBToFixedZero(diskDetails?.virtualSize),
           storageDomain: diskDetails?.storageDomainVo?.name ,
+          isCreated: false, // 🚀 연결된 디스크는 isCreated: false
         };
       }).filter(Boolean);
   
@@ -64,25 +65,6 @@ const VmDiskConnectionModal = ({ isOpen, vm, dataCenterId, type="disk", existing
     }
   };  
 
-  // useEffect(() => {
-  //   if (isOpen) {
-  //     setSelectedDiskIds(existingDisks);
-
-  //     // 기존 디스크의 인터페이스 및 설정 유지
-  //     const initialInterfaces = {};
-  //     const initialReadOnly = {};
-  //     const initialOs = {};
-  //     disks.forEach((disk) => {
-  //       initialInterfaces[disk.id] = "VIRTIO_SCSI";
-  //       initialReadOnly[disk.id] = false;
-  //       initialOs[disk.id] = false;
-  //     });
-
-  //     setSelectedInterfaces(initialInterfaces);
-  //     setSelectedReadOnly(initialReadOnly);
-  //     setSelectedBootable(initialOs);
-  //   }
-  // }, [isOpen, disks, existingDisks]);
   useEffect(() => {
     if (isOpen) {
       // 기존 선택된 디스크 적용 (기존 데이터와 다를 경우만 설정)

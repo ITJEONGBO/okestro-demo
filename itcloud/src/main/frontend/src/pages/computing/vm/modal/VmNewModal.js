@@ -368,11 +368,12 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
     const initialDiskState = vm?.diskAttachmentVos?.map((d) => ({
       id: d?.id,
       alias: d?.diskImageVo?.alias,
-      virtualSize: d?.diskImageVo?.size ? d?.diskImageVo?.size / (1024 * 1024 * 1024) : 0,
+      virtualSize: d?.diskImageVo?.virtualSize ? d?.diskImageVo?.virtualSize / (1024 * 1024 * 1024) : 0,
       interface_: d?.interface_ || "VIRTIO_SCSI", 
       readOnly: d?.readOnly || false, 
       bootable: d?.bootable || false, 
       storageDomainVo: { id: d?.diskImageVo?.storageDomainVo?.id || "" },
+      isExisting: true,
     })) || [];
 
     setDiskListState(initialDiskState);
@@ -613,7 +614,6 @@ const VmNewModal = ({ isOpen, editMode = false, vmId, onClose }) => {
                   dataCenterId={dataCenterId}
                   diskListState={diskListState}
                   setDiskListState={setDiskListState}
-                  // onCreateDisk={handleAddDisk}
                 />
                 <VmNic
                   nicsState={nicListState}

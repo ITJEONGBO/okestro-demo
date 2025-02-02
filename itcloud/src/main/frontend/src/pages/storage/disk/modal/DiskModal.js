@@ -172,16 +172,16 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
     const sizeToBytes = parseInt(formState.size, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환
     const appendSizeToBytes = parseInt(formState.appendSize || 0, 10) * 1024 * 1024 * 1024; // GB -> Bytes 변환 (기본값 0)
 
-    const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
-    const selectedDomain = domains.find((dm) => dm.id === domainVoId);
-    const selectedDiskProfile = diskProfiles.find((dp) => dp.id === diskProfileVoId);
+    const selectedDataCenter = datacenters.find((dc) => dc?.id === dataCenterVoId);
+    const selectedDomain = domains.find((dm) => dm?.id === domainVoId);
+    const selectedDiskProfile = diskProfiles.find((dp) => dp?.id === diskProfileVoId);
 
 
     // 데이터 객체 생성
     const diskDataToSubmit = {
-      dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
-      storageDomainVo: { id: selectedDomain.id, name: selectedDomain.name },
-      diskProfileVo: { id: selectedDiskProfile.id, name: selectedDiskProfile.name },
+      dataCenterVo: { id: selectedDataCenter?.id, name: selectedDataCenter?.name },
+      storageDomainVo: { id: selectedDomain?.id, name: selectedDomain?.name },
+      diskProfileVo: { id: selectedDiskProfile?.id, name: selectedDiskProfile?.name },
       ...formState,
       size: sizeToBytes
     };

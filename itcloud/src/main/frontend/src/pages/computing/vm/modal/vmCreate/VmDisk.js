@@ -22,9 +22,20 @@ const VmDisk = ({ editMode, vm, dataCenterId, diskListState, setDiskListState, d
   };
     
   // 디스크 삭제 핸들러
-  const handleRemoveDisk = (index) => {
+  // const handleRemoveDisk = (index) => {
+  //   setDiskListState((prev) => prev.filter((_, i) => i !== index));
+  // };
+
+  const handleRemoveDisk = (index, isExisting) => {
+    if (isExisting) {
+      // 기존 디스크인 경우 삭제 확인 모달 띄우기
+      const isConfirmed = window.confirm("이 디스크를 삭제하시겠습니까? 삭제하면 복구할 수 없습니다.");
+      if (!isConfirmed) return; // 취소하면 삭제하지 않음
+    }
+  
     setDiskListState((prev) => prev.filter((_, i) => i !== index));
   };
+  
 
   return (
     <>
@@ -35,7 +46,7 @@ const VmDisk = ({ editMode, vm, dataCenterId, diskListState, setDiskListState, d
           <button onClick={() => setIsCreatePopupOpen(true)}>생성</button>
         </div>
 
-        <Suspense fallback={<div>Loading...</div>}>
+         <Suspense fallback={<div>Loading...</div>}>
           {isConnectionPopupOpen && (
             <VmDiskConnectionModal
               isOpen={isConnectionPopupOpen}
@@ -44,26 +55,25 @@ const VmDisk = ({ editMode, vm, dataCenterId, diskListState, setDiskListState, d
               type="vm"
               existingDisks={diskListState.map((disk) => disk.id)} // 기존 연결된 디스크 전달
               onSelectDisk={(selectedDisks) => {
-                // 기존 디스크 목록에 새로운 디스크 추가
-                setDiskListState((prevDisks) => {
-                  const uniqueDisks = selectedDisks.filter(
-                    (newDisk) => !prevDisks.some((existingDisk) => existingDisk.id === newDisk.id)
-                  );
-                  return [...prevDisks, ...uniqueDisks];
-                });
+                setDiskListState((prevDisks) => [
+                  ...prevDisks,
+                  ...selectedDisks.map(disk => ({ ...disk, isCreated: false })) // 연결된 디스크 추가
+                ]);
               }}
               onClose={() => setIsConnectionPopupOpen(false)}
             />
           )}
           {isCreatePopupOpen && (
             <VmDiskModal
-              editMode={editMode}
+              // editMode={editMode}
               isOpen={isCreatePopupOpen}
               dataCenterId={dataCenterId}
               type="vm"
               onCreateDisk={(newDisk) => {
-                // 새로 생성된 디스크를 기존 목록에 추가
-                setDiskListState((prevDisks) => [...prevDisks, newDisk]);
+                setDiskListState((prevDisks) => [
+                  ...prevDisks,
+                  { ...newDisk, isCreated: true } // 생성된 디스크 추가
+                ]);
                 setIsCreatePopupOpen(false);
               }}
               onClose={() => setIsCreatePopupOpen(false)}
@@ -92,23 +102,10 @@ const VmDisk = ({ editMode, vm, dataCenterId, diskListState, setDiskListState, d
             <div key={index} className="disk-item">
               <div style={{ display: "flex", alignItems: "center" }}>
                 <span style={{ marginRight: "10px" }}>
-                  <strong>이름:</strong> {disk?.alias} ({disk?.virtualSize} GB)
+                  <strong>{disk.isExisting ? "[기존]" : disk.isCreated ? "[생성]" : "[연결]"} </strong>
+                  이름: {disk?.alias} ({disk?.size || disk?.virtualSize} GB){disk?.bootable ? " [부팅]" : ""}
                 </span>
-
-                <span style={{ marginRight: "10px" }}>
-                  <strong>인터페이스:</strong> {disk?.interface_}
-                </span>
-
-                <span style={{ marginRight: "10px" }}>
-                  <strong>읽기전용:</strong> {disk?.readOnly ? "✔" : "✖"}
-                </span>
-
-                <span style={{ marginRight: "10px" }}>
-                  <strong>부팅가능:</strong> {disk?.bootable ? "✔" : "✖"}
-                </span>
-
-                <button onClick={() => setIsEditPopupOpen(true)}>편집</button>
-                <button onClick={() => handleRemoveDisk(index)}>삭제</button>
+                <button onClick={() => handleRemoveDisk(index, disk.isExisting)}>삭제</button>
               </div>
             </div>
           ))

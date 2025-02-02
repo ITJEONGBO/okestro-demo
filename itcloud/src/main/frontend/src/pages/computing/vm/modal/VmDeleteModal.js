@@ -1,41 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import "./../css/MVm.css"
+import "./../css/MVm.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { useDeleteDiskFromVM, useDeleteVm, useDisksFromVM } from '../../../../api/RQHook';
-import { useNavigate } from 'react-router-dom';
+import { useDeleteVm } from '../../../../api/RQHook';
+import { useQueries } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import ApiManager from '../../../../api/ApiManager'; 
 
 const VmDeleteModal = ({ isOpen, onClose, data }) => {
-  const navigate = useNavigate();
   const [ids, setIds] = useState([]);
   const [names, setNames] = useState([]);
-  const [diskDeleteStates, setDiskDeleteStates] = useState({});
-  
-  const { data: disks = [] } = useDisksFromVM(setIds[0]);
+  const [detachOnlyList, setDetachOnlyList] = useState({});
 
   const { mutate: deleteVm } = useDeleteVm();
-  const { mutate: deleteVmDisk } = useDeleteDiskFromVM();
 
   useEffect(() => {
     if (Array.isArray(data)) {
-      const ids = data.map((item) => item.id);
-      const names = data.map((item) => item.name);
-      setIds(ids);
-      setNames(names);
-      setDiskDeleteStates(ids.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
+      const vmIds = data.map((item) => item.id);
+      const vmNames = data.map((item) => item.name);
+      setIds(vmIds);
+      setNames(vmNames);
     } else if (data) {
       setIds([data.id]);
       setNames([data.name]);
-      setDiskDeleteStates({ [data.id]: true });
     }
   }, [data]);
-  
-  const handleCheckboxChange = (vmId) => {
-    setDiskDeleteStates((prevStates) => ({
+
+  const diskQueries = useQueries({
+    queries: ids.map((vmId) => ({
+      queryKey: ['DisksFromVM', vmId],
+      queryFn: async () => {
+        console.log(`Fetching disks for VM: ${vmId}`);
+        return await ApiManager.findDisksFromVM(vmId);
+      },
+      enabled: !!vmId, 
+    })),
+  });
+
+  useEffect(() => {
+    if (!diskQueries.length) return;
+
+    const newStates = {};
+    diskQueries.forEach(({ data }, index) => {
+      newStates[ids[index]] = data && data.length > 0; // 디스크가 있으면 true
+    });
+
+    setDetachOnlyList((prevStates) => ({
       ...prevStates,
-      [vmId]: !prevStates[vmId],
+      ...newStates,
+    }));
+  }, [JSON.stringify(diskQueries), ids]);
+
+  const handleCheckboxChange = (vmId) => {
+    setDetachOnlyList((prevStates) => ({
+      ...prevStates,
+      [vmId]: !prevStates[vmId], 
     }));
   };
 
@@ -44,20 +64,20 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
       toast.error('삭제할 가상머신 ID가 없습니다.');
       return;
     }
-  
+
     ids.forEach((vmId, index) => {
+      console.log(`가상머신 삭제 ${vmId} : ${detachOnlyList[vmId]}` );
       deleteVm(
-        { vmId: vmId, detachOnly: !diskDeleteStates[vmId] },
+        { vmId, detachOnly: detachOnlyList[vmId] },
         {
           onSuccess: () => {
-            if (ids.length === 1 || index === ids.length - 1) {
+            if (index === ids.length - 1) {
               onClose();
               toast.success('가상머신 삭제 성공');
-              // navigate('/computing/vms');
             }
           },
           onError: (error) => {
-            toast.error(`가상머신 삭제 오류:`, error);
+            toast.error(`가상머신 삭제 오류: ${error.message}`);
           },
         }
       );
@@ -92,17 +112,18 @@ const VmDeleteModal = ({ isOpen, onClose, data }) => {
               <input
                 type="checkbox"
                 id={`diskDelete-${vmId}`}
-                checked={diskDeleteStates[vmId]}
+                checked={detachOnlyList[vmId] || false}
                 onChange={() => handleCheckboxChange(vmId)}
+                disabled={!diskQueries[index]?.data?.length} // 디스크가 존재하지 않으면 disabled
               />
               <label htmlFor={`diskDelete-${vmId}`}>디스크 삭제</label>
             </div>
           ))}
+
         </div>
         <div className="edit-footer">
-          {/* <button style={{ display: 'none' }}></button> */}
-          <button onClick={ handleFormSubmit }>OK</button>
-          <button onClick={ onClose }>취소</button>
+          <button onClick={handleFormSubmit}>OK</button>
+          <button onClick={onClose}>취소</button>
         </div>
       </div>
     </Modal>

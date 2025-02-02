@@ -2973,7 +2973,8 @@ export const useAllDisks = (mapPredicate) => useQuery({
   queryFn: async () => {
     const res = await ApiManager.findAllDisks()
     return res?.map((e) => mapPredicate(e)) ?? [];
-  }
+  },
+  staleTime: 2000, // 2초 동안 데이터 재요청 방지
 })
 /**
  * @name useDiskById

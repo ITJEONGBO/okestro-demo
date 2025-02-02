@@ -880,10 +880,6 @@ fun Vm.toVmVo(conn: Connection): VmVo {
     val disk: Disk? = cdrom?.file()?.id()?.let { conn.findDisk(it).getOrNull() }
     val diskAttachments: List<DiskAttachment> = conn.findAllDiskAttachmentsFromVm(vm.id()).getOrDefault(listOf())
 
-    diskAttachments.forEach {
-        println("disk: "+it.name())
-    }
-    println(diskAttachments.toDiskAttachmentVos(conn))
     return VmVo.builder {
         id { vm.id() }
         name { vm.name() }
@@ -904,7 +900,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         hostVo { host?.fromHostToIdentifiedVo() }
 //        snapshotVos { vm. }
         nicVos { nics.toVmNics(conn, vm.id()) }
-//        diskAttachmentVos { diskAttachments.toDiskAttachmentVos(conn) }
+        diskAttachmentVos { diskAttachments.toDiskAttachmentVos(conn) }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         templateVo { template?.fromTemplateToIdentifiedVo() }
@@ -916,7 +912,6 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         stateless { vm.stateless() }
         startPaused { vm.startPaused() }
         deleteProtected { vm.deleteProtected() }
-        diskAttachmentVos { vm.diskAttachments().toDiskAttachmentVos(conn) }
         vnicProfileVos { vm.nics().toVnicProfileVosFromNic(conn) }
         memorySize { vm.memory() }
         memoryMax { vm.memoryPolicy().max() }
