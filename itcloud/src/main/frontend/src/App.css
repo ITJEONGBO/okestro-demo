@@ -11,7 +11,6 @@
 @tailwind utilities;
 
 #root,* { margin: 0;padding: 0;box-sizing: border-box;font-family: 'GowunDodum-Regular'; }
-
 #root { 
     background-color:#EBEEEE;
     padding: 0.1rem;
@@ -636,8 +635,6 @@ textarea{
 .svg-inline--fa{
     cursor:pointer;
 }
-
-
 .host-empty-outer{
     width: 100%;
     padding:  0.3rem 0;
@@ -716,6 +713,7 @@ textarea{
     text-decoration: none;
     color: inherit; /* 필요에 따라 색상을 설정하세요 */
 }
+
 
 /* 스토리지 우클릭 메뉴박스*/
 /* #storage_context_menu {
@@ -1171,19 +1169,6 @@ textarea{
     height: 5vh;
     border-radius: 3px;
 } */
-
-/*hostdetail.js*/
-.host_detail_outer{
-    width: 100%;
-    display: flex;
-    height: 88%;
-}
-
-.detail_machine_outer,#detail_template_outer{
-    padding: 1.4rem 0;
-}
-
-
 
 
 
@@ -2291,6 +2276,17 @@ background-color: #f0f0f0;
     display: flex;
     width: 6%;
 } 
+//hostdetail.js
+.host_detail_outer{
+    width: 100%;
+    display: flex;
+    height: 88%;
+}
+
+.detail_machine_outer,#detail_template_outer{
+    padding: 1.4rem 0;
+}
+
 */
 
 /* Computing.css */
