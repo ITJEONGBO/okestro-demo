@@ -32,7 +32,7 @@ class ItDataCenterServiceTest {
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "44f1a272-bd3d-11ef-9679-00163e069706"  // 80 Default
+		dataCenterId = "44f1a272-bd3d-11ef-9679-00163e069706"  // 70 Default
 	}
 
 	/**

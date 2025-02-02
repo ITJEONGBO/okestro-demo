@@ -40,7 +40,7 @@ import java.math.BigInteger
  * @property contentType [DiskContentType]
  * @property storageType [DiskStorageType] 유형
  * @property createDate [String] 생성일자
- * @property connectVm [IdentifiedVo] 연결대상
+ * @property connectVm [IdentifiedVo] 연결대상(가상머신/템플릿)
  * @property diskProfileVos List<[IdentifiedVo]> 디스크 프로파일 목록
  */
 class DiskImageVo(
@@ -114,62 +114,40 @@ fun List<Disk>.toDiskIdNames(): List<DiskImageVo> =
  * 디스크 목록
  * 스토리지도메인 - 디스크 목록
  */
-fun Disk.toDiskMenu(conn: Connection,/* id: String*/): DiskImageVo {
-	val storageDomain: StorageDomain? = conn.findStorageDomain(this.storageDomains().first().id())
-		.getOrNull()
+fun Disk.toDiskMenu(conn: Connection): DiskImageVo {
+	val disk = this@toDiskMenu
+	val storageDomain: StorageDomain? = conn.findStorageDomain(this.storageDomains().first().id()).getOrNull()
 
-//	var vmIdentifiedVo: IdentifiedVo? = null
-//	var templateIdentifiedVo: IdentifiedVo? = null
-//
-//	if (id.isNotEmpty()) {
-//		val vmCache = mutableMapOf<String, Vm?>()
-//		val templateCache = mutableMapOf<String, Template?>()
-//
-//		val vm = vmCache.getOrPut(id) {
-//			try { conn.findVm(id).getOrNull() }
-//			catch (e: Exception) { null }
-//		}
-//
-//		val template = templateCache.getOrPut(id) {
-//			if (vm == null) {
-//				try { conn.findTemplate(id).getOrNull() }
-//				catch (e: Exception) { null }
-//			} else { null }
-//		}
-//
-//		vmIdentifiedVo = vm?.let {
-//			IdentifiedVo.builder {
-//				id { it.id() }
-//				name { it.name() }
-//			}
-//		}
-//		templateIdentifiedVo = template?.let {
-//			IdentifiedVo.builder {
-//				id { it.id() }
-//				name { it.name() }
-//			}
-//		}
-//	}
+	val diskLink: Disk? = conn.findDisk(this@toDiskMenu.id()).getOrNull()
+	val vmConn: Vm? = if(diskLink?.vmsPresent() == true){
+		conn.findVm(diskLink.vms().first().id()).getOrNull()
+	} else { null }
+
+	val templateId: String? = conn.findAllTemplates(follow = "diskattachments")
+		.getOrDefault(listOf())
+		.firstOrNull { template ->
+			template.diskAttachmentsPresent() &&
+					template.diskAttachments().any { diskAttachment -> diskAttachment.id() == disk.id() }
+		}?.id()
+	val tmp: Template? = templateId?.let { conn.findTemplate(it).getOrNull() }
 
 	return DiskImageVo.builder {
-		id { this@toDiskMenu.id() }
-		alias { this@toDiskMenu.alias() }
-		sharable { this@toDiskMenu.shareable() }
+		id { disk.id() }
+		alias { disk.alias() }
+		sharable { disk.shareable() }
 		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
-		virtualSize { this@toDiskMenu.provisionedSize() }
-		actualSize { this@toDiskMenu.actualSize() }
-		status { this@toDiskMenu.status() }
-		sparse { this@toDiskMenu.sparse() }
-		storageType { this@toDiskMenu.storageType() }
-		description { this@toDiskMenu.description() }
-//		connectVm { vmIdentifiedVo }
-//		connectTemplate { templateIdentifiedVo }
-		// TODO 연결대상 관리
-
+		virtualSize { disk.provisionedSize() }
+		actualSize { disk.actualSize() }
+		status { disk.status() }
+		sparse { disk.sparse() }
+		storageType { disk.storageType() }
+		description { disk.description() }
+		connectVm { vmConn?.fromVmToIdentifiedVo() }
+		connectTemplate { tmp?.fromTemplateToIdentifiedVo() }
 	}
 }
-fun List<Disk>.toDiskMenus(conn: Connection, /*vmId: String*/): List<DiskImageVo> =
-	this@toDiskMenus.map { it.toDiskMenu(conn, /*vmId*/) }
+fun List<Disk>.toDiskMenus(conn: Connection): List<DiskImageVo> =
+	this@toDiskMenus.map { it.toDiskMenu(conn) }
 
 fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 	val disk = this@toDiskInfo
@@ -180,6 +158,17 @@ fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 	val dataCenter: DataCenter? = storageDomain?.dataCenters()?.first()?.let {
 		conn.findDataCenter(it.id()).getOrNull()
 	}
+	val diskLink: Disk? = conn.findDisk(this@toDiskInfo.id()).getOrNull()
+	val vmConn: Vm? = if(diskLink?.vmsPresent() == true){
+		conn.findVm(diskLink.vms().first().id()).getOrNull()
+	} else { null }
+	val templateId: String? = conn.findAllTemplates(follow = "diskattachments")
+		.getOrDefault(listOf())
+		.firstOrNull { template ->
+			template.diskAttachmentsPresent() &&
+					template.diskAttachments().any { diskAttachment -> diskAttachment.id() == disk.id() }
+		}?.id()
+	val tmp: Template? = templateId?.let { conn.findTemplate(it).getOrNull() }
 
 	return DiskImageVo.builder {
 		id { disk.id() }
@@ -195,6 +184,8 @@ fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 		wipeAfterDelete { disk.wipeAfterDelete() }
 		sharable { disk.shareable() }
 		backup { disk.backup() == DiskBackup.INCREMENTAL }
+		connectVm { vmConn?.fromVmToIdentifiedVo() } // 연결된 가상머신
+		connectTemplate { tmp?.fromTemplateToIdentifiedVo() }
 	}
 }
 fun List<Disk>.toDisksInfo(conn: Connection): List<DiskImageVo> =

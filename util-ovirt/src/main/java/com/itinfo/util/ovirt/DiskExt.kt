@@ -25,11 +25,12 @@ fun Connection.findAllDisks(searchQuery: String = ""): Result<List<Disk>> = runC
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+
 fun Connection.srvDisk(diskId: String): DiskService =
 	srvAllDisks().diskService(diskId)
 
 fun Connection.findDisk(diskId: String): Result<Disk?> = runCatching {
-	this.srvDisk(diskId).get().send().disk()
+	this.srvDisk(diskId).get().allContent(true).send().disk()
 }.onSuccess {
 	Term.DISK.logSuccess("상세조회")
 }.onFailure {

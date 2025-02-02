@@ -73,7 +73,6 @@ class ItDiskServiceTest {
         log.info("수행시간: {}", end-start)
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
-//        assertThat(result.size, `is`(49))
     }
 
 

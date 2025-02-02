@@ -317,15 +317,6 @@ class DataCenterServiceImpl(
 		val res: List<Disk> = conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 			.getOrDefault(listOf())
 			.flatMap { conn.findAllDisksFromStorageDomain(it.id()).getOrDefault(listOf()) }
-
-//		return res.map { disk ->
-//			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
-//				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
-//
-//			// ID가 템플릿일 수도, VM일 수도 있으므로 먼저 템플릿과 VM을 구분하여 조회
-//			val id: String = diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
-//			disk.toDiskMenu(conn, id)
-//		}
 		return res.toDiskMenus(conn)
 	}
 
@@ -358,22 +349,41 @@ class DataCenterServiceImpl(
 		conn.findDataCenter(dataCenterId)
 			.getOrNull() ?: throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 
-		val attDiskIds = conn.findAllVms()
+		val res: List<DiskImageVo> = conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 			.getOrDefault(listOf())
 			.flatMap {
-				conn.findAllDiskAttachmentsFromVm(it.id()).getOrDefault(listOf())
-			}.map { it.id() }
-
-		// 데이터센터가 가진 디스크 목록 전체 출력
-		val res: List<Disk> = conn.findDataCenter(dataCenterId, follow = "storagedomains.disks")
-			.getOrNull()!!
-			.storageDomains()
-			.flatMap { it.disks().orEmpty() }
-			.map { it }
-			.filter { it.format() == DiskFormat.COW && !attDiskIds.contains(it.id()) && it.quotaPresent() }
-
-		return res.toDisksInfo(conn)
+				conn.findAllDisksFromStorageDomain(it.id())
+					.getOrDefault(listOf())
+					.filter { disk ->  disk.format() == DiskFormat.COW && disk.quotaPresent() }
+					.map { disk ->  disk.toDiskInfo(conn) }
+					.filter { disk ->  disk.connectVm.id == "" && disk.connectTemplate.id == "" }
+			}
+		return res
 	}
+//
+//	@Throws(Error::class)
+//	override fun findAttachDiskImageFromDataCenter(dataCenterId: String): List<DiskImageVo> {
+//		log.info("findAttachDiskImageByDataCenter ... 데이터센터 ID: $dataCenterId")
+//		conn.findDataCenter(dataCenterId)
+//			.getOrNull() ?: throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+//
+//		val attVmIds: List<String> = conn.findAllVms()
+//			.getOrDefault(listOf())
+//			.flatMap {
+//				conn.findAllDiskAttachmentsFromVm(it.id()).getOrDefault(listOf())
+//			}.map { it.id() }
+//
+//		val attTemp
+//
+//		// 데이터센터가 가진 디스크 목록 전체 출력
+//		val res: List<Disk> = conn.findDataCenter(dataCenterId, follow = "storagedomains.disks")
+//			.getOrNull()!!
+//			.storageDomains()
+//			.flatMap { it.disks().orEmpty() }
+//			.map { it }
+//			.filter { it.format() == DiskFormat.COW && !attVmIds.contains(it.id()) && it.quotaPresent() }
+//		return res.toDisksInfo(conn)
+//	}
 
 	@Throws(Error::class)
 	override fun findAllISOFromDataCenter(dataCenterId: String): List<IdentifiedVo> {
