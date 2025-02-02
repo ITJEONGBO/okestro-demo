@@ -309,6 +309,14 @@
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
+.select-box select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+}
 /*호스트 장치(View CPU Pinning 팝업)*/
 .device-view-popup-outer{
     position: absolute;
@@ -346,6 +354,38 @@
 /*네트워크 인터페이스 */
 .network_content_detail{
     font-size: 0.3rem;
+}
+.radio-outer>div{
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+.radio-outer input{
+    cursor: pointer;
+}
+.radio-outer input, .radio-outer img{
+    margin-right: 0.3rem;
+}
+.plug-radio-btn{
+    width: 100%;
+}
+.plug-radio-btn>div{
+    width: 20%;
+}
+.plug-radio-btn span{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.network-popup-content input[type="text"],.network-popup-content select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    border: 1px solid #a7a6a6;
 }
 /*마이그레이션 팝업*/
 .migration-popup-content{

@@ -184,7 +184,7 @@ const VmNetworkNewInterfaceModal = ({
           </button>
         </div>
 
-        <div className="network_popup_content">
+        <div className="network-popup-content">
           <div className="input_box pt-1">
             <span>이름</span>
             <input
@@ -229,10 +229,10 @@ const VmNetworkNewInterfaceModal = ({
             <span>선택된 유형: {selectedInterface}</span>
           </div>
 
-          <div className="plug_radio_btn">
+          <div className="plug-radio-btn">
             <span>링크 상태</span>
             <div>
-              <div className="radio_outer">
+              <div className="radio-outer">
                 <div>
                   <input
                     type="radio"
@@ -241,7 +241,7 @@ const VmNetworkNewInterfaceModal = ({
                     checked={linked === true} // linked가 true일 때 체크
                     onChange={() => setLinked(true)} // true로 설정
                   />
-                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
+                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth style={{marginRight:'0.1rem'}}/>
                   <label htmlFor="status_up">Up</label>
                 </div>
                 <div>
@@ -252,17 +252,17 @@ const VmNetworkNewInterfaceModal = ({
                     checked={linked === false} // linked가 false일 때 체크
                     onChange={() => setLinked(false)} // false로 설정
                   />
-                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
+                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth style={{marginRight:'0.1rem'}}/>
                   <label htmlFor="status_down">Down</label>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="plug_radio_btn">
+          <div className="plug-radio-btn">
             <span>카드 상태</span>
             <div>
-              <div className="radio_outer">
+              <div className="radio-outer">
                 <div>
                   <input
                     type="radio"
@@ -271,7 +271,7 @@ const VmNetworkNewInterfaceModal = ({
                     checked={plugged === true}
                     onChange={() => setPlugged(true)}
                   />
-                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
+                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth style={{marginRight:'0.1rem'}}/>
                   <label htmlFor="plugged">연결됨</label>
                 </div>
                 <div>
@@ -282,7 +282,7 @@ const VmNetworkNewInterfaceModal = ({
                       checked={plugged === false}
                       onChange={() => setPlugged(false)}
                     />
-                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth />
+                  <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth style={{marginRight:'0.1rem'}} />
                   <label htmlFor="unplugged">분리</label>
                 </div>
               </div>

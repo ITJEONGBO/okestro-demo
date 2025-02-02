@@ -46,7 +46,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       // passthrough: '',
       portMirroring: false,
       migration: true,
-       networkFilter: nFilters[0]?.id || "",
+      networkFilter: nFilters[0]?.id || "",
     });
     setDataCenterVoId('');
     setNetworkVoId(networkId || '');
@@ -156,7 +156,15 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       setNetworkVoId(networks[0].id); // networks의 첫 번째 값을 설정
     }
   }, [editMode, networkId, networks]);
-
+  useEffect(() => {
+    if (!editMode && nFilters.length > 0) {
+      setFormState((prev) => ({
+        ...prev,
+        networkFilter: nFilters[0], // 기본값을 첫 번째 네트워크 필터로 설정
+      }));
+    }
+  }, [nFilters, editMode]);
+  
   const handleFormSubmit = () => {
     // 이름 유효성 검사
     if (!formState.name) {

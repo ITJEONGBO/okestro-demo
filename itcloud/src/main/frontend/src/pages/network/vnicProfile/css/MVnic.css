@@ -6,7 +6,7 @@
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 68.4vh;
+    height: 60.4vh;
     width: 43%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -15,7 +15,6 @@
 .vnic-new-contents{
     font-size: 0.33rem;
 }
-
 .vnic-new-box{
     padding: 1.2% 0.3rem;
     display: flex;

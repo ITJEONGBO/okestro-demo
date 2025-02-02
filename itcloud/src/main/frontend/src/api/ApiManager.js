@@ -1629,19 +1629,15 @@ migrateHostsFromVM: async (vmId) => {
    * @returns {Promise<Object>}
    */
     deleteNicFromTemplate: async (templateId, nicId) => {
-      console.log('DELETE NIC 요청 데이터:', { // 잘찍힘
-        templateId,
-        nicId,
-      });
+      console.log('🚀 DELETE NIC 요청 데이터:', { templateId, nicId });
     
       return makeAPICall({
         method: "DELETE",
         url: ENDPOINTS.DELETE_NICS_FROM_TEMPLATE(templateId, nicId),
-        data: nicId
-        // defaultValues: DEFAULT_VALUES.DELETE_NIC_FROM_VM
+    
       });
     },
-  
+    
   /**
    * @name ApiManager.findDisksFromTemplate
    * @description disk 목록

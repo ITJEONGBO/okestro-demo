@@ -348,19 +348,19 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
                 <FormGroup label="설명">
                   <input type="text" />
                 </FormGroup>
-                <div className="img_select_box">
+                <div className="img-select-box">
                   <label htmlFor="os">데이터 센터</label>
                   <select id="os">
                     <option value="linux">Linux</option>
                   </select>
                 </div>
-                <div className="img_select_box">
+                <div className="img-select-box">
                   <label htmlFor="os">호스트</label>
                   <select id="os">
                     <option value="linux">Linux</option>
                   </select>
                 </div>
-                <div className="img_select_box">
+                <div className="img-select-box">
                   <label htmlFor="os">스토리지 타입</label>
                   <select id="os">
                     <option value="linux">Linux</option>

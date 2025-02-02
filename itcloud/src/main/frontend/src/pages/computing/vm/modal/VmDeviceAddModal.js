@@ -26,14 +26,14 @@ const VmDeviceAddModal = ({ isOpen, onRequestClose, hostDevices }) => {
         </div>
 
         <div className="p-1">
-          <div className="select_box mb-1">
+          <div className="select-box mb-1">
             <label className="mr-1" htmlFor="fixed_host">고정된 호스트</label>
             <select id="fixed_host">
               <option value="host01.ititinfo.com">host01.ititinfo.com</option>
               <option value="host02.ititinfo.com">host02.ititinfo.com</option>
             </select>
           </div>
-          <div className="select_box mb-1 flex">
+          <div className="select-box mb-1 flex">
             <label className="mr-1 w-9 block" htmlFor="features">기능</label>
             <select id="features">
               <option value="pci">pci</option>
