@@ -36,6 +36,7 @@ const TableRowClick = ({
       <span
         className='row-click'
         onClick={handleClick}
+        style={{ color: 'rgb(9, 83, 153)' }}
       >
         {children}
       </span>

@@ -431,7 +431,7 @@ const TableColumnsInfo = {
     { header: '별칭', accessor: 'alias', clickable: true },
     { header: 'ID', accessor: 'id', clickable: false },
     // { header: '공유가능', accessor: 'icon1', clickable: false },
-    { header: '연결 대상', accessor: 'connected', clickable: false },
+    { header: '연결 대상', accessor: 'connect', clickable: false },
     { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },

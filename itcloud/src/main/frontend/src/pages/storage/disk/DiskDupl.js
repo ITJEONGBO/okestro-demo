@@ -42,7 +42,7 @@ const DiskDupl = ({ disks = [], columns = [], type = 'disk' }) => {
               icon1: d?.bootable ? '🔑' : '',
               icon2: d?.readOnly ? '🔒' : '',
               sparse: d?.sparse ? '씬 프로비저닝' : '사전 할당',
-              connectVm: (
+              connect: (
                 <TableRowClick type={d?.connectVm?.id ? 'vms' : 'templates'} id={d?.connectVm?.id || d?.connectTemplate?.id}>
                   {d?.connectVm?.name || d?.connectTemplate?.name}
                 </TableRowClick>
