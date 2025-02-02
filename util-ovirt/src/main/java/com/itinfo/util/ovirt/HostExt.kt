@@ -81,9 +81,10 @@ fun Connection.addHost(host: Host, deployHostedEngine: Boolean, name: String, pa
 //		return Result.failure(Error("계정생성 실패"))
 //	}
 
+	// reboot, activate = 바로 활성화
 	log.info("배포작업: {}", deployHostedEngine)
 	val hostAdded: Host =
-		srvHosts().add().deployHostedEngine(deployHostedEngine).host(host).send().host()
+		srvHosts().add().deployHostedEngine(deployHostedEngine).reboot(true).activate(true).host(host).send().host()
 
 	// 상태 up 될때까지 기다리기
 //	this.expectHostStatus(hostAdded.id(), HostStatus.UP)

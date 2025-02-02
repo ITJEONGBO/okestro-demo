@@ -10,6 +10,9 @@ import {
   useAllClusters,
 } from '../../../../api/RQHook';
 import toast from 'react-hot-toast';
+import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
+import LabelInput from '../../../../utils/LabelInput';
+import LabelInputNum from '../../../../utils/LabelInputNum';
 
 const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
   const [formState, setFormState] = useState({
@@ -20,7 +23,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
     sshPort: '',
     sshPassWord: '',
     vgpu: '',
-    hostEngine: false,
+    hostedEngine: false,
     // 설치 후 호스트 활성화
     // 설치 후 호스트 다시시작
   });
@@ -62,7 +65,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
         sshPort: host?.sshPort || '', 
         sshPassWord: host?.sshPassWord || '',
         vgpu: host?.vgpu || '',
-        hostEngine: host?.hostEngine || false,
+        hostedEngine: host?.hostedEngine || false,
       });
       setClusterVoId(host?.clusterVo?.id || '');   
     } else if (!editMode && !isClustersLoading) {
@@ -79,7 +82,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
       sshPort: '22',
       sshPassWord: '',
       vgpu: 'consolidated',
-      hostEngine: false,
+      hostedEngine: false,
     });
     setClusterVoId('');
   };
@@ -137,7 +140,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
       );
     } else {
       dataToSubmit.sshPassWord = formState.sshPassWord;  // 생성 모드에서는 ssh 비밀번호 추가
-      dataToSubmit.hostEngine = formState.hostEngine;
+      dataToSubmit.hostedEngine = formState.hostedEngine;
       addHost(dataToSubmit, {
         onSuccess: () => {
           onClose();
@@ -169,93 +172,56 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
         </div>
 
         <div className="host-new-content">
-          <div>
-            <label htmlFor="cluster">호스트 클러스터</label>
-            <select
-              id="cluster"
-              value={clusterVoId}
-              onChange={(e) => setClusterVoId(e.target.value)}
-              disabled={editMode}
-            >
-              {isClustersLoading ? (
-                <option>로딩중~</option>
-              ) : (
-                clusters.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} ({c.id})
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
+          <LabelSelectOptionsID
+            label="호스트 클러스터"
+            value={clusterVoId}
+            onChange={(e) => setClusterVoId(e.target.value)}
+            disabled={editMode}
+            loading={isClustersLoading}
+            options={clusters}
+          />
           <hr/>
 
-          <div>
-            <label htmlFor="name">이름</label>
-              <input
-                type="text"
-                id="name"
-                autoFocus
-                value={formState.name}
-                onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
-              />
-          </div>
-
-          <div>
-            <label htmlFor="comment">코멘트</label>
-            <input
-              type="text"
-              id="comment"
-              value={formState.comment}
-              onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="address">호스트 이름/IP</label>
-            <input
-              type="text"
-              id="address"
-              value={formState.address}
-              onChange={(e) => setFormState((prev) => ({ ...prev, address: e.target.value }))}
-              disabled={editMode}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="sshPort">SSH 포트</label>
-            <input
-              type="text"
-              id="sshPort"
-              value={formState.sshPort}
-              onChange={(e) => setFormState((prev) => ({ ...prev, sshPort: e.target.value }))}
-              disabled={editMode}
-            />
-          </div>
+          <LabelInput
+            label="이름"
+            id="name"
+            value={formState.name}
+            autoFocus={true}
+            onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
+          />
+          <LabelInput
+            label="코멘트"
+            id="comment"
+            value={formState.comment}
+            onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
+          />
+          <LabelInput
+            label="호스트 이름/IP"
+            id="address"
+            value={formState.address}
+            onChange={(e) => setFormState((prev) => ({ ...prev, address: e.target.value }))}
+            disabled={editMode}
+          />
+          <LabelInputNum
+            label="SSH 포트"
+            id="sshPort"
+            value={formState.sshPort}
+            onChange={(e) => setFormState((prev) => ({ ...prev, sshPort: e.target.value }))}
+            disabled={editMode}
+          />
           <hr/>
 
-          {/* <div>
-            <input type="checkbox" id="" name="" />
-            <label htmlFor="">설치 후 호스트를 활성화</label>
-          </div>
-          <div>
-            <input type="checkbox" id="" name="" />
-            <label htmlFor="">설치 후 호스트를 다시 시작</label>
-          </div> */}
-
-          {!editMode && (
-            <>
+        {!editMode && (
+          <>
             <div><label>인증</label></div>
-            <div>
-              <label htmlFor="userName">사용자 이름</label>
-              <input
-                type="text"
-                id="userName"
-                value="root"
-                disabled
-              />
-            </div>
-            
+
+            <LabelInput
+              label="사용자 이름"
+              id="userName"
+              value="root"
+              disabled={true}
+            />
+                        
             <div>            
               <label htmlFor="sshPassWord">암호</label>
               <input
@@ -265,8 +231,8 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
                 onChange={(e) => setFormState((prev) => ({ ...prev, sshPassWord: e.target.value }))}
               />
             </div>
-            </>
-          )}
+          </>
+        )}
 
           <div>
             <div>vGPU 배치</div>
@@ -297,11 +263,11 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
             <label htmlFor="hostEngine">호스트 엔진 배포 작업 선택</label>
             <select
               id="hostEngine"
-              value={formState.hostEngine}
+              value={formState.hostedEngine}
               onChange={(e) =>
                 setFormState((prev) => ({
                   ...prev,
-                  hostEngine: e.target.value === "true", // 문자열을 boolean으로 변환
+                  hostedEngine: e.target.value === "true", // 문자열을 boolean으로 변환
                 }))
               }
             >
