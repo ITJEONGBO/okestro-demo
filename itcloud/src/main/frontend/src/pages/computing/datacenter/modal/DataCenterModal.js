@@ -10,6 +10,7 @@ import {
   useDataCenter
 } from '../../../../api/RQHook'
 import { CheckKorenName, CheckName } from '../../../../utils/CheckName';
+import LabelInput from '../../../../utils/LabelInput';
 
 const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
   const { mutate: addDataCenter } = useAddDataCenter();
@@ -127,32 +128,27 @@ const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
         </div>
 
         <div className="datacenter-new-content">
-          <div>
-            <label htmlFor="name1">이름</label>
-            <input
-              type="text"
-              value={formState.name}
-              autoFocus
-              onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
-            />
-          </div>
-          <div>
-            <label htmlFor="comment">코멘트</label>
-            <input
-              type="text"
-              value={formState.comment}
-              onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
-            />
-          </div>
-          <div>
-            <label htmlFor="description">설명</label>
-            <input
-              type="text"
-              id="description"
-              value={formState.description}
-              onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
-            />
-          </div>
+
+          <LabelInput
+            label="이름"
+            id="name"
+            value={formState.name}
+            autoFocus={true}
+            onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
+          />
+          <LabelInput
+            label="설명"
+            id="description"
+            value={formState.description}
+            onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
+          />
+          <LabelInput
+            label="코멘트"
+            id="comment"
+            value={formState.comment}
+            onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
+          />
+
           <div>
             <label htmlFor="storageType">스토리지 타입</label>
             <select
@@ -164,6 +160,7 @@ const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
               <option value="true">로컬</option>
             </select>
           </div>
+
           <div>
             <label htmlFor="version">호환버전</label>
             <select

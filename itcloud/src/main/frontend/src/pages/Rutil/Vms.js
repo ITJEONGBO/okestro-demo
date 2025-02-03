@@ -4,7 +4,9 @@ import { useAllVMs } from '../../api/RQHook';
 import VmDupl from '../../pages/computing/vm/VmDupl';
 
 const Vms = () => {
-  const { data: vms = [] } = useAllVMs((e) => ({ ...e }));
+  const { 
+    data: vms = [] 
+  } = useAllVMs((e) => ({ ...e }));
 
   return (
     <>

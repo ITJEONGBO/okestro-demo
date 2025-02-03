@@ -12,9 +12,12 @@ import {
   useNetworksFromDataCenter
 } from '../../../../api/RQHook';
 import { CheckKorenName, CheckName } from '../../../../utils/CheckName';
+import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
+import LabelInput from '../../../../utils/LabelInput';
+import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
 
 const FormGroup = ({ label, children }) => (
-  <div className="network_form_group">
+  <div className="network-form-group">
     <label>{label}</label>
     {children}
   </div>
@@ -54,7 +57,6 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
     setNetworkVoId('');
   };
 
-
   // 클러스터 데이터 가져오기
    const {
     data: cluster,
@@ -82,7 +84,6 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
     refetch: refetchNetworks,
     isLoading: isNetworksLoading,
   } = useNetworksFromDataCenter(dataCenterVoId ? dataCenterVoId : undefined, (e) => ({...e,}));
-
   
   const cpuArcs = [
     { value: "UNDEFINED", label: "정의되지 않음" },
@@ -183,14 +184,14 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
   useEffect(() => {
     if (editMode && cluster) {
       setFormState({
-        id: cluster.id,
-        name: cluster.name,
-        description: cluster.description,
-        comment: cluster.comment,
-        cpuArc: cluster.cpuArc,
-        cpuType: cluster.cpuType,
-        biosType: cluster.biosType,
-        errorHandling: cluster.errorHandling,
+        id: cluster?.id || '',
+        name: cluster?.name || '',
+        description: cluster?.description || '',
+        comment: cluster?.comment || '',
+        cpuArc: cluster?.cpuArc || '',
+        cpuType: cluster?.cpuType || '',
+        biosType: cluster?.biosType || '',
+        errorHandling: cluster?.errorHandling || '',
       });
       setDataCenterVoId(cluster?.dataCenterVo?.id);
       setNetworkVoId(cluster?.networkVo?.id);
@@ -203,13 +204,7 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
     if (!editMode && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
     }
-  }, [editMode, datacenters]);
-
-  useEffect(() => {
-    if (!editMode && networks.length > 0) {
-      setNetworkVoId(networks[0].id);
-    }
-  }, [editMode, networks]);
+  }, [isOpen, editMode, datacenters]);
 
   useEffect(() => {
     if (!editMode && datacenterId) {
@@ -218,33 +213,30 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
   }, [editMode, datacenterId]);
 
   useEffect(() => {
+    if (!editMode && networks.length > 0) {
+      setNetworkVoId(networks[0].id);
+    }
+  }, [networks, editMode]);
+
+  useEffect(() => {
     setCpuOptions(cpuArcOptions[formState.cpuArc] || []);
   }, [formState.cpuArc]);
   
   
   const validateForm = () => {
-    if (!CheckKorenName(formState.name) || !CheckName(formState.name)) {
-      toast.error('이름이 유효하지 않습니다.');
-      return false;
-    }
-    if (!CheckKorenName(formState.description)) {
-      toast.error('설명이 유효하지 않습니다.');
-      return false;
-    }
-    if (!CheckName(dataCenterVoId)) {
-      toast.error('데이터센터를 선택해주세요.');
-      return false;
-    }
-    if (!CheckName(networkVoId)) {
-      toast.error('네트워크를 선택해주세요.');
-      return false;
-    }
-    return true;
+    if (!CheckKorenName(formState.name) || !CheckName(formState.name)) return '이름이 유효하지 않습니다.';
+    if (!CheckKorenName(formState.description)) return '설명이 유효하지 않습니다.';
+    if (!CheckName(dataCenterVoId)) return '데이터센터를 선택해주세요.';
+    if (!CheckName(networkVoId)) return '네트워크를 선택해주세요.';
+    return null;
   };
 
-
   const handleFormSubmit = () => {
-    if (!validateForm()) return;
+    const error = validateForm();
+    if (error) {
+      toast.error(error);
+      return;
+    }
 
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedNetwork = networks.find((n) => n.id === networkVoId);
@@ -258,14 +250,12 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
 
     if (editMode) {
-      dataToSubmit.id = formState.id;
       editCluster({ 
-        clusterId: formState.id, 
-        clusterData: dataToSubmit 
+        clusterId: formState.id, clusterData: dataToSubmit
       }, {
         onSuccess: () => {
-          toast.success('클러스터 편집 완료');
           onClose();
+          toast.success('클러스터 편집 완료');
         },
         onError: (error) => {
           toast.error('Error editing cluster:', error);
@@ -304,81 +294,50 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
         </div>
 
         <div className="cluster_new_content">
-          <FormGroup label="데이터 센터">
-            <select
-              value={dataCenterVoId}
-              onChange={(e) => setDataCenterVoId(e.target.value)}
-              disabled={editMode}
-            >
-              {isDataCentersLoading ? (
-                <option>로딩중~</option>
-              ) : (
-                datacenters.map((dc) => (
-                  <option key={dc.id} value={dc.id}>
-                    {dc.name} ({dc.id})
-                  </option>
-                ))
-              )}
-            </select>
-          </FormGroup>
+          <LabelSelectOptionsID
+            label="데이터센터"
+            value={dataCenterVoId}
+            onChange={(e) => setDataCenterVoId(e.target.value)}
+            disabled={editMode}
+            loading={isDataCentersLoading}
+            options={datacenters}
+          />
           <hr/>
 
-          <FormGroup label="이름">
-            <input
-              type="text"
-              value={formState.name}
-              autoFocus
-              onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
-            />
-          </FormGroup>
+          <LabelInput
+            label="이름"
+            id="name"
+            value={formState.name}
+            autoFocus={true}
+            onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
+          />
+          <LabelInput
+            label="설명"
+            id="description"
+            value={formState.description}
+            onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
+          />
+          <LabelInput
+            label="코멘트"
+            id="comment"
+            value={formState.comment}
+            onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
+          />
+          <LabelSelectOptionsID
+            label="관리 네트워크"
+            value={networkVoId}
+            onChange={(e) => setNetworkVoId(e.target.value)}
+            disabled={editMode}
+            loading={isNetworksLoading}
+            options={networks}
+          />
 
-          <FormGroup label="설명">
-            <input
-              type="text"
-              value={formState.description}
-              onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
-            />
-          </FormGroup>
-
-          <FormGroup label="코멘트">
-            <input
-              type="text"
-              value={formState.comment}
-              onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
-            />
-          </FormGroup>
-
-          <FormGroup label="관리 네트워크">
-            <select
-              value={networkVoId}
-              onChange={(e) => setNetworkVoId(e.target.value)}
-              disabled={editMode}
-            >
-              {isNetworksLoading ? (
-                <option>로딩중...</option>
-              ) : (
-                networks.map((n) => (
-                  <option key={n.id} value={n.id}>
-                    {n.name} ({n.id})
-                  </option>
-                ))
-              )}
-            </select>
-          </FormGroup>
-
-          <FormGroup label="CPU 아키텍처">
-            <select
-              value={formState.cpuArc}
-              onChange={(e) => setFormState((prev) => ({ ...prev, cpuArc: e.target.value }))}
-            >
-              {cpuArcs.map((arc) => (
-                <option key={arc.value} value={arc.value}>
-                  {arc.label}
-                </option>
-              ))}
-            </select>
-          </FormGroup>
-
+          <LabelSelectOptions
+            label="CPU 아키텍처"
+            value={formState.cpuArc}
+            onChange={(e) => setFormState((prev) => ({ ...prev, cpuArc: e.target.value }))}
+            options={cpuArcs}
+          />
           <FormGroup label="CPU 유형">
             <select
               value={formState.cpuType}
@@ -392,27 +351,19 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
               ))}
             </select>
           </FormGroup>
-
-          <FormGroup label="칩셋/펌웨어 유형">
-            <select
-              id="biosType"
-              value={formState.biosType}
-              onChange={(e) => setFormState((prev) => ({ ...prev, biosType: e.target.value }))}
-              disabled={formState.cpuArc === "PPC64" || formState.cpuArc === "S390X"}
-            >
-              {biosTypeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </FormGroup>
+          <LabelSelectOptions
+            label="칩셋/펌웨어 유형"
+            value={formState.biosType}
+            onChange={(e) => setFormState((prev) => ({ ...prev, biosType: e.target.value }))}
+            disabled={formState.cpuArc === "PPC64" || formState.cpuArc === "S390X"}
+            options={biosTypeOptions}
+          />
 
           <div className='recovery-policy'>
             <FormGroup>
                 <div className='font-bold mb-0.5'>복구정책</div>
                   {errorHandlingOptions.map((option) => (
-                    <div key={option.value} className="host_text_radio_box mb-0.5">
+                    <div key={option.value} className="host-text-radio-box mb-0.5">
                       <input
                         type="radio"
                         name="recovery_policy"

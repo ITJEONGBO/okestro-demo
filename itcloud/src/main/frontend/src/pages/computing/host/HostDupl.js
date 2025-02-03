@@ -8,7 +8,7 @@ import TableRowClick from '../../../components/table/TableRowClick';
 import HostModals from './modal/HostModals';
 import { renderHostStatusIcon } from '../../../utils/Icon';
 
-const HostDupl = ({ hosts = [], columns, clusterId }) => {
+const HostDupl = ({ hosts = [], columns = [], clusterId }) => {
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
   const [selectedHosts, setSelectedHosts] = useState([]);
@@ -26,8 +26,9 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
         isEditDisabled={selectedHosts.length !== 1}
         isDeleteDisabled={selectedHosts.length === 0}
         status={selectedHosts[0]?.status}
-        selectedHosts={selectedHosts}
+        selectedHosts={selectedHosts || []}
       />
+
       <span>ID: {selectedIds || ''}</span>
 
       <TablesOuter
@@ -43,7 +44,7 @@ const HostDupl = ({ hosts = [], columns, clusterId }) => {
             ) : (''),
           status: host?.status,
           spmStatus: host?.spmStatus === 'NONE' ? '보통' : host?.spmStatus,
-          vmCnt: host?.vmSizeVo?.allCnt,
+          vmCnt: host?.vmSizeVo?.allCnt ?? '0',
           memoryUsage: host?.usageDto?.memoryPercent === null ? '' : host?.usageDto?.memoryPercent + '%',
           cpuUsage: host?.usageDto?.cpuPercent === null ? '' : host?.usageDto?.cpuPercent + '%',
           networkUsage: host?.usageDto?.networkPercent === null ? '' : host?.usageDto?.networkPercent + '%',

@@ -17,13 +17,6 @@ import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
 import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
 import LabelCheckbox from '../../../../utils/LabelCheckbox';
 
-const FormGroup = ({ label, children }) => (
-  <div className="img-input-box">
-    <label>{label}</label>
-    {children}
-  </div>
-);
-
 const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
   const { mutate: addDisk } = useAddDisk();
   const { mutate: editDisk } = useEditDisk();
@@ -160,7 +153,6 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
     if (!diskProfileVoId) return '디스크 프로파일을 선택해주세요.';
     return null;
   };
-
 
   const handleFormSubmit = () => {
     const error = validateForm();
@@ -342,12 +334,15 @@ const DiskModal = ({ isOpen, editMode = false, diskId, onClose }) => {
           <div id="storage_directlun_outer">
             <div className="disk-new-img">
               <div className="disk-new-img-left">
-                <FormGroup label="별칭">
+
+                <div className="img-input-box">
+                  <label>별칭</label>
                   <input type="text" />
-                </FormGroup>
-                <FormGroup label="설명">
+                </div>
+                <div className="img-input-box">
+                  <label>설명</label>
                   <input type="text" />
-                </FormGroup>
+                </div>
                 <div className="img-select-box">
                   <label htmlFor="os">데이터 센터</label>
                   <select id="os">

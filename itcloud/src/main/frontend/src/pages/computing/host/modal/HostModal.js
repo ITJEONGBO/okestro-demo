@@ -15,22 +15,35 @@ import LabelInput from '../../../../utils/LabelInput';
 import LabelInputNum from '../../../../utils/LabelInputNum';
 
 const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
+  const { mutate: addHost } = useAddHost();
+  const { mutate: editHost } = useEditHost();
+
   const [formState, setFormState] = useState({
     id: '',
     name: '',
     comment: '',
     address: '',
-    sshPort: '',
+    sshPort: '22',
     sshPassWord: '',
-    vgpu: '',
+    vgpu: 'consolidated',
     hostedEngine: false,
-    // 설치 후 호스트 활성화
-    // 설치 후 호스트 다시시작
+    // 설치 후 호스트 활성화, 설치 후 호스트 다시시작 = back에서 true선언
   });
   const [clusterVoId, setClusterVoId] = useState(clusterId || '');
 
-  const { mutate: addHost } = useAddHost();
-  const { mutate: editHost } = useEditHost();
+  const resetForm = () => {
+    setFormState({
+      id: '',
+      name: '',
+      comment: '',
+      address: '',
+      sshPort: '22',
+      sshPassWord: '',
+      vgpu: 'consolidated',
+      hostedEngine: false,
+    });
+    setClusterVoId('');
+  };
 
    // 호스트 데이터 가져오기
    const {
@@ -73,25 +86,12 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
     }
   }, [editMode, host, isClustersLoading]);
   
-  const resetForm = () => {
-    setFormState({
-      id: '',
-      name: '',
-      comment: '',
-      address: '',
-      sshPort: '22',
-      sshPassWord: '',
-      vgpu: 'consolidated',
-      hostedEngine: false,
-    });
-    setClusterVoId('');
-  };
 
   useEffect(() => {
-    if (!editMode && clusters && clusters.length > 0) {
+    if (!editMode && clusters.length > 0) {
       setClusterVoId(clusters[0].id);
     }
-  }, [clusters, editMode]);
+  }, [isOpen, clusters, editMode]);
 
   useEffect(() => {
     if (!editMode && clusterId) {
@@ -125,10 +125,9 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
     
     if (editMode) {
-      dataToSubmit.id = formState.id;  // 수정 모드에서는 id를 추가
-      editHost(
-        { hostId: formState.id, hostData: dataToSubmit }, 
-        {
+      editHost({ 
+        hostId: formState.id, hostData: dataToSubmit 
+      }, {
           onSuccess: () => {
             onClose();  // 성공 시 모달 닫기
             toast.success("Host 편집 완료")

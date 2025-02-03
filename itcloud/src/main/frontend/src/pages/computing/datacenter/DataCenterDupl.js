@@ -5,11 +5,8 @@ import DataCenterActionButtons from './button/DataCenterActionButtons';
 import DataCenterModals from './modal/DataCenterModals';
 import { renderDataCenterStatus, renderDatacenterStatusIcon } from '../../../utils/Icon';
 
-// Modal.setAppElement('#root');
-
 const DataCenterDupl = ({ datacenters = [], columns = [] }) => {
   const navigate = useNavigate();
-  
   const [activeModal, setActiveModal] = useState(null);
   const [selectedDataCenters, setSelectedDataCenters] = useState([]);
   const selectedIds = (Array.isArray(selectedDataCenters) ? selectedDataCenters : []).map(dc => dc.id).join(', ');
