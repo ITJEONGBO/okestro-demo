@@ -7,7 +7,9 @@ import com.itinfo.itcloud.model.network.NicVo
 import com.itinfo.itcloud.model.network.toNicVoFromSnapshot
 import com.itinfo.itcloud.model.network.toNicVosFromSnapshot
 import com.itinfo.itcloud.model.network.toNicVosFromVm
+import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
+import com.itinfo.itcloud.model.storage.toAddSnapshotDisks
 import com.itinfo.itcloud.ovirtDf
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -33,7 +35,7 @@ private val log = LoggerFactory.getLogger(SnapshotVo::class.java)
  * @property snapshotDiskVos List<[SnapshotDiskVo]>
  * @property nicVos List<[NicVo]>
  * @property applicationVos List<[IdentifiedVo]>
- *
+ * @property diskAttachmentVos List<[DiskAttachmentVo]>
  */
 class SnapshotVo (
     val id: String = "",
@@ -45,6 +47,7 @@ class SnapshotVo (
     val snapshotDiskVos: List<SnapshotDiskVo> = listOf(),
     val nicVos: List<NicVo> = listOf(),
     val applicationVos: List<IdentifiedVo> = listOf(),
+    val diskAttachmentVos: List<DiskAttachmentVo> = listOf(), // 스냅샷 생성시 디스크 포함할 목록
 ): Serializable {
     override fun toString(): String = gson.toJson(this)
 
@@ -58,8 +61,9 @@ class SnapshotVo (
         private var bSnapshotDiskVos: List<SnapshotDiskVo> = listOf(); fun snapshotDiskVos(block: () -> List<SnapshotDiskVo>?) { bSnapshotDiskVos = block() ?: listOf() }
         private var bNicVos: List<NicVo> = listOf(); fun nicVos(block: () -> List<NicVo>?) { bNicVos = block() ?: listOf() }
         private var bApplicationVos: List<IdentifiedVo> = listOf(); fun applicationVos(block: () -> List<IdentifiedVo>?) { bApplicationVos = block() ?: listOf() }
+        private var bDiskAttachmentVos: List<DiskAttachmentVo> = listOf(); fun diskAttachmentVos(block: () -> List<DiskAttachmentVo>?) { bDiskAttachmentVos = block() ?: listOf() }
 
-        fun build(): SnapshotVo = SnapshotVo(bId, bDescription, bStatus, bDate, bPersistMemory, bVmVo, bSnapshotDiskVos, bNicVos, bApplicationVos )
+        fun build(): SnapshotVo = SnapshotVo(bId, bDescription, bStatus, bDate, bPersistMemory, bVmVo, bSnapshotDiskVos, bNicVos, bApplicationVos, bDiskAttachmentVos )
     }
     companion object {
         inline fun builder(block: SnapshotVo.Builder.() -> Unit): SnapshotVo = SnapshotVo.Builder().apply(block).build()
@@ -98,10 +102,11 @@ fun List<Snapshot>.toSnapshotVos(conn: Connection, vmId: String): List<SnapshotV
 
 
 fun SnapshotVo.toSnapshotBuilder(): SnapshotBuilder {
-    log.info("snapshotvo: {}", this)
+    log.info("toSnapshotBuilder: {}", this)
     return SnapshotBuilder()
         .description(this@toSnapshotBuilder.description)
-        .persistMemorystate(this@toSnapshotBuilder.persistMemory)
+        .persistMemorystate(this@toSnapshotBuilder.persistMemory) // 메모리 저장 t/f
+        .diskAttachments(this@toSnapshotBuilder.diskAttachmentVos.toAddSnapshotDisks())
 }
 
 fun SnapshotVo.toAddSnapshot(): Snapshot =

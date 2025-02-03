@@ -3,6 +3,8 @@ package com.itinfo.itcloud.model.computing
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.IdentifiedVo
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.builders.DiskAttachmentBuilder
+import org.ovirt.engine.sdk4.builders.DiskBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
@@ -138,3 +140,4 @@ fun Disk.toSnapshotDiskVoFromVm(): SnapshotDiskVo {
 }
 fun List<Disk>.toSnapshotDiskVoFromVms(): List<SnapshotDiskVo> =
     this@toSnapshotDiskVoFromVms.map { it.toSnapshotDiskVoFromVm() }
+

@@ -57,6 +57,7 @@ class DiskImageVo(
 	val sharable: Boolean = false,
 	val backup: Boolean = false,
 	val format: DiskFormat = DiskFormat.RAW,
+	val imageId: String = String(),
 	val virtualSize: BigInteger = BigInteger.ZERO,
 	val actualSize: BigInteger = BigInteger.ZERO,
 	val status: DiskStatus = DiskStatus.LOCKED,
@@ -84,6 +85,7 @@ class DiskImageVo(
 		private var bSharable: Boolean = false;fun sharable(block: () -> Boolean?) { bSharable = block() ?: false }
 		private var bBackup: Boolean = false;fun backup(block: () -> Boolean?) { bBackup = block() ?: false }
 		private var bFormat: DiskFormat = DiskFormat.RAW;fun format(block: () -> DiskFormat?) { bFormat = block() ?: DiskFormat.RAW }
+		private var bImageId: String = "";fun imageId(block: () -> String?) { bImageId = block() ?: "" }
 		private var bVirtualSize: BigInteger = BigInteger.ZERO;fun virtualSize(block: () -> BigInteger?) { bVirtualSize = block() ?: BigInteger.ZERO }
 		private var bActualSize: BigInteger = BigInteger.ZERO;fun actualSize(block: () -> BigInteger?) { bActualSize = block() ?: BigInteger.ZERO }
 		private var bStatus: DiskStatus = DiskStatus.LOCKED;fun status(block: () -> DiskStatus?) { bStatus = block() ?: DiskStatus.LOCKED }
@@ -94,7 +96,7 @@ class DiskImageVo(
 		private var bConnectTemplate: IdentifiedVo = IdentifiedVo();fun connectTemplate(block: () -> IdentifiedVo?) { bConnectTemplate = block() ?: IdentifiedVo() }
 		private var bDiskProfileVos: List<IdentifiedVo> = listOf();fun diskProfileVos(block: () -> List<IdentifiedVo>?) { bDiskProfileVos = block() ?: listOf() }
 
-        fun build(): DiskImageVo = DiskImageVo(bId, bSize, bAppendSize, bAlias, bDescription, bDataCenterVo, bStorageDomainVo, bSparse, bDiskProfileVo, bWipeAfterDelete, bSharable, bBackup, bFormat, bVirtualSize, bActualSize, bStatus, bContentType, bStorageType, bCreateDate, bConnectVm, bConnectTemplate, bDiskProfileVos)
+        fun build(): DiskImageVo = DiskImageVo(bId, bSize, bAppendSize, bAlias, bDescription, bDataCenterVo, bStorageDomainVo, bSparse, bDiskProfileVo, bWipeAfterDelete, bSharable, bBackup, bFormat, bImageId, bVirtualSize, bActualSize, bStatus, bContentType, bStorageType, bCreateDate, bConnectVm, bConnectTemplate, bDiskProfileVos)
 	}
 	companion object {
 		private val log by LoggerDelegate()
@@ -294,6 +296,15 @@ fun DiskImageVo.toEditDiskBuilder(): Disk =
 		.id(this@toEditDiskBuilder.id)
 		.provisionedSize(this@toEditDiskBuilder.size.add(this@toEditDiskBuilder.appendSize))
 		.build()
+
+
+// 가상머신 스냅샷에서 디스크 포함할때 사용
+fun DiskImageVo.toAddSnapshotDisk(): Disk {
+	return DiskBuilder()
+		.id(this@toAddSnapshotDisk.id)
+		.imageId(this@toAddSnapshotDisk.imageId)
+		.build()
+}
 
 
 /**

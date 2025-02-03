@@ -182,4 +182,11 @@ fun List<DiskAttachmentVo>.toAttachDiskList(): List<DiskAttachment> =
 	this.map { it.toAttachDisk() }
 
 
-
+fun DiskAttachmentVo.toAddSnapshotDisk(): DiskAttachment {
+	log.info("toAddSnapshotDisk: $this")
+	return DiskAttachmentBuilder()
+		.disk(this@toAddSnapshotDisk.diskImageVo.toAddSnapshotDisk())
+		.build()
+}
+fun List<DiskAttachmentVo>.toAddSnapshotDisks(): List<DiskAttachment> =
+	this@toAddSnapshotDisks.map { it.toAddSnapshotDisk() }
