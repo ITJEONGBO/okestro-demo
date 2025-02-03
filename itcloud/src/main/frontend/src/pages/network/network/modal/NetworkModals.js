@@ -26,15 +26,13 @@ const NetworkModals = ({ activeModal, network, selectedNetworks = [], dcId, onCl
         onClose={onClose}
       />
     ),
-    // import: (
-    //   <NetworkImportModal
-    //     isOpen={isModalOpen}
-    //     action={action}
-    //     onRequestClose={onRequestClose}
-    //     contentLabel={getContentLabel(action)}
-    //     data={selectedNetwork}
-    //   />
-    // )
+    import: (
+      <NetworkImportModal
+        isOpen={activeModal === 'import'}
+        onClose={onClose}
+        data={selectedNetworks}
+      />
+    )
   };
 
   return (

@@ -42,36 +42,6 @@
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 
-.datacenter_span{
-    position:absolute;
-    right: 21.5%;
-    top: 14%;
-}
-.text_icon_box{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.boot_outer_content{
-    padding:0.2rem;
-}
-.instance_image{
-    padding: 2.3% 2% 2% 2%;
-    margin-bottom:0.2rem;
-    border-bottom:1px solid gray;
-}
-.instance_image>div{
-
-    display:flex;
-    justify-content: space-between;
-}
-.instance_image button{
-    padding: 0.08rem 0.15rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
 .vm-plus-btn-outer{
     width:100%
 }
@@ -151,8 +121,7 @@
     padding-bottom: 2%;
 }
 
-.ha-mode-second-content>div:nth-child(n+2) select
-{
+.ha-mode-second-content>div:nth-child(n+2) select{
     width: 47%;
     height: 3.3vh;
     padding: 0 3px;
@@ -166,10 +135,12 @@
     display: block;
 }
 
-#threads>div:nth-child(2),.boot-checkboxs>div>div:nth-child(2){
+#threads>div:nth-child(2),
+.boot-checkboxs>div>div:nth-child(2){
     width: 47%;
 }
-#threads input[type="text"],.boot-checkboxs input[type="text"]  {
+#threads input[type="text"],
+.boot-checkboxs input[type="text"]  {
     width: 94%;
     height: 3.3vh;
     padding: 0 3px;
@@ -250,8 +221,8 @@
 }
 .snapshot-new-table{
     max-height: 21vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
+    overflow-y: auto;
+    overflow-x: hidden; 
 }
 .host-textbox{
     margin-bottom:0.14rem;
@@ -309,14 +280,14 @@
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
-.select-box select{
+/* .select-box select{
     width: 47%;
     height: 3.3vh;
     padding: 0 3px;
     border-radius: 3px;
     cursor: pointer;
     font-size: 0.29rem; 
-}
+} */
 /*호스트 장치(View CPU Pinning 팝업)*/
 .device-view-popup-outer{
     position: absolute;

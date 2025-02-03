@@ -9,7 +9,7 @@ const Error = () => {
 
   return (
     <div id="section">
-      <div className='error_text'>
+      <div className='error-text'>
         <FontAwesomeIcon icon={faExclamationTriangle} fixedWidth/> &nbsp;
         <span>페이지를 표시할 수 없습니다.&nbsp;</span>
 

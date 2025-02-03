@@ -7,7 +7,7 @@ const NetworkActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled,type
     { type: 'create', label: '생성', disabled: false },
     { type: 'edit', label: '편집', disabled: isEditDisabled },
     { type: 'delete', label: '삭제', disabled: isDeleteDisabled },
-    { type: 'import', label: '가져오기' },
+    { type: 'import', label: '가져오기' , disabled: false },
   ];
 
   const wrapperClass = type === 'context' ? 'right-click-menu-box' : 'header-right-btns';

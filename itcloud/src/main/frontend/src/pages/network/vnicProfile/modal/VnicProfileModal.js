@@ -121,7 +121,9 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
           name: vnic?.name || '',
           description: vnic?.description || '',
           migration: vnic?.migration || false,
+          passThrough: vnic?.passThrough || "DISABLED",
           portMirroring: vnic?.portMirroring || false,
+          networkFilter: vnic?.networkFilterVo ? { id: vnic.networkFilterVo.id, name: vnic.networkFilterVo.name } : null,
         });
         setDataCenterVoId(vnic?.dataCenterVo?.id || '');
         setNetworkVoId(vnic?.networkVo?.id || '');
@@ -185,7 +187,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
     // API에 전달할 데이터 구성
     const dataToSubmit = {
       networkVo: { id: selectedNetwork.id, name: selectedNetwork.name },
-      networkFilter: { id: formState.networkFilter.id, name: formState.networkFilter.name }, // 필터 정보 추가
+      networkFilterVo: { id: formState.networkFilter.id, name: formState.networkFilter.name }, // 필터 정보 추가
       ...formState,
     };
   
@@ -330,17 +332,17 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
               <input 
                 type="checkbox" 
                 id="passthrough" 
-                checked={formState.passthrough} 
+                checked={formState.passthrough === "ENABLED"}
                 onChange={(e) =>
                   setFormState((prev) => ({
                     ...prev,
-                    passthrough: e.target.checked,
-                    migration: e.target.checked ? prev.migration : true, // 통과 체크 해제 시 migration 기본값 유지
+                    passthrough: e.target.checked ? "ENABLED" : "DISABLED", // 백엔드가 원하는 형식으로 변환
                   }))
                 }
               />
               <label htmlFor="passthrough">통과</label>
             </div>
+
 
             <div className="vnic-new-checkbox">
               <input

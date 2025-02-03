@@ -7,6 +7,7 @@ import TemplateNeworkNewInterModal from './modal/TemplateNeworkNewInterModal';
 import DeleteModal from "../../../components/DeleteModal";
 import NicActionButtons from "../../network/nic/NicActionButton"
 import { renderUpDownStatusIcon } from "../../../utils/Icon";
+import TemplateNicDeleteModal from "./modal/TemplateNicDeleteModal";
 
 const TemplateNics = ({ templateId }) => {
   const { 
@@ -44,13 +45,11 @@ const TemplateNics = ({ templateId }) => {
       )}
       
       {activeModal === 'delete' && (
-        <DeleteModal
+        <TemplateNicDeleteModal
           isOpen={true}
-          onRequestClose={closeModal}
-          type="NetworkInterfaceFromTemplate" // 전달되는 타입
-          templateId={templateId} // 템플릿 ID 전달
-          data={selectedVnicProfiles} // 선택된 NIC 데이터 전달
-          contentLabel="NIC 삭제"
+          onClose={closeModal}
+          data={selectedVnicProfiles[0]} // 선택된 NIC 데이터 전달
+          templateId={templateId}
         />
       )}
     </Suspense>
@@ -62,7 +61,9 @@ const TemplateNics = ({ templateId }) => {
         openModal={openModal}
         isEditDisabled={selectedVnicProfiles.length !== 1}
       />
-      <span>id = {selectedIds || ''}</span>
+      <span>선택된 Template ID: {templateId || '없음'}</span>
+      <br />
+      <span>선택된 NIC ID: {selectedIds || '없음'}</span>
 
       <TablesOuter
         columns={TableColumnsInfo.NICS_FROM_TEMPLATE}

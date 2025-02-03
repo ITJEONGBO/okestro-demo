@@ -4,14 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useDeleteNetworkFromTemplate } from '../../../../api/RQHook';
 
-const TemplateNicDeleteModal = ({ isOpen, onClose, data }) => {
+const TemplateNicDeleteModal = ({ isOpen, onClose, data,templateId}) => {
   const [ids, setIds] = useState([]);
   const [names, setNames] = useState([]);
   const { mutateAsync: deleteNetworkFromTemplate } = useDeleteNetworkFromTemplate(); // 비동기 삭제 훅
 
   useEffect(() => {
+    console.log("🚀 Received data in TemplateNicDeleteModal:", data);
+    console.log("--templateId:", templateId);
     if (Array.isArray(data)) {
-      setIds(data.map((item) => ({ templateId: item.templateId, nicId: item.id }))); // 템플릿 ID와 NIC ID 설정
+      setIds(data.map((item) => ({ templateId, nicId: item.nicId }))); // 템플릿 ID와 NIC ID 설정
       setNames(data.map((item) => item.name || 'Unnamed NIC'));
     } else if (data) {
       setIds([{ templateId: data.templateId, nicId: data.id }]);

@@ -37,6 +37,13 @@ const TemplateDupl = ({ templates = [], columns = [], type }) => {
         onRowClick={(selectedRows) => setSelectedTemplates(selectedRows)} 
         clickableColumnIndex={[0]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
+        onContextMenuItems={(row) => [
+          <TemplateActionButtons
+            openModal={openModal}
+            isEditDisabled={!row} 
+            type='context'
+          />
+        ]}
         />
 
         <TemplateModals

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TemplateActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status }) => {
+const TemplateActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled,type = 'default' }) => {
   
   const basicActions = [
     // { type: 'create', label: '생성', disabled: false },
@@ -8,10 +8,16 @@ const TemplateActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, st
     { type: 'delete', label: '삭제', disabled: isDeleteDisabled },
   ];
 
+  const wrapperClass = type === 'context' ? 'right-click-menu-box' : 'header-right-btns';
   return (
-    <div className="header-right-btns">
+    <div className={wrapperClass}>
       {basicActions.map(({ type, label, disabled }) => (
-        <button key={type} onClick={() => openModal(type)} disabled={disabled}>
+        <button 
+          key={type} 
+          onClick={() => openModal(type)} 
+          disabled={disabled} 
+          className='right-click-menu-btn'
+        >
           {label}
         </button>
       ))}

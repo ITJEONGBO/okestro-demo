@@ -70,8 +70,8 @@ const TemplateNeworkNewInterModal = ({
           setVnicProfileVoId(nicData.vnicProfileVo?.id || '');
           setVnicProfileVoName(nicData.vnicProfileVo.name || '');
           setSelectedInterface(nicData.interface_ || 'VIRTIO');
-          setLinked(nicData.linked);
-          setPlugged(nicData.plugged); // 기본값 설정
+          setLinked(nicData.linked?.toLowerCase() === "up"); 
+          setPlugged(!!nicData.plugged); 
           setStatus(nicData.status);
           setMacAddress(nicData.macAddress);
         } else {
@@ -157,7 +157,7 @@ const TemplateNeworkNewInterModal = ({
           </button>
         </div>
 
-        <div className="network_popup_content">
+        <div className="network-popup-content">
           <div className="input_box pt-1">
             <span>이름</span>
             <input
@@ -187,24 +187,24 @@ const TemplateNeworkNewInterModal = ({
             </select>
           </div>
           <div className="select_box">
-  <label htmlFor="type">유형</label>
-  <select
-    id="type"
-    value={selectedInterface} // 선택된 값을 상태로 연결
-    onChange={(e) => setSelectedInterface(e.target.value)} // 선택 시 상태 업데이트
-  >
-    {interfaceOptions.map((option) => (
-      <option key={option.value} value={option.value}>
-        {option.label} {/* 화면에 표시될 한글 */}
-      </option>
-    ))}
-  </select>
-  <span>선택된 유형: {selectedInterface}</span>
+            <label htmlFor="type">유형</label>
+            <select
+              id="type"
+              value={selectedInterface} // 선택된 값을 상태로 연결
+              onChange={(e) => setSelectedInterface(e.target.value)} // 선택 시 상태 업데이트
+            >
+              {interfaceOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label} {/* 화면에 표시될 한글 */}
+                </option>
+              ))}
+            </select>
+            <span>선택된 유형: {selectedInterface}</span>
           </div>
-          <div className="plug_radio_btn">
+          <div className="plug-radio-btn">
             <span>링크 상태</span>
             <div>
-              <div className="radio_outer">
+              <div className="radio-outer">
                 <div>
                   <input
                     type="radio"
@@ -230,10 +230,10 @@ const TemplateNeworkNewInterModal = ({
               </div>
             </div>
           </div>
-          <div className="plug_radio_btn">
+          <div className="plug-radio-btn">
             <span>카드 상태</span>
             <div>
-              <div className="radio_outer">
+              <div className="radio-outer">
                 <div>
                   <input
                     type="radio"

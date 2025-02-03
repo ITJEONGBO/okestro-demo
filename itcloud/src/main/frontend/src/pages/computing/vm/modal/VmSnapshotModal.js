@@ -11,26 +11,34 @@ import {
 import '../css/MVm.css';
 import toast from 'react-hot-toast';
 const VmSnapshotModal = ({ isOpen, data, vmId, onClose }) => {
-    const [id, setId] = useState(''); // 스냅샷 ID
     const [alias, setAlias] = useState(''); // 스냅샷 ID
     const [description, setDescription] = useState(''); // 스냅샷 설명
     const [persistMemory, setPersistMemory] = useState(false); // 메모리 저장 여부
  
     const { mutate: addSnapshotFromVM } = useAddSnapshotFromVM();
 
-    const [bootable, setBootable] = useState(true);
-    const { data: disks } = useDisksFromVM(vmId, (e) => ({
-      ...e,
-      snapshot_check: (
-        <input
-          type="checkbox"
-          name="diskSelection"
-          onChange={(e) => setBootable(e.target.checked)} 
-        />
-      ),
-      alias: e?.diskImageVo?.alias,
-      description: e?.diskImageVo?.description,
-    }));
+    const { data: disks = [] } = useDisksFromVM(vmId && isOpen ? vmId : null, (e) => {
+      if (!vmId) return [];  // ✅ vmId가 없으면 요청하지 않음
+      console.log("🔍 Mapping disk:", e);
+      return {
+        id: e.id,  
+        alias: e.diskImageVo?.alias || "Unknown Disk", 
+        description: e.diskImageVo?.description || "No Description",
+        snapshot_check: (
+          <input
+            type="checkbox"
+            name="diskSelection"
+            onChange={(event) => console.log(`Disk ${e.id} selected:`, event.target.checked)}
+          />
+        ),
+      };
+    });
+    
+    useEffect(() => {
+      if (isOpen && vmId) {
+        console.log("🚀 Fetching disks for vmId:", vmId);
+      }
+    }, [isOpen, vmId]);
 
     const handleFormSubmit = () => {
       // 데이터 객체 생성

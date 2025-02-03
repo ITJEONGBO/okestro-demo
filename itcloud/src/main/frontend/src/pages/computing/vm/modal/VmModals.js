@@ -41,6 +41,7 @@ const VmModals = ({ activeModal, vm, selectedVms = [], onClose }) => {
       <VmSnapshotModal
         isOpen={activeModal === 'snapshot'}
         vmId={vm?.id}
+        data={selectedVms}
         onClose={onClose}
       />
     ),

@@ -41,12 +41,12 @@ const NetworkTemplates = ({ networkId }) => {
   const renderModals = () => (
     <Suspense fallback={<div>Loading...</div>}>
       {isModalOpen && (
-    <TemplateNicDeleteModal
-    isOpen={isModalOpen}
-    onClose={closeDeleteModal}
-    data={modalData} // 선택된 NIC 데이터 전달
-    vmId={modalData && modalData[0]?.vmId} // 선택된 VM ID 전달 (필요 시 사용)
-  />
+        <TemplateNicDeleteModal
+          isOpen={isModalOpen}
+          onClose={closeDeleteModal}
+          data={modalData} // 선택된 NIC 데이터 전달
+          templateId={selectedTemplateIds}
+        />
       )}
     </Suspense>
   );

@@ -138,6 +138,7 @@ fun VnicProfileVo.toVnicProfileBuilder(): VnicProfileBuilder {
 			.portMirroring(vnic.portMirroring)
 	}
 
+	log.info("VnicProfileVo: {}", this)
 	return builder
 		.name(vnic.name)
 		.network(NetworkBuilder().id(vnic.networkVo.id))

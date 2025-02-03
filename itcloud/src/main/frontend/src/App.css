@@ -699,8 +699,7 @@ textarea{
 }
 
 /* 중복끝 */
-
-.error_text{
+.error-text{
     display: flex; 
     justify-content: center; 
     align-items: center; 
@@ -2286,7 +2285,35 @@ background-color: #f0f0f0;
 .detail_machine_outer,#detail_template_outer{
     padding: 1.4rem 0;
 }
+.datacenter_span{
+    position:absolute;
+    right: 21.5%;
+    top: 14%;
+}
+.text_icon_box{
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+.boot_outer_content{
+    padding:0.2rem;
+}
+.instance_image{
+    padding: 2.3% 2% 2% 2%;
+    margin-bottom:0.2rem;
+    border-bottom:1px solid gray;
+}
+.instance_image>div{
 
+    display:flex;
+    justify-content: space-between;
+}
+.instance_image button{
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+}
 */
 
 /* Computing.css */
