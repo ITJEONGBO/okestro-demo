@@ -7,6 +7,7 @@ import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
+import org.ovirt.engine.sdk4.types.Host
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.net.UnknownHostException
@@ -148,8 +149,7 @@ class HostOperationServiceImpl(
     @Throws(Error::class)
     override fun activate(hostId: String): Boolean {
         log.info("activate ... hostId: {}", hostId)
-        val res: Result<Boolean> =
-            conn.activateHost(hostId)
+        val res: Result<Boolean> = conn.activateHost(hostId)
         return res.isSuccess
     }
 
@@ -185,28 +185,26 @@ class HostOperationServiceImpl(
         return res.isSuccess
     }
 
-//    @Throws(UnknownHostException::class, Error::class)
-//    override fun restartMultiple(hostIds: List<String>): Map<String, String> {
-//        TODO("Not yet implemented")
-//    }
-
     // TODO 인증서 등록에 대한 조건이 뭔지 모르겠음 (활성화 조건을 모름)
     @Throws(Error::class)
     override fun enrollCertificate(hostId: String): Boolean {
         log.info("enrollCertificate ... hostId: {}", hostId)
-        val res: Result<Boolean> =
-            conn.enrollCertificate(hostId)
+        val res: Result<Boolean> = conn.enrollCertificate(hostId)
         return res.isSuccess
     }
 
     @Throws(Error::class)
     override fun globalHaActivate(hostId: String): Boolean {
-        TODO("Not yet implemented")
+        log.info("globalHaActivate ... hostId: {}", hostId)
+        val res: Result<Boolean> = conn.activeGlobalHaFromHost(hostId)
+        return res.isSuccess
     }
 
     @Throws(Error::class)
     override fun globalHaDeactivate(hostId: String): Boolean {
-        TODO("Not yet implemented")
+        log.info("globalHaDeactivate ... hostId: {}", hostId)
+        val res: Result<Boolean> = conn.deactiveGlobalHaFromHost(hostId)
+        return res.isSuccess
     }
 
 

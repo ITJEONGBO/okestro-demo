@@ -576,7 +576,53 @@ class HostController {
 //		return ResponseEntity.ok(iHostOp.restartMultiple(hostIdList))
 //	}
 
+	@ApiOperation(
+		httpMethod="POST",
+		value="호스트 글로벌 HA 활성화",
+		notes="호스트를 글로벌 HA 활성화한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{hostId}/activateGlobal")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun activateGlobal(
+		@PathVariable hostId: String?
+	): ResponseEntity<Boolean> {
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/activateGlobal ... 호스트 글로벌 HA 활성화", hostId)
+		return ResponseEntity.ok(iHostOp.globalHaActivate(hostId))
+	}
 
+	@ApiOperation(
+		httpMethod="POST",
+		value="호스트 글로벌 HA 비활성화",
+		notes="호스트를 글로벌 HA 비활성화한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{hostId}/deactivateGlobal")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun deactivateGlobal(
+		@PathVariable hostId: String?
+	): ResponseEntity<Boolean> {
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/deactivateGlobal ... 호스트 글로벌 HA 비활성화", hostId)
+		return ResponseEntity.ok(iHostOp.globalHaDeactivate(hostId))
+	}
 
 	companion object {
 		private val log by LoggerDelegate()

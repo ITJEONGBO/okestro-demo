@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.network
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
+import com.itinfo.itcloud.controller.network.VnicProfileController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -413,6 +414,32 @@ class NetworkController: BaseController() {
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("/networks/{}/vnicProfiles ... 네트워크 vnic profile 목록", networkId)
 		return ResponseEntity.ok(iVnic.findAllFromNetwork(networkId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="vnic 프로파일 생성",
+		notes="vnic 프로파일을 생성한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="vnicProfile", value="Vnic Profile", dataTypeClass=VnicProfileVo::class, required=true, paramType="body")
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{networkId}/vnicProfiles")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun addVnic(
+		@PathVariable networkId: String? = null,
+		@RequestBody vnicProfile: VnicProfileVo? = null
+	): ResponseEntity<VnicProfileVo?> {
+		if (vnicProfile == null)
+			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
+		log.info("/networks/{}/vnicProfiles ... vnicProfile 생성", networkId)
+		return ResponseEntity.ok(iVnic.add(vnicProfile))
 	}
 
 	companion object {

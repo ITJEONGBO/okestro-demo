@@ -8,6 +8,8 @@ import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
+import org.ovirt.engine.sdk4.builders.HostBuilder
+import org.ovirt.engine.sdk4.builders.HostedEngineBuilder
 import org.ovirt.engine.sdk4.builders.IscsiDetailsBuilder
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -382,6 +384,33 @@ fun Connection.enrollCertificate(hostId: String): Result<Boolean> = runCatching 
 	Term.HOST.logSuccess("인증서 등록", hostId)
 }.onFailure {
 	Term.HOST.logFail("인증서 등록", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.activeGlobalHaFromHost(hostId: String): Result<Boolean> = runCatching {
+	val host: Host = this.findHost(hostId).getOrNull()
+		?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+
+	// host 주소
+	val address: InetAddress = InetAddress.getByName(host.address())
+
+
+	TODO("ssh 로 구현")
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.HOST,"글로벌 ha 활성화")
+}.onFailure {
+	Term.HOST.logFailWithin(Term.HOST,"글로벌 ha 활성화", it)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.deactiveGlobalHaFromHost(hostId: String): Result<Boolean> = runCatching {
+	val host: Host = this.findHost(hostId).getOrNull()
+		?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+	TODO("ssh 로 구현")
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.HOST,"글로벌 ha 비활성화")
+}.onFailure {
+	Term.HOST.logFailWithin(Term.HOST,"글로벌 ha 비활성화", it)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
