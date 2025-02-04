@@ -6,7 +6,7 @@ import TableRowClick from "../../../components/table/TableRowClick";
 import TemplateNeworkNewInterModal from './modal/TemplateNeworkNewInterModal';
 import DeleteModal from "../../../components/DeleteModal";
 import NicActionButtons from "../../network/nic/NicActionButton"
-import { renderUpDownStatusIcon } from "../../../utils/Icon";
+import { renderTFStatusIcon, renderUpDownStatusIcon } from "../../../utils/Icon";
 import TemplateNicDeleteModal from "./modal/TemplateNicDeleteModal";
 
 const TemplateNics = ({ templateId }) => {
@@ -69,7 +69,7 @@ const TemplateNics = ({ templateId }) => {
         columns={TableColumnsInfo.NICS_FROM_TEMPLATE}
         data={vnicProfiles.map((nic) => ({
           ...nic,
-          status: renderUpDownStatusIcon(nic?.status),
+          status: renderTFStatusIcon(nic?.linked),
           network: <TableRowClick type="network" id={nic?.networkVo?.id}>{nic?.networkVo?.name}</TableRowClick>,
           vnicProfile: <TableRowClick type="vnicProfile" id={nic?.vnicProfileVo?.id}>{nic?.vnicProfileVo?.name}</TableRowClick>,
           linked: nic?.linked === true ? "Up" : 'Down',
