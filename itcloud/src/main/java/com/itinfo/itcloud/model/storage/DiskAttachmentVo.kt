@@ -106,7 +106,7 @@ fun DiskAttachment.toDiskAttachmentToTemplate(conn: Connection): DiskAttachmentV
 		passDiscard { this@toDiskAttachmentToTemplate.passDiscard() }
 		interface_ { this@toDiskAttachmentToTemplate.interface_() }
 		logicalName { this@toDiskAttachmentToTemplate.logicalName() }
-		// diskImageVo { disk?.toTemplateDiskInfo(conn) }
+		 diskImageVo { disk?.toTemplateDiskInfo(conn) }
 	}
 }
 fun List<DiskAttachment>.toDiskAttachmentsToTemplate(conn: Connection): List<DiskAttachmentVo> =

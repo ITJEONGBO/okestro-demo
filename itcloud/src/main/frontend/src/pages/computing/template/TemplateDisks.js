@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { faMinusCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAllDisksFromTemplate } from '../../../api/RQHook';
+import TableRowClick from '../../../components/table/TableRowClick';
 
 const TemplateDisks = ({ templateId }) => {
   const [isRowExpanded, setRowExpanded] = useState({});
@@ -46,12 +47,17 @@ const TemplateDisks = ({ templateId }) => {
       virtualSize: (disk.virtualSize / (1024 ** 3)).toFixed(0), // 가상 크기를 GiB로 변환
       actualSize: (disk.actualSize / (1024 ** 3)).toFixed(0),   // 실제 크기를 GiB로 변환
       creationTime: disk.createDate || 'N/A',                  // 생성 날짜
-      storageDomainName: disk.storageDomainVo?.name || 'Unknown',
+      storageDomainName: (
+        <TableRowClick type="domains" id={disk.storageDomainVo?.id}>
+          {disk?.storageDomainVo?.name}
+        </TableRowClick>
+      ),
+      // storageDomainName: disk.storageDomainVo?.name || 'Unknown',
       diskType: disk.contentType || 'Unknown',
       status: disk.status || 'Unknown',
-      spaceUsed: (82).toFixed(0), // 예시 데이터
-      spaceFree: (17).toFixed(2), // 예시 데이터
-      spaceTotal: (99).toFixed(2), // 예시 데이터
+      // spaceUsed: (82).toFixed(0), // 예시 데이터
+      // spaceFree: (17).toFixed(2), // 예시 데이터
+      // spaceTotal: (99).toFixed(2), // 예시 데이터
       policy: disk.sparse ? '씬 프로비저닝' : '두꺼운 프로비저닝',
       interfaceType: diskAttachment.interface_ || 'N/A',
     };

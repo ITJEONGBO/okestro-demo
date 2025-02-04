@@ -299,7 +299,6 @@ fun Disk.toTemplateDiskInfo(conn: Connection): DiskImageVo {
 		status { disk.status() }
 		sparse { disk.sparse() } // 할당정책
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
-		// storageDomainVo { storageDomain?.toStorageDomainIdName() }
 		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
 		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
 		virtualSize { disk.provisionedSize() }
