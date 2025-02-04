@@ -124,6 +124,7 @@ fun StorageDomain.toStorageDomainIdName(): StorageDomainVo = StorageDomainVo.bui
 	id { this@toStorageDomainIdName.id() }
 	name { this@toStorageDomainIdName.name() }
 }
+
 fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 	this@toStorageDomainIdNames.map { it.toStorageDomainIdName() }
 
@@ -359,10 +360,12 @@ fun StorageDomain.toStorageDomainSize(): StorageDomainVo {
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainSize.id() }
 		name { this@toStorageDomainSize.name() }
+		domainType { this@toStorageDomainSize.type().value() }
+		domainTypeMaster { if(this@toStorageDomainSize.masterPresent()) this@toStorageDomainSize.master() else false }
 		usedSize { this@toStorageDomainSize.used() }
 		availableSize { this@toStorageDomainSize.available() }
+		// diskImageVos {  }
 	}
 }
 fun List<StorageDomain>.toStorageDomainSizes(): List<StorageDomainVo> =
 	this@toStorageDomainSizes.map { it.toStorageDomainSize() }
-

@@ -79,12 +79,14 @@ class HostController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun add(
-		@RequestBody host: HostVo? = null
+		@RequestBody host: HostVo? = null,
+		@RequestParam(defaultValue = "false") deployHostedEngine: Boolean
+		// @PathVariable deployHostedEngine: Boolean? = false,
 	): ResponseEntity<HostVo?> {
 		if (host == null)
 			throw ErrorPattern.HOST_VO_INVALID.toException()
 		log.info("/computing/hosts ... 호스트 생성\n{}", host)
-		return ResponseEntity.ok(iHost.add(host))
+		return ResponseEntity.ok(iHost.add(host, deployHostedEngine))
 	}
 
 	@ApiOperation(

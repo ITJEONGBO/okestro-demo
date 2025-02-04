@@ -97,9 +97,7 @@ fun List<DiskAttachment>.toDiskAttachmentVos(conn: Connection): List<DiskAttachm
 
 
 fun DiskAttachment.toDiskAttachmentToTemplate(conn: Connection): DiskAttachmentVo {
-	val disk: Disk? =
-		conn.findDisk(this@toDiskAttachmentToTemplate.disk().id())
-			.getOrNull()
+	val disk: Disk? = conn.findDisk(this@toDiskAttachmentToTemplate.disk().id()).getOrNull()
 	return DiskAttachmentVo.builder {
 		id { this@toDiskAttachmentToTemplate.id() }
 		active { this@toDiskAttachmentToTemplate.active() }
@@ -108,8 +106,7 @@ fun DiskAttachment.toDiskAttachmentToTemplate(conn: Connection): DiskAttachmentV
 		passDiscard { this@toDiskAttachmentToTemplate.passDiscard() }
 		interface_ { this@toDiskAttachmentToTemplate.interface_() }
 		logicalName { this@toDiskAttachmentToTemplate.logicalName() }
-//		diskImageVo { disk?.toDiskImageVo(conn) }
-		diskImageVo { disk?.toDiskInfo(conn) }
+		// diskImageVo { disk?.toTemplateDiskInfo(conn) }
 	}
 }
 fun List<DiskAttachment>.toDiskAttachmentsToTemplate(conn: Connection): List<DiskAttachmentVo> =

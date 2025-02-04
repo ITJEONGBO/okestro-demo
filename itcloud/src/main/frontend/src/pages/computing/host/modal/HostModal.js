@@ -91,7 +91,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
     if (!editMode && clusters && clusters.length > 0) {
       setClusterVoId(clusters[0].id);
     }
-  }, [isOpen, clusters, editMode]);
+  }, [clusters, editMode]);
 
   useEffect(() => {
     if (!editMode && clusterId) {
@@ -140,7 +140,9 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
     } else {
       dataToSubmit.sshPassWord = formState.sshPassWord;  // 생성 모드에서는 ssh 비밀번호 추가
       dataToSubmit.hostedEngine = formState.hostedEngine;
-      addHost(dataToSubmit, {
+      addHost({
+        hostData: dataToSubmit, deploy_hosted_engine: formState.hostedEngine
+      }, {
         onSuccess: () => {
           onClose();
           toast.success("Host 생성 완료")

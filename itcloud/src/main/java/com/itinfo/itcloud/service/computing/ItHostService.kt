@@ -15,7 +15,6 @@ import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.computing.HostOperationServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.types.*
@@ -50,7 +49,8 @@ interface ItHostService {
 	 * @return [HostVo]?
 	 */
 	@Throws(Error::class)
-	fun add(hostVo: HostVo): HostVo?
+	// fun add(hostVo: HostVo): HostVo?
+	fun add(hostVo: HostVo, deployHostedEngine: Boolean?): HostVo?
 	/**
 	 * [ItHostService.update]
 	 * 호스트 편집 (전원관리 제외)
@@ -208,11 +208,12 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun add(hostVo: HostVo): HostVo? {
+	// override fun add(hostVo: HostVo): HostVo? {
+	override fun add(hostVo: HostVo, deployHostedEngine: Boolean?): HostVo? {
 		log.info("add ... ")
 		val res: Host? = conn.addHost(
 			hostVo.toAddHostBuilder(),
-			hostVo.hostedEngine,
+			deployHostedEngine,
 			rutil.id,
 			rutil.password
 		).getOrNull()

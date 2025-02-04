@@ -174,10 +174,10 @@ class HostOperationServiceImpl(
         return result
     }
 
+    // TODO host root 로그인이 아닌 새호스트 계정을 생성하고 이를 application.properties에 저장해서 보여주는 방식
     @Throws(UnknownHostException::class, Error::class)
     override fun restart(hostId: String): Boolean {
         log.info("reStart ... hostId: {}", hostId)
-        // TODO host root 로그인이 아닌 새호스트 계정을 생성하고 이를 application.properties에 저장해서 보여주는 방식
         val name = rutil.id
         val password = rutil.password
         log.info("Host ID: {}, Password: {}", name, password)

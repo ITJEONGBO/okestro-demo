@@ -706,10 +706,10 @@ const ApiManager = {
    * @param {Object} hostData - 추가할 호스트 정보
    * @returns {Promise<Object>} API 응답 결과
    */
-  addHost: async (hostData) => {
+  addHost: async (hostData, deploy_hosted_engine) => {
     return makeAPICall({
       method: "POST",
-      url: ENDPOINTS.ADD_HOST(),
+      url: ENDPOINTS.ADD_HOST(deploy_hosted_engine),
       data: hostData, // POST 요청 시 전송할 데이터
       // defaultValues: DEFAULT_VALUES.ADD_HOST
     });

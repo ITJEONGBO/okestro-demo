@@ -69,7 +69,7 @@ fun Connection.findAllVmsFromHost(hostId: String, searchQuery: String = ""): Res
 }
 
 
-fun Connection.addHost(host: Host, deployHostedEngine: Boolean, name: String, password: String): Result<Host?> = runCatching {
+fun Connection.addHost(host: Host, deployHostedEngine: Boolean? = false, name: String, password: String): Result<Host?> = runCatching {
 	if(this.findAllHosts()
 			.getOrDefault(listOf())
 			.nameDuplicateHost(host.name())) {
@@ -303,19 +303,23 @@ fun InetAddress.makeUserHostViaSSH(password: String, port: Int, userName: String
  * @param port [Int]
  */
 fun InetAddress.rebootHostViaSSH(hostName: String, hostPw: String, port: Int): Result<Boolean> = runCatching {
-	log.info("SSH 시작: hostName={}, hostAddress={}, port={}", hostName, this.hostAddress, port)
+	log.info("SSH 시작: hostName={}, hostPw={}, hostAddress={}, port={}", hostName, hostPw, this.hostAddress, port)
 
 	val session: com.jcraft.jsch.Session = JSch().getSession(hostName, this.hostAddress, port)
 	session.setPassword(hostPw)
+
+	// 보안 경고 무시 설정
 	session.setConfig("StrictHostKeyChecking", "no")
-//	session.setConfig("PreferredAuthentications", "password")
-	log.info("---------------------3")
+	session.setConfig("PreferredAuthentications", "password")
+
+	log.info("SSH 세션 연결 시도")
 	session.connect()
-	log.info("---------------------4")
+	log.info("SSH 세션 연결 성공 {}", this.hostAddress)
 
 	val channel: ChannelExec = session.openChannel("exec") as ChannelExec
 	log.info("---------------------5")
-	channel.setCommand("echo $hostPw | sudo -S reboot")
+	channel.setCommand("sudo -S reboot")
+	channel.setCommand(hostPw)
 	log.info("---------------------6")
 	channel.connect()
 
