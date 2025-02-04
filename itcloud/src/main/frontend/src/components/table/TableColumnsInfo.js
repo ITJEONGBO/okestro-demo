@@ -44,8 +44,8 @@ const TableColumnsInfo = {
     { header: '코멘트', accessor: 'comment', clickable: false },
   ],
   NETWORK_FROM_CLUSTER: [
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '이름', accessor: 'name', clickable: true },
+    { header: '이름', accessor: 'name', clickable: true, width: '18%' },
+    { header: '상태', accessor: 'status', clickable: false , width: '15%' },
     { header: '역할', accessor: 'role', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],

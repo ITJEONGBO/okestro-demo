@@ -78,7 +78,7 @@ const NetworkHosts = ({ networkId }) => {
       <div className="header-right-btns">
         <button 
           onClick={() => setIsModalOpen(true)} 
-          disabled={!selectedHost} // selectedHost가 없으면 버튼 비활성화
+          disabled={!selectedHostId} // selectedHost가 없으면 버튼 비활성화
         >
           호스트 네트워크 설정
         </button>

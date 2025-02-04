@@ -80,7 +80,6 @@ const DiskDupl = ({ disks = [], columns = [], type = 'disk' }) => {
         activeModal={activeModal}
         selectedDisks={selectedDisks}
         disk={activeModal === 'edit' ? selectedDisks[0] : null}
-        // datacenterId={datacenterId}
         onClose={closeModal}
       />
     </div>

@@ -41,6 +41,13 @@ const ClusterDupl = ({ clusters = [], columns = [], datacenterId }) => {
         clickableColumnIndex={[0]}
         onClickableColumnClick={(row) => handleNameClick(row.id)}
         multiSelect={true} // 다중 선택 활성화
+        onContextMenuItems={(row) => [
+          <ClusterActionButtons
+            openModal={openModal}
+            isEditDisabled={!row} 
+            type='context'
+          />
+        ]}
       />
 
       {/* 클러스터 모달창 */}

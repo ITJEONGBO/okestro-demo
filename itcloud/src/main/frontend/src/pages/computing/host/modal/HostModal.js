@@ -88,7 +88,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
   
 
   useEffect(() => {
-    if (!editMode && clusters.length > 0) {
+    if (!editMode && clusters && clusters.length > 0) {
       setClusterVoId(clusters[0].id);
     }
   }, [isOpen, clusters, editMode]);

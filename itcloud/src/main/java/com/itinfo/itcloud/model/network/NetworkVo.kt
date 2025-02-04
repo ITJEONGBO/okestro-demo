@@ -221,6 +221,7 @@ fun NetworkVo.toNetworkBuilder(): NetworkBuilder {
 //			null
 //	)
 
+	log.info("NetworkVo: {}", this)
 	return builder
 }
 

@@ -9,18 +9,23 @@ export function icon(status) {
   switch (status) {
     case 'UP':
     case 'OK':
+    case 'ACTIVE':
+    case '활성화':
       iconProps = {
         icon: faPlay,
         style: { color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' },
       };
       break;
-    case 'ACTIVE':
+    case '실행중':
       iconProps = {
         icon: faPlay,
-        style: { color: 'lime', fontSize: '0.3rem', transform: 'rotate(270deg)' },
+        style: { color: 'green', fontSize: '0.3rem', transform: 'rotate(120deg)' },
       };
       break;
     case 'DOWN':
+    case '비활성화':
+    case 'INACTIVE':
+    case 'UNINITIALIZED':
       iconProps = {
         icon: faPlay,
         style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' },
@@ -49,18 +54,6 @@ export function icon(status) {
         icon: faRefresh,
         style: { color: 'black', fontSize: '0.3rem' },
       };
-      break;
-    case 'INACTIVE':
-      iconProps = {
-        icon: faPlay,
-        style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' },
-    };
-      break;
-    case 'UNINITIALIZED':
-      iconProps = {
-        icon: faPlay,
-        style: { color: 'red', fontSize: '0.3rem', transform: 'rotate(90deg)' },
-    };
       break;
     default:
       return status;

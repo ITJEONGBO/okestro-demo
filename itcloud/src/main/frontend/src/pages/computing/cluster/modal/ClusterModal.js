@@ -17,7 +17,7 @@ import LabelInput from '../../../../utils/LabelInput';
 import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
 
 const FormGroup = ({ label, children }) => (
-  <div className="network-form-group">
+  <div className="cluster-form-group">
     <label>{label}</label>
     {children}
   </div>
@@ -285,7 +285,7 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="cluster_new_popup">
+      <div className="cluster-new-popup">
         <div className="popup-header">
           <h1>{editMode ? '클러스터 편집' : '새 클러스터'}</h1>
           <button onClick={onClose}>
@@ -293,7 +293,7 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
           </button>
         </div>
 
-        <div className="cluster_new_content">
+        <div className="cluster-new-content">
           <LabelSelectOptionsID
             label="데이터센터"
             value={dataCenterVoId}
@@ -363,7 +363,7 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
             <FormGroup>
                 <div className='font-bold mb-0.5'>복구정책</div>
                   {errorHandlingOptions.map((option) => (
-                    <div key={option.value} className="host-text-radio-box mb-0.5">
+                    <div key={option.value} className="host-text-radio-box mb-1">
                       <input
                         type="radio"
                         name="recovery_policy"

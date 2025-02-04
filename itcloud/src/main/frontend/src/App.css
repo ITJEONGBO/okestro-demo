@@ -80,9 +80,7 @@ button[disabled],select[disabled],input[disabled]{
     margin-bottom: 0.5rem;
     justify-content: right;
   }
-  .header-right-btns>button:last-child{
-    margin-right: 0 !important;
-  }
+
   .dropdown-container {
     position: relative;
     display: inline-block;
@@ -141,6 +139,10 @@ button[disabled],select[disabled],input[disabled]{
     justify-content: left;
     align-items: center; 
     border: 1px solid gray;
+    cursor:pointer;
+}
+.header-right-btns>button:last-child{
+    margin-right: 0 !important;
 }
  /*우클릭 메뉴박스*/
  .right-click-menu-box{
@@ -449,7 +451,9 @@ input[type="checkbox"],input[type="radio"]{
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
 }
-input[type="text"],select{
+input[type="text"],
+input[type="number"],
+select{
     border: 1px solid rgb(206, 206, 206);
     border-radius: 3px;
     padding:0 0.1rem;

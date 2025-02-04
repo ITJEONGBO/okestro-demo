@@ -136,14 +136,17 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
 
     const dataToSubmit = {
       datacenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
-      clusterVos: clusterVoList.map((cluster) => ({
-        id: cluster.id,
-        name: cluster.name,
-        required: cluster.isRequired,
-      })),
+      clusterVos: clusterVoList
+        .filter((cluster) => cluster.isConnected) // 🔥 연결된 클러스터만 필터링
+        .map((cluster) => ({
+          id: cluster.id,
+          name: cluster.name,
+          required: cluster.isRequired,
+        })),
       ...formState,
       mtu: formState.mtu ? parseInt(formState.mtu, 10) : 0, // mtu가 빈 값이면 1500 설/정
       vlan: formState.vlan !== 0 ? parseInt(formState.vlan, 10) : 0, // 빈 문자열을 null로 설정
+      portIsolation: formState.portIsolation, 
       usage: { vm: formState.usageVm },
     };
     
@@ -241,18 +244,18 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
             </FormGroup>
             <hr/>
 
-            <FormGroup >
+            <FormGroup>
               <div className='network-new-input'>
                 <div className='network-checkbox'>
                   <input
                     type="checkbox"
                     id="vlan"
-                    checked={formState.vlan !== '0'}
+                    checked={formState.vlan !== null} // ✅ 기본적으로 체크 해제
                     onChange={(e) => {
                       const isChecked = e.target.checked;
                       setFormState((prev) => ({
                         ...prev,
-                        vlan: isChecked ? '' : '0', // 체크되면 빈 문자열로, 해제되면 null로 설정
+                        vlan: isChecked ? "" : null, // ✅ 체크하면 빈 문자열, 해제하면 null
                       }));
                     }}
                   />
@@ -260,21 +263,24 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                 </div>
 
                 <input
-                  type="text"
+                  type="number"
                   id="vlan"
-                  disabled={formState.vlan === '0'}
-                  value={formState.vlan === "0"  ? '' : formState.vlan } 
+                  className="input_number"
+                  min="1"
+                  step="1"
+                  disabled={formState.vlan === null} // ✅ 체크되지 않으면 비활성화
+                  value={formState.vlan === null ? '' : formState.vlan} 
                   onChange={(e) => {
-                    const value = e.target.value;
                     setFormState((prev) => ({
                       ...prev,
-                      vlan: value,
+                      vlan: e.target.value, // ✅ 입력값 그대로 반영
                     }));
                   }}
                 />
               </div>
             </FormGroup>
-            
+
+
             <FormGroup label="">
               <div className='network-checkbox-only'>
                 <input
@@ -312,32 +318,43 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
             <FormGroup label="MTU" className="mtu-form">
               <div className="mtu-input-outer">
                 <div className="mtu-radio-input">
-                  <div style={{ fontSize: "0.32rem",display:'flex' }}>
+                  <div style={{ fontSize: "0.32rem", display: 'flex' }}>
                     <input
                       type="radio"
-                      checked={formState.mtu === "0"} // 기본값 상태 체크
+                      checked={formState.mtu === "0"} // 기본값 1500 선택됨
                       onChange={() => setFormState((prev) => ({ ...prev, mtu: "0" }))}
                     />
                     <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
                   </div>
-                  <div style={{ fontSize: "0.32rem",display:'flex' }}>
+                  <div style={{ fontSize: "0.32rem", display: 'flex' }}>
                     <input
                       type="radio"
-                      checked={formState.mtu === "custom"} // 사용자 정의 상태 체크
-                      onChange={() => setFormState((prev) => ({ ...prev, mtu: "custom" }))}
+                      checked={formState.mtu !== "0"} // 사용자 정의 값이 있을 때 선택됨
+                      onChange={() => setFormState((prev) => ({ ...prev, mtu: "" }))} // 빈 문자열로 설정해 사용자가 입력할 수 있도록
                     />
                     <label style={{ fontSize: "0.32rem" }}>사용자 정의</label>
                   </div>
                 </div>
                 <div className="mtu-text-input" style={{ fontSize: "10px" }}>
                   <input 
-                    type="text" 
-                    style={{width:'100%'}}
-                    disabled={formState.mtu !== "custom"} // 사용자 정의 라디오 선택 시만 활성화
+                    type="number" 
+                    style={{ width: '100%' }}
+                    min="68"
+                    step="1" 
+                    disabled={formState.mtu === "0"} // 기본값 선택 시 비활성화
+                    value={formState.mtu === "0" ? "" : formState.mtu} // 기본값일 경우 빈 값 표시
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFormState((prev) => ({
+                        ...prev,
+                        mtu: value, // 입력값 반영
+                      }));
+                    }}
                   />
                 </div>
               </div>
             </FormGroup>
+
 
 
          

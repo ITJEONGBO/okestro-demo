@@ -284,6 +284,7 @@ fun Cluster.resolveDataCenter(conn: Connection): DataCenter? {
 fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 	val builder = this@toClusterBuilder
 
+	log.info("ClusterVo: {}", this)
 	return ClusterBuilder()
 		.dataCenter(DataCenterBuilder().id(builder.dataCenterVo.id).build()) // 필수
 		.name(builder.name) // 필수

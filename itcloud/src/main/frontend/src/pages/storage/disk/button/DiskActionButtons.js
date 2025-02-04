@@ -6,7 +6,7 @@ const DiskActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status
   const basicActions = [
     { type: 'create', label: '생성', disabled: false },
     { type: 'edit', label: '편집', disabled: isEditDisabled },
-    { type: 'delete', label: '삭제', disabled: isDeleteDisabled || !isOk },
+    { type: 'delete', label: '삭제', disabled: isDeleteDisabled },
     { type: 'move', label: '이동', disabled: isEditDisabled },
     { type: 'copy', label: '복사', disabled: isEditDisabled },
     { type: 'upload', label: '업로드' },

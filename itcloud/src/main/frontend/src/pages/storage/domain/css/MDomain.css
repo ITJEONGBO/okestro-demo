@@ -29,6 +29,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.3rem;
+  align-items:center;
 }
 .domain-num-box{
   font-size: 0.32rem;
