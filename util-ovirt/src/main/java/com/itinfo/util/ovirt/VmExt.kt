@@ -47,31 +47,21 @@ fun Connection.findVm(vmId: String, follow: String = ""): Result<Vm?> = runCatch
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findVmName(vmId: String): Result<String> = kotlin.runCatching {
-	this.findVm(vmId).getOrNull()?.name() ?: ""
-}.onSuccess {
-	Term.VM.logSuccess("이름 조회")
-}.onFailure {
-	Term.VM.logFail("이름 조회", it)
-	throw if (it is Error) it.toItCloudException() else it
-
-}
 
 fun Connection.startVm(vmId: String): Result<Boolean> = runCatching {
-	val vm: Vm =
-		this.findVm(vmId)
-			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	val vm: Vm = this.findVm(vmId)
+		.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	if(vm.status() == VmStatus.UP){
 		log.error("가상머신 상태가 up인 상태")
 		throw ErrorPattern.VM_STATUS_ERROR.toError()
 	}
-	val diskAttachments =
-		this.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
+	val diskAttachments = this.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
 	if (!diskAttachments.any { it.bootable() }) {
 		throw ErrorPattern.DISK_ATTACHMENT_NOT_BOOTABLE.toError()
 	}
 
-	this.srvVm(vmId).start().useCloudInit(vm.initializationPresent()).send()
+	this.srvVm(vmId).start().send()
+//	this.srvVm(vmId).start().useCloudInit(vm.initializationPresent()).send()
 	this.expectVmStatus(vmId, VmStatus.UP)
 }.onSuccess {
 	Term.VM.logSuccess("시작", vmId)

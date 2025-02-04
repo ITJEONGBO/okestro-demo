@@ -47,7 +47,7 @@ const VmModals = ({ activeModal, vm, selectedVms = [], onClose }) => {
     ),
     action: (
       <VmActionModal
-        isOpen={['start', 'pause', 'reboot', 'reset', 'stop', 'powerOff'].includes(activeModal)}
+        isOpen={['start', 'pause', 'reboot', 'reset', 'shutdown', 'powerOff'].includes(activeModal)}
         action={activeModal}
         data={selectedVms}
         onClose={onClose}

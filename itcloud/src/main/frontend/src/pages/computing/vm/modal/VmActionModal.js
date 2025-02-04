@@ -17,8 +17,8 @@ import {
 const VmActionModal = ({ isOpen, action, data, onClose }) => {
   const { mutate: startVM } = useStartVM();
   const { mutate: pauseVM } = usePauseVM(); // 일시중지
-  const { mutate: powerOffVM } = usePowerOffVM(); // 종료
-  const { mutate: shutdownVM } = useShutdownVM();
+  const { mutate: shutdownVM } = useShutdownVM(); // 종료
+  const { mutate: powerOffVM } = usePowerOffVM(); // 전원끔
   const { mutate: rebootVM } = useRebootVM();
   const { mutate: resetVM } = useResetVM();
 
@@ -45,8 +45,8 @@ const VmActionModal = ({ isOpen, action, data, onClose }) => {
       pause: '일시중지',
       reboot: '재부팅',
       reset: '재설정',
-      stop: '종료',
-      powerOff: '전원 끔',
+      shutdown: '종료',
+      powerOff: '전원을 Off',
     };
     return labels[action] || '';
   };
@@ -77,10 +77,10 @@ const VmActionModal = ({ isOpen, action, data, onClose }) => {
     const actionMap = {
       start: startVM,
       pause: pauseVM,
-      powerOff: powerOffVM,
-      shutdown: shutdownVM,
       reboot: rebootVM,
       reset: resetVM,
+      shutdown: shutdownVM,
+      powerOff: powerOffVM,
     };
 
     const actionFn = actionMap[action];
