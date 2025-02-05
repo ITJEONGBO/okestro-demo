@@ -2,7 +2,6 @@ import React from "react";
 import DomainModal from "./DomainModal";
 import DomainDeleteModal from "./DomainDeleteModal";
 import DomainActionModal from "./DomainActionModal";
-import DomainImportModal from "./DomainImportModal";
 
 const DomainModals = ({ activeModal, domain, selectedDomains = [], datacenterId, onClose }) => {
   const modals = {
@@ -22,11 +21,17 @@ const DomainModals = ({ activeModal, domain, selectedDomains = [], datacenterId,
       />
     ),
     import: (
-      <DomainImportModal
+      <DomainModal
         isOpen={activeModal === 'import'}
+        // importMode={true}
         domainId={domain?.id}
         onClose={onClose}
       />
+      // <DomainImportModal
+      //   isOpen={activeModal === 'import'}
+      //   domainId={domain?.id}
+      //   onClose={onClose}
+      // />
     ),
     delete: (
       <DomainDeleteModal
@@ -48,6 +53,7 @@ const DomainModals = ({ activeModal, domain, selectedDomains = [], datacenterId,
         isOpen={['attach', 'detach', 'activate', 'maintenance'].includes(activeModal)}
         action={activeModal}
         data={selectedDomains}
+        datacenterId={datacenterId}
         onClose={onClose}
       />
     ),

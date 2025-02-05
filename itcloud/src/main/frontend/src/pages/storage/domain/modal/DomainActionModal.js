@@ -18,13 +18,18 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
   const { mutate: activateDomain } = useActivateDomain();
   const { mutate: maintenanceDomain } = useMaintenanceDomain();
   
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
+  const [ids, setIds] = useState([]);
+    const [names, setNames] = useState([]);
   
   useEffect(() => {
-    if (data) {
-      setId(data.id || '');
-      setName(data.name || '');
+    if (Array.isArray(data)) {
+      const ids = data.map((item) => item.id);
+      const names = data.map((item) => item.name); // name이 없는 경우 처리
+      setIds(ids);
+      setNames(names);
+    } else if (data) {
+      setIds([data.id]);
+      setNames([data.name]);
     }
   }, [data]);
 
@@ -38,10 +43,9 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
     return labels[action] || '';
   };
 
-
   const handleFormSubmit = () => {
-    if (!id) {
-      console.error('ID가 없습니다.');
+    if (!ids.length) {
+      console.error('실행할 도메인이 없습니다.');
       return;
     }
 
@@ -51,23 +55,27 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
       activate: activateDomain,
       maintenance: maintenanceDomain
     };
-    const actionFn = actionMap[action];
-    handleAction(actionFn);
-  }
 
-  const handleAction = (actionFn) => {
-    actionFn(
-      { domainId: id, dataCenterId: datacenterId }, 
-      {
-        onSuccess: () => {
-          toast.success(`${data?.name} ${action} 성공`);
-          onClose(); // 삭제 성공 시 모달 닫기
-        },
-        onError: (error) => {
-          console.error(`${action} ${name} 액션 오류:`, error);
-        },
-      }
-    );
+    const actionFn = actionMap[action];
+    if (!actionFn) {
+      console.error(`잘못된 액션: ${action}`);
+      return;
+    }
+
+    ids.forEach((domainId, index) => {
+      actionFn(
+        { domainId, dataCenterId: datacenterId },{
+          onSuccess: () => {
+            toast.success(`도메인 ${getContentLabel()} 완료`);
+            onClose(); // 모든 작업 완료 후 모달 닫기
+          },
+          onError: (error) => {
+            toast.error(`일부 도메인 ${getContentLabel()} 실패`);
+            onClose(); // 일부 실패해도 모달 닫기
+          },
+        }
+      );
+    });
   };
   
 
@@ -91,7 +99,7 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
         <div className="disk-delete-box">
           <div>
             <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
-            <span> {data?.name} 를(을) {getContentLabel(action)} 하시겠습니까?</span>
+            <span> {names.join(', ')} 를(을) {getContentLabel(action)} 하시겠습니까?</span>
           </div>
         </div>
 

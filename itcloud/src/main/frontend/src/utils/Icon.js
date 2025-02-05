@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner, faCheckCircle, faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
 
+
 export function icon(status) {
   const tooltipId = `status-tooltip-${status}`;
   let iconProps = {};
@@ -197,3 +198,4 @@ export const renderSeverityIcon = (severity) => {
       return severity;
   }
 };
+

@@ -1,11 +1,8 @@
 import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
 import toast from 'react-hot-toast';
-// import '../css/MDomain.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import Tables from '../../../../components/table/Tables';
-import TableColumnsInfo from '../../../../components/table/TableColumnsInfo';
 import { 
   useAddDomain, 
   useAllDataCenters, 
@@ -20,24 +17,24 @@ import {
   useImportDomain,
   useLoginIscsiFromHost,
 } from '../../../../api/RQHook';
+import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
+import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
+import LabelInput from '../../../../utils/LabelInput';
+import DomainNfs from './DomainCreate/DomainNfs';
+import DomainIscsi from './DomainCreate/DomainIscsi';
+import DomainFibre from './DomainCreate/DomainFibre';
+import LabelInputNum from '../../../../utils/LabelInputNum';
 
-// Modal.setAppElement('#root');
-
-const FormGroup = ({ label, children }) => (
-  <div className="domain-new-select">
-    <label>{label}</label>
-    {children}
-  </div>
-);
-
-const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose }) => {
+const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }) => {
   const { mutate: addDomain } = useAddDomain();
   const { mutate: editDomain } = useEditDomain();
-  const { mutate: importDomain } = useImportDomain();
-  const { mutate: importIscsiFromHost } = useImportIscsiFromHost(); // 가져오기 iscsi
-  const { mutate: importFcpFromHost } = useImportFcpFromHost();   // 가져오기 fcp
-  const { mutate: loginIscsiFromHost } = useLoginIscsiFromHost();  // 가져오기 iscsi 로그인
+  const { mutate: importDomain } = useImportDomain(); // 가져오기
 
+  const { mutate: loginIscsiFromHost } = useLoginIscsiFromHost();  // 가져오기 iscsi 로그인
+  const { mutate: importIscsiFromHost } = useImportIscsiFromHost(); // 가져오기 iscsi
+  const { mutate: importFcpFromHost } = useImportFcpFromHost();   // 가져오기 fibre
+
+  // 일반정보
   const [formState, setFormState] = useState({
     id: '',
     domainType: 'data', // 기본값 설정
@@ -48,26 +45,30 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
     warning: '10',
     spaceBlocker: '5',
   });
+
+  // import = 가져오기
+  // nfs 는 같음, iscsi 주소, 포트, 사용자 인증 이름, 암호 해서 검색
+  const [formImportState, setFormImportState] = useState({
+    target: '',
+    address: '',
+    port: 3260,
+    chapName: '',
+    chapPassword: '',
+    useChap: false,
+  });
+
   const [dataCenterVoId, setDataCenterVoId] = useState('');  
   const [hostVoName, setHostVoName] = useState('');
   const [hostVoId, setHostVoId] = useState('');
   const [storageTypes, setStorageTypes] = useState([]);
 
   const [nfsAddress, setNfsAddress] = useState('');  // nfs
-  const [lunId, setLunId] = useState(''); // iscsi, fibre
-
-  // import
-  // nfs 는 같음, iscsi 주소, 포트, 사용자 인증 이름, 암호 해서 검색
-  const [target, setTarget] = useState('');
-  const [address, setAddress] = useState('');
-  const [port, setPort] = useState('');
-  const [chapName, setChapName] = useState('');
-  const [chapPassword, setChapPassword] = useState('');
-  const [useChap, setUseChap] = useState(false);
+  const [lunId, setLunId] = useState(''); // iscsi, fibre 생성시 사용
   
   const [iscsiSearchResults, setIscsiSearchResults] = useState([]);
   const [fcpSearchResults, setFcpSearchResults] = useState([]);
 
+  // 초기화
   const resetForm = () => {
     setFormState({
       id: '',
@@ -79,13 +80,18 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
       warning: '10',
       spaceBlocker: '5',
     });
-    // setStorageTypes(['nfs', 'iscsi', 'fcp']); // 기본 도메인 유형에 따른 스토리지 유형
+    setFormImportState({
+      target: '',
+      address: '',
+      port: 3260,
+      chapName: '',
+      chapPassword: '',
+      useChap: false,
+    });
     setIscsiSearchResults([]); // iSCSI 검색 결과 초기화
     setFcpSearchResults([]);   // FCP 검색 결과 초기화
     setNfsAddress('');
     setLunId('');
-    setAddress('');
-    setPort(3260);
   };
 
 
@@ -123,7 +129,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
     refetch: refetchIscsis,
     error: isIscsisError,
     isLoading: isIscsisLoading,
-  } = useIscsiFromHost(hostVoId ? hostVoId : null, ((e) => {
+  } = useIscsiFromHost(hostVoId, ((e) => {
     const unit = e?.logicalUnits[0];
     return {
       ...e,
@@ -137,7 +143,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
       productId: unit?.productId,   
       vendorId: unit?.vendorId,
       serial: unit?.serial,
-  };
+    };
   }));
 
   // fibre 목록 가져오기
@@ -183,6 +189,7 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
   const isIscsi = formState.storageType === 'iscsi' || domain?.storageType === 'iscsi';
   const isFibre = formState.storageType === 'fcp' || domain?.storageType === 'fcp';
 
+  // 편집은 단순 이름, 설명 변경정도
   useEffect(() => {
     if (editMode && domain) {
       const updatedState = {
@@ -215,16 +222,24 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
   }, [isOpen]);
   
   useEffect(() => {
-    if (!editMode && dataCenters.length > 0) {
+    if (!editMode && dataCenters && dataCenters.length > 0) {
       setDataCenterVoId(dataCenters[0].id);
     }
   }, [dataCenters, editMode]);
   
   useEffect(() => {
-    if (!editMode && hosts.length > 0) {
+    if (!editMode && hosts && hosts.length > 0) {
       setHostVoId(hosts[0].id);
+      setHostVoName(hosts[0].name);
     }
   }, [hosts, editMode]);  
+
+  useEffect(() => {
+    if (formState.storageType === 'iscsi' && hostVoId) {
+      refetchIscsis();
+    }
+  }, [hostVoId, formState.storageType, refetchIscsis]);
+  
 
   useEffect(() => {
     const options = storageTypeOptions(formState.domainType);
@@ -245,19 +260,28 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
     setLunId('');
     setIscsiSearchResults([]); // iSCSI 검색 결과 초기화
     setFcpSearchResults([]);   // FCP 검색 결과 초기화
-    setTarget('');             // 선택된 target 초기화
-    setAddress('');            // iSCSI 주소 초기화
-    setPort('3260');           // iSCSI 포트 기본값 초기화
-  }, [formState.storageType]); // formState.storageType 변경 시 실행
-    
+  
+    setFormImportState({
+      target: '',
+      address: '',
+      port: 3260,
+      chapName: '',
+      chapPassword: '',
+      useChap: false,
+    });
+  }, [formState.storageType]);
 
-  const handleRowClick = (row) => {
-    console.log('선택한 행 데이터:', row);
-    setLunId(row.id); // 선택된 LUN ID를 설정
-    setTarget(row.target); // 선택된 target 값을 설정
-    setAddress(row.address); // 선택된 address 값을 설정
-    setPort(row.port); // 선택된 port 값을 설정
-  };
+  // const handleRowClick = (row) => {
+  //   console.log('선택한 행 데이터:', row);
+  //   setLunId(row.id); // 선택된 LUN ID 설정
+  //   setFormImportState((prev) => ({
+  //     ...prev,
+  //     target: row.target || '',
+  //     address: row.address || '',
+  //     port: row.port || 3260, // 기본값 유지
+  //   }));
+  // };
+  
 
   const validateForm = () => {
     if (!formState.name) return '이름을 입력해주세요.';
@@ -272,72 +296,6 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
       if (selectedLogicalUnit?.abled === 'NO') return '선택한 항목은 사용할 수 없습니다.';
     }
     return null;
-  };
-
-
-  const handleSearchIscsi = () => {
-    if (!hostVoId) {
-      toast.error('호스트를 선택해주세요.');
-      return;
-    }
-    if (!address || !port) {
-      toast.error('주소와 포트를 입력해주세요.');
-      return;
-    }
-  
-    const iscsiData = { address, port };
-    importIscsiFromHost(
-      { hostId: hostVoId, iscsiData },
-      {
-        onSuccess: (data) => {
-          console.log('iSCSI 가져오기 성공:', data);
-          setIscsiSearchResults(data); // 검색 결과 상태 업데이트
-        },
-        onError: (error) => {
-          console.error('iSCSI 가져오기 실패:', error);
-        },
-      }
-    );
-  };
-
-  const handleSearchFcp = () => {
-    if (!hostVoId) {
-      toast.error('호스트를 선택해주세요.');
-      return;
-    }  
-    importFcpFromHost(
-      { hostId: hostVoId },
-      {
-        onSuccess: (data) => {
-          console.log('fcp 가져오기 성공:', data);
-          setFcpSearchResults(data);
-        },
-        onError: (error) => {
-          console.error('fcp 가져오기 실패:', error);
-        },
-      }
-    );
-  };
-
-  const handleLoginIscsi = () => {
-    if (!target) { // 체크박스를 선택해주세요
-      toast.error('항목을 선택해주세요.');
-      return;
-    }
-  
-    const iscsiData = { target, address, port };
-    loginIscsiFromHost(
-      { hostId: hostVoId, iscsiData },
-      {
-        onSuccess: (data) => {
-          console.log('iSCSI 로그인 성공:', data);
-          setIscsiSearchResults(data); // 검색 결과 상태 업데이트
-        },
-        onError: (error) => {
-          console.error('iSCSI 로그인 실패:', error);
-        },
-      }
-    );
   };
 
   
@@ -423,9 +381,8 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
     >
       <div className="storage-domain-administer-popup">
         <div className="popup-header">
-          <h1>
-          {
-          // importMode ? "도메인 가져오기":
+          <h1>{
+            // importMode ? "도메인 가져오기":
             editMode ? "도메인 편집"
             : "새로운 도메인 생성"
           }
@@ -436,350 +393,151 @@ const DomainModal = ({ isOpen, editMode = false, domainId, datacenterId, onClose
         <div className="storage-domain-new-first">
           <div className="domain_new_left">
 
-          <FormGroup label="데이터 센터">
-            <select
+            <LabelSelectOptionsID 
+              className="domain-new-select"
+              label="데이터센터"
               value={dataCenterVoId}
               onChange={(e) => setDataCenterVoId(e.target.value)}
               disabled={editMode}
-            >
-            {isDatacentersLoading ? (
-              <p>데이터 센터를 불러오는 중...</p>
-            ) : dataCenters.length === 0 ? (
-              <p>사용 가능한 데이터 센터가 없습니다.</p>
-            ) : datacenterId ? (
-              <input 
-                type="text" 
-                value={dataCenter?.name || ''} 
-                readOnly 
-              />
-            ) : (
-              dataCenters.map((dc) => (
-                <option key={dc.id} value={dc.id}>
-                  {dc.name}
-                </option>
-              ))
-            )}
-            </select>
-          </FormGroup>
-
-          <FormGroup label="도메인 유형">
-            <select
+              loading={isDatacentersLoading}
+              options={dataCenters}
+            />
+            <LabelSelectOptions
+              className="domain-new-select"
+              label="도메인 유형"
               value={formState.domainType}
               onChange={(e) => setFormState((prev) => ({ ...prev, domainType: e.target.value }))}
               disabled={editMode}
-            >
-              {domainTypes.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </FormGroup>
-
-          <FormGroup label="스토리지 유형">
-            <select
+              options={domainTypes}
+            />
+            <LabelSelectOptions
+              className="domain-new-select"
+              label="스토리지 유형"
               value={formState.storageType}
-              onChange={(e) =>
-                setFormState((prev) => ({ ...prev, storageType: e.target.value }))
-              }
+              onChange={(e) => setFormState((prev) => ({ ...prev, storageType: e.target.value }))}
               disabled={editMode}
-            >
-              {storageTypes.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </FormGroup>
+              options={storageTypes}
+            />
 
-          <FormGroup label="호스트">
-            <select
-              value={hostVoName}
-              onChange={(e) => setHostVoName(e.target.value)}
-              disabled={editMode}
-            >
-              {isHostsLoading ? (
-                <option key="loading">호스트를 불러오는 중...</option>
-              ) : hosts.length === 0 ? (
-                <option key="no-hosts">사용 가능한 호스트가 없습니다.</option>
-              ) : (
-                hosts.map((h) => (
-                  <option key={h.name} value={h.name}>
-                    {h.name} : {h.id}
-                  </option>
-                ))
-              )}
-            </select>
-          </FormGroup>
-        </div>
+            <div className="domain-new-select">
+              <label>호스트</label>
+              <select
+                label="호스트"
+                value={hostVoName}
+                onChange={(e) => setHostVoName(e.target.value)}
+                disabled={editMode}
+              >
+                {isHostsLoading ? (
+                  <option key="loading">호스트를 불러오는 중...</option>
+                ) : (
+                  hosts.map((h) => (
+                    <option key={h.name} value={h.name}>
+                      {h.name} : {h.id}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+          </div>
 
-        <div className="domain_new_right">
-          <FormGroup label="이름">
-            <input
-              type="text"
+          <div className="domain-new-right">
+            <LabelInput
+              className="domain-new-select"
+              label="이름"
+              id='name'
+              autoFocus={true}
               value={formState.name}
-              autoFocus
               onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
             />
-          </FormGroup>
-          
-          <FormGroup label="설명">
-            <input
-              type="text"
+            <LabelInput
+              className="domain-new-select"
+              label="설명"
+              id='description'
               value={formState.description}
               onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
             />
-          </FormGroup>
-
-          <FormGroup label="코멘트">
-            <input
-              type="text"
+            <LabelInput
+              className="domain-new-select"
+              label="코멘트"
+              id='comment'
               value={formState.comment}
               onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
             />
-          </FormGroup>
+          </div>
         </div>
-      </div>
    
       {/* NFS 의 경우 */}
       {isNfs && (
-        <div className="storage_popup_iSCSI">
-          <div className="tab_content">
-            <div className='domain-num-box'>
-              <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
-              {editMode ? (
-                <input
-                  type="text"
-                  placeholder="예: myserver.mydomain.com"
-                  value={domain?.storageAddress}
-                  disabled
-                />
-              ) : (
-                <>
-                  
-                    <input
-                      type="text"
-                      placeholder="예: myserver.mydomain.com:/my/local/path"
-                      value={nfsAddress}
-                      onChange={(e) => setNfsAddress(e.target.value)}
-                    />
-                 
-                </>
-              )}
-            </div>
-          </div>
-        </div>
+        <DomainNfs
+          editMode={editMode}
+          // importMode={importMode}
+          nfsAddress={nfsAddress}
+          setNfsAddres={setNfsAddress}
+          domain={domain}
+        />
       )}
       
       {/* ISCSI 의 경우 */}
-      {isIscsi && (        
-        <div className="storage_popup_iSCSI">
-          <div className="section-table-outer">
-            {isIscsisLoading ? (
-              <div className="label_font_body">로딩 중...</div>
-            ) : isIscsisError ? (
-              <div className="label_font_body">데이터를 불러오는 중 오류가 발생했습니다.</div>
-            ) : (
-              <>
-                {editMode ? (
-                  <Tables
-                    columns={TableColumnsInfo.LUNS_TARGETS}
-                    data={domain?.hostStorageVo?.logicalUnits?.map((logicalUnit) => ({
-                      abled: logicalUnit.storageDomainId === "" ? "OK" : "NO",
-                      status: logicalUnit.status,
-                      id: logicalUnit.id,
-                      size: logicalUnit.size ? `${(logicalUnit.size / (1024 ** 3)).toFixed(2)} GB` : "",
-                      paths: logicalUnit.paths || 0,
-                      vendorId: logicalUnit.vendorId || "",
-                      productId: logicalUnit.productId || "",
-                      serial: logicalUnit.serial || "",
-                      target: logicalUnit.target || "",
-                      address: logicalUnit.address || "",
-                      port: logicalUnit.port || "",
-                    })) || []}
-                    onRowClick={handleRowClick}
-                  />
-                ) : (
-                  <>
-                    {iscsiSearchResults?.length === 0 ? (
-                      <>
-                      <div className='target-search-outer'>
-                        <label className='label_font_name'>대상 검색</label>
-                        <div className='target-search'>
-                          <div>
-                            <FormGroup>
-                              <label className='label_font_name'>주소</label>
-                              <input
-                                type="text"
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
-                              />
-                            </FormGroup>
-                            <FormGroup>
-                              <label className='label_font_name'>포트</label>
-                              <input
-                                type="number"
-                                value={port}
-                                onChange={(e) => setPort(e.target.value)}
-                              />
-                            </FormGroup>
-                          </div>
-                          <div>
-                            <div className="flex mb-0.5">
-                              <input
-                                type="checkbox"
-                                id="format"
-                                checked={useChap}
-                                onChange={(e) => setUseChap(e.target.checked)} // 체크 여부에 따라 true/false 설정
-                              />
-                              <label htmlFor="format">사용자 인증</label>
-                            </div>
-                            <div className='flex'>
-                              <FormGroup>
-                                <label>CHAP 사용자 이름</label>
-                                <input
-                                  type="text"
-                                  value={chapName}
-                                  onChange={(e) => setChapName(e.target.value)}
-                                  disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
-                                />
-                              </FormGroup>
-                              <FormGroup>
-                                <label >CHAP 암호</label>
-                                <input
-                                  type="password"
-                                  value={chapPassword}
-                                  onChange={(e) => setChapPassword(e.target.value)}
-                                  disabled={!useChap} // 사용자 인증이 체크되지 않으면 비활성화
-                                />
-                              </FormGroup>
-                            </div>
-                          </div>
-                          
-                        </div>
-                        <button className='search-button' onClick={handleSearchIscsi}>검색</button>
-                      </div>
-                      </>
-                    ) : (
-                      <>
-                        <button className='search_button' onClick={handleLoginIscsi}>로그인</button>
-                        <Tables
-                          columns={TableColumnsInfo.TARGETS_LUNS}
-                          data={iscsiSearchResults}
-                          onRowClick={handleRowClick}
-                          shouldHighlight1stCol={true}
-                        />
-                        <p style={{ fontSize: '12px' }}>target: {target}, {address}, {port}</p>
-                      </>
-                    )}
-                    <Tables
-                      columns={TableColumnsInfo.LUNS_TARGETS}
-                      data={iscsis}
-                      onRowClick={handleRowClick}
-                      shouldHighlight1stCol={true}
-                    />  
-
-                    
-                  </>
-                )}
-              </>
-            )}
-          </div>
-          <div>
-            <span style={{ fontSize: '22px' }}>id: {lunId}</span>
-          </div>
-        </div>
+      {isIscsi && (
+        <DomainIscsi
+          editMode={editMode}
+          domain={domain}
+          iscsis={iscsis}
+          iscsiSearchResults={iscsiSearchResults}
+          setIscsiSearchResults={setIscsiSearchResults}
+          lunId={lunId}
+          setLunId={setLunId}
+          hostVoId={hostVoId}
+          hostVoName={hostVoName}
+          setHostVoName={setHostVoName}
+          isIscsisLoading={isIscsisLoading}
+          importIscsiFromHost={importIscsiFromHost}
+          loginIscsiFromHost={loginIscsiFromHost}
+          formImportState={formImportState}  // ✅ formImportState 전달
+          setFormImportState={setFormImportState} // ✅ 상태 업데이트 함수 전달
+          refetchIscsis={refetchIscsis}
+        />
       )}
 
-      
+      {/* Firbre 의 경우 */}
       {isFibre && (
-        <div className="storage_popup_iSCSI">
-          <div className="section-table-outer">
-            {isFibresLoading ? (
-              <div className="label_font_body">로딩 중...</div>
-            ) : isFibresError ? (
-              <div className="label_font_body">데이터를 불러오는 중 오류가 발생했습니다.</div>
-            ) : (
-              <>
-                {editMode ? (
-                  <Tables
-                    columns={TableColumnsInfo.FIBRE}
-                    data={
-                      domain?.hostStorageVo?.logicalUnits?.map((logicalUnit) => ({
-                        abled: logicalUnit.storageDomainId === "" ? "OK" : "NO",
-                        status: logicalUnit.status,
-                        id: logicalUnit.id,
-                        size: logicalUnit.size ? `${(logicalUnit.size / (1024 ** 3)).toFixed(2)} GB` : "N/A",
-                        paths: logicalUnit.paths || 0,
-                        vendorId: logicalUnit.vendorId || "N/A",
-                        productId: logicalUnit.productId || "N/A",
-                        serial: logicalUnit.serial || "N/A",
-                        target: logicalUnit.target || "N/A",
-                        address: logicalUnit.address || "N/A",
-                        port: logicalUnit.port || "N/A",
-                      })) || []
-                    }
-                    onRowClick={handleRowClick}
-                    // shouldHighlight1stCol={true}
-                  />
-                // ): importMode ? (
-                //   <>
-                //     <button className='search_button' onClick={handleSearchFcp}>검색</button>
-
-                //     {fcpSearchResults?.length > 0 && (
-                //       <Tables
-                //         columns={TableColumnsInfo.FIBRE_IMPORT}
-                //         data={fcpSearchResults}
-                //         onRowClick={handleRowClick}
-                //         // shouldHighlight1stCol={true}
-                //       />
-                //     )}
-                //   </>
-                ): (
-                  <Tables
-                    columns={TableColumnsInfo.FIBRE}
-                    data={fibres}
-                    onRowClick={handleRowClick}
-                    shouldHighlight1stCol={true}
-                  />
-                )} 
-                <div>
-                  <span style={{ fontSize: '22px' }}>id: {lunId}</span>
-                </div>
-              </> 
-            )}
-          </div>
-        </div>
+        <DomainFibre
+          editMode={editMode}
+          domain={domain}
+          fibres={fibres}
+          fcpSearchResults={fcpSearchResults}
+          setFcpSearchResults={setFcpSearchResults}
+          lunId={lunId}
+          setLunId={setLunId}
+          hostVoId={hostVoId}
+          importFcpFromHost={importFcpFromHost}
+          // handleRowClick={handleRowClick}
+          formImportState={formImportState}  // ✅ formImportState 전달
+          setFormImportState={setFormImportState} // ✅ 상태 업데이트 함수 전달
+        />
       )}
-      
+    
       <div><hr/></div>
 
-      <div className="tab_content">
-        <div className="storage_specific_content">
-          <FormGroup>
-            <div className='domain-num-box'>
-              <label className='label_font_body'>디스크 공간 부족 경고 표시(%)</label>
-              <input
-                type="number"
-                value={formState.warning}
-                className='input_number'
-                onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
-              />
-            </div>
-          </FormGroup>
-          <FormGroup>
-            <div className='domain-num-box'>
-              <label className='label_font_body'>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-              <input
-                type="number"
-                value={formState.spaceBlocker}
-                className='input_number'
-                onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
-              />
-            </div>
-          </FormGroup>
+      <div className="tab-content">
+        <div className="storage-specific-content">
+          <LabelInputNum
+            className='domain-num-box'
+            label="디스크 공간 부족 경고 표시(%)"
+            id='warning'
+            value={formState.warning}
+            onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
+          />
+          <LabelInputNum
+            className='domain-num-box'
+            label="심각히 부족한 디스크 공간의 동작 차단(GB)"
+            id='spaceBlocker'
+            value={formState.spaceBlocker}
+            onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
+          />
         </div>
       </div>
+
       <div className="edit-footer">
         <button style={{ display: 'none' }}></button>
         <button onClick={handleFormSubmit}>{editMode ? '편집' : '완료'}</button>

@@ -831,7 +831,7 @@ export const useEventFromHost = (hostId, mapPredicate) => useQuery({
 
 /**
  * @name useIscsiFromHost
- * @description 호스트 내 iscsi 목록조회 useQuery훅
+ * @description 호스트 내 iscsi (생성) 목록조회 useQuery훅
  * 
  * @param {string} hostId
  * @param {function} mapPredicate 목록객체 변형 처리

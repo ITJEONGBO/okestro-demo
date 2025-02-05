@@ -1,7 +1,3 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner, faCheckCircle, faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
-import { Tooltip } from 'react-tooltip';
-
 
 /***
  * 숫자 구분

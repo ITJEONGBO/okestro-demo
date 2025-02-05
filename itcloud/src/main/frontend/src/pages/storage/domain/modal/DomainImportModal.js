@@ -436,7 +436,7 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
         </div>
 
         <div className="storage-domain-new-first">
-          <div className="domain_new_left">
+          <div className="domain-new-left">
 
           <FormGroup label="데이터 센터">
             <select
@@ -515,7 +515,7 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
           </FormGroup>
         </div>
 
-        <div className="domain_new_right">
+        <div className="domain-new-right">
           <FormGroup label="이름">
             <input
               type="text"
@@ -545,10 +545,10 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
    
       {/* NFS 의 경우 */}
       {isNfs && (
-        <div className="storage_popup_iSCSI">
-          <div className="tab_content">
+        <div className="storage-popup-iSCSI">
+          <div className="tab-content">
             <div className='domain-num-box'>
-              <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
+              <label htmlFor="NFSPath" className='label-font-body'>NFS 서버 경로</label>
               {editMode ? (
                 <input
                   type="text"
@@ -577,12 +577,12 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
       
       {/* ISCSI 의 경우 */}
       {isIscsi && (        
-        <div className="storage_popup_iSCSI">
-          <div className="tab_content">
+        <div className="storage-popup-iSCSI">
+          <div className="tab-content">
             {isIscsisLoading ? (
-              <div className="label_font_body">로딩 중...</div>
+              <div className="label-font-body">로딩 중...</div>
             ) : isIscsisError ? (
-              <div className="label_font_body">데이터를 불러오는 중 오류가 발생했습니다.</div>
+              <div className="label-font-body">데이터를 불러오는 중 오류가 발생했습니다.</div>
             ) : (
               <>
                 { editMode ? (
@@ -690,12 +690,12 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
       )}
       
       {isFibre && (
-        <div className="storage_popup_iSCSI">
-          <div className="tab_content">
+        <div className="storage-popup-iSCSI">
+          <div className="tab-content">
             {isFibresLoading ? (
-              <div className="label_font_body">로딩 중...</div>
+              <div className="label-font-body">로딩 중...</div>
             ) : isFibresError ? (
-              <div className="label_font_body">데이터를 불러오는 중 오류가 발생했습니다.</div>
+              <div className="label-font-body">데이터를 불러오는 중 오류가 발생했습니다.</div>
             ) : (
               <>
                 {editMode ? (
@@ -751,26 +751,26 @@ const DomainImportModal = ({ isOpen, editMode = false, domainId, datacenterId, o
       
       <div><hr/></div>
 
-      <div className="tab_content">
-        <div className="storage_specific_content">
+      <div className="tab-content">
+        <div className="storage-specific-content">
           <FormGroup>
             <div className='domain-num-box'>
-              <label className='label_font_body'>디스크 공간 부족 경고 표시(%)</label>
+              <label className='label-font-body'>디스크 공간 부족 경고 표시(%)</label>
               <input
                 type="number"
                 value={formState.warning}
-                className='input_number'
+                className='input-number'
                 onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
               />
             </div>
           </FormGroup>
           <FormGroup>
             <div className='domain-num-box'>
-              <label className='label_font_body'>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+              <label className='label-font-body'>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
               <input
                 type="number"
                 value={formState.spaceBlocker}
-                className='input_number'
+                className='input-number'
                 onChange={(e) => setFormState((prev) => ({ ...prev, spaceBlocker: e.target.value }))}
               />
             </div>
