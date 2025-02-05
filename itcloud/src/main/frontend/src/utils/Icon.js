@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner, faCheckCircle, faTimesCircle, faWarning } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner, faCheckCircle, faTimesCircle, faWarning, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
 
 
@@ -54,6 +54,12 @@ export function icon(status) {
       iconProps = {
         icon: faRefresh,
         style: { color: 'black', fontSize: '0.3rem' },
+      };
+      break;
+    case 'SUSPENDED':
+      iconProps = {
+        icon: faMoon,
+        style: { color: 'blue', fontSize: '0.3rem' },
       };
       break;
     default:

@@ -3,6 +3,8 @@ import VmDeleteModal from './VmDeleteModal';
 import VmActionModal from './VmActionModal';
 import VmSnapshotModal from './VmSnapshotModal';
 import VmNewModal from './VmNewModal';
+import VmAddTemplateModal from './VmAddTemplateModal';
+import VmExportOVAModal from './VmExportOVAModal';
 
 const VmModals = ({ activeModal, vm, selectedVms = [], onClose }) => {
   const modals = {
@@ -37,12 +39,28 @@ const VmModals = ({ activeModal, vm, selectedVms = [], onClose }) => {
         data={selectedVms}
       />
     ),
+    templates:(
+      <VmAddTemplateModal
+        isOpen={activeModal === 'templates'}
+        onRequestClose={onClose}
+        selectedVm={vm} 
+        vmId={vm?.id}
+      />
+    ),
     snapshot: (
       <VmSnapshotModal
         isOpen={activeModal === 'snapshot'}
         vmId={vm?.id}
         data={selectedVms}
         onClose={onClose}
+      />
+    ),
+    ova:(
+      <VmExportOVAModal
+        isOpen={activeModal === 'ova'}
+        onRequestClose={onClose}
+        selectedVm={vm}
+        vmId={vm?.id} 
       />
     ),
     action: (

@@ -189,7 +189,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className={`network-new-popup ${editMode ? 'edit-mode' : ''}`}>
+      <div className={`network-new-popup modal ${editMode ? 'edit-mode' : ''}`}>
         <div className="popup-header">
           <h1>{editMode ? '논리 네트워크 수정' : '새 논리 네트워크'}</h1>
             <button onClick={onClose}>

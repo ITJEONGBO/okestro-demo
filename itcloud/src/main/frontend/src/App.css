@@ -18,9 +18,7 @@
     text-rendering:optimizeLegibility; 
 }
 /*-----중복 */
-.content-outer,
-.computing_table_outer
-{
+.content-outer{
     width: 100%;
     display: flex;
     height: 88%;
@@ -49,7 +47,6 @@ button[disabled],select[disabled],input[disabled]{
     display: flex;
     align-items: center; 
     border-radius: 2px;
-    
 }
 .plusbtns>button{
     height: 100%;
@@ -58,8 +55,19 @@ button[disabled],select[disabled],input[disabled]{
     max-width: 12vw !important;
     text-align: center;
   }
+// 모달
+.modal{
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+}
 .Overlay {
-    background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
+    background-color: rgba(116, 115, 115, 0.555); 
     position: fixed;
     top: 0;
     left: 0;
@@ -441,32 +449,33 @@ button[disabled],select[disabled],input[disabled]{
 .inactive-tab {
     color: black;
 }
-
- 
-input[type="checkbox"],input[type="radio"]{
-    margin-right:0.1rem;
-    cursor:pointer;
-    width:0.3rem;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-input[type="text"],
+input[type="text"], 
 input[type="number"],
-select{
+select {
     border: 1px solid rgb(206, 206, 206);
     border-radius: 3px;
     padding:0 0.1rem;
+    height: 3.4vh;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
 }
+
+input[type="checkbox"],
+input[type="radio"]{
+    margin-right:0.15rem;
+    cursor:pointer;
+    width:0.3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
 input[type="submit"]{
     border:1px solid gray;
     cursor:pointer;
     border-radius: 3px;
     padding: 0 0.1rem;
-}
-input[type="text"]:focus {
-    box-shadow: 0 0 8px rgba(22, 90, 190, 0.8);
-    outline: none;
 }
 textarea{
     border: 1px solid gray;
@@ -475,10 +484,7 @@ textarea{
     padding: 0.1rem;
     outline:none;
 }
-.section_table_outer input[type="text"],.section_table_outer select{
-    border:1px solid #DDDDDD;
-    width:100%;
-}
+
     /*info 설명박스*/
 .tooltip-box {
     background-color: #333; 
@@ -510,8 +516,6 @@ textarea{
 .disk-delete-box{
     padding:0.2rem;
     font-size:0.4rem;
-
-    
 }
 .disk-delete-box>div{
     padding: 0.4rem;
@@ -519,7 +523,6 @@ textarea{
 }
 .disk_delete_checkbox{
     display: flex;
-
 }
 .popup-header{
     background-color: #cfe4eb;
@@ -558,56 +561,7 @@ textarea{
     color: #449bff;
 }
 
-/*체크박스*/  
-.checkbox_group{
-    display:flex;
-    align-items: center; 
-}
 
-.host_hidden_parameter>div:first-child{
-    font-weight: 800;
-    font-size: 0.34rem;
-    margin-top:0.3rem;
-    margin-bottom: 0.7rem;
-}
-.proxy_content{
-    display: flex;
-    justify-content: space-between;
-    font-size:0.34rem;
-    margin-bottom:0.3rem;
-}
-
-.proxy_add{
-    padding:0.3rem 0;
-    border-top:1px solid rgb(207, 207, 207);
-    font-size:0.34rem;
-    display:flex;
-    justify-content: space-between;
-}
-.disk_type{
-    display:flex;
-    font-size: 0.35rem;
-    justify-content: space-between;
-}
-.disk_type>div{
-    display: flex;
-   
-    padding: 0.2rem 0;
-}
-.disk_type span{
-    display:block;
-    margin-right:0.2rem;
-}
-.disk_type .header_right_btns{
-    margin-bottom:0;
-}
-.content_type>div{
-    padding: 0.1rem;
-    cursor:pointer;
-}
-.content_type>div:hover{
-    background:#DDDDDD;
-}
 /*디스크 이동*/
 .disk_move_popup{
     border: 1px solid #dfdddd;
@@ -717,7 +671,55 @@ textarea{
     color: inherit; /* 필요에 따라 색상을 설정하세요 */
 }
 
+.checkbox_group{
+    display:flex;
+    align-items: center; 
+}
 
+.host_hidden_parameter>div:first-child{
+    font-weight: 800;
+    font-size: 0.34rem;
+    margin-top:0.3rem;
+    margin-bottom: 0.7rem;
+}
+.proxy_content{
+    display: flex;
+    justify-content: space-between;
+    font-size:0.34rem;
+    margin-bottom:0.3rem;
+}
+
+.proxy_add{
+    padding:0.3rem 0;
+    border-top:1px solid rgb(207, 207, 207);
+    font-size:0.34rem;
+    display:flex;
+    justify-content: space-between;
+}
+.disk_type{
+    display:flex;
+    font-size: 0.35rem;
+    justify-content: space-between;
+}
+.disk_type>div{
+    display: flex;
+   
+    padding: 0.2rem 0;
+}
+.disk_type span{
+    display:block;
+    margin-right:0.2rem;
+}
+.disk_type .header_right_btns{
+    margin-bottom:0;
+}
+.content_type>div{
+    padding: 0.1rem;
+    cursor:pointer;
+}
+.content_type>div:hover{
+    background:#DDDDDD;
+}
 /* 스토리지 우클릭 메뉴박스*/
 /* #storage_context_menu {
     position: absolute;
@@ -2318,6 +2320,62 @@ background-color: #f0f0f0;
     font-weight: 600;
     cursor: pointer;
 }
+
+체크박스
+.checkbox_group{
+    display:flex;
+    align-items: center; 
+}
+
+.host_hidden_parameter>div:first-child{
+    font-weight: 800;
+    font-size: 0.34rem;
+    margin-top:0.3rem;
+    margin-bottom: 0.7rem;
+}
+.proxy_content{
+    display: flex;
+    justify-content: space-between;
+    font-size:0.34rem;
+    margin-bottom:0.3rem;
+}
+
+.proxy_add{
+    padding:0.3rem 0;
+    border-top:1px solid rgb(207, 207, 207);
+    font-size:0.34rem;
+    display:flex;
+    justify-content: space-between;
+}
+.disk_type{
+    display:flex;
+    font-size: 0.35rem;
+    justify-content: space-between;
+}
+.disk_type>div{
+    display: flex;
+   
+    padding: 0.2rem 0;
+}
+.disk_type span{
+    display:block;
+    margin-right:0.2rem;
+}
+.disk_type .header_right_btns{
+    margin-bottom:0;
+}
+.content_type>div{
+    padding: 0.1rem;
+    cursor:pointer;
+}
+.content_type>div:hover{
+    background:#DDDDDD;
+}
+    .section_table_outer input[type="text"],.section_table_outer select{
+    border:1px solid #DDDDDD;
+    width:100%;
+}
+    //
 */
 
 /* Computing.css */

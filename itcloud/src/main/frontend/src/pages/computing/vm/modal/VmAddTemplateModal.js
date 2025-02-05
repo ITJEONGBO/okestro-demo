@@ -71,7 +71,7 @@ const VmAddTemplateModal = ({
 
   // 디스크할당
   // 가상머신에 연결되어있는 디스크
-  const { data: disks } = useDisksFromVM(selectedVm.id, (e) => ({
+  const { data: disks } = useDisksFromVM(selectedVm?.id || '', (e) => ({
     ...e,
   }));
   useEffect(() => {
@@ -153,7 +153,6 @@ const format = [
   { value: 'COW', label: 'cow' },
 ];
 const [selectedFormat, setSelectedFormat] = useState('RAW');
-
 
 const handleFormSubmit = () => {
   if (!name) {
@@ -300,7 +299,7 @@ const handleFormSubmit = () => {
         </div>
 
         <div>
-          <div className="vnic_new_checkbox">
+          <div className="vnic-new-checkbox">
             <input
               type="checkbox"
               id="create_as_subtemplate"
@@ -313,7 +312,7 @@ const handleFormSubmit = () => {
 
         {isSubtemplate && (
           <div className="subtemplate_fields">
-            <div className="network_form_group">
+            <div className="network-form-group">
               <label htmlFor="root_template">Root 템플릿</label>
               <select
                 id="root_template"
@@ -341,7 +340,7 @@ const handleFormSubmit = () => {
         {disks && disks.length > 0 && (
           <>
             <div className="font-bold">디스크 할당:</div>
-            <div className="section_table_outer py-1">
+            <div className="section-table-outer py-1">
               <table>
                 <thead>
                   <tr>
@@ -376,61 +375,58 @@ const handleFormSubmit = () => {
                       <span> 선택된 포맷: {disk.diskImageVo?.format || "RAW"}</span>
                     </td>
                     <td>
-        <select
-          value={disk.diskImageVo?.storageDomainVo?.id || ""}
-          onChange={(e) => {
-            const selectedStorage = storageFromDataCenter.find(
-              (storage) => storage.id === e.target.value
-            );
-            if (selectedStorage) {
-              disk.diskImageVo.storageDomainVo = {
-                id: selectedStorage.id,
-                name: selectedStorage.name,
-              };
-              setSelectedStorageId(selectedStorage.id);
-              setForceRender((prev) => !prev);
-            }
-          }}
-        >
-          {storageFromDataCenter &&
-            storageFromDataCenter.map((storage) => (
-              <option key={storage.id} value={storage.id}>
-                {storage.name}
-              </option>
-            ))}
-        </select>
-      </td>
+                        <select
+                          value={disk.diskImageVo?.storageDomainVo?.id || ""}
+                          onChange={(e) => {
+                            const selectedStorage = storageFromDataCenter.find(
+                              (storage) => storage.id === e.target.value
+                            );
+                            if (selectedStorage) {
+                              disk.diskImageVo.storageDomainVo = {
+                                id: selectedStorage.id,
+                                name: selectedStorage.name,
+                              };
+                              setSelectedStorageId(selectedStorage.id);
+                              setForceRender((prev) => !prev);
+                            }
+                          }}
+                        >
+                          {storageFromDataCenter &&
+                            storageFromDataCenter.map((storage) => (
+                              <option key={storage.id} value={storage.id}>
+                                {storage.name}
+                              </option>
+                            ))}
+                        </select>
+                    </td>
 
-
-
-
-      <td>
-        {selectedStorageId && diskProfiles ? (
-          <select
-            value={disk.diskImageVo?.diskProfileVo?.id || ""}
-            onChange={(e) => {
-              const selectedProfile = diskProfiles.find(
-                (profile) => profile.id === e.target.value
-              );
-              if (selectedProfile) {
-                disk.diskImageVo.diskProfileVo = {
-                  id: selectedProfile.id,
-                  name: selectedProfile.name,
-                };
-                setForceRender((prev) => !prev);
-              }
-            }}
-          >
-            {diskProfiles.map((profile) => (
-              <option key={profile.id} value={profile.id}>
-                {profile.name}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <span>디스크 프로파일을 로드 중입니다...</span>
-        )}
-      </td>
+                    <td>
+                      {selectedStorageId && diskProfiles ? (
+                        <select
+                          value={disk.diskImageVo?.diskProfileVo?.id || ""}
+                          onChange={(e) => {
+                            const selectedProfile = diskProfiles.find(
+                              (profile) => profile.id === e.target.value
+                            );
+                            if (selectedProfile) {
+                              disk.diskImageVo.diskProfileVo = {
+                                id: selectedProfile.id,
+                                name: selectedProfile.name,
+                              };
+                              setForceRender((prev) => !prev);
+                            }
+                          }}
+                        >
+                          {diskProfiles.map((profile) => (
+                            <option key={profile.id} value={profile.id}>
+                              {profile.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span>디스크 프로파일을 로드 중입니다...</span>
+                      )}
+                    </td>
 
                     </tr>
                   ))}
@@ -443,7 +439,7 @@ const handleFormSubmit = () => {
           <div className="font-bold">연결된 디스크 데이터가 없습니다.</div>
         ) : null}
 
-        <div className="vnic_new_checkbox">
+        <div className="vnic-new-checkbox">
           <input
             type="checkbox"
             id="allow_all_access"
@@ -452,7 +448,7 @@ const handleFormSubmit = () => {
           />
           <label htmlFor="allow_all_access">모든 사용자에게 이 템플릿 접근을 허용</label>
         </div>
-        <div className="vnic_new_checkbox">
+        <div className="vnic-new-checkbox">
           <input
             type="checkbox"
             id="copy_vm_permissions"
@@ -461,7 +457,7 @@ const handleFormSubmit = () => {
           />
           <label htmlFor="copy_vm_permissions">가상 머신 권한 복사</label>
         </div>
-        <div className="vnic_new_checkbox">
+        <div className="vnic-new-checkbox">
           <input
             type="checkbox"
             id="seal_template_linux_only"

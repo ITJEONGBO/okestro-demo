@@ -63,17 +63,13 @@
     padding: 1.2% 2%;
     align-items:center;
 }
-.network-form-group input[type="text"],[type="number"],
-.network-form-group select,
-.network_checkbox_type3 input
+.network-form-group input[type="text"]{
+    width: 47%;
+}
+.network-form-group [type="number"],
+.network-form-group select
 {
     width: 47%;
-    height: 3.3vh;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-
 }
 .mtu-form input[type="text"]{
     width: 57%;
@@ -87,10 +83,7 @@
     background-color: #d1e2eb;
     border-top: none;
 }
-.dddd input{
-    width:100%;
-    height: 3.3vh;
-}
+
 .network-new-cluster-table th,.network-new-cluster-table td{
     border: 1px solid rgb(209, 209, 209);
     padding: 0.05rem;

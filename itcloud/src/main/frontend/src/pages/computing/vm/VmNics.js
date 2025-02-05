@@ -102,7 +102,8 @@ const VmNics = ({ vmId }) => {
       <span>id = {selectedNics?.id || ''}</span>
       
       <div className='network-interface-outer'>
-        {nics?.map((nic, index) => (
+      {nics.length > 0 ? ( // NIC가 하나라도 있을 때 실행
+        nics.map((nic, index) => (
           <div className={`network_content2 ${selectedNics?.id === nic.id ? 'selected' : ''}`}
             onClick={() => setSelectedNics(nic)} // NIC 선택 시 상태 업데이트
             key={nic.id}
@@ -212,7 +213,13 @@ const VmNics = ({ vmId }) => {
                 </div>
               </div>
             </div>
-          ))}
+            ))
+          ) : (
+            <p style={{ textAlign: "center", color: "gray", padding: "20px" , fontSize:'0.4rem'}}>
+              표시할 네트워크 인터페이스가 없습니다.
+            </p>
+          )}
+          
         </div>
         
         {/* 모달창 */}

@@ -11,28 +11,40 @@ import {
 import '../css/MVm.css';
 import toast from 'react-hot-toast';
 const VmSnapshotModal = ({ isOpen, data, vmId, onClose }) => {
+    const [selectedDisks, setSelectedDisks] = useState([]);// 체크된 디스크 목록
+    const [isLoading, setIsLoading] = useState(false); // 로딩표시
     const [alias, setAlias] = useState(''); // 스냅샷 ID
     const [description, setDescription] = useState(''); // 스냅샷 설명
     const [persistMemory, setPersistMemory] = useState(false); // 메모리 저장 여부
- 
+    const handleDiskSelection = (disk, isChecked) => {
+      setSelectedDisks((prev) =>
+        isChecked
+          ? [...prev, disk] // 체크되면 추가
+          : prev.filter((d) => d.id !== disk.id) // 체크 해제되면 제외
+      );
+    };
+    
+    
     const { mutate: addSnapshotFromVM } = useAddSnapshotFromVM();
 
-    const { data: disks = [] } = useDisksFromVM(vmId && isOpen ? vmId : null, (e) => {
-      if (!vmId) return [];  // ✅ vmId가 없으면 요청하지 않음
-      console.log("🔍 Mapping disk:", e);
-      return {
-        id: e.id,  
-        alias: e.diskImageVo?.alias || "Unknown Disk", 
-        description: e.diskImageVo?.description || "No Description",
-        snapshot_check: (
-          <input
-            type="checkbox"
-            name="diskSelection"
-            onChange={(event) => console.log(`Disk ${e.id} selected:`, event.target.checked)}
-          />
-        ),
-      };
-    });
+    const { data: disks = [] } = useDisksFromVM(vmId && isOpen ? vmId : null, (e) => ({
+      id: e.id,
+      alias: e.diskImageVo?.alias || "Unknown Disk",
+      description: e.diskImageVo?.description || "No Description",
+      imageId: e.diskImageVo?.imageId || "",
+      storageDomainVo: e.diskImageVo?.storageDomainVo || {},
+      snapshot_check: (
+        <input
+          type="checkbox"
+          checked={selectedDisks.some(disk => disk.id === e.id)} // 체크 상태 유지
+          onChange={(event) => handleDiskSelection(e, event.target.checked)}
+        />
+      ),
+    }));
+    
+    
+    
+    
     
     useEffect(() => {
       if (isOpen && vmId) {
@@ -41,27 +53,48 @@ const VmSnapshotModal = ({ isOpen, data, vmId, onClose }) => {
     }, [isOpen, vmId]);
 
     const handleFormSubmit = () => {
-      // 데이터 객체 생성
+      setIsLoading(true);
+    
       const dataToSubmit = {
         alias,
-        description: description || "Default description", 
-        persistMemory
+        description: description || "Default description",
+        persistMemory,
+        diskAttachmentVos: selectedDisks.length > 0 
+          ? selectedDisks.map((disk) => ({
+              id: disk.id,
+              interface_: "IDE",
+              logicalName: disk.alias,
+              diskImageVo: {
+                id: disk.id,
+                alias: disk.alias,
+                description: disk.description,
+                format: "COW",
+                imageId: disk.imageId, 
+                storageDomainVo: disk.storageDomainVo, 
+              },
+            }))
+          : [], // 체크된 디스크가 없으면 빈 배열
       };
     
-      console.log("snapshot Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
-
-      addSnapshotFromVM(   
+      addSnapshotFromVM(
         { vmId, snapshotData: dataToSubmit },
         {
-        onSuccess: () => {
-          onClose();
-          toast.success("스냅샷 생성 완료")
-        },
-        onError: (error) => {
-          toast.error('Error adding snapshot:', error);
+          onSuccess: () => {
+            setIsLoading(false);
+            setSelectedDisks([]); // ✅ 선택된 디스크 초기화
+            onClose();
+            toast.success("스냅샷 생성 완료");
+          },
+          onError: (error) => {
+            setIsLoading(false);
+            toast.error("Error adding snapshot:", error);
+          },
         }
-      });
-    }
+      );
+    };
+    
+    
+    
     
     return (
     <Modal
@@ -104,7 +137,9 @@ const VmSnapshotModal = ({ isOpen, data, vmId, onClose }) => {
 
         <div className="edit-footer">
           <button style={{ display: 'none' }}></button>
-          <button onClick={handleFormSubmit}>OK</button>
+          <button onClick={handleFormSubmit} disabled={isLoading}>
+            {isLoading ? "...스냅샷 생성 중" : "OK"}
+          </button>
           <button onClick={onClose}>취소</button>
         </div>
       </div>

@@ -29,10 +29,4 @@
 .host-new-content select,
 .host-new-content input[type="text"]{
     width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    border: 1px solid rgb(206, 206, 206);
 }

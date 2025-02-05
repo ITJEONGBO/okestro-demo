@@ -11,10 +11,10 @@ const Info = () => {
   const { data: storage = [] } = useDashboardStorage();
   
   return (
-    <div className="rutil_general">
-      <div className="rutil_general_first_contents">
+    <div className="rutil-general">
+      <div className="rutil-general-first-contents">
         <div>
-          <img className="logo_general" src={logo} alt="logo" />
+          <img className="logo-general" src={logo} alt="logo" />
           <span>
             버전: {dashboard?.version}<br />
             빌드날짜: {dashboard?.releaseDate}
@@ -32,10 +32,10 @@ const Info = () => {
           <div>부팅시간(업타임): <strong>{dashboard?.bootTime ?? ""}</strong></div>
         </div>
       </div>
-      <div className="type_info_boxs">
-        <div className="type_info_box">CPU: {Math.floor(100 - (cpuMemory?.totalCpuUsagePercent ?? 0))}% 사용가능</div>
-        <div className="type_info_box">메모리: {Math.floor(100 - (cpuMemory?.totalMemoryUsagePercent ?? 0))}% 사용가능</div>
-        <div className="type_info_box">스토리지: {Math.floor(100 - (storage?.usedPercent ?? 0))}% 사용가능</div>
+      <div className="type-info-boxs">
+        <div className="type-info-box">CPU: {Math.floor(100 - (cpuMemory?.totalCpuUsagePercent ?? 0))}% 사용가능</div>
+        <div className="type-info-box">메모리: {Math.floor(100 - (cpuMemory?.totalMemoryUsagePercent ?? 0))}% 사용가능</div>
+        <div className="type-info-box">스토리지: {Math.floor(100 - (storage?.usedPercent ?? 0))}% 사용가능</div>
       </div>
     </div>
   )
