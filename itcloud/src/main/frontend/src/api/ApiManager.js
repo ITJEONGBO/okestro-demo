@@ -2,10 +2,9 @@ import ENDPOINTS from "./Endpoints"
 import DEFAULT_VALUES from "./DefaultValues"
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { data } from "jquery";
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
-// axios.defaults.baseURL = `https://192.168.0.70:8443`
+// axios.defaults.baseURL = 'https://192.168.0.70:8443'
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**

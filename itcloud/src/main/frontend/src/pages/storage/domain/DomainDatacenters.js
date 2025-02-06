@@ -43,7 +43,7 @@ const DomainDatacenters = ({ domainId }) => {
         isEditDisabled={selectedDataCenters.length !== 1}
         isDeleteDisabled={selectedDataCenters.length === 0} 
         status={selectedDataCenters[0]?.domainStatus}
-        actionType="datacenter" // 도메인인지, 데이터센터인지
+        actionType="domainDc" // 도메인인지, 데이터센터인지
       />
       <span>ID: {selectedIds || ''}</span>
 

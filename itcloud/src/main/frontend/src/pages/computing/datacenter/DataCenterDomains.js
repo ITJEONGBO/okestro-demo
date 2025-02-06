@@ -14,7 +14,7 @@ const DataCenterDomains = ({ datacenterId }) => {
       <DomainDupl
         domains={storageDomains}
         columns={TableColumnsInfo.STORAGE_DOMAINS}
-        actionType={'datacenter'}
+        actionType={'dcDomain'}
         datacenterId={datacenterId}
       />
     </>

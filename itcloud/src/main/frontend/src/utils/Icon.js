@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner, faCheckCircle, faTimesCircle, faWarning, faMoon } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faPencil, faWrench, faQuestionCircle, faRefresh, faArrowsUpToLine, faFaceSmileBeam, faSpinner, faCheckCircle, faTimesCircle, faWarning, faMoon, faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tooltip';
 
 
@@ -205,3 +205,11 @@ export const renderSeverityIcon = (severity) => {
   }
 };
 
+
+export const xButton = () => {
+  return <FontAwesomeIcon icon={faTimes} fixedWidth />
+}
+
+export const warnButton = () => {
+  return <FontAwesomeIcon style={{ marginRight: '0.3rem' }} icon={faExclamationTriangle} />
+}

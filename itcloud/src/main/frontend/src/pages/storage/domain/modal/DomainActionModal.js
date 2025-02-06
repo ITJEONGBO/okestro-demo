@@ -66,12 +66,12 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
       actionFn(
         { domainId, dataCenterId: datacenterId },{
           onSuccess: () => {
-            toast.success(`도메인 ${getContentLabel()} 완료`);
             onClose(); // 모든 작업 완료 후 모달 닫기
+            toast.success(`도메인 ${getContentLabel()} 완료`);
           },
           onError: (error) => {
-            toast.error(`일부 도메인 ${getContentLabel()} 실패`);
             onClose(); // 일부 실패해도 모달 닫기
+            toast.error(`일부 도메인 ${getContentLabel()} 실패`);
           },
         }
       );

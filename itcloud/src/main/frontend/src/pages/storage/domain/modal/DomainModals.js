@@ -37,6 +37,7 @@ const DomainModals = ({ activeModal, domain, selectedDomains = [], datacenterId,
       <DomainDeleteModal
         isOpen={activeModal === 'delete' }
         data={selectedDomains}
+        deleteMode={true}
         onClose={onClose}
       />
     ),

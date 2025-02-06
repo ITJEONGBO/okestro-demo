@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -15,19 +15,14 @@ const HostActionModal = ({ isOpen, action, onClose, data }) => {
   const { mutate: restartHost } = useRestartHost();
   // const { mutate: stopHost } = useStopHost();
 
-  const [ids, setIds] = useState([]);
-  const [names, setNames] = useState([]);
-  
-  useEffect(() => {
-    if (Array.isArray(data)) {
-      const ids = data.map((item) => item.id);
-      const names = data.map((item) => item.name); // name이 없는 경우 처리
-      setIds(ids);
-      setNames(names);
-    } else if (data) {
-      setIds([data.id]);
-      setNames([data.name]);
-    }
+  const { ids, names } = useMemo(() => {
+    if (!data) return { ids: [], names: [] };
+    
+    const dataArray = Array.isArray(data) ? data : [data];
+    return {
+      ids: dataArray.map((item) => item.id),
+      names: dataArray.map((item) => item.name || 'undefined'),
+    };
   }, [data]);
 
   const getContentLabel = () => {

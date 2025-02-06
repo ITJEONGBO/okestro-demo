@@ -5,9 +5,9 @@ import TableColumnsInfo from "../../../components/table/TableColumnsInfo";
 import TableRowClick from "../../../components/table/TableRowClick";
 import TemplateNeworkNewInterModal from './modal/TemplateNeworkNewInterModal';
 import DeleteModal from "../../../components/DeleteModal";
-import NicActionButtons from "../../network/nic/NicActionButton"
-import { renderTFStatusIcon, renderUpDownStatusIcon } from "../../../utils/Icon";
+import { renderTFStatusIcon } from "../../../utils/Icon";
 import TemplateNicDeleteModal from "./modal/TemplateNicDeleteModal";
+import NicActionButtons from "../../network/vnicProfile/NicActionButton";
 
 const TemplateNics = ({ templateId }) => {
   const { 

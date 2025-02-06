@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const DomainActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, status, actionType }) => {
@@ -19,7 +19,14 @@ const DomainActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, stat
     { type: 'destory', label: '파괴', disabled: isDeleteDisabled || !isMaintenance },
   ];
 
-  const dataCenterActions = [
+  const dcDomainActions = [
+    { type: 'create', label: '생성' },
+    { type: 'detach', label: '분리', disabled: isDeleteDisabled || isActive },
+    { type: 'activate', label: '활성', disabled: isDeleteDisabled || isActive },
+    { type: 'maintenance', label: '유지보수', disabled: isDeleteDisabled || isMaintenance },
+  ];
+
+  const domainDcActions = [
     { type: 'attach', label: '연결', disabled: isDeleteDisabled || isActive }, // 연결 disabled 조건 구하기
     { type: 'detach', label: '분리', disabled: isDeleteDisabled || isActive },
     { type: 'activate', label: '활성', disabled: isDeleteDisabled || isActive },
@@ -44,9 +51,16 @@ const DomainActionButtons = ({ openModal, isEditDisabled, isDeleteDisabled, stat
         </>
       )}
 
-      {/* 데이터센터 액션 버튼 */}
-      {actionType === "datacenter" && 
-        renderButtons(dataCenterActions)
+      {/* 데이터센터-스토리지도메인 액션 버튼 */}
+      {actionType === "dcDomain" && 
+        <>
+          {renderButtons(dcDomainActions)}
+          <button onClick={() => navigate('/storages/disks')}>디스크</button>
+        </>
+      }
+      {/* 스토리지도메인-데이터센터 액션 버튼 */}
+      {actionType === "domainDc" && 
+        renderButtons(domainDcActions)
       }
     </div>
   );

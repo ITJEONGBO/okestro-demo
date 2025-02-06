@@ -37,7 +37,7 @@ const VmActionButtons = ({
   const basicActions = [
     { type: "create", label: "생성", disabled: false },
     { type: "edit", label: "편집", disabled: isEditDisabled },
-    { type: "start", label: "실행", disabled: isUp },
+    { type: "start", label: "실행", disabled: isDeleteDisabled || isUp },
     { type: "pause", label: "일시중지", disabled: !isUp || isDeleteDisabled },
     { type: "reboot", label: "재부팅", disabled: !isUp || isDeleteDisabled },
     { type: "reset", label: "재설정", disabled: !isUp },
@@ -49,21 +49,9 @@ const VmActionButtons = ({
 
   const manageActions = [
     { type: "import", label: "가져오기" },
-    {
-      type: "copyVm",
-      label: "가상머신 복제",
-      disabled: isEditDisabled || !isPause,
-    },
-    {
-      type: "delete",
-      label: "삭제",
-      disabled: isDeleteDisabled || isMaintenance,
-    },
-    {
-      type: "templates",
-      label: "템플릿 생성",
-      disabled: isEditDisabled || isTemplate,
-    },
+    { type: "copyVm", label: "가상머신 복제", disabled: isEditDisabled || !isPause },
+    { type: "delete", label: "삭제", disabled: isDeleteDisabled || isMaintenance },
+    { type: "templates", label: "템플릿 생성", disabled: isEditDisabled || isTemplate },
     { type: "ova", label: "ova로 내보내기", disabled: isEditDisabled },
   ];
 

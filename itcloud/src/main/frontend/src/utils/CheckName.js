@@ -1,6 +1,6 @@
 
 // 한글이 들어갔는지 확인 함수
-export function CheckKorenName(name) {
+export function CheckKoreanName(name) {
   const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(name);
   if (hasKorean) {
     return false; // 한글이 포함된 경우 false 반환

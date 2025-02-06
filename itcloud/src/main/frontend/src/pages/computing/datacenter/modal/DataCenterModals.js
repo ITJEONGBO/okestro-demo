@@ -15,7 +15,7 @@ const DataCenterModals = ({ activeModal, dataCenter, selectedDataCenters = [], o
         isOpen={activeModal === 'edit'}
         dcId={dataCenter?.id}
         onClose={onClose}
-    />
+      />
     ),
     delete: (
       <DataCenterDeleteModal

@@ -238,6 +238,7 @@ fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfiguration
         status { host.status() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         address { host.address() }
+        hostedEngine { host.hostedEnginePresent() }
         hostedActive { if(host.hostedEnginePresent()) host.hostedEngine().active() else false }
         hostedScore { if(host.hostedEnginePresent()) host.hostedEngine().scoreAsInteger() else 0 }
         iscsi { if(host.iscsiPresent()) host.iscsi().initiator() else "" }

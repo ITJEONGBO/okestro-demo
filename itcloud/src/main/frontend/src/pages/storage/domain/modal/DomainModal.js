@@ -222,10 +222,12 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
   }, [isOpen]);
   
   useEffect(() => {
-    if (!editMode && dataCenters && dataCenters.length > 0) {
+    if(datacenterId){
+      setDataCenterVoId(datacenterId);
+    } else if (!editMode && dataCenters && dataCenters.length > 0) {
       setDataCenterVoId(dataCenters[0].id);
     }
-  }, [dataCenters, editMode]);
+  }, [dataCenters, datacenterId, editMode]);
   
   useEffect(() => {
     if (!editMode && hosts && hosts.length > 0) {

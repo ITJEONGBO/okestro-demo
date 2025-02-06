@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import Modal from 'react-modal';
 import '../css/MCluster.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
   useAddCluster, 
   useEditCluster, 
@@ -11,206 +9,157 @@ import {
   useAllDataCenters, 
   useNetworksFromDataCenter
 } from '../../../../api/RQHook';
-import { CheckKorenName, CheckName } from '../../../../utils/CheckName';
+import { CheckKoreanName, CheckName } from '../../../../utils/CheckName';
 import LabelSelectOptionsID from '../../../../utils/LabelSelectOptionsID';
 import LabelInput from '../../../../utils/LabelInput';
 import LabelSelectOptions from '../../../../utils/LabelSelectOptions';
+import { xButton } from '../../../../utils/Icon';
 
-const FormGroup = ({ label, children }) => (
-  <div className="cluster-form-group">
-    <label>{label}</label>
-    {children}
-  </div>
-);
+const initialFormState = {
+  id: '',
+  name: '',
+  description: '',
+  comment: '',
+  cpuArc: 'UNDEFINED',
+  cpuType: '',
+  biosType: 'CLUSTER_DEFAULT',
+  errorHandling: 'migrate',
+};
+
+const cpuArcs = [
+  { value: "UNDEFINED", label: "정의되지 않음" },
+  { value: "X86_64", label: "x86_64" },
+  { value: "PPC64", label: "ppc64" },
+  { value: "S390X", label: "s390x" },
+];
+
+const cpuArcOptions = {
+  X86_64: [
+    { value: 'Intel Nehalem Family', label: 'Intel Nehalem Family' },
+    { value: 'Secure Intel Nehalem Family', label: 'Secure Intel Nehalem Family' },
+    { value: 'Intel Westmere Family', label: 'Intel Westmere Family' },
+    { value: 'Secure Intel Westmere Family', label: 'Secure Intel Westmere Family' },
+    { value: 'Intel SandyBridge Family', label: 'Intel SandyBridge Family' },
+    { value: 'Secure Intel SandyBridge Family', label: 'Secure Intel SandyBridge Family' },
+    { value: 'Intel IvyBridge Family', label: 'Intel IvyBridge Family' },
+    { value: 'Secure Intel IvyBridge Family', label: 'Secure Intel IvyBridge Family' },
+    { value: 'Intel Haswell Family', label: 'Intel Haswell Family' },
+    { value: 'Secure Intel Haswell Family', label: 'Secure Intel Haswell Family' },
+    { value: 'Intel Broadwell Family', label: 'Intel Broadwell Family' },
+    { value: 'Secure Intel Broadwell Family', label: 'Secure Intel Broadwell Family' },
+    { value: 'Intel Skylake Client Family', label: 'Intel Skylake Client Family' },
+    { value: 'Secure Intel Skylake Client Family', label: 'Secure Intel Skylake Client Family' },
+    { value: 'Intel Skylake Server Family', label: 'Intel Skylake Server Family' },
+    { value: 'Secure Intel Skylake Server Family', label: 'Secure Intel Skylake Server Family' },
+    { value: 'Intel Cascadelake Server Family', label: 'Intel Cascadelake Server Family' },
+    { value: 'Secure Intel Cascadelake Server Family', label: 'Secure Intel Cascadelake Server Family' },
+    { value: 'Intel Icelake Server Family', label: 'Intel Icelake Server Family' },
+    { value: 'Secure Intel Icelake Server Family', label: 'Secure Intel Icelake Server Family' },
+    { value: 'AMD Opteron G4', label: 'AMD Opteron G4' },
+    { value: 'AMD Opteron G5', label: 'AMD Opteron G5' },
+    { value: 'AMD EPYC', label: 'AMD EPYC' },
+    { value: 'Secure AMD EPYC', label: 'Secure AMD EPYC' }
+  ],
+  PPC64: [
+    { value: 'IBM POWER8', label: 'IBM POWER8' },
+    { value: 'IBM POWER9', label: 'IBM POWER9' }
+  ],
+  S390X: [
+    { value: 'IBM z114, z196', label: 'IBM z114, z196' },
+    { value: 'IBM zBC12, zEC12', label: 'IBM zBC12, zEC12' },
+    { value: 'IBM z13s, z13', label: 'IBM z13s, z13' },
+    { value: 'IBM z14', label: 'IBM z14' }
+  ],
+  UNDEFINED: [
+    { value: '자동 감지', label: '자동 감지' },
+    { value: 'Intel Nehalem Family', label: 'Intel Nehalem Family' },
+    { value: 'Secure Intel Nehalem Family', label: 'Secure Intel Nehalem Family' },
+    { value: 'Intel Westmere Family', label: 'Intel Westmere Family' },
+    { value: 'Secure Intel Westmere Family', label: 'Secure Intel Westmere Family' },
+    { value: 'Intel SandyBridge Family', label: 'Intel SandyBridge Family' },
+    { value: 'Secure Intel SandyBridge Family', label: 'Secure Intel SandyBridge Family' },
+    { value: 'Intel IvyBridge Family', label: 'Intel IvyBridge Family' },
+    { value: 'Secure Intel IvyBridge Family', label: 'Secure Intel IvyBridge Family' },
+    { value: 'Intel Haswell Family', label: 'Intel Haswell Family' },
+    { value: 'Secure Intel Haswell Family', label: 'Secure Intel Haswell Family' },
+    { value: 'Intel Broadwell Family', label: 'Intel Broadwell Family' },
+    { value: 'Secure Intel Broadwell Family', label: 'Secure Intel Broadwell Family' },
+    { value: 'Intel Skylake Client Family', label: 'Intel Skylake Client Family' },
+    { value: 'Secure Intel Skylake Client Family', label: 'Secure Intel Skylake Client Family' },
+    { value: 'Intel Skylake Server Family', label: 'Intel Skylake Server Family' },
+    { value: 'Secure Intel Skylake Server Family', label: 'Secure Intel Skylake Server Family' },
+    { value: 'Intel Cascadelake Server Family', label: 'Intel Cascadelake Server Family' },
+    { value: 'Secure Intel Cascadelake Server Family', label: 'Secure Intel Cascadelake Server Family' },
+    { value: 'Intel Icelake Server Family', label: 'Intel Icelake Server Family' },
+    { value: 'Secure Intel Icelake Server Family', label: 'Secure Intel Icelake Server Family' },
+    { value: 'AMD Opteron G4', label: 'AMD Opteron G4' },
+    { value: 'AMD Opteron G5', label: 'AMD Opteron G5' },
+    { value: 'AMD EPYC', label: 'AMD EPYC' },
+    { value: 'Secure AMD EPYC', label: 'Secure AMD EPYC' },
+    { value: 'IBM POWER8', label: 'IBM POWER8' },
+    { value: 'IBM POWER9', label: 'IBM POWER9' },
+    { value: 'IBM z114, z196', label: 'IBM z114, z196' },
+    { value: 'IBM zBC12, zEC12', label: 'IBM zBC12, zEC12' },
+    { value: 'IBM z13s, z13', label: 'IBM z13s, z13' },
+    { value: 'IBM z14', label: 'IBM z14' }
+  ]
+};
+
+const biosTypeOptions = [
+  { value: "CLUSTER_DEFAULT", label: "자동 감지" },
+  { value: "Q35_OVMF", label: "UEFI의 Q35 칩셋" },
+  { value: "I440FX_SEA_BIOS", label: "BIOS의 I440FX 칩셋" },
+  { value: "Q35_SEA_BIOS", label: "BIOS의 Q35 칩셋" },
+  { value: "Q35_SECURE_BOOT", label: "UEFI SecureBoot의 Q35 칩셋" },
+];  
+
+const errorHandlingOptions = [
+  { value: "migrate", label: "가상 머신을 마이그레이션함" },
+  { value: "migrate_highly_available", label: "고가용성 가상 머신만 마이그레이션" },
+  { value: "do_not_migrate", label: "가상 머신은 마이그레이션 하지 않음" },
+];
+
 
 const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClose }) => {
-  const { mutate: addCluster } = useAddCluster();
-  const { mutate: editCluster } = useEditCluster();
-
-  const [formState, setFormState] = useState({
-    id: '',
-    name: '',
-    description: '',
-    comment: '',
-    cpuArc: '',
-    cpuType: '',
-    biosType: 'CLUSTER_DEFAULT',
-    errorHandling: 'migrate',
-  });
-  const [dataCenterVoId, setDataCenterVoId] = useState(datacenterId || '');
+  const cLabel = editMode ? '편집' : '생성';
+  const [formState, setFormState] = useState(initialFormState);
+  const [dataCenterVoId, setDataCenterVoId] = useState('');
   const [networkVoId, setNetworkVoId] = useState('');
   const [cpuOptions, setCpuOptions] = useState([]);
 
-  const resetForm = () => {
-    setFormState({
-      id: '',
-      name: '',
-      description: '',
-      comment: '',
-      cpuArc: 'UNDEFINED',
-      cpuType: '',
-      biosType: 'CLUSTER_DEFAULT',
-      errorHandling: 'migrate',
-    });
-    setCpuOptions([]);
-    setDataCenterVoId(datacenterId ||'');
-    setNetworkVoId('');
-  };
+  const { mutate: addCluster } = useAddCluster();
+  const { mutate: editCluster } = useEditCluster();
 
-  // 클러스터 데이터 가져오기
-   const {
-    data: cluster,
-    refetch: refetchCluster,
-    isLoading: isClusterLoading
-  } = useCluster(clusterId);
-  
-  // 데이터센터 가져오기
-  const {
-    data: datacenters = [],
-    refetch: refetchDatacenters,
-    isLoading: isDataCentersLoading
-  } = useAllDataCenters((e) => ({...e,}));
-
-  // 데이터센터에서 클러스터 생성시 자신의 데이터센터 아이디 넣기
-  // const {
-  //   data: dataCenter,
-  //   refetch: refetchDataCenter,
-  //   isLoading: isDataCenterLoading,
-  // } = useDataCenter(dcId);
-
-  // 네트워크 가져오기
-  const {
-    data: networks = [],
-    refetch: refetchNetworks,
-    isLoading: isNetworksLoading,
-  } = useNetworksFromDataCenter(dataCenterVoId ? dataCenterVoId : undefined, (e) => ({...e,}));
-  
-  const cpuArcs = [
-    { value: "UNDEFINED", label: "정의되지 않음" },
-    { value: "X86_64", label: "x86_64" },
-    { value: "PPC64", label: "ppc64" },
-    { value: "S390X", label: "s390x" },
-  ];
-  
-  const biosTypeOptions = [
-    { value: "CLUSTER_DEFAULT", label: "자동 감지" },
-    { value: "Q35_OVMF", label: "UEFI의 Q35 칩셋" },
-    { value: "I440FX_SEA_BIOS", label: "BIOS의 I440FX 칩셋" },
-    { value: "Q35_SEA_BIOS", label: "BIOS의 Q35 칩셋" },
-    { value: "Q35_SECURE_BOOT", label: "UEFI SecureBoot의 Q35 칩셋" },
-  ];  
-  
-  const errorHandlingOptions = [
-    { value: "migrate", label: "가상 머신을 마이그레이션함" },
-    { value: "migrate_highly_available", label: "고가용성 가상 머신만 마이그레이션" },
-    { value: "do_not_migrate", label: "가상 머신은 마이그레이션 하지 않음" },
-  ];
-  
-  const cpuArcOptions = {
-    X86_64: [
-      'Intel Nehalem Family', 
-      'Secure Intel Nehalem Family', 
-      'Intel Westmere Family', 
-      'Secure Intel Westmere Family',
-      'Intel SandyBridge Family',
-      'Secure Intel SandyBridge Family',
-      'Intel IvyBridge Family',
-      'Secure Intel IvyBridge Family',
-      'Intel Haswell Family',
-      'Secure Intel Haswell Family',
-      'Intel Broadwell Family',
-      'Secure Intel Broadwell Family',
-      'Intel Skylake Client Family',
-      'Secure Intel Skylake Client Family',
-      'Intel Skylake Server Family',
-      'Secure Intel Skylake Server Family',
-      'Intel Cascadelake Server Family',
-      'Secure Intel Cascadelake Server Family',
-      'Intel Icelake Server Family',
-      'Secure Intel Icelake Server Family',
-      'AMD Opteron G4',
-      'AMD Opteron G5',
-      'AMD EPYC',
-      'Secure AMD EPYC'
-    ],
-    PPC64: ['IBM POWER8', 'IBM POWER9'],
-    S390X: [
-      'IBM z114, z196',
-      'IBM zBC12, zEC12',
-      'IBM z13s, z13',
-      'IBM z14'
-    ],
-    UNDEFINED: [
-      '자동 감지',
-      'Intel Nehalem Family', 
-      'Secure Intel Nehalem Family', 
-      'Intel Westmere Family', 
-      'Secure Intel Westmere Family',
-      'Intel SandyBridge Family',
-      'Secure Intel SandyBridge Family',
-      'Intel IvyBridge Family',
-      'Secure Intel IvyBridge Family',
-      'Intel Haswell Family',
-      'Secure Intel Haswell Family',
-      'Intel Broadwell Family',
-      'Secure Intel Broadwell Family',
-      'Intel Skylake Client Family',
-      'Secure Intel Skylake Client Family',
-      'Intel Skylake Server Family',
-      'Secure Intel Skylake Server Family',
-      'Intel Cascadelake Server Family',
-      'Secure Intel Cascadelake Server Family',
-      'Intel Icelake Server Family',
-      'Secure Intel Icelake Server Family',
-      'AMD Opteron G4',
-      'AMD Opteron G5',
-      'AMD EPYC',
-      'Secure AMD EPYC',
-      'IBM POWER8',
-      'IBM POWER9',
-      'IBM z114, z196',
-      'IBM zBC12, zEC12',
-      'IBM z13s, z13',
-      'IBM z14'
-    ]
-  };
-
-  useEffect(() => {
-    if (!isOpen) {
-      resetForm(); // 모달이 닫힐 때 상태를 초기화
-    }
-  }, [isOpen]);
+  const { data: cluster } = useCluster(clusterId);
+  const { data: datacenters = [], isLoading: isDataCentersLoading } = useAllDataCenters((e) => ({...e,}));
+  const { data: networks = [], isLoading: isNetworksLoading, } = useNetworksFromDataCenter(dataCenterVoId, (e) => ({...e,}));
   
   useEffect(() => {
+    if (!isOpen)
+      setFormState(initialFormState);
     if (editMode && cluster) {
       setFormState({
-        id: cluster?.id || '',
-        name: cluster?.name || '',
-        description: cluster?.description || '',
-        comment: cluster?.comment || '',
-        cpuArc: cluster?.cpuArc || '',
-        cpuType: cluster?.cpuType || '',
-        biosType: cluster?.biosType || '',
-        errorHandling: cluster?.errorHandling || '',
+        id: cluster.id,
+        name: cluster.name,
+        description: cluster?.description,
+        comment: cluster.comment,
+        cpuArc: cluster.cpuArc,
+        cpuType: cluster.cpuType,
+        biosType: cluster.biosType,
+        errorHandling: cluster.errorHandling,
       });
       setDataCenterVoId(cluster?.dataCenterVo?.id);
       setNetworkVoId(cluster?.networkVo?.id);
-    } else if (!editMode) {
-      resetForm();
     }
-  }, [editMode, cluster]);
+  }, [isOpen, editMode, cluster]);
 
   useEffect(() => {
-    if (!editMode && datacenters.length > 0) {
+    if(datacenterId){
+      setDataCenterVoId(datacenterId);
+    } else if (!editMode && datacenters && datacenters.length > 0) {
       setDataCenterVoId(datacenters[0].id);
     }
-  }, [isOpen, editMode, datacenters]);
-
-  useEffect(() => {
-    if (!editMode && datacenterId) {
-      setDataCenterVoId(datacenterId);
-    }
-  }, [editMode, datacenterId]);
+  }, [datacenters, datacenterId, editMode]);
 
   useEffect(() => {
     if (!editMode && networks.length > 0) {
@@ -221,11 +170,14 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
   useEffect(() => {
     setCpuOptions(cpuArcOptions[formState.cpuArc] || []);
   }, [formState.cpuArc]);
-  
+
+  const handleInputChange = (field) => (e) => {
+    setFormState((prev) => ({ ...prev, [field]: e.target.value }));
+  };
   
   const validateForm = () => {
-    if (!CheckKorenName(formState.name) || !CheckName(formState.name)) return '이름이 유효하지 않습니다.';
-    if (!CheckKorenName(formState.description)) return '설명이 유효하지 않습니다.';
+    if (!CheckKoreanName(formState.name) || !CheckName(formState.name)) return '이름이 유효하지 않습니다.';
+    if (!CheckKoreanName(formState.description)) return '설명이 유효하지 않습니다.';
     if (!CheckName(dataCenterVoId)) return '데이터센터를 선택해주세요.';
     if (!CheckName(networkVoId)) return '네트워크를 선택해주세요.';
     return null;
@@ -233,64 +185,36 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
 
   const handleFormSubmit = () => {
     const error = validateForm();
-    if (error) {
-      toast.error(error);
-      return;
-    }
+    if (error) return toast.error(error);
 
     const selectedDataCenter = datacenters.find((dc) => dc.id === dataCenterVoId);
     const selectedNetwork = networks.find((n) => n.id === networkVoId);
 
     const dataToSubmit = {
+      ...formState,
       dataCenterVo: { id: selectedDataCenter.id, name: selectedDataCenter.name },
       networkVo: { id: selectedNetwork.id, name: selectedNetwork.name },
-      ...formState,
     };
+
+    const onSuccess = () => {
+      onClose();
+      toast.success(`클러스터 ${cLabel} 완료`);
+    };
+    const onError = (err) => toast.error(`Error ${cLabel} cluster: ${err}`);
 
     console.log("Form Data: ", dataToSubmit); // 데이터를 확인하기 위한 로그
 
-    if (editMode) {
-      editCluster({ 
-        clusterId: formState.id, clusterData: dataToSubmit
-      }, {
-        onSuccess: () => {
-          onClose();
-          toast.success('클러스터 편집 완료');
-        },
-        onError: (error) => {
-          toast.error('Error editing cluster:', error);
-        }
-      });
-    } else {
-      addCluster(dataToSubmit, {
-        onSuccess: () => {
-          toast.success('클러스터 생성 완료');
-          resetForm();
-          onClose();
-        },
-        onError: (error) => {
-          toast.error('Error editing cluster:', error);
-        }
-      });
-    }
+    editMode
+      ? editCluster({ clusterId: formState.id, clusterData: dataToSubmit }, { onSuccess, onError })
+      : addCluster(dataToSubmit, { onSuccess, onError });
   };
 
-
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onClose}
-      contentLabel={editMode ? '클러스터 편집' : '생성'}
-      className="Modal"
-      overlayClassName="Overlay"
-      shouldCloseOnOverlayClick={false}
-    >
+    <Modal isOpen={isOpen} onRequestClose={onClose} contentLabel={cLabel} className="Modal" overlayClassName="Overlay" shouldCloseOnOverlayClick={false} >
       <div className="cluster-new-popup">
         <div className="popup-header">
-          <h1>{editMode ? '클러스터 편집' : '새 클러스터'}</h1>
-          <button onClick={onClose}>
-            <FontAwesomeIcon icon={faTimes} fixedWidth />
-          </button>
+          <h1>클러스터 {cLabel}</h1>
+          <button onClick={onClose}> { xButton() } </button>
         </div>
 
         <div className="cluster-new-content">
@@ -303,26 +227,10 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
             options={datacenters}
           />
           <hr/>
-
-          <LabelInput
-            label="이름"
-            id="name"
-            value={formState.name}
-            autoFocus={true}
-            onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
-          />
-          <LabelInput
-            label="설명"
-            id="description"
-            value={formState.description}
-            onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
-          />
-          <LabelInput
-            label="코멘트"
-            id="comment"
-            value={formState.comment}
-            onChange={(e) => setFormState((prev) => ({ ...prev, comment: e.target.value }))}
-          />
+          <LabelInput label="이름" id="name" value={formState.name} onChange={handleInputChange('name')} autoFocus />
+          <LabelInput label="설명" id="description" value={formState.description} onChange={handleInputChange('description')} />
+          <LabelInput label="코멘트" id="comment" value={formState.comment} onChange={handleInputChange('comment')} />
+          
           <LabelSelectOptionsID
             label="관리 네트워크"
             value={networkVoId}
@@ -331,58 +239,32 @@ const ClusterModal = ({ isOpen, editMode = false, clusterId, datacenterId, onClo
             loading={isNetworksLoading}
             options={networks}
           />
-
-          <LabelSelectOptions
-            label="CPU 아키텍처"
-            value={formState.cpuArc}
-            onChange={(e) => setFormState((prev) => ({ ...prev, cpuArc: e.target.value }))}
-            options={cpuArcs}
-          />
-          <FormGroup label="CPU 유형">
-            <select
-              value={formState.cpuType}
-              onChange={(e) =>setFormState((prev) => ({ ...prev, cpuType: e.target.value }))}
-            >
-              <option value="">선택</option>
-              {cpuOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </FormGroup>
-          <LabelSelectOptions
-            label="칩셋/펌웨어 유형"
-            value={formState.biosType}
-            onChange={(e) => setFormState((prev) => ({ ...prev, biosType: e.target.value }))}
-            disabled={formState.cpuArc === "PPC64" || formState.cpuArc === "S390X"}
-            options={biosTypeOptions}
-          />
+          <LabelSelectOptions label="CPU 아키텍처" value={formState.cpuArc} onChange={handleInputChange('cpuArc')} options={cpuArcs} />
+          <LabelSelectOptions label="CPU 유형" value={formState.cpuType} onChange={handleInputChange('cpuType')} options={cpuOptions} />
+          <LabelSelectOptions label="칩셋/펌웨어 유형" value={formState.biosType} onChange={handleInputChange('biosType')} options={biosTypeOptions} disabled={formState.cpuArc === "PPC64" || formState.cpuArc === "S390X"} />
 
           <div className='recovery-policy'>
-            <FormGroup>
-                <div className='font-bold mb-0.5'>복구정책</div>
-                  {errorHandlingOptions.map((option) => (
-                    <div key={option.value} className="host-text-radio-box mb-1">
-                      <input
-                        type="radio"
-                        name="recovery_policy"
-                        value={option.value}
-                        checked={formState.errorHandling === option.value}
-                        onChange={(e) =>
-                          setFormState((prev) => ({ ...prev, errorHandling: e.target.value }))
-                        }
-                      />
-                      <label htmlFor={option.value}>{option.label}</label>
-                    </div>
-                  ))}
-            </FormGroup>
+            <div className="cluster-form-group">
+              <div className='font-bold mb-0.5'>복구정책</div>
+                {errorHandlingOptions.map((option) => (
+                  <div key={option.value} className="host-text-radio-box mb-1">
+                    <input
+                      type="radio"
+                      name="recovery_policy"
+                      value={option.value}
+                      checked={formState.errorHandling === option.value}
+                      onChange={handleInputChange('errorHandling')}
+                    />
+                    <label htmlFor={option.value}>{option.label}</label>
+                  </div>
+                ))}
+             </div>
           </div>
-
         </div>
 
         <div className="edit-footer">
-          <button onClick={handleFormSubmit}>{editMode ? '편집' : '생성'}</button>
+          <button style={{ display: 'none' }}></button>
+          <button onClick={ handleFormSubmit }>{cLabel}</button>
           <button onClick={onClose}>취소</button>
         </div>
       </div>
