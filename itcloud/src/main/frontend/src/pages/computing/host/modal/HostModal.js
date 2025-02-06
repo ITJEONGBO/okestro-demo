@@ -164,7 +164,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="host-new-popup">
+      <div className="host-new-popup modal">
         <div className="popup-header">
           <h1>{editMode ? '호스트 편집' : '새 호스트'}</h1>
           <button onClick={onClose}>
@@ -172,7 +172,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
           </button>
         </div>
 
-        <div className="host-new-content">
+        <div className="host-new-content modal-content">
           <LabelSelectOptionsID
             label="호스트 클러스터"
             value={clusterVoId}
@@ -214,7 +214,7 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
 
         {!editMode && (
           <>
-            <div><label>인증</label></div>
+            <div className='font-semibold'><label>인증</label></div>
 
             <LabelInput
               label="사용자 이름"
@@ -223,8 +223,18 @@ const HostModal = ({ isOpen, editMode = false, hId, clusterId, onClose }) => {
               disabled={true}
             />
                         
-            <div>            
-              <label htmlFor="sshPassWord">암호</label>
+            <div>         
+              <div className='flex items-center'>  
+                <input 
+                  type="radio" 
+                  id="vgpu" 
+                  name="consolidated" 
+                  value="consolidated"
+                  checked={formState.vgpu === 'consolidated'}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, vgpu: e.target.value }))}
+                />
+                <label htmlFor="sshPassWord">암호</label>
+              </div> 
               <input
                 type="password"
                 id="sshPassWord"

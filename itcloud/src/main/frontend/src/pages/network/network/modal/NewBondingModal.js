@@ -16,7 +16,7 @@ const NewBondingModal = ({ isOpen, onClose, mode = 'edit' }) => {
       overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="network-bonding-modal">
+      <div className="network-bonding-modal modal">
         <div className="popup-header">
           <h1>{modalTitle}</h1>
           <button onClick={onClose}>

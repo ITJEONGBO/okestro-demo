@@ -11,8 +11,8 @@ const DomainNfs = ({
   return (
     <>
       <div className="storage_popup_iSCSI">
-        <div className="tab_content">
-          <div className='domain-num-box'>
+        <div>
+          <div className='domain-num-box center'>
             <label htmlFor="NFSPath" className='label_font_body'>NFS 서버 경로</label>
             {editMode ? (
               <input

@@ -22,7 +22,7 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
       overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="network-backup-edit">
+      <div className="network-backup-edit modal">
         <div className="popup-header">
           <h1>관리 네트워크 인터페이스 수정: ovirtmgmt</h1>
           <button onClick={onClose}>
@@ -63,17 +63,17 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
             </div>
             {selectedModalTab === 'ipv4' && (
               <>
-                <div className="backup_edit_radiobox">
+                <div className="backup-edit-radiobox">
                   <div className="font-bold">부트 프로토콜</div>
-                  <div className="radio_option">
+                  <div className="flex">
                     <input type="radio" id="default_mtu" name="mtu" value="default" checked />
                     <label htmlFor="default_mtu">없음</label>
                   </div>
-                  <div className="radio_option">
+                  <div className="flex">
                     <input type="radio" id="dhcp_mtu" name="mtu" value="dhcp" />
                     <label htmlFor="dhcp_mtu">DHCP</label>
                   </div>
-                  <div className="radio_option">
+                  <div className="flex">
                     <input type="radio" id="static_mtu" name="mtu" value="static" />
                     <label htmlFor="static_mtu">정적</label>
                   </div>
@@ -106,25 +106,25 @@ const NetworkHostPlusModal = ({ isOpen, onClose, initialSelectedTab = 'ipv4' }) 
               <>
                 
 
-                <div className="backup_edit_radiobox">
+                <div className="backup-edit-radiobox">
                   <div className="font-bold mb-0.5">부트 프로토콜</div>
-                  <div className="radio_option mb-0.5">
+                  <div className="flex mb-0.5">
                     <input type="radio" id="default_mtu" name="mtu" value="default" checked />
                     <label htmlFor="default_mtu">없음</label>
                   </div>
-                  <div className="radio_option mb-0.5">
+                  <div className="flex mb-0.5">
                     <input type="radio" id="dhcp_mtu" name="mtu" value="dhcp" />
                     <label htmlFor="dhcp_mtu">DHCP</label>
                   </div>
-                  <div className="radio_option mb-0.5">
+                  <div className="flex mb-0.5">
                     <input type="radio" id="slaac_mtu" name="mtu" value="slaac" />
                     <label htmlFor="slaac_mtu">상태 비저장 주소 자동 설정</label>
                   </div>
-                  <div className="radio_option mb-0.5">
+                  <div className="flex mb-0.5">
                     <input type="radio" id="dhcp_slaac_mtu" name="mtu" value="dhcp_slaac" />
                     <label htmlFor="dhcp_slaac_mtu">DHCP 및 상태 비저장 주소 자동 설정</label>
                   </div>
-                  <div className="radio_option mb-0.5">
+                  <div className="flex mb-0.5">
                     <input type="radio" id="static_mtu" name="mtu" value="static" />
                     <label htmlFor="static_mtu">정적</label>
                   </div>

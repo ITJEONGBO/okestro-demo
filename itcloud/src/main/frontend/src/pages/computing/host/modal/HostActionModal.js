@@ -94,7 +94,7 @@ const HostActionModal = ({ isOpen, action, onClose, data }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage-delete-popup">
+      <div className="storage-delete-popup modal">
         <div className="popup-header">
           <h1>호스트 {getContentLabel(action)}</h1>
           <button onClick={onClose}>

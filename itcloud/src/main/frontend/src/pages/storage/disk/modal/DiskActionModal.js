@@ -9,7 +9,7 @@ import {
 import { formatBytesToGBToFixedZero } from '../../../../utils/format';
 
 const FormGroup = ({ label, children }) => (
-  <div className="img-input-box">
+  <div className="img-input-box ">
     <label>{label}</label>
     {children}
   </div>
@@ -76,7 +76,7 @@ const DiskActionModal = ({ isOpen, action, data=[], onClose }) => {
       overlayClassName="Overlay newRolePopupOverlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="disk-move-popup">
+      <div className="disk-move-popup modal">
         <div className="popup-header">
           <h1>{action === 'move' ? '디스크 이동' : '디스크 복사'}</h1>
           <button onClick={onClose}>

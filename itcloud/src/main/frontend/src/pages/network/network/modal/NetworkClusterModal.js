@@ -40,7 +40,7 @@ const NetworkClusterModal = ({ isOpen, onRequestClose, networkId }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="manage_network_popup">
+      <div className="manage-network-popup modal">
         <div className="popup-header">
           <h1>네트워크 관리</h1>
           <button onClick={onRequestClose}>

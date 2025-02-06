@@ -50,7 +50,7 @@ const TemplateNicDeleteModal = ({ isOpen, onClose, data,templateId}) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage-delete-popup">
+      <div className="storage-delete-popup modal">
         <div className="popup-header">
           <h1>NIC 삭제</h1>
           <button onClick={onClose}>

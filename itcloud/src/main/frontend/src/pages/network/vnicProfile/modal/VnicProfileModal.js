@@ -226,7 +226,7 @@ const VnicProfileModal = ({ isOpen, editMode = false, vnicProfileId, networkId, 
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="vnic-new-content-popup">
+      <div className="vnic-new-content-popup modal">
         <div className="popup-header">
           <h1>{editMode ? '가상 머신 인터페이스 프로파일 편집' : '가상 머신 인터페이스 프로파일'}</h1>
           <button onClick={onClose}>

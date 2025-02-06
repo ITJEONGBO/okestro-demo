@@ -90,7 +90,7 @@ const DomainDeleteModal = ({ isOpen, deleteMode = true, data, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="domain-delete-popup">
+      <div className="domain-delete-popup modal">
         <div className="popup-header">
           <h1>{`스토리지 도메인 ${deleteMode ? '삭제' : '파괴'}`}</h1>
           <button onClick={onClose}>

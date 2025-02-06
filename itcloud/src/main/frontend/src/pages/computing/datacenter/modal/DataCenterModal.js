@@ -119,7 +119,7 @@ const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="datacenter-new-popup">
+      <div className="datacenter-new-popup modal">
         <div className="popup-header">
           <h1>{editMode ? '데이터 센터 편집' : '새 데이터 센터'}</h1>
           <button onClick={onClose}>
@@ -127,7 +127,7 @@ const DataCenterModal = ({ isOpen, editMode = false, dcId, onClose }) => {
           </button>
         </div>
 
-        <div className="datacenter-new-content">
+        <div className="datacenter-new-content modal-content">
 
           <LabelInput
             label="이름"

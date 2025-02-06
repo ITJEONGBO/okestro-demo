@@ -9,7 +9,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 #root,* { margin: 0;padding: 0;box-sizing: border-box;font-family: 'GowunDodum-Regular'; }
 #root { 
     background-color:#EBEEEE;
@@ -22,13 +26,6 @@
     width: 100%;
     display: flex;
     height: 88%;
-}
-
-form{
-    width: 100%;
-}
-form>div{
-    font-size: 0.32rem;
 }
 button{
     border:1px solid gray;
@@ -51,21 +48,8 @@ button[disabled],select[disabled],input[disabled]{
 .plusbtns>button{
     height: 100%;
 }
-.icon_tooltip {
-    max-width: 12vw !important;
-    text-align: center;
-  }
-// 모달
-.modal{
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-}
+
+/* 모달 */
 .Overlay {
     background-color: rgba(116, 115, 115, 0.555); 
     position: fixed;
@@ -76,8 +60,36 @@ button[disabled],select[disabled],input[disabled]{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.modal{
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    border: 1px solid #dfdddd;
+    position: absolute;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 0.32rem;
+}
+/* 스크롤없는모달 */
+.modal-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.1rem 0;
   }
-
+/* 인풋감싸는박스 */
+.input-outer {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.2rem;
+    align-items: center;
+  }
+.center{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: space-between; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
 #section{
     background-color: #ffffff;
     width: 100%;
@@ -173,7 +185,6 @@ button[disabled],select[disabled],input[disabled]{
 .storage-disk-new-popup{
     border: 1px solid #dfdddd;
     position: absolute;
-    box-sizing: border-box;
     border-radius: 4px;
     background: #fff;
     top: 50%;
@@ -204,13 +215,8 @@ button[disabled],select[disabled],input[disabled]{
     width: 100%;
     padding: 0.6rem 0.3rem;
 }
-.content_header_right {  
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width:100%;
-}
 
+/*footer*/
 .edit-footer {
     position: fixed;
     bottom: 0;
@@ -242,6 +248,7 @@ button[disabled],select[disabled],input[disabled]{
     color: white;
     border: 1px solid #295b9c;
 }
+
 .select-box-outer{
     width: 100%;
     padding: 1% 0.3rem;
@@ -252,24 +259,11 @@ button[disabled],select[disabled],input[disabled]{
     margin-bottom: 0.2rem;
 }
 .select-box select,
-.select-box input
+.select-box input,
+.img-input-box input, 
+.img-select-box select
 {
     width: 55%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-}
-.img-input-box input, .img-select-box select{
-    width: 55%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
 }
 .img-input-box,.img-select-box{
     padding-bottom: 0.3rem;
@@ -306,68 +300,17 @@ button[disabled],select[disabled],input[disabled]{
 }
 /*네트워크 인터페이스 팝업창들*/
 /*새로만들기*/
-.network_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 43%;
-    width: 44%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
+
 .network-popup-content{
-    height: 60%;
     padding: 1% 2%;
-    font-size: 0.35rem;
 }
 .network-popup-content>div{
     display: flex;
     justify-content: space-between;
     padding-bottom: 1.3%;
 }
-.network_new_popup form{
-    height: 69vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-    font-size: 0.33rem;
-    width:100%;
-}
-.Overlay {
-    background-color: rgba(116, 115, 115, 0.555); 
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
 
-.host_new_outer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
 
-.host_new_popup {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 70%;
-    width: 38%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
 
 .host-btn-outer{
     width: 100%;
@@ -398,9 +341,6 @@ button[disabled],select[disabled],input[disabled]{
     text-align: left;
     font-weight: bold;
     width: 38%;
-}
-.empty{
-    color: white;
 }
 .table td {
     text-align: left;
@@ -451,6 +391,7 @@ button[disabled],select[disabled],input[disabled]{
 }
 input[type="text"], 
 input[type="number"],
+input[type="password"],
 select {
     border: 1px solid rgb(206, 206, 206);
     border-radius: 3px;
@@ -501,17 +442,8 @@ textarea{
 }
 /*삭제모달*/
 .storage-delete-popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
     height: 22.4vh;
     width: 38%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
 .disk-delete-box{
     padding:0.2rem;
@@ -561,82 +493,10 @@ textarea{
     color: #449bff;
 }
 
-
-/*디스크 이동*/
-.disk_move_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 48.4vh;
-    width: 42%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.network_filter_btns{
-    margin-bottom: 0.2rem;
-    border-radius:3px;
-    width: 54%;
-    display:flex;
-}
-.network_filter_btns>button{
-    padding:0.06rem;
-    cursor:pointer;
-    display: flex;
-    align-items: center;
-    text-align: center;
-  
-}
-.svg-inline--fa{
-    cursor:pointer;
-}
-.host-empty-outer{
-    width: 100%;
-    padding:  0.3rem 0;
-}
-
-.popup_plus_btn{
-    padding: 1.2% 2%;
-    display: flex;
-    justify-content: right;
-}
-.popup_plus{
-    padding:0.08rem;
-    border:1px solid gray;
-    border-radius:3px;
-    cursor:pointer;
-}
-.plus_popup_outer{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 56%;
-    width: 42%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    font-size:0.35rem;
-}
 /*팝업 왼쪽nav*/
 .network-backup-edit{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
     height: 57.4vh;
     width: 48%;
-    left: 50%;
-    font-size: 0.32rem;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-   
 }
 .network-backup-edit-nav{
     font-size: 0.33rem;
@@ -703,7 +563,6 @@ textarea{
 }
 .disk_type>div{
     display: flex;
-   
     padding: 0.2rem 0;
 }
 .disk_type span{
@@ -720,6 +579,10 @@ textarea{
 .content_type>div:hover{
     background:#DDDDDD;
 }
+.icon_tooltip {
+    max-width: 12vw !important;
+    text-align: center;
+  }
 /* 스토리지 우클릭 메뉴박스*/
 /* #storage_context_menu {
     position: absolute;
@@ -2035,7 +1898,17 @@ display: flex;
 .input_number{
   width: 70px;
 }
-
+.network_popup{
+    position: absolute;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 43%;
+    width: 44%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+}
   //storage_volume_option_box
 .storage_volume_option_boxbtn,.upload_option_boxbtn{
     position: relative;
@@ -2376,6 +2249,223 @@ background-color: #f0f0f0;
     width:100%;
 }
     //
+/* .network_popup_table{
+    font-size: 0.3rem;
+    
+}
+.network_popup_table>table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.network_popup_table thead{
+    background-color: #dddddd;
+}
+.network_popup_table thead th{
+    padding: 0.12rem 0;
+}
+.network_popup_table tbody td{
+    border-right: 1px solid #dddddd;
+}
+.network_popup_table tbody td:last-child{
+    border-right: none;
+}
+.network_popup_table>.vnic_new_checkbox{
+   text-align: center;
+} 
+
+/* 
+.unconfigured_network{
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between; 
+    align-items: center;
+    height:33vh;
+    margin-bottom:0.2rem
+}
+.unconfigured_network>div{
+    width: 100%;
+    padding: 0.1rem;
+    text-align: center;
+    align-items: center;
+}
+
+.unconfigured_content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    gap: 0.5rem; 
+    cursor:pointer;
+    border:1px solid gray;
+}
+.lable_part {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px;
+    width: 100%;
+    border: 1px dashed black;
+  }
+  
+  .lable_part span {
+    font-size: 14px;
+    color: black;
+    font-weight: normal;
+  } 
+
+디스크 이동
+.disk_move_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 48.4vh;
+    width: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+}
+.network_filter_btns{
+    margin-bottom: 0.2rem;
+    border-radius:3px;
+    width: 54%;
+    display:flex;
+}
+.network_filter_btns>button{
+    padding:0.06rem;
+    cursor:pointer;
+    display: flex;
+    align-items: center;
+    text-align: center;
+  
+}
+.svg-inline--fa{
+    cursor:pointer;
+}
+.host-empty-outer{
+    width: 100%;
+    padding:  0.3rem 0;
+}
+
+.popup_plus_btn{
+    padding: 1.2% 2%;
+    display: flex;
+    justify-content: right;
+}
+.popup_plus{
+    padding:0.08rem;
+    border:1px solid gray;
+    border-radius:3px;
+    cursor:pointer;
+}
+.plus_popup_outer{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 56%;
+    width: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    font-size:0.35rem;
+}
+    //
+    .storage-upload-first > div {
+  display: flex; 
+  justify-content: center;
+  align-items: center; 
+}
+  .host_new_popup {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 70%;
+    width: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+//
+.storage_right_btns{
+    display: flex;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+    height: 3.3vh;
+}
+.storage_right_btns>span{
+    margin-right: 0.2rem;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+}
+.storage_right_btns>div{
+    width: 8%;
+    display: flex;
+    justify-content: space-between;
+}
+.storage_right_btns button{
+    width: 50%;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    font-weight: 600;
+}
+    //
+.content_header_right {  
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width:100%;
+}
+스토리지 유지보수 팝업
+.maintenance_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    font-size: 0.34rem;
+    height: 49%;
+    width: 34%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+    z-index: 1000;
+  }
+  .hosted_storage{
+    padding: 0.3rem;
+  }
+ --데이터센터
+ .pregroup_content{
+    width: 100%;
+}
+
+.vGPU_radiobox{
+    padding:0.2rem;
+}
+.host_new_add{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 78%;
+    width: 41%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.host_new_add form{
+    height: 65vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
 */
 
 /* Computing.css */

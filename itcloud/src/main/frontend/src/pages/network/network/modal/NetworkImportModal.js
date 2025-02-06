@@ -16,7 +16,7 @@ const NetworkImportModal = ({ isOpen, onClose, onSubmit }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="network-bring-popup">
+      <div className="network-bring-popup modal">
         <div className="popup-header">
           <h1>네트워크 가져오기</h1>
           <button onClick={onClose}>
@@ -24,7 +24,7 @@ const NetworkImportModal = ({ isOpen, onClose, onSubmit }) => {
           </button>
         </div>
 
-        <div className="network-form-group">
+        <div className="network-form-group center">
           <label htmlFor="cluster" style={{ fontSize: '0.33rem', fontWeight: '600' }}>네트워크 공급자</label>
           <select id="cluster">
             <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>

@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { data } from "jquery";
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
+// axios.defaults.baseURL = `https://192.168.0.70:8443`
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**
@@ -1634,7 +1635,7 @@ migrateHostsFromVM: async (vmId) => {
       return makeAPICall({
         method: "DELETE",
         url: ENDPOINTS.DELETE_NICS_FROM_TEMPLATE(templateId, nicId),
-    
+        data: nicId, 
       });
     },
     

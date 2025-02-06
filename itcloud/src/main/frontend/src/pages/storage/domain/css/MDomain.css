@@ -1,18 +1,8 @@
 /*도메인(새로만들기, 편집, 가져오기)*/
 .storage-domain-administer-popup{
-  border: 1px solid #dfdddd;
-  position: absolute;
-  box-sizing: border-box;
-  border-radius: 4px;
-  background: #fff;
-  top: 50%;
   height: 87%;
   width: 58%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-
 .storage-domain-new-first{
   display: flex;
   padding: 0.4rem;
@@ -26,15 +16,9 @@
 
 .domain-new-select{
   width: 100%;
-  display: flex;
-  justify-content: space-between;
   margin-bottom: 0.3rem;
-  align-items:center;
 }
 .domain-num-box{
-  font-size: 0.32rem;
-  display: flex;
-  justify-content: space-between;
   padding: 0.2rem;
   width: 100%;
 }
@@ -43,45 +27,11 @@
 .domain-num-box input
 {
   width: 56%;
-  height: 3.3vh;
-  padding: 0 3px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 0.29rem;
-  outline: none;
-  border: 1px solid  rgb(206, 206, 206);
 }
 
 /*도메인 삭제*/
 .domain-delete-popup{
-  border: 1px solid #dfdddd;
-  position: absolute;
-  box-sizing: border-box;
-  border-radius: 4px;
-  background: #fff;
-  top: 50%;
   height: 33.4vh;
   width: 38%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
 
-/*유지보수 팝업*/
-.maintenance_popup{
-  position: absolute;
-  box-sizing: border-box;
-  border-radius: 4px;
-  background: #fff;
-  top: 50%;
-  font-size: 0.34rem;
-  height: 49%;
-  width: 34%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
-  z-index: 1000;
-}
-.hosted_storage{
-  padding: 0.3rem;
-}

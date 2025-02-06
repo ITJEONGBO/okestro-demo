@@ -88,7 +88,7 @@ const DomainActionModal = ({ isOpen, action, data, datacenterId, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage-delete-popup">
+      <div className="storage-delete-popup modal">
         <div className="popup-header">
           <h1> 스토리지 도메인 {getContentLabel(action)}</h1>
           <button onClick={onClose}>

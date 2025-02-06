@@ -1,449 +1,254 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
 /*새로만들기*/
 .network-new-popup {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 75.4%;
-    width: 42%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+  height: 75.4%;
+  width: 42%;
 }
 .network-new-popup.edit-mode {
-    height: 73%;
+  height: 75%;
 }
-.network-new-popup form{
-    height: 66vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-.network-new-content{
-    height: 66vh;
-    overflow-y: auto; 
-    overflow-x: hidden;
-}
-.network-new-input{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center; 
-}
-.network-checkbox{
-    display: flex;
-    align-items: center; 
-}
-.network-checkbox-only{
-    display: flex;
-    width: 100%;
-    justify-content: left;
-    align-items: center; 
-}
-.mtu-input-outer{
-
-}
-.mtu-radio-input{
-    width:100%;
-}
-.mtu-text-input input{
-    width:100%; 
-}
-.network-form-group,
-.network_radio_group,
-.network_checkbox_type3
-{
-    display: flex;
-    justify-content: space-between;
-    padding: 1.2% 2%;
-    align-items:center;
-}
-.network-form-group input[type="text"]{
-    width: 47%;
-}
-.network-form-group [type="number"],
-.network-form-group select
-{
-    width: 47%;
-}
-.mtu-form input[type="text"]{
-    width: 57%;
-}
-.network-new-cluster-table{ 
-    border-collapse: collapse;
-    width: 100%;
-    text-align: left;
-}
-.network-new-cluster-table thead{
-    background-color: #d1e2eb;
-    border-top: none;
-}
-
-.network-new-cluster-table th,.network-new-cluster-table td{
-    border: 1px solid rgb(209, 209, 209);
-    padding: 0.05rem;
-}
-
-.storage_right_btns{
-    display: flex;
-    font-size: 0.34rem;
-    margin-bottom: 0.3rem;
-    height: 3.3vh;
-}
-.storage_right_btns>span{
-    margin-right: 0.2rem;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.storage_right_btns>div{
-    width: 8%;
-    display: flex;
-    justify-content: space-between;
-}
-.storage_right_btns button{
-    width: 50%;
-    cursor: pointer;
-    border: 1px solid #14417c;
-    border-radius: 3px;
-    color: rgb(10, 55, 107);
-    font-weight: 600;
-}
-.network-new-cluster-form{
-    padding: 0.2rem 0.4rem;
-    margin-bottom: 1rem;
-    font-size: 0.32rem;
-}
-.network-new-cluster-form>span,#network_new_vnic_form>span{
-    font-size: 0.35rem;
-    font-weight: 600;
-}
-.network-new-cluster-form>div{
-    border: 1px solid rgb(209, 209, 209);
-    height: 37vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-/*vNic프로파일(새로만들기)*/
-
-/*클러스터(네트워크 관리)*/
-.manage_network_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 60.4vh;
-    width: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-.manage_network_popup>.section_table_outer{
-    margin-top: 0.2rem;
-}
-.manage_network_popup>.section_table_outer td{
-    text-align: left;
-  
-}
-/**/
-/* .network_popup_table{
-    font-size: 0.3rem;
-    
-}
-.network_popup_table>table{
-    width: 100%;
-    border-collapse: collapse;
-}
-.network_popup_table thead{
-    background-color: #dddddd;
-}
-.network_popup_table thead th{
-    padding: 0.12rem 0;
-}
-.network_popup_table tbody td{
-    border-right: 1px solid #dddddd;
-}
-.network_popup_table tbody td:last-child{
-    border-right: none;
-}
-.network_popup_table>.vnic_new_checkbox{
-   text-align: center;
-} */
-/*호스트 네트워크 설정 */
-.host-nework-content-popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 67%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.host-network-separation{
-    display:flex;
-    justify-content: space-between;
-    font-size: 0.33rem;
-}
-.network-separation-left{
-    width:68%
-}
-.network-separation-left>div:first-child{
-    display:flex;
-    justify-content: space-between;
-    height:13%;
-}
-.network-item {
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: #d1e5eb;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  .network-item:hover {
-    border: 1.7px dashed #002a4f;
-    transform: scale(1); /* 크기 10% 증가 */
-  }
-.network-separation-left>div:first-child>div{
-    width:37%;
-    text-align:center;
-    padding:0.2rem;
-}
-.separation-left-content{
-    border: 1px solid #a3a3a3;
-    display:flex;
-    justify-content: space-between;
-    padding:0.15rem;
-    margin-bottom: 0.16rem;
-}
-.separation-left-content:last-child{
-    margin-bottom: 1rem
-}
-.interface{
-    border: 1px solid #a3a3a3;
-    padding:0.1rem;
-    width: 39%;
-}
-.host_network_outer{
-    padding:0.2rem;
-    font-size:0.33rem;
-    height: 53.5vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-.container{
-    display: flex;
-    align-items: center;
-    border: 1px solid skyblue;
-    cursor:pointer;
-    padding: 0.1rem 0.2rem;
-    margin-bottom:0.1rem;
-    background-color: white;
-}
-.container:hover{
-    background: lightblue;
-}
-.outer-networks{
-    width:100%;
-}
-.interface-header{
-    margin-bottom:0.1rem;
-}
-.assigned-network-outer{
-    border: 1px solid #949fa3;;
-    display: flex;
-    align-items: center;
-    padding:0.2rem;
-    width: 39%;
-}
-.assigned-network{
-    display: flex;
-    align-items: center;
-    border: 1px dashed gray;
-    padding: 0.1rem 0.2rem;
-    cursor:pointer;
-}
-.left-section {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-.network_separation_right{
-    width: 33%;
-    padding: 0 0.5rem;
-}
-.network-outer-item{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: space-between; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.right-section {
-    display: flex;
-    gap: 5px;
-}
-
-.vnic_new_checkbox{
-    display:flex;
-}
-/*본딩모달*/
-.network-bonding-modal{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 30%;
-    width: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-    font-size:0.32rem;
-}
-.bonding-content{
-    padding:0.2rem;
-}
-/*연필추가모달*/
-.backup-edit-content{
-    width: 100%;
-}
-.host-plus-checkbox{
-    padding: 0.2rem;
-    display: flex;
-}
-/* 
-.unconfigured_network{
-    display: flex;
-    flex-direction: column; 
-    justify-content: space-between; 
-    align-items: center;
-    height:33vh;
-    margin-bottom:0.2rem
-}
-.unconfigured_network>div{
-    width: 100%;
-    padding: 0.1rem;
-    text-align: center;
-    align-items: center;
-}
-
-.unconfigured_content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; 
-    gap: 0.5rem; 
-    cursor:pointer;
-    border:1px solid gray;
-}
-.lable_part {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px;
-    width: 100%;
-    border: 1px dashed black;
-  }
-  
-  .lable_part span {
-    font-size: 14px;
-    color: black;
-    font-weight: normal;
-  } */
-#network_detail_edit_form{
-  height: 69vh;
+.network-new-content {
+  height: 66vh;
   overflow-y: auto;
   overflow-x: hidden;
-  font-size: 0.33rem;
-}
-.network_detail_edit_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 82.8%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-.backup_edit_radiobox{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding:0.2rem;
-    height:16vh;
 }
 
-.label_name{
-    font-size: '10px';
+.network-checkbox {
+  display: flex;
+  align-items: center;
 }
+.network-checkbox-only {
+  display: flex;
+  width: 100%;
+  justify-content: left;
+  align-items: center;
+}
+
+.mtu-radio-input {
+  width: 100%;
+}
+.mtu-text-input input {
+  width: 100%;
+}
+.network-form-group {
+  padding: 1.2% 1.2%;
+}
+.network-form-group input[type="text"],
+.network-form-group [type="number"],
+.network-form-group select {
+  width: 47%;
+}
+.mtu-form input[type="text"] {
+  width: 57%;
+}
+.network-new-cluster-table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+}
+.network-new-cluster-table thead {
+  background-color: #d1e2eb;
+  border-top: none;
+}
+
+.network-new-cluster-table th,
+.network-new-cluster-table td {
+  border: 1px solid rgb(209, 209, 209);
+  padding: 0.05rem;
+}
+
+.network-new-cluster-form {
+  padding: 0.2rem 0.4rem;
+  margin-bottom: 1rem;
+}
+.network-new-cluster-form > span,
+#network_new_vnic_form > span {
+  font-weight: 600;
+}
+.network-new-cluster-form > div {
+  border: 1px solid rgb(209, 209, 209);
+  height: 37vh;
+  overflow-y: auto; /* 세로 스크롤 추가 */
+  overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+
+/*클러스터(네트워크 관리)*/
+.manage-network-popup {
+  height: 60.4vh;
+  width: 58%;
+}
+/*호스트 네트워크 설정 */
+.host-nework-content-popup {
+  height: 67%;
+  width: 48%;
+}
+.host-network-separation {
+  display: flex;
+  justify-content: space-between;
+}
+.network-separation-left {
+  width: 68%;
+}
+.network-separation-left > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  height: 13%;
+}
+.network-item {
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #d1e5eb;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+}
+.network-item:hover {
+  border: 1.7px dashed #002a4f;
+  transform: scale(1); /* 크기 10% 증가 */
+}
+.network-separation-left > div:first-child > div {
+  width: 37%;
+  text-align: center;
+  padding: 0.2rem;
+}
+.separation-left-content {
+  border: 1px solid #a3a3a3;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.15rem;
+  margin-bottom: 0.16rem;
+}
+.separation-left-content:last-child {
+  margin-bottom: 1rem;
+}
+.interface {
+  border: 1px solid #a3a3a3;
+  padding: 0.1rem;
+  width: 39%;
+}
+.host-network-outer {
+  padding: 0.2rem;
+  font-size: 0.33rem;
+  height: 53.5vh;
+  overflow-y: auto; /* 세로 스크롤 추가 */
+  overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+.container {
+  display: flex;
+  align-items: center;
+  border: 1px solid skyblue;
+  cursor: pointer;
+  padding: 0.1rem 0.2rem;
+  margin-bottom: 0.1rem;
+  background-color: white;
+}
+.container:hover {
+  background: lightblue;
+}
+.outer-networks {
+  width: 100%;
+}
+.interface-header {
+  margin-bottom: 0.1rem;
+}
+.assigned-network-outer {
+  border: 1px solid #949fa3;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+  width: 39%;
+}
+.assigned-network {
+  display: flex;
+  align-items: center;
+  border: 1px dashed gray;
+  padding: 0.1rem 0.2rem;
+  cursor: pointer;
+}
+.left-section {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+.network_separation_right {
+  width: 33%;
+  padding: 0 0.5rem;
+}
+.right-section {
+  display: flex;
+  gap: 5px;
+}
+/*본딩모달*/
+.network-bonding-modal {
+  height: 30%;
+  width: 30%;
+}
+.bonding-content {
+  padding: 0.2rem;
+}
+/*연필추가모달(outer는 app.css에있음)*/
+.backup-edit-content {
+  width: 100%;
+}
+.host-plus-checkbox {
+  padding: 0.2rem;
+  display: flex;
+}
+.backup-edit-radiobox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.2rem;
+  height: 16vh;
+}
+
 /*네트워크 인터페이스 새로만들기*/
-.new_network_interface{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 45%;
-    width: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+.new-network-interface {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background: #fff;
+  top: 50%;
+  height: 45%;
+  width: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 
 /*네트워크(가져오기)*/
-.network-bring-popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 87%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+.network-bring-popup {
+  height: 87%;
+  width: 48%;
 }
-.network_bring_outer .network-form-group{
-    font-size: 0.34rem;
-    padding: 0.4rem;
+.network-form-group {
+  padding: 0.2rem;
 }
-.network-bring-table-outer{
-    font-size: 0.34rem;
-    padding: 0 0.4rem 0.4rem 0.4rem;
+.network-bring-table-outer {
+  padding: 0 0.4rem 0.4rem 0.4rem;
 }
-.network-bring-table-outer span
-{
-    font-weight: 600;
-    margin-bottom: 0.1rem;
-    display: block;
+.network-bring-table-outer span {
+  font-weight: 600;
+  margin-bottom: 0.1rem;
+  display: block;
 }
-.network-bring-table-outer>div{
-    border: 1px solid #c9c9c9;
-    height: 27vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
+.network-bring-table-outer > div {
+  border: 1px solid #c9c9c9;
+  height: 27vh;
+  overflow-y: auto; /* 세로 스크롤 추가 */
+  overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
-.network-bring-table-outer table{
-    width: 100%;
-    border-collapse: collapse;
+.network-bring-table-outer table {
+  width: 100%;
+  border-collapse: collapse;
 }
-.network-bring-table-outer th,.network-bring-table-outer td{
-    padding: 0.04rem;
+.network-bring-table-outer th,
+.network-bring-table-outer td {
+  padding: 0.04rem;
 }
-.network-bring-table-outer th{
-    background-color: #d1e2eb;
-    text-align: left;
-    border-collapse: collapse;
+.network-bring-table-outer th {
+  background-color: #d1e2eb;
+  text-align: left;
+  border-collapse: collapse;
 }

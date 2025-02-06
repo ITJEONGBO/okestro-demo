@@ -1,34 +1,18 @@
-.disk-move-popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 37%;
-    width: 39%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+.disk-move-popup {
+  height: 37%;
+  width: 39%;
 }
 
 /*새로만들기*/
-.img-input-box select{
+.img-input-box select {
   width: 55%;
-  height: 3.5vh;
-  border: 1px solid #8b8989;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 0.29rem; 
-  outline: none;
 }
-.disk-new-img{
+.disk-new-img {
   display: flex;
   padding: 0 0.35rem;
-  font-size: 0.33rem;
 }
-.disk-new-img-right{
-padding-left: 0.3rem;
+.disk-new-img-right {
+  padding-left: 0.3rem;
 }
 .disk-new-img-right div {
   display: flex;
@@ -36,53 +20,36 @@ padding-left: 0.3rem;
   cursor: pointer;
   margin-bottom: 0.13rem;
 }
-.disk-new-img-right label{
+.disk-new-img-right label {
   margin-left: 0.1rem;
 }
 
-.disk-new-img-left{
+.disk-new-img-left {
   width: 60%;
 }
-.disk-new-img-left>div{
+.disk-new-img-left > div {
   display: flex;
   justify-content: space-between;
 }
- /*디스크(업로드)*/
- .storage-disk-upload-popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 78.4vh;
-    width: 58%;
-    left: 50%;
-    font-size: 0.32rem;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-  }
-  .storage-upload-first{
-    padding: 0.4rem;
-    display: flex;
-    font-size: 0.34rem;
-    margin-bottom:1rem;
-  }
-  .storage-upload-first>button{
-    font-weight: 600;
-    margin-right: 0.4rem;
-    padding: 0.1rem;
-   
-    cursor: pointer;
-  }
-  .storage-upload-first>div{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-  }
-  .disk-option{
-    background-color: #e6e6e6;
-    font-size: 0.34rem;
-    font-weight: 600;
-    padding: 0.35rem 0.4rem;
-  }
+/*디스크(업로드)*/
+.storage-disk-upload-popup {
+  height: 78.4vh;
+  width: 58%;
+}
+.storage-upload-first {
+  padding: 0.4rem;
+  display: flex;
+  font-size: 0.34rem;
+  margin-bottom: 1rem;
+}
+.storage-upload-first > button {
+  font-weight: 600;
+  margin-right: 0.4rem;
+  padding: 0.1rem;
+}
+
+.disk-option {
+  background-color: #e6e6e6;
+  font-weight: 600;
+  padding: 0.35rem 0.4rem;
+}

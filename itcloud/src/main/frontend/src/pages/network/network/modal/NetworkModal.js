@@ -14,7 +14,7 @@ import {
 import { CheckKorenName, CheckName } from '../../../../utils/CheckName';
 
 const FormGroup = ({ label, children }) => (
-  <div className="network-form-group">
+  <div className="network-form-group center">
     <label style={{ 'font-size': "0.32rem" }}>{label}</label>
     {children}
   </div>
@@ -197,8 +197,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
             </button>
         </div>
         <div className='network-new-content'>
-          <div className="network_first_contents">
-
+          <div>
             <FormGroup label="데이터 센터">
               <select
                 value={dataCenterVoId}
@@ -245,7 +244,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
             <hr/>
 
             <FormGroup>
-              <div className='network-new-input'>
+              <div className='network-new-input center'>
                 <div className='network-checkbox'>
                   <input
                     type="checkbox"
@@ -259,7 +258,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                       }));
                     }}
                   />
-                  <label style={{ fontSize: "0.32rem" }}>VLAN 태깅 활성화</label>
+                  <label>VLAN 태깅 활성화</label>
                 </div>
 
                 <input
@@ -297,7 +296,7 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                     }));
                   }}
                 />
-                <label style={{fontSize: "0.32rem" }}>가상 머신 네트워크</label>
+                <label>가상 머신 네트워크</label>
               </div>
             </FormGroup>
             
@@ -311,31 +310,31 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                   onChange={(e) => setFormState((prev) => ({ ...prev, portIsolation: e.target.checked }))}
                   disabled={!formState.usageVm} // 가상 머신 네트워크가 비활성화되면 비활성화
                 />
-                <label style={{ fontSize: "0.32rem" }}>포트 분리</label>
+                <label>포트 분리</label>
               </div>
             </FormGroup>
 
             <FormGroup label="MTU" className="mtu-form">
               <div className="mtu-input-outer">
                 <div className="mtu-radio-input">
-                  <div style={{ fontSize: "0.32rem", display: 'flex' }}>
+                  <div className='flex'>
                     <input
                       type="radio"
                       checked={formState.mtu === "0"} // 기본값 1500 선택됨
                       onChange={() => setFormState((prev) => ({ ...prev, mtu: "0" }))}
                     />
-                    <label style={{ fontSize: "0.32rem" }}>기본값 (1500)</label>
+                    <label>기본값 (1500)</label>
                   </div>
-                  <div style={{ fontSize: "0.32rem", display: 'flex' }}>
+                  <div className='flex'>
                     <input
                       type="radio"
                       checked={formState.mtu !== "0"} // 사용자 정의 값이 있을 때 선택됨
                       onChange={() => setFormState((prev) => ({ ...prev, mtu: "" }))} // 빈 문자열로 설정해 사용자가 입력할 수 있도록
                     />
-                    <label style={{ fontSize: "0.32rem" }}>사용자 정의</label>
+                    <label>사용자 정의</label>
                   </div>
                 </div>
-                <div className="mtu-text-input" style={{ fontSize: "10px" }}>
+                <div className="mtu-text-input">
                   <input 
                     type="number" 
                     style={{ width: '100%' }}
@@ -355,10 +354,6 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
               </div>
             </FormGroup>
 
-
-
-         
-            
             <FormGroup>
               <div className="network-checkbox-only">
                 <input 
@@ -368,13 +363,13 @@ const NetworkModal = ({ isOpen, editMode = false, networkId, dcId, onClose }) =>
                   checked={dnsEnabled}
                   onChange={(e) => setDnsEnabled(e.target.checked)} 
                 />
-                <label style={{fontSize: "0.32rem" }}>DNS 설정</label>
+                <label>DNS 설정</label>
               </div>
             </FormGroup>
 
             <div style={{fontSize: "0.32rem",padding:'0 1em',fontWeight:'800' }}>DNS 서버</div>
             <FormGroup>
-              <div className='network-form-group' style={{width:'100%',padding:0}}>
+              <div className='network-form-group center' style={{width:'100%',padding:0}}>
                   <input 
                     type="text" 
                     id="dns_server" 

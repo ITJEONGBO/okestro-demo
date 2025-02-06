@@ -55,7 +55,7 @@ const DiskDeleteModal = ({ isOpen, onClose, data }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage-delete-popup">
+      <div className="storage-delete-popup modal">
         <div className="popup-header">
           <h1>디스크 삭제</h1>
           <button onClick={onClose}>

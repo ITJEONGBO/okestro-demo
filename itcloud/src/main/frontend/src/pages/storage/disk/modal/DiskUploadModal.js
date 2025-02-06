@@ -166,7 +166,7 @@ const DiskUploadModal = ({ isOpen, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-    <div className="storage-disk-upload-popup">
+    <div className="storage-disk-upload-popup modal">
       <div className="popup-header">
         <h1>이미지 업로드</h1>
         <button onClick={onClose}>
@@ -190,7 +190,7 @@ const DiskUploadModal = ({ isOpen, onClose }) => {
         />
       </div>
 
-      <div className="storage_upload_second">
+      <div>
         <div className="disk-option">디스크 옵션</div>
           <div className="disk-new-img" style={{ paddingTop: '0.4rem' }}>
             <div className="disk-new-img-left">

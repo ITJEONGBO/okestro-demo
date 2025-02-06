@@ -101,7 +101,7 @@ const VmActionModal = ({ isOpen, action, data, onClose }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage-delete-popup">
+      <div className="storage-delete-popup modal">
         <div className="popup-header">
           <h1>가상머신 {getContentLabel(action)}</h1>
           <button onClick={onClose}>

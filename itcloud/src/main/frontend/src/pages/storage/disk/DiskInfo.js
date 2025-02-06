@@ -60,8 +60,8 @@ const DiskInfo = () => {
   const sectionHeaderButtons = [
     { type: 'edit', label: '편집', onClick: () => openModal('edit'),},
     { type: 'delete', label: '삭제', onClick: () => openModal('delete'), },
-    { type: 'move', label: '이동', onClick: () => openModal('deactivate') },
-    { type: 'copy', label: '복사', onClick: () => openModal('activate') },
+    { type: 'move', label: '이동', onClick: () => openModal('move') },
+    { type: 'copy', label: '복사', onClick: () => openModal('copy') },
     // { type: 'upload', label: '업로드', onClick: () => openModal('restart') },
   ];
 

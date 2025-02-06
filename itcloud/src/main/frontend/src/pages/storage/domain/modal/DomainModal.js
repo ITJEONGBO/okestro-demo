@@ -379,7 +379,7 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="storage-domain-administer-popup">
+      <div className="storage-domain-administer-popup modal">
         <div className="popup-header">
           <h1>{
             // importMode ? "도메인 가져오기":
@@ -391,10 +391,10 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
         </div>
 
         <div className="storage-domain-new-first">
-          <div className="domain_new_left">
+          <div >
 
             <LabelSelectOptionsID 
-              className="domain-new-select"
+              className="domain-new-select center"
               label="데이터센터"
               value={dataCenterVoId}
               onChange={(e) => setDataCenterVoId(e.target.value)}
@@ -403,7 +403,7 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
               options={dataCenters}
             />
             <LabelSelectOptions
-              className="domain-new-select"
+              className="domain-new-select center"
               label="도메인 유형"
               value={formState.domainType}
               onChange={(e) => setFormState((prev) => ({ ...prev, domainType: e.target.value }))}
@@ -411,7 +411,7 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
               options={domainTypes}
             />
             <LabelSelectOptions
-              className="domain-new-select"
+              className="domain-new-select center"
               label="스토리지 유형"
               value={formState.storageType}
               onChange={(e) => setFormState((prev) => ({ ...prev, storageType: e.target.value }))}
@@ -419,7 +419,7 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
               options={storageTypes}
             />
 
-            <div className="domain-new-select">
+            <div className="domain-new-select center">
               <label>호스트</label>
               <select
                 label="호스트"
@@ -442,7 +442,7 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
 
           <div className="domain-new-right">
             <LabelInput
-              className="domain-new-select"
+              className="domain-new-select center"
               label="이름"
               id='name'
               autoFocus={true}
@@ -450,14 +450,14 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
               onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
             />
             <LabelInput
-              className="domain-new-select"
+              className="domain-new-select center"
               label="설명"
               id='description'
               value={formState.description}
               onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
             />
             <LabelInput
-              className="domain-new-select"
+              className="domain-new-select center"
               label="코멘트"
               id='comment'
               value={formState.comment}
@@ -522,14 +522,14 @@ const DomainModal = ({ isOpen, editMode=false, domainId, datacenterId, onClose }
       <div className="tab-content">
         <div className="storage-specific-content">
           <LabelInputNum
-            className='domain-num-box'
+            className='domain-num-box center'
             label="디스크 공간 부족 경고 표시(%)"
             id='warning'
             value={formState.warning}
             onChange={(e) => setFormState((prev) => ({ ...prev, warning: e.target.value }))}
           />
           <LabelInputNum
-            className='domain-num-box'
+            className='domain-num-box center'
             label="심각히 부족한 디스크 공간의 동작 차단(GB)"
             id='spaceBlocker'
             value={formState.spaceBlocker}

@@ -269,7 +269,7 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
         {outerItem.networks.map((network) => (
           <div
             key={network.id}
-            className="network-outer-item"
+            className="center"
             draggable
             onDragStart={(e) => dragStart(e, network, "networkOuter", outerItem.id)}
           >
@@ -371,7 +371,7 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
       overlayClassName="Overlay"
       shouldCloseOnOverlayClick={false}
     >
-      <div className="host-nework-content-popup">
+      <div className="host-nework-content-popup modal">
         <div className="popup-header">
           <h1>호스트 네트워크 설정</h1>
           <button onClick={onRequestClose}>
@@ -379,7 +379,7 @@ const NetworkHostModal = ({ isOpen, onRequestClose, nicData, hostId }) => {
           </button>
         </div>
 
-        <div className="host_network_outer">
+        <div className="host-network-outer">
           <div className="py-1 font-bold underline">드래그 하여 변경</div>
           <div className="host-network-separation">
           <div className="network-separation-left">
